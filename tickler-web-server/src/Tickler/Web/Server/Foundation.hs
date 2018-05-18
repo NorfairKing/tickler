@@ -241,9 +241,19 @@ instance PathPiece (UUID a) where
     toPathPiece = uuidText
 
 withNavBar :: WidgetFor App () -> HandlerFor App Html
-withNavBar widget = do
+withNavBar = withFormFailureNavBar []
+
+withFormResultNavBar :: FormResult a -> WidgetFor App () -> HandlerFor App Html
+withFormResultNavBar fr w =
+    case fr of
+        FormSuccess _ -> withNavBar w
+        FormFailure ts -> withFormFailureNavBar ts w
+        FormMissing -> withFormFailureNavBar ["Missing data"] w
+
+withFormFailureNavBar :: [Text] -> Widget -> Handler Html
+withFormFailureNavBar errs body = do
     mauth <- maybeAuthId
-    msgs <- getMessages
+    msgs <- fmap (map ((,) "error" . toHtml) errs ++) getMessages
     defaultLayout $(widgetFile "with-nav-bar")
 
 genToken :: MonadHandler m => m Html

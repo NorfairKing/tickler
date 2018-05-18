@@ -5,6 +5,7 @@
 /done                              DoneR                POST
 
 /account                           AccountR             GET
+/account/settings                  AccountSettingsR     POST
 /account/delete                    AccountDeleteR       POST
 
 /error/api-down/#Text              ErrorAPIDownR        GET

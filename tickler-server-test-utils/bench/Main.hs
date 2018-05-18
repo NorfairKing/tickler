@@ -25,8 +25,7 @@ largeTextItem =
 
 main :: IO ()
 main =
-    withServer $ \cenv -> do
-        (_, tok) <- setupTestUser cenv
+    withServer $ \cenv ->
         defaultMain
             [ bench "register" $ register cenv
             , bench "register and login" $ registerAndLogin cenv

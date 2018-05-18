@@ -25,9 +25,10 @@
 
 
 <!-- Messages -->
-$forall (_, msg) <- msgs
-  <div .ui .bottom .attached .message>
+$forall (status, msg) <- msgs
+  <div .ui .bottom .attached .#{status} .message>
     ^{msg}
 
+
 <div .ui .main .container>
-  ^{widget}
+  ^{body}

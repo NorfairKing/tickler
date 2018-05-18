@@ -9,6 +9,8 @@ import Import
 import Data.Aeson
 import Data.Time
 
+import Text.Printf
+
 import Database.Persist.Sql
 
 instance ToJSON TimeZone where
@@ -31,5 +33,17 @@ instance PersistField TimeZone where
     fromPersistValue = fromPersistValueJSON
     toPersistValue = toPersistValueJSON
 
-timezoneChoices :: [TimeZone]
-timezoneChoices = map hoursToTimeZone [-12 .. 12]
+timeZoneChoices :: [TimeZone]
+timeZoneChoices =
+    map (\i ->
+             TimeZone
+             { timeZoneMinutes = 60 * i
+             , timeZoneSummerOnly = False
+             , timeZoneName =
+                   concat $
+                   "UTC" :
+                   (if i == 0
+                        then []
+                        else [printf "%+d" i])
+             })
+        [-12 .. 12]
