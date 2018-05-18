@@ -136,3 +136,6 @@ instance ToSample GetDocsResponse where
 
 instance ToMarkup GetDocsResponse where
     toMarkup (GetDocsResponse html) = toMarkup html
+
+instance ToSample TimeZone where
+    toSamples Proxy = singleSample utc

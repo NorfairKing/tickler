@@ -13,6 +13,8 @@ module Tickler.Client
     , clientPostLogin
     , clientGetDocs
     , clientGetAccountInfo
+    , clientGetAccountSettings
+    , clientPutAccountSettings
     , clientDeleteAccount
     , clientAdminGetStats
     , clientAdminDeleteAccount
@@ -28,6 +30,7 @@ module Tickler.Client
     , NewSyncItem(..)
     , SyncResponse(..)
     , AccountInfo(..)
+    , AccountSettings(..)
     , Registration(..)
     , LoginForm(..)
     , GetDocsResponse(..)
@@ -64,6 +67,8 @@ clientGetItem :: Token -> ItemUUID -> ClientM (ItemInfo TypedItem)
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
 clientPostSync :: Token -> SyncRequest -> ClientM SyncResponse
 clientGetAccountInfo :: Token -> ClientM AccountInfo
+clientGetAccountSettings :: Token -> ClientM AccountSettings
+clientPutAccountSettings :: Token -> AccountSettings -> ClientM NoContent
 clientDeleteAccount :: Token -> ClientM NoContent
 clientPostRegister :: Registration -> ClientM NoContent
 clientPostLogin ::
@@ -73,5 +78,5 @@ clientGetDocs :: ClientM GetDocsResponse
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientGetShowItem :<|> clientGetSize :<|> clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetAccountInfo :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientGetShowItem :<|> clientGetSize :<|> clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
     client (flatten ticklerAPI)

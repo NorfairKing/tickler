@@ -2,7 +2,9 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
@@ -20,6 +22,7 @@ import Tickler.Data.AccountUUID
 import Tickler.Data.HashedPassword
 import Tickler.Data.ItemType
 import Tickler.Data.ItemUUID
+import Tickler.Data.Time ()
 import Tickler.Data.Username
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"]
@@ -33,6 +36,14 @@ User
     lastLogin UTCTime Maybe
     UniqueUserIdentifier identifier
     UniqueUsername username
+    deriving Show
+    deriving Eq
+    deriving Generic
+
+UserSettings
+    userId AccountUUID
+    timeZone TimeZone
+    UniqueUserSettings userId
     deriving Show
     deriving Eq
     deriving Generic
@@ -51,6 +62,8 @@ TicklerItem
     deriving Generic
 |]
 
-instance Validity TicklerItem
-
 instance Validity User
+
+instance Validity UserSettings
+
+instance Validity TicklerItem

@@ -22,19 +22,6 @@ instance GenUnchecked AccountUUID
 
 instance GenValid AccountUUID
 
-instance GenUnchecked ItemType
-
-instance GenValid ItemType
-
-instance GenUnchecked TicklerItem
-
-instance GenValid TicklerItem where
-    genValid =
-        (TicklerItem <$> genValid <*> genValid <*> genValid <*> genValid <*>
-         genValid <*>
-         genValid) `suchThat`
-        isValid
-
 instance GenUnchecked Username
 
 instance GenValid Username where
@@ -50,6 +37,25 @@ instance GenValid Username where
              ((:) <$> charGen <*> ((:) <$> charGen <*> genListOf charGen)))
         charGen = genValid `suchThat` validUsernameChar
 
-instance GenUnchecked User
+instance GenValid UserSettings
 
 instance GenUnchecked HashedPassword
+
+instance GenUnchecked User
+
+instance GenValid User
+
+instance GenUnchecked UserSettings
+
+instance GenUnchecked ItemType
+
+instance GenValid ItemType
+
+instance GenUnchecked TicklerItem
+
+instance GenValid TicklerItem where
+    genValid =
+        (TicklerItem <$> genValid <*> genValid <*> genValid <*> genValid <*>
+         genValid <*>
+         genValid) `suchThat`
+        isValid

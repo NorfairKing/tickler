@@ -17,3 +17,7 @@ spec = do
     ordSpec @AccountInfo
     genValidSpec @AccountInfo
     jsonSpecOnValid @AccountInfo
+    eqSpec @AccountSettings
+    ordSpec @AccountSettings
+    genValidSpec @AccountSettings
+    jsonSpecOnValid @AccountSettings

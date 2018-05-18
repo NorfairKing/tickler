@@ -12,6 +12,8 @@ import Tickler.Server.Handler.Admin (ticklerAdminServer)
 import Tickler.Server.Handler.DeleteAccount (serveDeleteAccount)
 import Tickler.Server.Handler.DeleteItem (serveDeleteItem)
 import Tickler.Server.Handler.GetAccountInfo (serveGetAccountInfo)
+import Tickler.Server.Handler.GetAccountSettings
+       (serveGetAccountSettings)
 import Tickler.Server.Handler.GetItem (serveGetItem)
 import Tickler.Server.Handler.GetItemUUIDs (serveGetItemUUIDs)
 import Tickler.Server.Handler.GetItems (serveGetItems)
@@ -20,6 +22,8 @@ import Tickler.Server.Handler.GetTicklerSize (serveGetTicklerSize)
 import Tickler.Server.Handler.PostAddItem (servePostAddItem)
 import Tickler.Server.Handler.PostSync (servePostSync)
 import Tickler.Server.Handler.Public (ticklerPublicServer)
+import Tickler.Server.Handler.PutAccountSettings
+       (servePutAccountSettings)
 
 ticklerServer :: TicklerSite (AsServerT TicklerHandler)
 ticklerServer =
@@ -47,5 +51,7 @@ ticklerProtectedServer =
     , deleteItem = serveDeleteItem
     , postSync = servePostSync
     , getAccountInfo = serveGetAccountInfo
+    , getAccountSettings = serveGetAccountSettings
+    , putAccountSettings = servePutAccountSettings
     , deleteAccount = serveDeleteAccount
     }

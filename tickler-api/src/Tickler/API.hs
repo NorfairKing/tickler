@@ -30,6 +30,9 @@ module Tickler.API
     , NewSyncItem(..)
     , SyncResponse(..)
     , AccountInfo(..)
+    , AccountSettings(..)
+    , GetAccountSettings
+    , PutAccountSettings
     , Registration(..)
     , PostRegister
     , LoginForm(..)

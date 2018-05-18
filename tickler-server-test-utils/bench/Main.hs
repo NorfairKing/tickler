@@ -30,17 +30,6 @@ main =
         defaultMain
             [ bench "register" $ register cenv
             , bench "register and login" $ registerAndLogin cenv
-            , bench "size" $ size cenv tok
-            , bench "add small text item" $ add cenv tok smallTextItem
-            , bench "add large text item" $ add cenv tok largeTextItem
-            , bench "add and get small text item" $
-              addAndGet cenv tok smallTextItem
-            , bench "add and get large text item" $
-              addAndGet cenv tok smallTextItem
-            , bench "add and delete small text item" $
-              addAndDelete cenv tok smallTextItem
-            , bench "add and delete large text item" $
-              addAndDelete cenv tok largeTextItem
             ]
 
 register :: ClientEnv -> Benchmarkable
@@ -56,26 +45,6 @@ registerAndLogin cenv =
         runClientOrError cenv $ do
             NoContent <- clientPostRegister r
             clientPostLogin $ registrationLoginForm r
-
-size :: ClientEnv -> Token -> Benchmarkable
-size cenv tok = whnfIO $ runClientOrError cenv $ clientGetSize tok
-
-add :: ClientEnv -> Token -> TypedItem -> Benchmarkable
-add cenv tok ti = whnfIO $ runClientOrError cenv $ clientPostAddItem tok ti
-
-addAndGet :: ClientEnv -> Token -> TypedItem -> Benchmarkable
-addAndGet cenv tok ti =
-    whnfIO $
-    runClientOrError cenv $ do
-        u <- clientPostAddItem tok ti
-        clientGetItem tok u
-
-addAndDelete :: ClientEnv -> Token -> TypedItem -> Benchmarkable
-addAndDelete cenv tok ti =
-    whnfIO $
-    runClientOrError cenv $ do
-        u <- clientPostAddItem tok ti
-        clientDeleteItem tok u
 
 setupTestUser :: ClientEnv -> IO (Registration, Token)
 setupTestUser cenv = do

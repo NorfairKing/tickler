@@ -29,6 +29,9 @@ module Tickler.API.Protected
     , PostSync
     , AccountInfo(..)
     , GetAccountInfo
+    , AccountSettings(..)
+    , GetAccountSettings
+    , PutAccountSettings
     , DeleteAccount
     , Registration(..)
     , LoginForm(..)
@@ -69,6 +72,8 @@ data TicklerProtectedSite route = TicklerProtectedSite
     , deleteItem :: route :- DeleteItem
     , postSync :: route :- PostSync
     , getAccountInfo :: route :- GetAccountInfo
+    , getAccountSettings :: route :- GetAccountSettings
+    , putAccountSettings :: route :- PutAccountSettings
     , deleteAccount :: route :- DeleteAccount
     } deriving (Generic)
 
@@ -100,5 +105,11 @@ type PostSync
      = ProtectAPI :> "sync" :> ReqBody '[ JSON] SyncRequest :> Post '[ JSON] SyncResponse
 
 type GetAccountInfo = ProtectAPI :> "account" :> Get '[ JSON] AccountInfo
+
+type GetAccountSettings
+     = ProtectAPI :> "account" :> "settings" :> Get '[ JSON] AccountSettings
+
+type PutAccountSettings
+     = ProtectAPI :> "account" :> "settings" :> ReqBody '[ JSON] AccountSettings :> Put '[ JSON] NoContent
 
 type DeleteAccount = ProtectAPI :> "account" :> Delete '[ JSON] NoContent

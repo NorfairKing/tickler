@@ -13,6 +13,7 @@ module Tickler.API.Account.Types
     , parseUsername
     , parseUsernameWithError
     , usernameText
+    , AccountSettings(..)
     , module Data.UUID.Typed
     ) where
 
@@ -56,3 +57,18 @@ instance ToJSON AccountInfo where
             ]
 
 instance ToSample AccountInfo
+
+newtype AccountSettings = AccountSettings
+    { accountSettingsTimeZone :: TimeZone
+    } deriving (Show, Eq, Ord, Generic)
+
+instance Validity AccountSettings
+
+instance FromJSON AccountSettings where
+    parseJSON =
+        withObject "AccountSettings" $ \o -> AccountSettings <$> o .: "timezone"
+
+instance ToJSON AccountSettings where
+    toJSON AccountSettings {..} = object ["timezone" .= accountSettingsTimeZone]
+
+instance ToSample AccountSettings
