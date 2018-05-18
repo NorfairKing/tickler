@@ -1,0 +1,68 @@
+name: tickler-server
+version: '0.0.0.0'
+synopsis: Tickler Server
+description: Please see README.md
+category: Tickler
+author: Tom Sydney Kerckhove
+maintainer: syd.kerckhove@gmail.com
+copyright: ! 'Copyright: (c) 2016-2018 Tom Sydney Kerckhove'
+license: AllRightsReserved
+github: NorfairKing/tickler-server
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  default-extensions:
+  - NoImplicitPrelude
+  exposed-modules:
+  - TicklerServer
+  - Tickler.Server
+  - Tickler.Server.Handler.PostSync
+  - Tickler.Server.Handler.Utils
+  - Tickler.Server.Types
+  - Tickler.Server.OptParse
+  - Tickler.Server.OptParse.Types
+
+  dependencies:
+  - aeson
+  - aeson-pretty
+  - base >=4.7 && <5
+  - bytestring
+  - file-embed
+  - tickler-api
+  - tickler-data
+  - jose
+  - monad-logger
+  - mtl >=2.2
+  - optparse-applicative >=0.13
+  - pandoc
+  - path
+  - path-io
+  - persistent >=2.7
+  - persistent-sqlite
+  - pretty-show
+  - resourcet
+  - servant
+  - servant-auth-server
+  - servant-docs
+  - servant-generic
+  - servant-server
+  - text
+  - time
+  - typed-uuid
+  - wai
+  - wai-cors
+  - warp >=3.2
+
+executables:
+  tickler-server:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - tickler-server

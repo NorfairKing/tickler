@@ -1,0 +1,61 @@
+name: tickler-api-gen
+version: '0.0.0.0'
+synopsis: Generators for tickler-api
+category: Tickler
+author: Tom Sydney Kerckhove
+maintainer: syd.kerckhove@gmail.com
+copyright: ! 'Copyright: (c) 2018 Tom Sydney Kerckhove'
+license: AllRightsReserved
+github: NorfairKing/tickler
+default-extensions:
+- NoImplicitPrelude
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  exposed-modules:
+  - Tickler.API.Gen
+  - Tickler.API.Account.Gen
+  - Tickler.API.Admin.Gen
+  - Tickler.API.Protected.Gen
+
+  dependencies:
+  - QuickCheck
+  - base >=4.7 && <5
+  - bytestring
+  - genvalidity
+  - genvalidity-bytestring
+  - genvalidity-text
+  - genvalidity-time
+  - genvalidity-uuid
+  - tickler-api
+  - tickler-data
+  - tickler-data-gen
+  - text
+  - validity
+  - validity-bytestring
+  - validity-text
+  - validity-time
+
+tests:
+  tickler-api-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - genvalidity-hspec
+    - genvalidity-hspec-aeson
+    - genvalidity-text
+    - hspec
+    - tickler-api
+    - tickler-api-gen
+    - tickler-data
+    - tickler-data-gen
+    - QuickCheck
+    - text
+    - bytestring

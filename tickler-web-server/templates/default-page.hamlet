@@ -1,0 +1,17 @@
+$doctype 5
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href=@{StaticR static_semantic_dist_semantic_min_css}>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" 
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous">
+    <script src=@{StaticR static_semantic_dist_semantic_min_js}>
+    <title>#{pageTitle pc}
+
+    ^{pageHead pc}
+
+  <body>
+    ^{pageBody pc}

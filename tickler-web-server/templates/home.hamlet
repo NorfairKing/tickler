@@ -1,0 +1,308 @@
+<div .ui .very .padded .segment>
+  <div .hidden .divider>
+  <h1 class="ui center aligned icon header">
+    <i class="inbox icon"></i>
+    <div class="content">
+      Tickler
+      <div .sub .header>
+        Are you having a hard time getting things off your mind? Try tickler!
+
+<div .ui .huge .padded .segment>
+  <h2 .ui .header> Just write it down
+  <p>
+    Have you heard that all you need to do to get things of your mind,
+    is to systematically write them down? Try it out with tickler!
+  <p>
+    Tickler offers a no-nonsense web interface to write down your
+    thoughts and ideas anywhere you go, and easily process them.
+    It is faster, cleaner and leaner than any of its alternatives,
+    while exposing an elegant API and including a CLI.
+
+  <h2 .ui .header> Anywhere, anytime
+  <p>
+    Has one of the following scenarios ever happened to you?
+    <div .ui .list>
+      <div .item>
+        <div .header>
+          <i .minus .icon>
+          A friend tells you about a movie you just have to watch
+      <div .item>
+        <div .header>
+          <i .minus .icon>
+          In the middle of a party, you suddenly get a great idea
+      <div .item>
+        <div .header>
+          <i .minus .icon>
+          During dinner with your parents, you remember you really need to send someone an email.
+    <p>
+      Never again will you have to drop everything and send the email.
+      Never again will you have to put your thought in your calendar, where it does not belong.
+      Never again will you forget which movies to watch.
+      Because now, there is tickler.
+
+  <h2 .ui .header> Extremely minimal
+  <p>
+    <div .ui .list>
+      <div .item>
+        <i .idea .icon>
+        <div .content>
+          Add an tickler item
+      <div .item>
+        <i .search .icon>
+        <div .content>
+          Show one tickler item
+      <div .item>
+        <i .check .icon>
+        <div .content>
+          Delete the shown tickler item
+
+  <h2 .ui .header> Extremely low friction
+  <p> Tickler is specifically built to have the lowest friction of all similar tools.
+  <table .ui .table>
+    <thead>
+      <tr>
+        <th>
+          Method
+        <th>
+          Steps
+        <th>
+          Clicks
+        <th>
+    <tbody>
+      <tr>
+        <td> Google Chrome on Android
+        <td>
+          <div .ui .ordered .list>
+            <div .item>
+              Click the Tickler icon on the launcher
+            <div .item>
+              Click 'log in' (with a saved password)
+            <div .item>
+              Click the 'add item' tex area.
+            <div .item>
+              Start typing
+        <td> 3
+        <td> <i class="green checkmark icon"></i>
+      <tr>
+        <td> Safari on IOS
+        <td>
+          <div .ui .ordered .list>
+            <div .item>
+              Click the Tickler icon on the launcher
+            <div .item>
+              Click 'log in' (with a saved password)
+            <div .item>
+              Click the 'add item' tex area.
+            <div .item>
+              Start typing
+        <td> 3
+        <td> <i class="green checkmark icon"></i>
+      <tr>
+        <td .positive>
+          Tickler Cli
+        <td .positive>
+          <div .ui .ordered .list>
+            <div .item> Open a terminal. (One keyboard shortcut.)
+            <div .item>
+              Start typing:
+              <code>
+                tickler add YOUR ITEM HERE
+        <td .positive> 0
+        <td .positive> <i class="yellow star icon"></i>
+  <p .small>
+    If you would like to add more rows to this table, feel free to
+    <a href="mailto:tickler@cs-syd.eu">
+      contact us
+    .
+
+  <h2 .ui .header> Open-source
+  <p>
+    Tickler is entirely open-source.
+    <a href="https://github.com/NorfairKing/tickler">
+      The source can be found on Github.
+
+  <h2 .ui .header> API-First
+  <p>
+    Every interaction with Tickler is available via
+    <a href=@{APIDocsR}>the tickler API.
+    The API allows to integrate tickler seamlessly with complex systems to optimise your workflow.
+    From a "Getting things done"-style tickler system
+    which drops items into your tickler whenever you want
+    to automated item generation upon receiving emails
+    from certain people, everything is possible.
+
+
+  <h2 .ui .header> CLI-Second
+  <p>
+    Tickler is available via 
+    <a href="https://github.com/NorfairKing/tickler/tree/master/tickler-cli">the official Tickler command-line client
+    .
+    In addition to the features on the web interface, the command-line client works offline with easy synchronisation.
+
+<div .ui .huge .padded .segment>
+  <h2 .ui .header> FAQ
+  <div .ui .list>
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          <p>
+            Why can I not modify items?
+        <div .description>
+          <p>
+            Items represent thoughts you have and want to get out of your head.
+            The purpose is to not think about the ideas anymore between when you write them down and when you process them. 
+            During processing, you take the items out of the tickler and think about what you want to do with each idea.
+            After that, you delete the item from the tickler.
+            Allowing to modify items would only allow you to make yourself less efficient.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          <p>
+            Why can I not list all my items?
+        <div .description>
+          <p>
+            Only being able to view one item at a time forces you to process items one by one without skipping any.
+            This is a proven improvement to your processing speed.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          <p>
+            So it's a todo list?
+        <div .description>
+          <p>
+            No. It is like a box which contains random thoughts you want to get out of your head.
+            These thoughts still require processing, as opposed to todo items.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          <p>
+            What happens to my data?
+        <div .description>
+          <p>
+            All data submitted via Tickler is secured while it is being submitted and while it is being stored.
+            Users will never be tracked and their data will never be exposed to third parties.
+            Administrators cannot see tickler items via the web interface, they can only see usernames.
+            The data is not end-to-end encrypted.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          <p>
+            Will there ever be ads?
+        <div .description>
+          <p>
+            There will never be ads on Tickler.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          <p>
+            Will Tickler remain free of charge?
+        <div .description>
+          <p>
+            Tickler is currently free of charge.
+            This is because the author uses it and running the service for only himself is
+            not cheaper than running it for multiple people.
+            If this ever changes, Tickler may start charging a small subscription fee to cover
+            the cost of operation.
+            You can expect this to be less than a dollar per month.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          <p>
+            I don't trust you with my data, can I still use Tickler?
+        <div .description>
+          <p>
+            Yes, tickler is free software, so anyone can host an Tickler server themselves.
+            The code and instructions are available 
+            <a href="https://github.com/NorfairKing/tickler">
+              on Github.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          <p>
+            Is there an Android or Iphone application?
+        <div .description>
+          <p>
+            Tickler is currently not available on Android or Iphone.
+            This may change in the future if there is enough demand.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          <p>
+            How is Tickler better than the notes application on my phone?
+        <div .description>
+          <p>
+            Notes and tickler Items serve a fundamentally different purpose.
+            Tickler items are meant to be short term, ephemeral and for prosessing.
+            Notes have an indeterminate life-time and do not lend themselves well for processing.
+            Tickler incorporates the best-practices for processing and is not cluttered by unnecessary features.
+            
+            Moreover, Tickler items will persist beyond eventual damage to your phone.
+            This is not the case for all notes apps.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          <p>
+            How is Tickler better than google keep, remember the milk, todoist..?
+        <div .description>
+          <p>
+            Tickler has been designed with your ease of mind and efficiency in mind.
+            For example, the processing does not allow you to see more than one item at a time,
+            which is a proven strategy to improve your processing efficiency.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          How is Tickler better than org-mode?
+        <div .description>
+          <div .item>
+            <p>
+              Tickler allows for more efficient processing.
+          <div .item>
+            <p>
+              Tickler allows you to use a web interface, e.g. through your phone,
+              as well as a command line interface. This combination makes tickler
+              more efficient to use.
+
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          <p>
+            How do I use Tickler for "Getting Things Done" (GTD)?
+        <div .description>
+          <p>
+            Tickler was built specifically to act as the first part in a GTD process.
+            Use it as the "in-basket" in the following flowchart.
+        <img .ui .large .centered .image
+          src=@{StaticR static_gtd_flowchart_jpg}>
+
+
+<div .ui .huge .padded .segment>
+  <h2 .ui .header>
+    Contact
+  <p>
+    For questions and feedback, feel free to
+    <a href="mailto:tickler@cs-syd.eu">
+      contact us
+    .

@@ -1,0 +1,54 @@
+name: tickler-data-gen
+version: '0.0.0.0'
+synopsis: Generators for tickler-data
+category: Tickler
+author: Tom Sydney Kerckhove
+maintainer: syd.kerckhove@gmail.com
+copyright: ! 'Copyright: (c) 2017-2018 Tom Sydney Kerckhove'
+license: AllRightsReserved
+github: NorfairKing/tickler-server
+default-extensions:
+- NoImplicitPrelude
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  exposed-modules:
+  - Tickler.Data.Gen
+
+  dependencies:
+  - QuickCheck
+  - base >=4.7 && <5
+  - bytestring
+  - genvalidity
+  - genvalidity-bytestring
+  - genvalidity-text
+  - genvalidity-time
+  - genvalidity-uuid
+  - tickler-data
+  - text
+  - validity
+  - validity-bytestring
+  - validity-text
+  - validity-time
+
+tests:
+  tickler-data-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - genvalidity-hspec
+    - genvalidity-hspec-aeson
+    - genvalidity-text
+    - hspec
+    - tickler-data
+    - tickler-data-gen
+    - QuickCheck
+    - text
+    - bytestring

@@ -1,0 +1,107 @@
+name: tickler-server-test-utils
+version: '0.0.0.0'
+synopsis: Test utils for tickler-server
+description: Please see README.md
+category: Tickler
+author: Tom Sydney Kerckhove
+maintainer: syd.kerckhove@gmail.com
+copyright: ! 'Copyright: (c) 2016 Tom Sydney Kerckhove'
+license: AllRightsReserved
+github: NorfairKing/tickler-server
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  exposed-modules:
+  - Tickler.Server.TestUtils
+  default-extensions:
+  - NoImplicitPrelude
+
+  dependencies:
+  - QuickCheck >=2.9
+  - base
+  - bytestring >=0.10 && <0.11
+  - cookie >=0.4 && <0.5
+  - genvalidity-bytestring
+  - genvalidity-hspec
+  - genvalidity-text
+  - genvalidity-time
+  - hspec
+  - http-client
+  - http-types
+  - tickler-api
+  - tickler-client
+  - tickler-client-gen
+  - tickler-data
+  - tickler-data-gen
+  - tickler-server
+  - microlens >=0.4 && <0.5
+  - monad-logger
+  - path
+  - path-io
+  - persistent-sqlite
+  - resourcet
+  - servant
+  - servant-auth-client
+  - servant-auth-server
+  - servant-client
+  - servant-server
+  - text >=1.2 && <1.3
+  - typed-uuid
+  - wai
+  - warp
+
+tests:
+  tickler-server-test:
+    main: Spec.hs
+    source-dirs: test
+    default-extensions:
+    - NoImplicitPrelude
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - QuickCheck
+    - base >=4.9 && <5
+    - bytestring
+    - genvalidity-bytestring
+    - genvalidity-hspec
+    - genvalidity-text
+    - genvalidity-time
+    - hspec
+    - http-types
+    - tickler-api
+    - tickler-client
+    - tickler-client-gen
+    - tickler-data
+    - tickler-data-gen
+    - tickler-server-test-utils
+    - path
+    - path-io
+    - servant
+    - servant-client
+    - text
+
+benchmarks:
+  tickler-server-bench:
+    main: Main.hs
+    source-dirs: bench
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -Wall
+    - -fno-warn-name-shadowing
+    dependencies:
+    - QuickCheck
+    - base
+    - bytestring
+    - cookie
+    - criterion
+    - tickler-client
+    - servant
+    - servant-auth-client
+    - servant-client
+    - tickler-server-test-utils

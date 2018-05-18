@@ -1,0 +1,40 @@
+name: tickler-client
+version: '0.0.0.0'
+synopsis: Tickler Client
+category: Tickler
+author: Tom Sydney Kerckhove
+maintainer: syd.kerckhove@gmail.com
+copyright: ! 'Copyright: (c) 2016-2018 Tom Sydney Kerckhove'
+license: AllRightsReserved
+github: NorfairKing/tickler
+default-extensions:
+- NoImplicitPrelude
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  exposed-modules:
+  - Tickler.Client
+  - Tickler.Client.Store
+
+  dependencies:
+  - base >=4.7 && <5
+  - aeson
+  - bytestring >=0.10 && <0.11
+  - containers
+  - tickler-api
+  - tickler-data
+  - servant
+  - servant-auth-client
+  - servant-auth-server
+  - servant-client
+  - servant-flatten
+  - servant-generic
+  - text
+  - time
+  - typed-uuid
+  - validity >=0.4
+  - validity-bytestring >=0.2
+  - validity-containers >=0.2
+  - validity-text >=0.2
+  - validity-time >=0.1
+  - validity-uuid >=0.0

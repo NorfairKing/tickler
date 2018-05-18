@@ -1,0 +1,21 @@
+<p>
+  ^{timestampWidget}
+<p>
+  $case typedItemCase itemInfoContents
+    $of Left err
+      Invalid item: #{err}
+    $of Right i
+      $case i 
+        $of CaseTextItem t
+          #{t}
+<form
+  method="post"
+  action=@{DoneR}>
+  <input
+    name="item"
+    type="hidden"
+    value=#{uuidText itemInfoIdentifier}>
+  ^{token}
+  <button .ui .button type="submit">
+    Done
+

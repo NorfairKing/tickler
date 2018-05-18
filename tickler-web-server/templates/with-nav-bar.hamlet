@@ -1,0 +1,33 @@
+<!-- Following menu -->
+<div class="ui large top menu">
+  <div class="ui container">
+    <a .item href=@{HomeR}>
+      Home
+    $maybe _ <- mauth
+      <a .item href=@{AddR}>
+        Add item
+      <a .item href=@{ProcessR}>
+        Process
+      <a .item href=@{AccountR}>
+        Account
+    <div .right .menu>
+      $maybe _ <- mauth
+        <div .item>
+          <a .ui .button href=@{AuthR LogoutR}>
+            Logout
+      $nothing
+        <div .item>
+          <a .ui .button href=@{AuthR LoginR}>
+            Login
+        <div .item>
+          <a .ui .primary .button href=@{AuthR registerR}>
+            Register
+
+
+<!-- Messages -->
+$forall (_, msg) <- msgs
+  <div .ui .bottom .attached .message>
+    ^{msg}
+
+<div .ui .main .container>
+  ^{widget}

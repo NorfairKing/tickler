@@ -1,0 +1,51 @@
+extra-package-dbs: []
+packages:
+- tickler-api
+- tickler-api-gen
+- tickler-cli
+- tickler-client
+- tickler-client-gen
+- tickler-data
+- tickler-data-gen
+- tickler-server
+- tickler-server-test-utils
+- tickler-web-server
+extra-deps:
+- hlint-2.0.15
+- extra-1.6.5
+- jose-0.6.0.3
+- cookie-0.4.3
+- servant-auth-0.3.1.0
+- servant-auth-client-0.3.2.0
+- servant-auth-docs-0.2.9.0
+- servant-auth-server-0.3.2.0
+- servant-flatten-0.2
+- servant-options-0.1.0.0
+- git: git@github.com:NorfairKing/validity.git
+  commit: a86dd3e4830c14c056a0d5d8712864d395d25b2a
+  subdirs:
+    - validity
+    - validity-bytestring
+    - validity-containers
+    - validity-path
+    - validity-text
+    - validity-time
+    - validity-uuid
+    - genvalidity
+    - genvalidity-bytestring
+    - genvalidity-containers
+    - genvalidity-hspec
+    - genvalidity-hspec-aeson
+    - genvalidity-path
+    - genvalidity-property
+    - genvalidity-text
+    - genvalidity-time
+    - genvalidity-uuid
+- git: https://github.com/NorfairKing/typed-uuid.git
+  commit: 155c9ec880ca1c12f7dd8a8468b3626de8164823
+  subdirs:
+    - typed-uuid
+    - genvalidity-typed-uuid
+- git: git@github.com:NorfairKing/pretty-relative-time.git
+  commit: 9a670db25ac68974045c75da364486c10970824f
+resolver: lts-11.9

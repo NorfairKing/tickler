@@ -1,0 +1,20 @@
+/                                  HomeR                GET
+
+/process                           ProcessR             GET
+/add                               AddR                 POST GET
+/done                              DoneR                POST
+
+/account                           AccountR             GET
+/account/delete                    AccountDeleteR       POST
+
+/error/api-down/#Text              ErrorAPIDownR        GET
+
+/api/docs                          APIDocsR             GET
+
+-- Subsites
+/auth                              AuthR   Auth            getAuth
+/static                            StaticR EmbeddedStatic  appStatic
+
+-- Admin pages
+/admin                             AdminR               GET
+/admin/account/delete/#AccountUUID AdminAccountDeleteR  POST

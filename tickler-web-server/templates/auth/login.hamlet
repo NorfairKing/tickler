@@ -1,0 +1,39 @@
+<div .ui .middle .aligned .center .aligned .grid>
+  <div .column>
+    <h2 .ui .primary .image .header>
+      <div .content>
+        Tickler Login
+    <form .ui .large .form 
+      method="post"
+      action=@{AuthR loginFormPostTargetR}>
+      <div .ui .stacked .segment>
+        <div .field>
+          <div .ui .left .icon .input>
+            <i .user .icon></i>
+            <input
+              name="userkey"
+              placeholder="Username or Email"
+              required=""
+              value=""
+              type="text">
+        <div .field>
+          <div .ui .left .icon .input>
+            <i .lock .icon></i>
+            <input
+              name="passphrase"
+              placeholder="Passphrase"
+              required=""
+              value=""
+              type="password">
+        ^{token}
+        <button .ui .fluid .large .primary .submit .button>
+          Login
+
+    <div .ui .stacked .segment>
+      <a .ui .fluid .large .default .button 
+        href=@{AuthR registerR}>
+        Sign Up
+
+    $forall (_, msg) <- msgs
+      <div .ui .error .message>
+        #{msg}

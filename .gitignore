@@ -1,0 +1,8 @@
+.shake/
+*.cabal
+.stack-work/
+/out/
+/tmp/
+/src/
+dist/
+*.db*

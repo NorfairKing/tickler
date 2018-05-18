@@ -1,0 +1,18 @@
+<html>
+  <head>
+  <body>
+    <div
+      class="container-fluid">
+      <h1> Thanks Registrations
+      <p> Please verify your email address by clicking the link below.
+      <p>
+        <a href=@{AuthR verificationEmailLink}>
+          Verify Email
+      <p> We hope to see you soon.
+      <p> Thanks
+      <p>
+        You got this email because you tried to register at 
+        <a href=@{HomeR}>
+          Thanks
+        .
+

@@ -1,0 +1,54 @@
+<div .ui .segment>
+  <div class="ui two huge statistics">
+    <div class="statistic">
+      <div class="value">
+        #{adminStatsNbUsers}
+      <div class="label">
+        Members
+
+    <div class="statistic">
+      <div class="value">
+        #{adminStatsNbItems}
+      <div class="label">
+        Items
+
+<div .ui .segment>
+  <table .ui .celled .table>
+    <thead>
+      <tr>
+        <th>
+          UUID
+        <th>
+          Username
+        <th>
+          Created
+        <th>
+          Last Login
+        <th>
+          Admin
+        <th>
+          Delete
+    <tbody>
+      $forall u <- users
+        <tr>
+          <td>
+            <code>
+              #{uuidText $ accountInfoUUID u}
+          <td>
+            #{usernameText $ accountInfoUsername u}
+          <td>
+            #{prettyTimestamp now $ accountInfoCreatedTimestamp u}
+          <td>
+            $maybe ll <- accountInfoLastLogin u
+              #{prettyTimestamp now ll}
+          <td>
+            #{accountInfoAdmin u}
+          <td>
+            <form
+              method=post
+              action=@{AdminAccountDeleteR $ accountInfoUUID u}
+              onclick="return confirm('Are you sure you want to delete this account? This cannot be undone.');">
+             ^{token}
+             <button
+               .negative .ui .button>
+               Delete

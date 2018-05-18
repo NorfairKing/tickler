@@ -1,0 +1,41 @@
+name: tickler-data
+version: '0.0.0.0'
+synopsis: Tickler Data
+category: Tickler
+author: Tom Sydney Kerckhove
+maintainer: syd.kerckhove@gmail.com
+copyright: ! 'Copyright: (c) 2017-2018 Tom Sydney Kerckhove'
+license: AllRightsReserved
+github: NorfairKing/tickler
+default-extensions:
+- NoImplicitPrelude
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  exposed-modules:
+  - Tickler.Data
+  - Tickler.Data.AccountUUID
+  - Tickler.Data.HashedPassword
+  - Tickler.Data.ItemType
+  - Tickler.Data.ItemUUID
+  - Tickler.Data.UUID
+  - Tickler.Data.Username
+
+  dependencies:
+  - aeson
+  - base >=4.7 && <5
+  - bcrypt
+  - bytestring
+  - hashable
+  - persistent
+  - persistent-template
+  - text
+  - time
+  - typed-uuid
+  - uuid
+  - validity
+  - validity-bytestring
+  - validity-text
+  - validity-time
+  - validity-uuid

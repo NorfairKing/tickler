@@ -1,0 +1,88 @@
+name: tickler-cli
+version: '0.0.0.0'
+synopsis: A command line interface for the tickler app.
+description: Please see README.md
+category: Tickler
+author: Tom Sydney Kerckhove & Nick Van den Broeck
+maintainer: syd.kerckhove@gmail.com
+copyright: ! 'Copyright: (c) 2017-2018 Tom Sydney Kerckhove'
+license: AllRightsReserved
+github: NorfairKing/tickler-cli
+
+library:
+  source-dirs: src/
+  ghc-options: -Wall
+  default-extensions:
+  - NoImplicitPrelude
+  exposed-modules:
+  - Tickler.Cli
+  - Tickler.Cli.LastSeen
+  - Tickler.Cli.OptParse
+  - Tickler.Cli.Session
+  - Tickler.Cli.Store
+  - Tickler.Cli.Sync
+
+  dependencies:
+  - base >=4.9 && <5
+  - aeson >=1.0
+  - aeson-pretty >=0.8
+  - bytestring >=0.10
+  - cookie >=0.4
+  - http-client >=0.5
+  - http-client-tls >=0.3
+  - tickler-api
+  - tickler-client
+  - tickler-data
+  - optparse-applicative >=0.13
+  - path >=0.4
+  - pretty-relative-time
+  - mtl >=2.2
+  - path-io >=1.2
+  - servant >=0.9
+  - servant-auth-client >=0.2
+  - servant-auth-server >=0.3
+  - servant-client >=0.9
+  - servant-server >=0.9
+  - validity
+  - text >=1.2
+  - time
+  - yaml >=0.8
+
+executables:
+  tickler:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - tickler-cli
+
+tests:
+  tickler-cli-test:
+    main: Spec.hs
+    source-dirs: test/
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - bytestring
+    - genvalidity-hspec
+    - genvalidity-hspec-aeson >=0.1
+    - hspec
+    - tickler-cli
+    - tickler-client
+    - tickler-data
+    - tickler-server-test-utils
+    - mtl
+    - path
+    - path-io
+    - servant
+    - servant-client
+    - text >=1.2

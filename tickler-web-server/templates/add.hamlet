@@ -1,0 +1,14 @@
+<div .ui .segment>
+  <h1> Add Item
+
+  <form
+    .ui .form
+    method=post
+    action=@{AddR}>
+    <div .field>
+      <textarea 
+        name="contents" 
+        autofocus>
+    ^{token}
+    <button .ui .primary .button type="submit">
+      Submit
