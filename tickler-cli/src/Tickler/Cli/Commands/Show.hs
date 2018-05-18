@@ -37,8 +37,8 @@ showItem = do
 
 prettyItem :: UTCTime -> LastItem -> String
 prettyItem now LastItem {..} =
-    let timeStr = prettyTimestamp now lastItemTimestamp
-        timeAgoString = prettyTimeAuto now lastItemTimestamp
+    let timeStr = prettyTimestamp now lastItemScheduled
+        timeAgoString = prettyTimeAuto now lastItemScheduled
     in case typedItemCase lastItemData of
            Left err -> unlines ["Invalid item:", err]
            Right i ->

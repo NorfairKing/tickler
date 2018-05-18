@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
@@ -14,6 +13,7 @@ module Tickler.API.Protected.Types
     , TypedItemCase(..)
     , typedItemCase
     , ItemInfo(..)
+    , AddItem(..)
     , SyncRequest(..)
     , NewSyncItem(..)
     , SyncResponse(..)
@@ -87,7 +87,8 @@ newtype TypedItemCase =
 data ItemInfo a = ItemInfo
     { itemInfoIdentifier :: ItemUUID
     , itemInfoContents :: a
-    , itemInfoTimestamp :: UTCTime
+    , itemInfoCreated :: UTCTime
+    , itemInfoScheduled :: UTCTime
     } deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity a => Validity (ItemInfo a)
@@ -97,15 +98,35 @@ instance ToJSON a => ToJSON (ItemInfo a) where
         object
             [ "id" .= itemInfoIdentifier
             , "contents" .= itemInfoContents
-            , "timestamp" .= itemInfoTimestamp
+            , "created" .= itemInfoCreated
+            , "scheduled" .= itemInfoScheduled
             ]
 
 instance FromJSON a => FromJSON (ItemInfo a) where
     parseJSON =
         withObject "ItemInfo TypedItem" $ \o ->
-            ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "timestamp"
+            ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created" <*>
+            o .: "scheduled"
 
 instance ToSample a => ToSample (ItemInfo a)
+
+data AddItem = AddItem
+    { addItemTypedItem :: TypedItem
+    , addItemScheduled :: UTCTime
+    } deriving (Show, Eq, Ord, Generic)
+
+instance Validity AddItem
+
+instance FromJSON AddItem where
+    parseJSON =
+        withObject "AddItem" $ \o ->
+            AddItem <$> o .: "item" <*> o .: "scheduled"
+
+instance ToJSON AddItem where
+    toJSON AddItem {..} =
+        object ["item" .= addItemTypedItem, "scheduled" .= addItemScheduled]
+
+instance ToSample AddItem
 
 data SyncRequest = SyncRequest
     { syncRequestUnsyncedItems :: [NewSyncItem]
@@ -148,25 +169,27 @@ instance ToSample SyncRequest
 
 data NewSyncItem = NewSyncItem
     { newSyncItemContents :: TypedItem
-    , newSyncItemTimestamp :: Maybe UTCTime
+    , newSyncItemCreated :: Maybe UTCTime
+    , newSyncItemScheduled :: UTCTime
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity NewSyncItem
 
 instance FromJSON NewSyncItem where
-    parseJSON v =
-        (NewSyncItem <$> parseJSON v <*> pure Nothing) <|>
+    parseJSON =
         withObject
             "NewSyncItem"
-            (\o -> NewSyncItem <$> o .: "contents" <*> o .:? "timestamp")
-            v
+            (\o ->
+                 NewSyncItem <$> o .: "contents" <*> o .:? "created" <*>
+                 o .: "scheduled")
 
 instance ToJSON NewSyncItem where
     toJSON NewSyncItem {..} =
-        case newSyncItemTimestamp of
-            Nothing -> toJSON newSyncItemContents
-            Just ts ->
-                object ["contents" .= newSyncItemContents, "timestamp" .= ts]
+        object
+            [ "contents" .= newSyncItemContents
+            , "created" .= newSyncItemCreated
+            , "scheduled" .= newSyncItemScheduled
+            ]
 
 instance ToSample NewSyncItem
 

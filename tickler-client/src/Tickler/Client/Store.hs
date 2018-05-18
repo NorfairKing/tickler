@@ -43,6 +43,7 @@ instance ToJSON Store where
 data StoreItem
     = Unsynced TypedItem
                UTCTime
+               UTCTime
     | Synced (ItemInfo TypedItem)
     | Undeleted ItemUUID
     deriving (Show, Eq, Ord, Generic)
@@ -54,13 +55,20 @@ instance FromJSON StoreItem where
         withObject "StoreItem" $ \o -> do
             state <- o .: "state"
             case state of
-                IsUnsynced -> Unsynced <$> o .: "contents" <*> o .: "timestamp"
+                IsUnsynced ->
+                    Unsynced <$> o .: "contents" <*> o .: "created" <*>
+                    o .: "scheduled"
                 IsSynced -> Synced <$> o .: "item"
                 IsUndeleted -> Undeleted <$> o .: "uuid"
 
 instance ToJSON StoreItem where
-    toJSON (Unsynced i ts) =
-        object ["state" .= IsUnsynced, "contents" .= i, "timestamp" .= ts]
+    toJSON (Unsynced i ts sch) =
+        object
+            [ "state" .= IsUnsynced
+            , "contents" .= i
+            , "created" .= ts
+            , "scheduled" .= sch
+            ]
     toJSON (Synced i) = object ["state" .= IsSynced, "item" .= i]
     toJSON (Undeleted u) = object ["state" .= IsUndeleted, "uuid" .= u]
 
@@ -79,27 +87,29 @@ instance ToJSON SyncState
 emptyStore :: Store
 emptyStore = Store S.empty
 
-addItemToStore :: TypedItem -> UTCTime -> Store -> Store
-addItemToStore contents timestamp (Store is) =
-    Store $ S.insert (Unsynced contents timestamp) is
+addItemToStore :: TypedItem -> UTCTime -> UTCTime -> Store -> Store
+addItemToStore contents timestamp scheduled (Store is) =
+    Store $ S.insert (Unsynced contents timestamp scheduled) is
 
 lastItemInStore :: Store -> Maybe LastItem
 lastItemInStore (Store is) =
     let ls =
             flip mapSetMaybe is $ \ii ->
                 case ii of
-                    Unsynced t ts ->
+                    Unsynced t ts sch ->
                         Just
                             LastItem
                             { lastItemData = t
-                            , lastItemTimestamp = ts
+                            , lastItemCreated = ts
+                            , lastItemScheduled = sch
                             , lastItemUUID = Nothing
                             }
                     Synced ItemInfo {..} ->
                         Just
                             LastItem
                             { lastItemData = itemInfoContents
-                            , lastItemTimestamp = itemInfoTimestamp
+                            , lastItemCreated = itemInfoCreated
+                            , lastItemScheduled = itemInfoScheduled
                             , lastItemUUID = Just itemInfoIdentifier
                             }
                     Undeleted _ -> Nothing
@@ -107,7 +117,8 @@ lastItemInStore (Store is) =
 
 data LastItem = LastItem
     { lastItemData :: TypedItem
-    , lastItemTimestamp :: UTCTime
+    , lastItemCreated :: UTCTime
+    , lastItemScheduled :: UTCTime
     , lastItemUUID :: Maybe ItemUUID
     } deriving (Show, Eq, Ord, Generic)
 
@@ -121,13 +132,17 @@ doneLastItem LastItem {..} (Store is) =
     Store $
     flip mapSetMaybe is $ \si ->
         case si of
-            Unsynced t ts ->
-                if and [t == lastItemData, ts == lastItemTimestamp]
+            Unsynced t ts sch ->
+                if and [ t == lastItemData
+                       , ts == lastItemCreated
+                       , sch == lastItemScheduled
+                       ]
                     then Nothing
                     else Just si
             Synced ItemInfo {..} ->
                 if and [ itemInfoContents == lastItemData
-                       , itemInfoTimestamp == lastItemTimestamp
+                       , itemInfoCreated == lastItemCreated
+                       , itemInfoScheduled == lastItemScheduled
                        , Just itemInfoIdentifier == lastItemUUID
                        ]
                     then Just (Undeleted itemInfoIdentifier)
@@ -139,7 +154,7 @@ storeSize (Store is) =
     length $
     flip S.filter is $ \si ->
         case si of
-            Unsynced _ _ -> True
+            Unsynced {} -> True
             Synced _ -> True
             Undeleted _ -> False
 
@@ -150,11 +165,12 @@ makeSyncRequest Store {..} =
           S.toList $
           flip mapSetMaybe storeItems $ \si ->
               case si of
-                  Unsynced t ts ->
+                  Unsynced t ts sch ->
                       Just
                           NewSyncItem
                           { newSyncItemContents = t
-                          , newSyncItemTimestamp = Just ts
+                          , newSyncItemCreated = Just ts
+                          , newSyncItemScheduled = sch
                           }
                   _ -> Nothing
     , syncRequestSyncedItems =
@@ -176,11 +192,12 @@ mergeStore s SyncResponse {..} =
     let withNewOwnItems =
             flip mapSetMaybe (storeItems s) $ \si ->
                 case si of
-                    Unsynced t ut ->
+                    Unsynced t ut sch ->
                         case find
                                  (\ItemInfo {..} ->
                                       t == itemInfoContents &&
-                                      ut == itemInfoTimestamp)
+                                      ut == itemInfoCreated &&
+                                      sch == itemInfoScheduled)
                                  syncResponseAddedItems of
                             Nothing -> Just si -- If it wasn't added (for whatever reason), just leave it as unsynced
                             Just ii -> Just $ Synced ii -- If it was added, then it becomes synced

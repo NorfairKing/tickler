@@ -10,14 +10,16 @@ import Data.Time
 import Tickler.API
 import Tickler.Data
 
-makeTicklerItem :: AccountUUID -> ItemUUID -> UTCTime -> TypedItem -> TicklerItem
-makeTicklerItem u i ts TypedItem {..} =
+makeTicklerItem ::
+       AccountUUID -> ItemUUID -> UTCTime -> UTCTime -> TypedItem -> TicklerItem
+makeTicklerItem u i cr sch TypedItem {..} =
     TicklerItem
     { ticklerItemIdentifier = i
+    , ticklerItemUserId = u
     , ticklerItemType = itemType
     , ticklerItemContents = itemData
-    , ticklerItemTimestamp = ts
-    , ticklerItemUserId = u
+    , ticklerItemCreated = cr
+    , ticklerItemScheduled = sch
     }
 
 makeItemInfo :: TicklerItem -> ItemInfo TypedItem
@@ -26,5 +28,6 @@ makeItemInfo TicklerItem {..} =
     { itemInfoIdentifier = ticklerItemIdentifier
     , itemInfoContents =
           TypedItem {itemType = ticklerItemType, itemData = ticklerItemContents}
-    , itemInfoTimestamp = ticklerItemTimestamp
+    , itemInfoCreated = ticklerItemCreated
+    , itemInfoScheduled = ticklerItemScheduled
     }

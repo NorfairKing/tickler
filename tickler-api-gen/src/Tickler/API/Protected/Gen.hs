@@ -14,7 +14,6 @@ import Data.GenValidity.UUID ()
 
 import Tickler.Data.Gen ()
 
-import Tickler.API.Protected
 import Tickler.API.Protected.Types
 
 instance GenUnchecked TypedItem
@@ -26,7 +25,13 @@ instance GenUnchecked a => GenUnchecked (ItemInfo a)
 
 instance GenValid a => GenValid (ItemInfo a) where
     genValid =
-        (ItemInfo <$> genValid <*> genValid <*> genValid) `suchThat` isValid
+        (ItemInfo <$> genValid <*> genValid <*> genValid <*> genValid) `suchThat`
+        isValid
+
+instance GenUnchecked AddItem
+
+instance GenValid AddItem where
+    genValid = (AddItem <$> genValid <*> genValid) `suchThat` isValid
 
 instance GenUnchecked SyncRequest
 
@@ -37,7 +42,8 @@ instance GenValid SyncRequest where
 instance GenUnchecked NewSyncItem
 
 instance GenValid NewSyncItem where
-    genValid = (NewSyncItem <$> genValid <*> genValid) `suchThat` isValid
+    genValid =
+        (NewSyncItem <$> genValid <*> genValid <*> genValid) `suchThat` isValid
 
 instance GenUnchecked SyncResponse
 

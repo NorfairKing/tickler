@@ -29,6 +29,6 @@ serveGetShowItem (Authenticated AuthCookie {..}) = do
         runDb $
         selectFirst
             [TicklerItemUserId ==. authCookieUserUUID]
-            [Asc TicklerItemTimestamp]
+            [Asc TicklerItemCreated]
     pure $ makeItemInfo . entityVal <$> itemsEnt
 serveGetShowItem _ = throwAll err401

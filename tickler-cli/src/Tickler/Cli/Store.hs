@@ -46,11 +46,17 @@ checkLastSeenAfter s = do
 lastSeenInStore :: LastItem -> Store -> Bool
 lastSeenInStore LastItem {..} Store {..} = any matches storeItems
   where
-    matches (Unsynced t ts) =
-        and [lastItemTimestamp == ts, lastItemData == t, isNothing lastItemUUID]
+    matches (Unsynced t ts sch) =
+        and
+            [ lastItemCreated == ts
+            , lastItemData == t
+            , isNothing lastItemUUID
+            , lastItemScheduled == sch
+            ]
     matches (Synced ItemInfo {..}) =
         and
-            [ lastItemTimestamp == itemInfoTimestamp
+            [ lastItemCreated == itemInfoCreated
+            , lastItemScheduled == itemInfoScheduled
             , lastItemData == itemInfoContents
             , lastItemUUID == Just itemInfoIdentifier
             ]

@@ -25,6 +25,10 @@ spec = do
     ordSpec @(ItemInfo TypedItem)
     genValidSpec @(ItemInfo TypedItem)
     jsonSpecOnValid @(ItemInfo TypedItem)
+    eqSpec @AddItem
+    ordSpec @AddItem
+    genValidSpec @AddItem
+    jsonSpecOnValid @AddItem
     eqSpec @SyncRequest
     ordSpec @SyncRequest
     genValidSpec @SyncRequest

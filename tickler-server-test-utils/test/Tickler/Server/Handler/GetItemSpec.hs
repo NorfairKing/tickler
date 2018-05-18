@@ -26,4 +26,5 @@ spec =
                     runClientOrError cenv $ do
                         uuid <- clientPostAddItem token t
                         clientGetItem token uuid
-                itemInfoContents i `shouldBe` t
+                itemInfoContents i `shouldBe` addItemTypedItem t
+                itemInfoScheduled i `shouldBe` addItemScheduled t

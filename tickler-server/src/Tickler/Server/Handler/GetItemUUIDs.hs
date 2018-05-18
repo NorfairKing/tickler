@@ -29,5 +29,5 @@ serveGetItemUUIDs (Authenticated AuthCookie {..}) =
     runDb $
     selectList
         [TicklerItemUserId ==. authCookieUserUUID]
-        [Asc TicklerItemTimestamp]
+        [Asc TicklerItemCreated]
 serveGetItemUUIDs _ = throwAll err401

@@ -1,5 +1,7 @@
 <p>
-  ^{timestampWidget}
+  Created: ^{createdWidget}
+<p>
+  Scheduled: ^{scheduledWidget}
 <p>
   $case typedItemCase itemInfoContents
     $of Left err

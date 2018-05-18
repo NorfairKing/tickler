@@ -24,7 +24,6 @@ import Tickler.API.Account.Gen ()
 import Tickler.API.Admin.Gen ()
 import Tickler.API.Protected.Gen ()
 
-
 instance GenUnchecked Registration
 
 instance GenValid Registration where

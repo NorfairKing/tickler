@@ -11,6 +11,8 @@ module Tickler.Web.Server.Handler.Process
 
 import Import
 
+import Data.Time
+
 import Yesod
 
 import Tickler.API
@@ -33,15 +35,18 @@ getProcessR =
 makeItemInfoWidget :: ItemInfo TypedItem -> Handler Widget
 makeItemInfoWidget ItemInfo {..} = do
     token <- genToken
-    timestampWidget <- makeTimestampWidget itemInfoTimestamp
+    createdWidget <- makeTimestampWidget itemInfoCreated
+    scheduledWidget <- makeTimestampWidget itemInfoScheduled
     pure $(widgetFile "item")
 
-newtype NewItem = NewItem
+data NewItem = NewItem
     { newItemText :: Textarea
+    , newItemScheduledDay :: Day
     }
 
 newItemForm :: FormInput Handler NewItem
-newItemForm = NewItem <$> ireq textareaField "contents"
+newItemForm =
+    NewItem <$> ireq textareaField "contents" <*> ireq dayField "scheduled"
 
 postAddR :: Handler Html
 postAddR =
@@ -49,7 +54,14 @@ postAddR =
         NewItem {..} <- runInputPost newItemForm
         void $
             runClientOrErr $
-            clientPostAddItem t $ textTypedItem $ unTextarea newItemText
+            clientPostAddItem
+                t
+                AddItem
+                { addItemTypedItem = textTypedItem $ unTextarea newItemText
+                , addItemScheduled =
+                      localTimeToUTC utc $
+                      LocalTime newItemScheduledDay midnight -- TODO this is probably very wrong, revisit later
+                }
         redirect AddR
 
 newtype DoneItem = DoneItem

@@ -22,6 +22,7 @@ module Tickler.API.Protected
     , TypedItemCase(..)
     , typedItemCase
     , ItemInfo(..)
+    , AddItem(..)
     , SyncRequest(..)
     , NewSyncItem(..)
     , SyncResponse(..)
@@ -79,14 +80,15 @@ type GetShowItem
 type GetTicklerSize = ProtectAPI :> "tickler" :> "size" :> Get '[ JSON] Int
 
 -- | The order of the items is not guaranteed to be the same for every call.
-type GetItemUUIDs = ProtectAPI :> "tickler" :> "uuids" :> Get '[ JSON] [ItemUUID]
+type GetItemUUIDs
+     = ProtectAPI :> "tickler" :> "uuids" :> Get '[ JSON] [ItemUUID]
 
 -- | The order of the items is not guaranteed to be the same for every call.
 type GetItems
      = ProtectAPI :> "tickler" :> "items" :> Get '[ JSON] [ItemInfo TypedItem]
 
 type PostAddItem
-     = ProtectAPI :> "tickler" :> "item" :> ReqBody '[ JSON] TypedItem :> Post '[ JSON] ItemUUID
+     = ProtectAPI :> "tickler" :> "item" :> ReqBody '[ JSON] AddItem :> Post '[ JSON] ItemUUID
 
 type GetItem
      = ProtectAPI :> "tickler" :> "item" :> Capture "id" ItemUUID :> Get '[ JSON] (ItemInfo TypedItem)

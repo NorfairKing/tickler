@@ -34,7 +34,8 @@ combineToInstructions ::
 combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environment {..} = do
     let port = fromMaybe 8000 $ serveFlagPort `mplus` envPort
     let apiPort = fromMaybe 8001 $ serveFlagAPIPort `mplus` envAPIPort
-    let connInfo = mkSqliteConnectionInfo $ fromMaybe "tickler.db" serveFlagAPIDB
+    let connInfo =
+            mkSqliteConnectionInfo $ fromMaybe "tickler.db" serveFlagAPIDB
     let connCount = fromMaybe 4 serveFlagAPIConnectionCount
     when (apiPort == port) $
         die $

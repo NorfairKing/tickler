@@ -74,15 +74,21 @@ servePostSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
     syncAddedItems = do
         now <- liftIO getCurrentTime
         forM syncRequestUnsyncedItems $ \NewSyncItem {..} -> do
-            let ts = fromMaybe now newSyncItemTimestamp
+            let ts = fromMaybe now newSyncItemCreated
             uuid <- liftIO nextRandomUUID
             runDb $
                 insert_ $
-                makeTicklerItem authCookieUserUUID uuid now newSyncItemContents
+                makeTicklerItem
+                    authCookieUserUUID
+                    uuid
+                    now
+                    newSyncItemScheduled
+                    newSyncItemContents
             pure
                 ItemInfo
                 { itemInfoIdentifier = uuid
-                , itemInfoTimestamp = ts
+                , itemInfoCreated = ts
+                , itemInfoScheduled = newSyncItemScheduled
                 , itemInfoContents = newSyncItemContents
                 }
 servePostSync _ _ = throwAll err401

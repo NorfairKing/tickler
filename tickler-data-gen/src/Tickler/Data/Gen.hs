@@ -30,8 +30,10 @@ instance GenUnchecked TicklerItem
 
 instance GenValid TicklerItem where
     genValid =
-        TicklerItem <$> genValid <*> genValid <*> genValid <*> genValid <*>
-        genValid
+        (TicklerItem <$> genValid <*> genValid <*> genValid <*> genValid <*>
+         genValid <*>
+         genValid) `suchThat`
+        isValid
 
 instance GenUnchecked Username
 

@@ -25,6 +25,7 @@ module Tickler.API
     , TypedItemCase(..)
     , typedItemCase
     , ItemInfo(..)
+    , AddItem(..)
     , SyncRequest(..)
     , NewSyncItem(..)
     , SyncResponse(..)

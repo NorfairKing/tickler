@@ -25,10 +25,17 @@ import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-servePostAddItem :: AuthResult AuthCookie -> TypedItem -> TicklerHandler ItemUUID
-servePostAddItem (Authenticated AuthCookie {..}) typedItem = do
+servePostAddItem :: AuthResult AuthCookie -> AddItem -> TicklerHandler ItemUUID
+servePostAddItem (Authenticated AuthCookie {..}) AddItem {..} = do
     now <- liftIO getCurrentTime
     uuid <- liftIO nextRandomUUID
-    runDb $ insert_ $ makeTicklerItem authCookieUserUUID uuid now typedItem
+    runDb $
+        insert_ $
+        makeTicklerItem
+            authCookieUserUUID
+            uuid
+            now
+            addItemScheduled
+            addItemTypedItem
     pure uuid
 servePostAddItem _ _ = throwAll err401

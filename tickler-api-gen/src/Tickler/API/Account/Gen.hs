@@ -2,8 +2,7 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# OPTIONS_GHC -fno-warn-dodgy-exports #-}
 
-module Tickler.API.Account.Gen
-     where
+module Tickler.API.Account.Gen where
 
 import Import
 

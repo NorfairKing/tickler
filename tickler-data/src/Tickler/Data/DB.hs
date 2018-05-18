@@ -39,11 +39,12 @@ User
 
 TicklerItem
     identifier ItemUUID
+    userId AccountUUID
     type ItemType
     contents ByteString
-    timestamp UTCTime
-    userId AccountUUID
-    UniqueItem identifier type contents timestamp userId
+    created UTCTime
+    scheduled UTCTime
+    UniqueItem identifier userId type contents
     UniqueIdentifier identifier userId
     deriving Show
     deriving Eq

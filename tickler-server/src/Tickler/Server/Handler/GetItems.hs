@@ -28,6 +28,6 @@ serveGetItems (Authenticated AuthCookie {..}) = do
         runDb $
         selectList
             [TicklerItemUserId ==. authCookieUserUUID]
-            [Asc TicklerItemTimestamp]
+            [Asc TicklerItemCreated]
     pure $ map (makeItemInfo . entityVal) itemsEnts
 serveGetItems _ = throwAll err401

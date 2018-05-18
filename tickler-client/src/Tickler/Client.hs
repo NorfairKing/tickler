@@ -23,6 +23,7 @@ module Tickler.Client
     , TypedItemCase(..)
     , typedItemCase
     , ItemInfo(..)
+    , AddItem(..)
     , SyncRequest(..)
     , NewSyncItem(..)
     , SyncResponse(..)
@@ -58,7 +59,7 @@ clientGetShowItem :: Token -> ClientM (Maybe (ItemInfo TypedItem))
 clientGetSize :: Token -> ClientM Int
 clientGetItemUUIDs :: Token -> ClientM [ItemUUID]
 clientGetItems :: Token -> ClientM [ItemInfo TypedItem]
-clientPostAddItem :: Token -> TypedItem -> ClientM ItemUUID
+clientPostAddItem :: Token -> AddItem -> ClientM ItemUUID
 clientGetItem :: Token -> ItemUUID -> ClientM (ItemInfo TypedItem)
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
 clientPostSync :: Token -> SyncRequest -> ClientM SyncResponse

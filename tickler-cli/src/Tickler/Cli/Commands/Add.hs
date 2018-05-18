@@ -19,4 +19,5 @@ import Tickler.Cli.Sync
 addItem :: Text -> CliM ()
 addItem t = do
     now <- liftIO getCurrentTime
-    modifyStoreAndSync $ addItemToStore (textTypedItem t) now
+    let scheduled = addUTCTime nominalDay now -- TODO this is not what we want, revisit later.
+    modifyStoreAndSync $ addItemToStore (textTypedItem t) now scheduled
