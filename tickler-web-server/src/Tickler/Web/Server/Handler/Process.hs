@@ -51,6 +51,7 @@ newItemForm =
 postAddR :: Handler Html
 postAddR =
     withLogin $ \t -> do
+        AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
         NewItem {..} <- runInputPost newItemForm
         void $
             runClientOrErr $
@@ -59,7 +60,7 @@ postAddR =
                 AddItem
                 { addItemTypedItem = textTypedItem $ unTextarea newItemText
                 , addItemScheduled =
-                      localTimeToUTC utc $
+                      localTimeToUTC accountSettingsTimeZone $
                       LocalTime newItemScheduledDay midnight -- TODO this is probably very wrong, revisit later
                 }
         redirect AddR
