@@ -5,6 +5,8 @@ module Tickler.Server.Item
     , makeItemInfo
     ) where
 
+import Import
+
 import Data.Time
 
 import Tickler.API
@@ -22,12 +24,23 @@ makeTicklerItem u i cr sch TypedItem {..} =
     , ticklerItemScheduled = sch
     }
 
-makeItemInfo :: TicklerItem -> ItemInfo TypedItem
-makeItemInfo TicklerItem {..} =
+makeItemInfo :: Either TicklerItem TriggeredItem -> ItemInfo TypedItem
+makeItemInfo (Left TicklerItem {..}) =
     ItemInfo
     { itemInfoIdentifier = ticklerItemIdentifier
     , itemInfoContents =
           TypedItem {itemType = ticklerItemType, itemData = ticklerItemContents}
     , itemInfoCreated = ticklerItemCreated
     , itemInfoScheduled = ticklerItemScheduled
+    , itemInfoTriggered = False
+    }
+makeItemInfo (Right TriggeredItem {..}) =
+    ItemInfo
+    { itemInfoIdentifier = triggeredItemIdentifier
+    , itemInfoContents =
+          TypedItem
+          {itemType = triggeredItemType, itemData = triggeredItemContents}
+    , itemInfoCreated = triggeredItemCreated
+    , itemInfoScheduled = triggeredItemScheduled
+    , itemInfoTriggered = True
     }

@@ -11,11 +11,10 @@ module Tickler.API.Protected
     , AuthCookie(..)
     , GetItemUUIDs
     , GetItems
-    , GetShowItem
-    , GetTicklerSize
     , PostAddItem
     , GetItem
     , DeleteItem
+    , ItemFilter(..)
     , ItemType(..)
     , TypedItem(..)
     , textTypedItem
@@ -49,6 +48,7 @@ module Tickler.API.Protected
 
 import Import
 
+import Servant.Docs
 import Servant.API
 import Servant.Auth.Docs ()
 import Servant.Auth.Server.SetCookieOrphan ()
@@ -63,9 +63,7 @@ import Tickler.API.Types
 type TicklerProtectedAPI = ToServant (TicklerProtectedSite AsApi)
 
 data TicklerProtectedSite route = TicklerProtectedSite
-    { getShowItem :: route :- GetShowItem
-    , getTicklerSize :: route :- GetTicklerSize
-    , getItemUUIDs :: route :- GetItemUUIDs
+    { getItemUUIDs :: route :- GetItemUUIDs
     , getItems :: route :- GetItems
     , postAddItem :: route :- PostAddItem
     , getItem :: route :- GetItem
@@ -77,20 +75,21 @@ data TicklerProtectedSite route = TicklerProtectedSite
     , deleteAccount :: route :- DeleteAccount
     } deriving (Generic)
 
--- | The item is not guaranteed to be the same one for every call if there are multiple items available.
-type GetShowItem
-     = ProtectAPI :> "tickler" :> "show-item" :> Get '[ JSON] (Maybe (ItemInfo TypedItem))
-
--- | Show the number of items in the tickler
-type GetTicklerSize = ProtectAPI :> "tickler" :> "size" :> Get '[ JSON] Int
-
 -- | The order of the items is not guaranteed to be the same for every call.
 type GetItemUUIDs
      = ProtectAPI :> "tickler" :> "uuids" :> Get '[ JSON] [ItemUUID]
 
 -- | The order of the items is not guaranteed to be the same for every call.
 type GetItems
-     = ProtectAPI :> "tickler" :> "items" :> Get '[ JSON] [ItemInfo TypedItem]
+     = ProtectAPI :> "tickler" :> "items" :> QueryParam "filter" ItemFilter :> Get '[ JSON] [ItemInfo TypedItem]
+
+instance ToParam (QueryParam "filter" ItemFilter) where
+    toParam Proxy =
+        DocQueryParam
+            "filter"
+            (map show [minBound .. maxBound :: ItemFilter])
+            "Optionally specify a filter on the items"
+            Normal
 
 type PostAddItem
      = ProtectAPI :> "tickler" :> "item" :> ReqBody '[ JSON] AddItem :> Post '[ JSON] ItemUUID

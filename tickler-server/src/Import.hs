@@ -13,6 +13,7 @@ import Data.String as X
 import Data.Text as X (Text)
 
 import Control.Arrow as X
+import Control.Applicative as X
 import Control.Monad as X
 import Control.Monad.Reader as X
 

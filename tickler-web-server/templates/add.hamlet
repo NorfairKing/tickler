@@ -9,6 +9,14 @@
       <textarea 
         name="contents" 
         autofocus>
+    <div .field>
+      <input
+        type="date"
+        name="scheduled-day">
+    <div .field>
+      <input
+        type="time"
+        name="scheduled-time">
     ^{token}
     <button .ui .primary .button type="submit">
       Submit

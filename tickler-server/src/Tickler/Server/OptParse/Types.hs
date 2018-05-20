@@ -42,4 +42,19 @@ data ServeSettings = ServeSettings
     , serveSetConnectionInfo :: SqliteConnectionInfo
     , serveSetConnectionCount :: Int
     , serveSetAdmins :: [Username]
+    , serveSetLooperSettings :: LooperSettings
     } deriving (Show)
+
+newtype LooperSettings = LooperSettings
+    { looperSetTriggerSets :: LooperSetsWith TriggerSettings
+    } deriving (Show)
+
+data TriggerSettings = TriggerSettings
+    { triggerSetConnectionInfo :: SqliteConnectionInfo
+    , triggerSetConnectionCount :: Int
+    } deriving (Show)
+
+data LooperSetsWith a = LooperSetsWith
+    { looperSets :: a
+    , looperSetPeriod :: Maybe Int -- Nothing means turned off. In number of seconds
+    } deriving (Show, Eq)

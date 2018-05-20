@@ -7,7 +7,8 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Tickler.API.Protected.Types
-    ( ItemType(..)
+    ( ItemFilter(..)
+    , ItemType(..)
     , TypedItem(..)
     , textTypedItem
     , TypedItemCase(..)
@@ -38,10 +39,22 @@ import Data.Time
 import Data.UUID.Typed
 
 import Servant.Docs
+import Web.HttpApiData
 
 import Tickler.Data
 
 import Tickler.API.Types
+
+data ItemFilter
+    = OnlyUntriggered
+    | OnlyTriggered
+    deriving (Show, Read, Eq,Enum,Bounded, Generic)
+
+instance ToHttpApiData ItemFilter where
+    toQueryParam = showTextData
+
+instance FromHttpApiData ItemFilter where
+    parseQueryParam = parseBoundedTextData
 
 data TypedItem = TypedItem
     { itemType :: ItemType
@@ -89,6 +102,7 @@ data ItemInfo a = ItemInfo
     , itemInfoContents :: a
     , itemInfoCreated :: UTCTime
     , itemInfoScheduled :: UTCTime
+    , itemInfoTriggered :: Bool
     } deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity a => Validity (ItemInfo a)
@@ -100,13 +114,15 @@ instance ToJSON a => ToJSON (ItemInfo a) where
             , "contents" .= itemInfoContents
             , "created" .= itemInfoCreated
             , "scheduled" .= itemInfoScheduled
+            , "triggered" .= itemInfoTriggered
             ]
 
 instance FromJSON a => FromJSON (ItemInfo a) where
     parseJSON =
         withObject "ItemInfo TypedItem" $ \o ->
             ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created" <*>
-            o .: "scheduled"
+            o .: "scheduled" <*>
+            o .: "triggered"
 
 instance ToSample a => ToSample (ItemInfo a)
 

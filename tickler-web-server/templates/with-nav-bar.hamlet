@@ -6,8 +6,10 @@
     $maybe _ <- mauth
       <a .item href=@{AddR}>
         Add item
-      <a .item href=@{ProcessR}>
-        Process
+      <a .item href=@{TicklesR}>
+        Tickles
+      <a .item href=@{TriggeredR}>
+        Triggered
       <a .item href=@{AccountR}>
         Account
     <div .right .menu>

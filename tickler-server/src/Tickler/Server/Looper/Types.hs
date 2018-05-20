@@ -1,0 +1,22 @@
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
+module Tickler.Server.Looper.Types
+    ( Looper(..), runLooper
+    ) where
+
+import Import
+
+import Control.Concurrent
+
+import Control.Monad.Logger
+import Control.Monad.Trans.Resource (runResourceT)
+import Data.Pool
+import Database.Persist.Sqlite
+
+newtype Looper a = Looper
+    { unLooper :: ReaderT (Pool SqlBackend) (LoggingT IO) a
+    } deriving (Functor, Applicative, Monad, MonadIO, MonadReader (Pool SqlBackend))
+
+runLooper :: Looper a -> Pool SqlBackend -> LoggingT IO a
+runLooper (Looper func) = runReaderT func

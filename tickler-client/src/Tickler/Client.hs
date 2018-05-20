@@ -1,8 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 
 module Tickler.Client
-    ( clientGetShowItem
-    , clientGetSize
+    ( clientGetAllItems
     , clientGetItemUUIDs
     , clientGetItems
     , clientPostAddItem
@@ -19,6 +18,7 @@ module Tickler.Client
     , clientAdminGetStats
     , clientAdminDeleteAccount
     , clientAdminGetAccounts
+    , ItemFilter(..)
     , ItemType(..)
     , TypedItem(..)
     , textTypedItem
@@ -58,10 +58,11 @@ import Servant.Client
 
 import Tickler.API
 
-clientGetShowItem :: Token -> ClientM (Maybe (ItemInfo TypedItem))
-clientGetSize :: Token -> ClientM Int
+clientGetAllItems :: Token -> ClientM [ItemInfo TypedItem]
+clientGetAllItems t = clientGetItems t Nothing
+
 clientGetItemUUIDs :: Token -> ClientM [ItemUUID]
-clientGetItems :: Token -> ClientM [ItemInfo TypedItem]
+clientGetItems :: Token -> Maybe ItemFilter -> ClientM [ItemInfo TypedItem]
 clientPostAddItem :: Token -> AddItem -> ClientM ItemUUID
 clientGetItem :: Token -> ItemUUID -> ClientM (ItemInfo TypedItem)
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
@@ -78,5 +79,5 @@ clientGetDocs :: ClientM GetDocsResponse
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientGetShowItem :<|> clientGetSize :<|> clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
     client (flatten ticklerAPI)

@@ -1,0 +1,6 @@
+$maybe itemsWidget <- mItemWidget
+  <h1> #{nrItems} tickles triggered
+  ^{itemsWidget}
+$nothing
+  <div .ui .segment>
+    <h1> No tickles triggered

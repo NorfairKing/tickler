@@ -19,6 +19,7 @@ module Tickler.API
     , TicklerAdminAPI
     , TicklerAdminSite(..)
     , AuthCookie(..)
+    , ItemFilter(..)
     , ItemType(..)
     , TypedItem(..)
     , textTypedItem

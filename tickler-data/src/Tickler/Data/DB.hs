@@ -60,6 +60,19 @@ TicklerItem
     deriving Show
     deriving Eq
     deriving Generic
+
+TriggeredItem
+    identifier ItemUUID
+    userId AccountUUID
+    type ItemType
+    contents ByteString
+    created UTCTime
+    scheduled UTCTime
+    UniqueTriggeredItem identifier userId type contents
+    UniqueTriggeredIdentifier identifier userId
+    deriving Show
+    deriving Eq
+    deriving Generic
 |]
 
 instance Validity User

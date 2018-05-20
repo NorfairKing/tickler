@@ -54,6 +54,19 @@ makeTicklerAPIServeSettings ServeSettings {..} =
     , API.serveSetConnectionInfo = serveSetAPIConnectionInfo
     , API.serveSetConnectionCount = serveSetAPIConnectionCount
     , API.serveSetAdmins = serveSetAPIAdmins
+    , API.serveSetLooperSettings =
+          API.LooperSettings
+          { API.looperSetTriggerSets =
+                API.LooperSetsWith
+                { API.looperSets =
+                      API.TriggerSettings
+                      { API.triggerSetConnectionInfo = serveSetAPIConnectionInfo
+                      , API.triggerSetConnectionCount = serveSetAPIConnectionCount
+
+                      }
+                , API.looperSetPeriod = Just 5
+                }
+          }
     }
 
 runTicklerAPIServer :: ServeSettings -> IO ()

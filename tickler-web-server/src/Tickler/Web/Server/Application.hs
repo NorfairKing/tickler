@@ -15,6 +15,7 @@ import Tickler.Web.Server.Handler.Add
 import Tickler.Web.Server.Handler.Admin
 import Tickler.Web.Server.Handler.Error
 import Tickler.Web.Server.Handler.Home
-import Tickler.Web.Server.Handler.Process
+import Tickler.Web.Server.Handler.Tickles
+import Tickler.Web.Server.Handler.Triggered
 
 mkYesodDispatch "App" resourcesApp

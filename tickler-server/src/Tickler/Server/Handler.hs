@@ -17,8 +17,6 @@ import Tickler.Server.Handler.GetAccountSettings
 import Tickler.Server.Handler.GetItem (serveGetItem)
 import Tickler.Server.Handler.GetItemUUIDs (serveGetItemUUIDs)
 import Tickler.Server.Handler.GetItems (serveGetItems)
-import Tickler.Server.Handler.GetShowItem (serveGetShowItem)
-import Tickler.Server.Handler.GetTicklerSize (serveGetTicklerSize)
 import Tickler.Server.Handler.PostAddItem (servePostAddItem)
 import Tickler.Server.Handler.PostSync (servePostSync)
 import Tickler.Server.Handler.Public (ticklerPublicServer)
@@ -42,9 +40,7 @@ ticklerOpenServer =
 ticklerProtectedServer :: TicklerProtectedSite (AsServerT TicklerHandler)
 ticklerProtectedServer =
     TicklerProtectedSite
-    { getShowItem = serveGetShowItem
-    , getTicklerSize = serveGetTicklerSize
-    , getItemUUIDs = serveGetItemUUIDs
+    { getItemUUIDs = serveGetItemUUIDs
     , getItems = serveGetItems
     , postAddItem = servePostAddItem
     , getItem = serveGetItem

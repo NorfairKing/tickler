@@ -63,7 +63,7 @@ servePostSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
             map (ticklerItemIdentifier . entityVal) foundItems
     syncNewRemoteItems :: TicklerHandler [ItemInfo TypedItem]
     syncNewRemoteItems =
-        map (makeItemInfo . entityVal) <$>
+        map (makeItemInfo . Left . entityVal) <$>
         runDb
             (selectList
                  [ TicklerItemUserId ==. authCookieUserUUID
@@ -90,5 +90,6 @@ servePostSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
                 , itemInfoCreated = ts
                 , itemInfoScheduled = newSyncItemScheduled
                 , itemInfoContents = newSyncItemContents
+                , itemInfoTriggered = False
                 }
 servePostSync _ _ = throwAll err401

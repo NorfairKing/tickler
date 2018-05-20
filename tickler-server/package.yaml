@@ -26,33 +26,57 @@ library:
   dependencies:
   - aeson
   - aeson-pretty
+  - amazonka
+  - amazonka-ses
+  - async
   - base >=4.7 && <5
+  - blaze-html
   - bytestring
+  - data-default
+  - email-validate
   - file-embed
-  - tickler-api
-  - tickler-data
+  - http-client
+  - http-types
   - jose
+  - lens
   - monad-logger
   - mtl >=2.2
+  - nonce
   - optparse-applicative >=0.13
   - pandoc
   - path
   - path-io
-  - persistent >=2.7
+  - persistent
   - persistent-sqlite
+  - persistent-template
   - pretty-show
+  - resource-pool
   - resourcet
+  - safe
   - servant
   - servant-auth-server
   - servant-docs
   - servant-generic
   - servant-server
+  - shakespeare
+  - template-haskell
   - text
+  - tickler-api
+  - tickler-data
   - time
   - typed-uuid
+  - validity
+  - validity-bytestring
+  - validity-containers
+  - validity-path
+  - validity-text
+  - validity-time
   - wai
+  - wai-app-static
   - wai-cors
+  - wai-extra
   - warp >=3.2
+  - yaml
 
 executables:
   tickler-server:

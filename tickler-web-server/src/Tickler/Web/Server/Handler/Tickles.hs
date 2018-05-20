@@ -1,0 +1,53 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE QuasiQuotes #-}
+
+module Tickler.Web.Server.Handler.Tickles
+    ( getTicklesR
+    , postDoneR
+    ) where
+
+import Import
+
+import Yesod
+
+import Tickler.API
+import Tickler.Client
+
+import Tickler.Web.Server.Foundation
+import Tickler.Web.Server.Time
+
+getTicklesR :: Handler Html
+getTicklesR =
+    withLogin $ \t -> do
+        items <- runClientOrErr $ clientGetItems t (Just OnlyUntriggered)
+        mItemWidget <-
+            case items of
+                [] -> pure Nothing
+                _ -> Just <$> makeItemInfoWidget items
+        let nrItems = length items
+        withNavBar $(widgetFile "tickles")
+
+makeItemInfoWidget :: [ItemInfo TypedItem] -> Handler Widget
+makeItemInfoWidget items = do
+    token <- genToken
+    fmap mconcat $
+        forM items $ \ItemInfo {..} -> do
+            createdWidget <- makeTimestampWidget itemInfoCreated
+            scheduledWidget <- makeTimestampWidget itemInfoScheduled
+            pure $(widgetFile "item")
+
+newtype DoneItem = DoneItem
+    { doneItemUUID :: ItemUUID
+    }
+
+doneItemForm :: FormInput Handler DoneItem
+doneItemForm = DoneItem <$> ireq hiddenField "item"
+
+postDoneR :: Handler Html
+postDoneR =
+    withLogin $ \t -> do
+        DoneItem {..} <- runInputPost doneItemForm
+        void $ runClientOrErr $ clientDeleteItem t doneItemUUID
+        redirect TicklesR

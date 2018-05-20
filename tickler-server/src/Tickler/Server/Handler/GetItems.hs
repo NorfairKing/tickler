@@ -22,12 +22,27 @@ import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-serveGetItems :: AuthResult AuthCookie -> TicklerHandler [ItemInfo TypedItem]
-serveGetItems (Authenticated AuthCookie {..}) = do
-    itemsEnts <-
-        runDb $
-        selectList
-            [TicklerItemUserId ==. authCookieUserUUID]
-            [Asc TicklerItemCreated]
-    pure $ map (makeItemInfo . entityVal) itemsEnts
-serveGetItems _ = throwAll err401
+serveGetItems ::
+       AuthResult AuthCookie
+    -> Maybe ItemFilter
+    -> TicklerHandler [ItemInfo TypedItem]
+serveGetItems (Authenticated AuthCookie {..}) mif = do
+    let getTicklerItems = do
+            itemsEnts <-
+                runDb $
+                selectList
+                    [TicklerItemUserId ==. authCookieUserUUID]
+                    [Asc TicklerItemCreated]
+            pure $ map (makeItemInfo . Left . entityVal) itemsEnts
+    let getTriggeredItems = do
+            itemsEnts <-
+                runDb $
+                selectList
+                    [TriggeredItemUserId ==. authCookieUserUUID]
+                    [Asc TriggeredItemCreated]
+            pure $ map (makeItemInfo . Right . entityVal) itemsEnts
+    case mif of
+        Just OnlyUntriggered -> getTicklerItems
+        Just OnlyTriggered -> getTriggeredItems
+        Nothing -> liftA2 (++) getTicklerItems getTriggeredItems
+serveGetItems _ _ = throwAll err401

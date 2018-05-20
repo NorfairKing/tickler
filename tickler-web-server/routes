@@ -1,8 +1,9 @@
 /                                  HomeR                GET
 
-/process                           ProcessR             GET
 /add                               AddR                 POST GET
+/tickles                           TicklesR             GET
 /done                              DoneR                POST
+/triggered                         TriggeredR           GET
 
 /account                           AccountR             GET
 /account/settings                  AccountSettingsR     POST

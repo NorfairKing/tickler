@@ -21,6 +21,9 @@ extra-deps:
 - servant-auth-server-0.3.2.0
 - servant-flatten-0.2
 - servant-options-0.1.0.0
+- amazonka-1.6.0
+- amazonka-core-1.6.0
+- amazonka-ses-1.6.0
 - git: git@github.com:NorfairKing/validity.git
   commit: a86dd3e4830c14c056a0d5d8712864d395d25b2a
   subdirs:

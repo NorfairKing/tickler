@@ -13,6 +13,7 @@ module Tickler.Server
 
 import Import
 
+import Control.Concurrent.Async (concurrently_)
 import Control.Monad.Logger
 import Control.Monad.Trans.Resource (runResourceT)
 import Database.Persist.Sqlite
@@ -31,26 +32,36 @@ import Tickler.Data
 import Tickler.Server.OptParse.Types
 import Tickler.Server.Types
 
+import Tickler.Server.Handler (ticklerServer)
+import Tickler.Server.Looper
 import Tickler.Server.SigningKey
 
-import Tickler.Server.Handler (ticklerServer)
-
 runTicklerServer :: ServeSettings -> IO ()
-runTicklerServer ServeSettings {..} =
+runTicklerServer sets@ServeSettings {..} = do
     runStderrLoggingT $
-    withSqlitePoolInfo serveSetConnectionInfo serveSetConnectionCount $ \pool -> do
-        runResourceT $ flip runSqlPool pool $ runMigration migrateAll
-        signingKey <- liftIO loadSigningKey
-        let jwtCfg = defaultJWTSettings signingKey
-        let cookieCfg = defaultCookieSettings
-        let ticklerEnv =
-                TicklerServerEnv
-                { envConnectionPool = pool
-                , envCookieSettings = cookieCfg
-                , envJWTSettings = jwtCfg
-                , envAdmins = serveSetAdmins
-                }
-        liftIO $ Warp.run serveSetPort $ ticklerApp ticklerEnv
+        withSqlitePoolInfo serveSetConnectionInfo serveSetConnectionCount $ \pool ->
+            runResourceT $ flip runSqlPool pool $ runMigration migrateAll
+    concurrently_ (runServer_ sets) (runLoopers_ sets)
+
+runServer_ :: ServeSettings -> IO ()
+runServer_ ServeSettings {..} = do
+    runStderrLoggingT $
+        withSqlitePoolInfo serveSetConnectionInfo serveSetConnectionCount $ \pool -> do
+            signingKey <- liftIO loadSigningKey
+            let jwtCfg = defaultJWTSettings signingKey
+            let cookieCfg = defaultCookieSettings
+            let ticklerEnv =
+                    TicklerServerEnv
+                    { envConnectionPool = pool
+                    , envCookieSettings = cookieCfg
+                    , envJWTSettings = jwtCfg
+                    , envAdmins = serveSetAdmins
+                    }
+            liftIO $ Warp.run serveSetPort $ ticklerApp ticklerEnv
+
+runLoopers_ :: ServeSettings -> IO ()
+runLoopers_ ServeSettings {..} = do
+    runLoopers serveSetLooperSettings
 
 ticklerApp :: TicklerServerEnv -> Wai.Application
 ticklerApp se =
