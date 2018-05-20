@@ -43,13 +43,16 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration = do
               , serveSetAdmins = admins
               , serveSetLooperSettings =
                     LooperSettings
-                    { looperSetTriggerSets =
+                    { looperSetConnectionInfo = connInfo
+                    , looperSetConnectionCount = connCount
+                    , looperSetTriggerSets =
                           LooperSetsWith
-                          { looperSets =
-                                TriggerSettings
-                                { triggerSetConnectionInfo = connInfo
-                                , triggerSetConnectionCount = connCount
-                                }
+                          { looperSets = TriggerSettings
+                          , looperSetPeriod = Just 5
+                          }
+                    , looperSetEmailerSets =
+                          LooperSetsWith
+                          { looperSets = EmailerSettings
                           , looperSetPeriod = Just 5
                           }
                     }

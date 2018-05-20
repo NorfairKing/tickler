@@ -27,6 +27,7 @@ library:
   - base >=4.7 && <5
   - bcrypt
   - bytestring
+  - email-validate
   - hashable
   - persistent
   - persistent-template

@@ -17,7 +17,7 @@ import Database.Persist.Sql
 
 newtype HashedPassword =
     HashedPassword ByteString
-    deriving (Show, Eq, Read, Generic, PersistField, PersistFieldSql)
+    deriving (Show, Eq, Ord, Read, Generic, PersistField, PersistFieldSql)
 
 instance Validity HashedPassword where
     validate (HashedPassword password) =

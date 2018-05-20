@@ -45,16 +45,22 @@ data ServeSettings = ServeSettings
     , serveSetLooperSettings :: LooperSettings
     } deriving (Show)
 
-newtype LooperSettings = LooperSettings
-    { looperSetTriggerSets :: LooperSetsWith TriggerSettings
-    } deriving (Show)
-
-data TriggerSettings = TriggerSettings
-    { triggerSetConnectionInfo :: SqliteConnectionInfo
-    , triggerSetConnectionCount :: Int
+data LooperSettings = LooperSettings
+    { looperSetConnectionInfo :: SqliteConnectionInfo
+    , looperSetConnectionCount :: Int
+    , looperSetTriggerSets :: LooperSetsWith TriggerSettings
+    , looperSetEmailerSets :: LooperSetsWith EmailerSettings
     } deriving (Show)
 
 data LooperSetsWith a = LooperSetsWith
     { looperSets :: a
     , looperSetPeriod :: Maybe Int -- Nothing means turned off. In number of seconds
     } deriving (Show, Eq)
+
+data TriggerSettings =
+    TriggerSettings
+    deriving (Show)
+
+data EmailerSettings =
+    EmailerSettings
+    deriving (Show)

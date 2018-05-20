@@ -19,10 +19,14 @@ import Database.Persist.Sql
 import Database.Persist.TH
 
 import Tickler.Data.AccountUUID
+import Tickler.Data.EmailAddress
+import Tickler.Data.EmailStatus
 import Tickler.Data.HashedPassword
 import Tickler.Data.ItemType
 import Tickler.Data.ItemUUID
 import Tickler.Data.Time ()
+import Tickler.Data.TriggerType
+import Tickler.Data.TriggerUUID
 import Tickler.Data.Username
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"]
@@ -38,7 +42,10 @@ User
     UniqueUsername username
     deriving Show
     deriving Eq
+    deriving Ord
     deriving Generic
+    deriving Typeable
+
 
 UserSettings
     userId AccountUUID
@@ -46,7 +53,10 @@ UserSettings
     UniqueUserSettings userId
     deriving Show
     deriving Eq
+    deriving Ord
     deriving Generic
+    deriving Typeable
+
 
 TicklerItem
     identifier ItemUUID
@@ -59,7 +69,10 @@ TicklerItem
     UniqueIdentifier identifier userId
     deriving Show
     deriving Eq
+    deriving Ord
     deriving Generic
+    deriving Typeable
+
 
 TriggeredItem
     identifier ItemUUID
@@ -72,7 +85,82 @@ TriggeredItem
     UniqueTriggeredIdentifier identifier userId
     deriving Show
     deriving Eq
+    deriving Ord
     deriving Generic
+    deriving Typeable
+
+
+UserTrigger
+    userId AccountUUID
+    UniqueUserTrigger userId
+    triggerType TriggerType
+    triggerId TriggerUUID
+
+    deriving Show
+    deriving Eq
+    deriving Ord
+    deriving Generic
+    deriving Typeable
+
+
+EmailTrigger
+    identifier TriggerUUID
+    address EmailAddress
+    verificationKey ByteString
+    verified Bool
+
+    UniqueEmailTrigger identifier
+
+    deriving Show
+    deriving Eq
+    deriving Ord
+    deriving Generic
+    deriving Typeable
+
+
+IntrayTrigger
+    identifier TriggerUUID
+
+    UniqueIntrayTrigger identifier
+
+    deriving Show
+    deriving Eq
+    deriving Ord
+    deriving Generic
+    deriving Typeable
+
+
+VerificationEmail
+    to          EmailAddress
+    key         Text
+    link        Text
+    scheduled   UTCTime
+    email       EmailId      Maybe
+
+    deriving Show
+    deriving Eq
+    deriving Ord
+    deriving Generic
+    deriving Typeable
+
+
+Email
+    to              EmailAddress
+    from            EmailAddress
+    fromName        Text
+    subject         Text
+    textContent     Text
+    htmlContent     Text
+    status          EmailStatus
+    error           Text         Maybe
+    sesId           Text         Maybe
+    scheduled       UTCTime
+    sent            UTCTime
+    deriving Show
+    deriving Eq
+    deriving Ord
+    deriving Generic
+    deriving Typeable
 |]
 
 instance Validity User
@@ -80,3 +168,9 @@ instance Validity User
 instance Validity UserSettings
 
 instance Validity TicklerItem
+
+instance Validity UserTrigger
+
+instance Validity EmailTrigger
+
+instance Validity IntrayTrigger

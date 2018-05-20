@@ -20,10 +20,10 @@ import Tickler.Data
 import Tickler.Server.OptParse.Types
 
 import Tickler.Server.Looper.Types
+import Tickler.Server.Looper.Utils
 
-runTriggerer :: Looper ()
-runTriggerer = do
-    liftIO $ putStrLn "Running trigger"
+runTriggerer :: TriggerSettings -> Looper ()
+runTriggerer TriggerSettings = do
     now <- liftIO getCurrentTime
     runDb $ do
         items <-
@@ -41,8 +41,3 @@ runTriggerer = do
         -- TODO if something goes wrong here, we should rollback the transaction
         unless (null items) $
             deleteWhere [TicklerItemId <-. map entityKey items]
-
-runDb :: SqlPersistT IO b -> Looper b
-runDb query = do
-    pool <- ask
-    liftIO $ runSqlPool query pool
