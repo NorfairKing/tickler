@@ -61,8 +61,8 @@ makeTicklerAPIServeSettings ServeSettings {..} =
                 { API.looperSets =
                       API.TriggerSettings
                       { API.triggerSetConnectionInfo = serveSetAPIConnectionInfo
-                      , API.triggerSetConnectionCount = serveSetAPIConnectionCount
-
+                      , API.triggerSetConnectionCount =
+                            serveSetAPIConnectionCount
                       }
                 , API.looperSetPeriod = Just 5
                 }

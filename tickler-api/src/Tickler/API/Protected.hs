@@ -48,10 +48,10 @@ module Tickler.API.Protected
 
 import Import
 
-import Servant.Docs
 import Servant.API
 import Servant.Auth.Docs ()
 import Servant.Auth.Server.SetCookieOrphan ()
+import Servant.Docs
 import Servant.Generic
 
 import Tickler.Data

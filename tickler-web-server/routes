@@ -2,8 +2,9 @@
 
 /add                               AddR                 POST GET
 /tickles                           TicklesR             GET
-/done                              DoneR                POST
 /triggered                         TriggeredR           GET
+
+/delete                            DeleteR              POST
 
 /account                           AccountR             GET
 /account/settings                  AccountSettingsR     POST

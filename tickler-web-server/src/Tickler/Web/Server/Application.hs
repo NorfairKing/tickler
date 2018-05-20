@@ -13,6 +13,7 @@ import Tickler.Web.Server.Handler.APIDocs
 import Tickler.Web.Server.Handler.Account
 import Tickler.Web.Server.Handler.Add
 import Tickler.Web.Server.Handler.Admin
+import Tickler.Web.Server.Handler.Delete
 import Tickler.Web.Server.Handler.Error
 import Tickler.Web.Server.Handler.Home
 import Tickler.Web.Server.Handler.Tickles

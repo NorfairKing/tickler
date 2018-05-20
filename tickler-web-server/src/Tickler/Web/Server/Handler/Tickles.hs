@@ -5,7 +5,6 @@
 
 module Tickler.Web.Server.Handler.Tickles
     ( getTicklesR
-    , postDoneR
     ) where
 
 import Import
@@ -37,17 +36,3 @@ makeItemInfoWidget items = do
             createdWidget <- makeTimestampWidget itemInfoCreated
             scheduledWidget <- makeTimestampWidget itemInfoScheduled
             pure $(widgetFile "item")
-
-newtype DoneItem = DoneItem
-    { doneItemUUID :: ItemUUID
-    }
-
-doneItemForm :: FormInput Handler DoneItem
-doneItemForm = DoneItem <$> ireq hiddenField "item"
-
-postDoneR :: Handler Html
-postDoneR =
-    withLogin $ \t -> do
-        DoneItem {..} <- runInputPost doneItemForm
-        void $ runClientOrErr $ clientDeleteItem t doneItemUUID
-        redirect TicklesR

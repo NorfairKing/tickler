@@ -48,7 +48,7 @@ import Tickler.API.Types
 data ItemFilter
     = OnlyUntriggered
     | OnlyTriggered
-    deriving (Show, Read, Eq,Enum,Bounded, Generic)
+    deriving (Show, Read, Eq, Enum, Bounded, Generic)
 
 instance ToHttpApiData ItemFilter where
     toQueryParam = showTextData

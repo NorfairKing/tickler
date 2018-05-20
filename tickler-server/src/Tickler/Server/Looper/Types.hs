@@ -2,7 +2,8 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Tickler.Server.Looper.Types
-    ( Looper(..), runLooper
+    ( Looper(..)
+    , runLooper
     ) where
 
 import Import
@@ -16,7 +17,12 @@ import Database.Persist.Sqlite
 
 newtype Looper a = Looper
     { unLooper :: ReaderT (Pool SqlBackend) (LoggingT IO) a
-    } deriving (Functor, Applicative, Monad, MonadIO, MonadReader (Pool SqlBackend))
+    } deriving ( Functor
+               , Applicative
+               , Monad
+               , MonadIO
+               , MonadReader (Pool SqlBackend)
+               )
 
 runLooper :: Looper a -> Pool SqlBackend -> LoggingT IO a
 runLooper (Looper func) = runReaderT func
