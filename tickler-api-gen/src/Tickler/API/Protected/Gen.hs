@@ -50,3 +50,13 @@ instance GenUnchecked SyncResponse
 instance GenValid SyncResponse where
     genValid =
         (SyncResponse <$> genValid <*> genValid <*> genValid) `suchThat` isValid
+
+instance GenUnchecked AddIntrayTrigger
+
+instance GenValid AddIntrayTrigger where
+    genValid = (AddIntrayTrigger <$> genValid) `suchThat` isValid
+
+instance GenUnchecked AddEmailTrigger
+
+instance GenValid AddEmailTrigger where
+    genValid = (AddEmailTrigger <$> genValid) `suchThat` isValid

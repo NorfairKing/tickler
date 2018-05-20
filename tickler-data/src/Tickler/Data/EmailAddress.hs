@@ -18,6 +18,7 @@ module Tickler.Data.EmailAddress
 
 import Import
 
+import Data.Aeson as JSON
 import Data.ByteString (ByteString)
 import qualified Data.Char as Char
 import qualified Data.Text as T
@@ -53,6 +54,16 @@ instance PersistField EmailAddress where
 instance PersistFieldSql EmailAddress where
     sqlType :: Proxy EmailAddress -> SqlType
     sqlType Proxy = sqlType (Proxy :: Proxy Text)
+
+instance FromJSON EmailAddress where
+    parseJSON =
+        withText "EmailAddress" $ \t ->
+            case emailValidateFromText t of
+                Left err -> fail $ show err
+                Right ea -> pure ea
+
+instance ToJSON EmailAddress where
+    toJSON  = JSON.String . emailAddressText
 
 normalizeEmail :: Text -> Text
 normalizeEmail = T.map Char.toLower

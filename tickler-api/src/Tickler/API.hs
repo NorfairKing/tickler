@@ -30,6 +30,13 @@ module Tickler.API
     , SyncRequest(..)
     , NewSyncItem(..)
     , SyncResponse(..)
+    , TriggerInfo(..)
+    , TriggerUUID
+    , GetTriggers
+    , AddIntrayTrigger(..)
+    , PostAddIntrayTrigger
+    , AddEmailTrigger(..)
+    , PostAddEmailTrigger
     , AccountInfo(..)
     , AccountSettings(..)
     , GetAccountSettings

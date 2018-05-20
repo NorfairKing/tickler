@@ -46,6 +46,7 @@ import Servant.Auth
 import Servant.Auth.Docs ()
 import Servant.Auth.Server
 import Servant.Auth.Server.SetCookieOrphan ()
+import Servant.Client.Core
 import Servant.Docs
 import Servant.HTML.Blaze
 
@@ -139,3 +140,9 @@ instance ToMarkup GetDocsResponse where
 
 instance ToSample TimeZone where
     toSamples Proxy = singleSample utc
+
+instance ToSample BaseUrl where
+    toSamples Proxy = singleSample $ BaseUrl Https "intray.cs-syd.eu" 8000 ""
+
+instance ToSample EmailAddress where
+    toSamples Proxy = singleSample  $ unsafeEmailAddress "user" "example.com"

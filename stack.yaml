@@ -10,6 +10,9 @@ packages:
 - tickler-server
 - tickler-server-test-utils
 - tickler-web-server
+- /home/syd/cs-syd/code/open-source/intray/intray-data
+- /home/syd/cs-syd/code/open-source/intray/intray-api
+- /home/syd/cs-syd/code/open-source/intray/intray-client
 extra-deps:
 - hlint-2.0.15
 - extra-1.6.5

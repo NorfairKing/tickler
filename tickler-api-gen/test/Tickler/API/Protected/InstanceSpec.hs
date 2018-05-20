@@ -41,3 +41,15 @@ spec = do
     ordSpec @SyncResponse
     genValidSpec @SyncResponse
     jsonSpecOnValid @SyncResponse
+    eqSpec @TriggerInfo
+    ordSpec @TriggerInfo
+    genValidSpec @TriggerInfo
+    jsonSpecOnValid @TriggerInfo
+    eqSpec @AddIntrayTrigger
+    ordSpec @AddIntrayTrigger
+    genValidSpec @AddIntrayTrigger
+    jsonSpecOnValid @AddIntrayTrigger
+    eqSpec @AddEmailTrigger
+    ordSpec @AddEmailTrigger
+    genValidSpec @AddEmailTrigger
+    jsonSpecOnValid @AddEmailTrigger

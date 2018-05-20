@@ -18,6 +18,9 @@ module Tickler.API.Protected.Types
     , SyncRequest(..)
     , NewSyncItem(..)
     , SyncResponse(..)
+    , TriggerInfo(..)
+    , AddIntrayTrigger(..)
+    , AddEmailTrigger(..)
     , Registration(..)
     , LoginForm(..)
     , GetDocsResponse(..)
@@ -246,6 +249,42 @@ instance ToJSON SyncResponse where
             ]
 
 instance ToSample SyncResponse
+
+data TriggerInfo = TriggerInfo
+    { triggerIdentifier :: TriggerUUID
+    } deriving (Show, Eq, Ord, Generic)
+
+instance Validity TriggerInfo
+
+instance FromJSON TriggerInfo
+
+instance ToJSON TriggerInfo
+
+instance ToSample TriggerInfo
+
+data AddIntrayTrigger = AddIntrayTrigger
+    { addIntrayTriggerUrl :: BaseUrl
+    } deriving (Show, Eq, Ord, Generic)
+
+instance Validity AddIntrayTrigger
+
+instance FromJSON AddIntrayTrigger
+
+instance ToJSON AddIntrayTrigger
+
+instance ToSample AddIntrayTrigger
+
+data AddEmailTrigger = AddEmailTrigger
+    { addEmailTrigger :: EmailAddress
+    } deriving (Show, Eq, Ord, Generic)
+
+instance Validity AddEmailTrigger
+
+instance FromJSON AddEmailTrigger
+
+instance ToJSON AddEmailTrigger
+
+instance ToSample AddEmailTrigger
 
 distinct :: Eq a => [a] -> Bool
 distinct ls = length ls == length (nub ls)

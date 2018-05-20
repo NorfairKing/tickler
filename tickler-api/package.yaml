@@ -36,6 +36,7 @@ library:
   - servant-auth-docs
   - servant-auth-server
   - servant-blaze
+  - servant-client-core
   - servant-docs
   - servant-generic
   - text

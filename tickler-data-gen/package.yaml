@@ -24,9 +24,12 @@ library:
   - genvalidity-bytestring
   - genvalidity-text
   - genvalidity-time
+  - genvalidity-typed-uuid
   - genvalidity-uuid
-  - tickler-data
+  - persistent
+  - servant-client-core
   - text
+  - tickler-data
   - validity
   - validity-bytestring
   - validity-text

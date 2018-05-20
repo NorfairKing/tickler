@@ -27,6 +27,7 @@ import Tickler.Data.ItemUUID
 import Tickler.Data.Time ()
 import Tickler.Data.TriggerType
 import Tickler.Data.TriggerUUID
+import Tickler.Data.Url
 import Tickler.Data.Username
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"]
@@ -120,6 +121,8 @@ EmailTrigger
 
 IntrayTrigger
     identifier TriggerUUID
+    url BaseUrl
+    -- accessKey ByteString
 
     UniqueIntrayTrigger identifier
 
@@ -169,8 +172,17 @@ instance Validity UserSettings
 
 instance Validity TicklerItem
 
+instance Validity TriggeredItem
+
 instance Validity UserTrigger
+
+instance Validity IntrayTrigger
 
 instance Validity EmailTrigger
 
-instance Validity IntrayTrigger
+instance Validity VerificationEmail
+
+instance Validity Email
+
+instance Validity (Key a) where
+    validate = trivialValidation

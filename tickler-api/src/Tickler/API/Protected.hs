@@ -26,6 +26,12 @@ module Tickler.API.Protected
     , NewSyncItem(..)
     , SyncResponse(..)
     , PostSync
+    , TriggerInfo(..)
+    , GetTriggers
+    , AddIntrayTrigger(..)
+    , PostAddIntrayTrigger
+    , AddEmailTrigger(..)
+    , PostAddEmailTrigger
     , AccountInfo(..)
     , GetAccountInfo
     , AccountSettings(..)
@@ -69,6 +75,9 @@ data TicklerProtectedSite route = TicklerProtectedSite
     , getItem :: route :- GetItem
     , deleteItem :: route :- DeleteItem
     , postSync :: route :- PostSync
+    , getTriggers :: route :- GetTriggers
+    , postAddIntrayTrigger :: route :- PostAddIntrayTrigger
+    , postAddEmailTrigger :: route :- PostAddEmailTrigger
     , getAccountInfo :: route :- GetAccountInfo
     , getAccountSettings :: route :- GetAccountSettings
     , putAccountSettings :: route :- PutAccountSettings
@@ -102,6 +111,14 @@ type DeleteItem
 
 type PostSync
      = ProtectAPI :> "sync" :> ReqBody '[ JSON] SyncRequest :> Post '[ JSON] SyncResponse
+
+type GetTriggers = ProtectAPI :> "trigger" :> Get '[ JSON] [TriggerInfo]
+
+type PostAddIntrayTrigger
+     = ProtectAPI :> "trigger" :> "intray" :> ReqBody '[ JSON] AddIntrayTrigger :> Post '[ JSON] TriggerUUID
+
+type PostAddEmailTrigger
+     = ProtectAPI :> "trigger" :> "email" :> ReqBody '[ JSON] AddEmailTrigger :> Post '[ JSON] TriggerUUID
 
 type GetAccountInfo = ProtectAPI :> "account" :> Get '[ JSON] AccountInfo
 

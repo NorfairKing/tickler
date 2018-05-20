@@ -9,6 +9,8 @@ import Tickler.Data.ItemType as X
 import Tickler.Data.ItemUUID as X
 import Tickler.Data.Time as X
 import Tickler.Data.EmailAddress as X
+import Tickler.Data.EmailStatus as X
 import Tickler.Data.Username as X
 import Tickler.Data.TriggerType as X
 import Tickler.Data.TriggerUUID as X
+import Tickler.Data.Url as X
