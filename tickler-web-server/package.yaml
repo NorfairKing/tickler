@@ -33,6 +33,7 @@ library:
   - servant
   - servant-auth-client
   - servant-client
+  - servant-client-core
   - shakespeare
   - template-haskell
   - text

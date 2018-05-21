@@ -41,10 +41,20 @@ spec = do
     ordSpec @SyncResponse
     genValidSpec @SyncResponse
     jsonSpecOnValid @SyncResponse
-    eqSpec @TriggerInfo
-    ordSpec @TriggerInfo
-    genValidSpec @TriggerInfo
-    jsonSpecOnValid @TriggerInfo
+    eqSpec @TypedTriggerInfo
+    genValidSpec @TypedTriggerInfo
+    jsonSpecOnValid @TypedTriggerInfo
+    eqSpec @(TriggerInfo TypedTriggerInfo)
+    genValidSpec @(TriggerInfo TypedTriggerInfo)
+    jsonSpecOnValid @(TriggerInfo TypedTriggerInfo)
+    eqSpec @IntrayTriggerInfo
+    ordSpec @IntrayTriggerInfo
+    genValidSpec @IntrayTriggerInfo
+    jsonSpecOnValid @IntrayTriggerInfo
+    eqSpec @EmailTriggerInfo
+    ordSpec @EmailTriggerInfo
+    genValidSpec @EmailTriggerInfo
+    jsonSpecOnValid @EmailTriggerInfo
     eqSpec @AddIntrayTrigger
     ordSpec @AddIntrayTrigger
     genValidSpec @AddIntrayTrigger

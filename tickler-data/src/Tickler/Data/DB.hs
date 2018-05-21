@@ -21,6 +21,7 @@ import Database.Persist.TH
 import Tickler.Data.AccountUUID
 import Tickler.Data.EmailAddress
 import Tickler.Data.EmailStatus
+import Tickler.Data.EmailVerificationKey
 import Tickler.Data.HashedPassword
 import Tickler.Data.ItemType
 import Tickler.Data.ItemUUID
@@ -93,24 +94,8 @@ TriggeredItem
 
 UserTrigger
     userId AccountUUID
-    UniqueUserTrigger userId
     triggerType TriggerType
     triggerId TriggerUUID
-
-    deriving Show
-    deriving Eq
-    deriving Ord
-    deriving Generic
-    deriving Typeable
-
-
-EmailTrigger
-    identifier TriggerUUID
-    address EmailAddress
-    verificationKey ByteString
-    verified Bool
-
-    UniqueEmailTrigger identifier
 
     deriving Show
     deriving Eq
@@ -123,8 +108,25 @@ IntrayTrigger
     identifier TriggerUUID
     url BaseUrl
     -- accessKey ByteString
+    added UTCTime
 
     UniqueIntrayTrigger identifier
+
+    deriving Show
+    deriving Eq
+    deriving Ord
+    deriving Generic
+    deriving Typeable
+
+
+EmailTrigger
+    identifier TriggerUUID
+    address EmailAddress
+    verificationKey EmailVerificationKey
+    verified Bool
+    added UTCTime
+
+    UniqueEmailTrigger identifier
 
     deriving Show
     deriving Eq

@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module Tickler.Server.Handler.GetItemSpec
+module Tickler.Server.Handler.PostAddEmailTriggerSpec
     ( spec
     ) where
 
@@ -18,13 +18,13 @@ import Tickler.Server.TestUtils
 spec :: Spec
 spec =
     withTicklerServer $
-    describe "GetItem" $
-    it "gets the same item that was just added" $ \cenv ->
+    describe "GetTrigger and PostAddEmailTrigger" $
+    it "gets the trigger that was just added" $ \cenv ->
         forAllValid $ \t ->
             withValidNewUser cenv $ \token -> do
-                i <-
+                (uuid, ti) <-
                     runClientOrError cenv $ do
-                        uuid <- clientPostAddItem token t
-                        clientGetItem token uuid
-                itemInfoContents i `shouldBe` addItemTypedItem t
-                itemInfoScheduled i `shouldBe` addItemScheduled t
+                        uuid <- clientPostAddEmailTrigger token t
+                        ti <- clientGetTrigger token uuid
+                        pure (uuid, ti)
+                triggerInfoIdentifier ti `shouldBe` uuid

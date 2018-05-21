@@ -31,22 +31,30 @@ extra-deps:
   commit: a86dd3e4830c14c056a0d5d8712864d395d25b2a
   subdirs:
     - validity
+    - validity-aeson
     - validity-bytestring
     - validity-containers
     - validity-path
+    - validity-scientific
     - validity-text
     - validity-time
+    - validity-unordered-containers
     - validity-uuid
+    - validity-vector
     - genvalidity
+    - genvalidity-aeson
     - genvalidity-bytestring
     - genvalidity-containers
     - genvalidity-hspec
     - genvalidity-hspec-aeson
     - genvalidity-path
     - genvalidity-property
+    - genvalidity-scientific
     - genvalidity-text
     - genvalidity-time
+    - genvalidity-unordered-containers
     - genvalidity-uuid
+    - genvalidity-vector
 - git: https://github.com/NorfairKing/typed-uuid.git
   commit: 155c9ec880ca1c12f7dd8a8468b3626de8164823
   subdirs:

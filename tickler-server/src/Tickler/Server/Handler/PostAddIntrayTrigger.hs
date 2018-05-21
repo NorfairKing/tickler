@@ -18,6 +18,7 @@ import Servant hiding (BadPassword, NoSuchUser)
 import Servant.Auth.Server as Auth
 import Servant.Auth.Server.SetCookieOrphan ()
 
+import Tickler.Data
 import Tickler.API
 
 import Tickler.Server.Types
@@ -29,6 +30,19 @@ servePostAddIntrayTrigger ::
 servePostAddIntrayTrigger (Authenticated AuthCookie {..}) AddIntrayTrigger {..} = do
     now <- liftIO getCurrentTime
     uuid <- liftIO nextRandomUUID
-    undefined
+    runDb $ do
+        insert_
+            IntrayTrigger
+            { intrayTriggerIdentifier = uuid
+            , intrayTriggerUrl = addIntrayTriggerUrl
+            , intrayTriggerAdded = now
+            }
+        insert_
+            UserTrigger
+            { userTriggerUserId = authCookieUserUUID
+            , userTriggerTriggerType = EmailTriggerType
+            , userTriggerTriggerId = uuid
+            }
+
     pure uuid
 servePostAddIntrayTrigger _ _ = throwAll err401

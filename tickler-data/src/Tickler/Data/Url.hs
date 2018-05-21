@@ -24,7 +24,7 @@ import Database.Persist.Sql
 instance Validity Scheme
 
 instance Validity BaseUrl where
-    validate BaseUrl {..} =
+    validate burl@BaseUrl {..} =
         mconcat
             [ annotate baseUrlScheme "baseUrlScheme"
             , annotate baseUrlHost "baseUrlHost"
@@ -45,6 +45,7 @@ instance Validity BaseUrl where
               all Char.isLatin1 baseUrlPath
             , declare "The path is entirely alphanumeric" $
               all Char.isAlphaNum baseUrlPath
+            , declare "Parsing the url after rendering it yields the same url" $ parseBaseUrl (showBaseUrl burl) == Just burl
             ]
 
 instance PersistField BaseUrl where

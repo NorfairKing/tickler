@@ -20,6 +20,7 @@ import Tickler.Server.Handler.GetItems (serveGetItems)
 import Tickler.Server.Handler.PostAddItem (servePostAddItem)
 import Tickler.Server.Handler.PostSync (servePostSync)
 import Tickler.Server.Handler.GetTriggers (serveGetTriggers)
+import Tickler.Server.Handler.GetTrigger (serveGetTrigger)
 import Tickler.Server.Handler.PostAddIntrayTrigger (servePostAddIntrayTrigger)
 import Tickler.Server.Handler.PostAddEmailTrigger (servePostAddEmailTrigger)
 import Tickler.Server.Handler.Public (ticklerPublicServer)
@@ -50,6 +51,7 @@ ticklerProtectedServer =
     , deleteItem = serveDeleteItem
     , postSync = servePostSync
     , getTriggers = serveGetTriggers
+    , getTrigger = serveGetTrigger
     , postAddIntrayTrigger = servePostAddIntrayTrigger
     , postAddEmailTrigger = servePostAddEmailTrigger
     , getAccountInfo = serveGetAccountInfo

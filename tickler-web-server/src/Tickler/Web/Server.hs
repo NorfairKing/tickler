@@ -56,14 +56,16 @@ makeTicklerAPIServeSettings ServeSettings {..} =
     , API.serveSetAdmins = serveSetAPIAdmins
     , API.serveSetLooperSettings =
           API.LooperSettings
-          { API.looperSetTriggerSets =
+          { API.looperSetConnectionInfo = serveSetAPIConnectionInfo
+          , API.looperSetConnectionCount = serveSetAPIConnectionCount
+          , API.looperSetTriggerSets =
                 API.LooperSetsWith
-                { API.looperSets =
-                      API.TriggerSettings
-                      { API.triggerSetConnectionInfo = serveSetAPIConnectionInfo
-                      , API.triggerSetConnectionCount =
-                            serveSetAPIConnectionCount
-                      }
+                { API.looperSets = API.TriggerSettings
+                , API.looperSetPeriod = Just 5
+                }
+          , API.looperSetEmailerSets =
+                API.LooperSetsWith
+                { API.looperSets = API.EmailerSettings
                 , API.looperSetPeriod = Just 5
                 }
           }

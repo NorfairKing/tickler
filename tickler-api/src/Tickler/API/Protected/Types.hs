@@ -18,7 +18,13 @@ module Tickler.API.Protected.Types
     , SyncRequest(..)
     , NewSyncItem(..)
     , SyncResponse(..)
+    , TriggerType(..)
     , TriggerInfo(..)
+    , decodeTriggerInfo
+    , TypedTriggerInfo(..)
+    ,decodeTypedTriggerInfo
+    , IntrayTriggerInfo(..)
+    , EmailTriggerInfo(..)
     , AddIntrayTrigger(..)
     , AddEmailTrigger(..)
     , Registration(..)
@@ -34,6 +40,7 @@ module Tickler.API.Protected.Types
 import Import
 
 import Data.Aeson as JSON
+import qualified Data.Aeson as JSON (Result(Error))
 import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Char8 as SB8
 import Data.List (nub)
@@ -52,6 +59,8 @@ data ItemFilter
     = OnlyUntriggered
     | OnlyTriggered
     deriving (Show, Read, Eq, Enum, Bounded, Generic)
+
+instance Validity ItemFilter
 
 instance ToHttpApiData ItemFilter where
     toQueryParam = showTextData
@@ -250,17 +259,90 @@ instance ToJSON SyncResponse where
 
 instance ToSample SyncResponse
 
-data TriggerInfo = TriggerInfo
-    { triggerIdentifier :: TriggerUUID
+data TriggerInfo a = TriggerInfo
+    { triggerInfoIdentifier :: TriggerUUID
+    , triggerInfo :: a
     } deriving (Show, Eq, Ord, Generic)
 
-instance Validity TriggerInfo
+instance Validity a => Validity (TriggerInfo a)
 
-instance FromJSON TriggerInfo
+instance FromJSON a => FromJSON (TriggerInfo a) where
+    parseJSON =
+        withObject "TriggerInfo" $ \o ->
+            TriggerInfo <$> o .: "uuid" <*> o .: "info"
 
-instance ToJSON TriggerInfo
+instance ToJSON a => ToJSON (TriggerInfo a) where
+    toJSON TriggerInfo {..} =
+        object ["uuid" .= triggerInfoIdentifier, "info" .= triggerInfo]
 
-instance ToSample TriggerInfo
+instance ToSample a => ToSample (TriggerInfo a)
+
+instance Functor TriggerInfo where
+    fmap f ti = ti {triggerInfo = f $ triggerInfo ti}
+
+decodeTriggerInfo ::
+       FromJSON a
+    => TriggerType
+    -> TriggerInfo TypedTriggerInfo
+    -> Maybe (TriggerInfo a)
+decodeTriggerInfo tt ti = unwrap $ decodeTypedTriggerInfo tt <$> ti
+  where
+    unwrap :: TriggerInfo (Maybe a) -> Maybe (TriggerInfo a)
+    unwrap tmi =
+        case triggerInfo tmi of
+            Nothing -> Nothing
+            Just i ->
+                Just $
+                TriggerInfo
+                { triggerInfoIdentifier = triggerInfoIdentifier tmi
+                , triggerInfo = i
+                }
+
+data TypedTriggerInfo = TypedTriggerInfo
+    { typedTriggerInfoType :: TriggerType
+    , typedTriggerInfoValue :: JSON.Value
+    } deriving (Show, Eq, Generic)
+
+instance Validity TypedTriggerInfo
+
+instance FromJSON TypedTriggerInfo
+
+instance ToJSON TypedTriggerInfo
+
+instance ToSample TypedTriggerInfo
+
+decodeTypedTriggerInfo ::
+       FromJSON a => TriggerType -> TypedTriggerInfo -> Maybe a
+decodeTypedTriggerInfo expectedType TypedTriggerInfo {..} =
+    if typedTriggerInfoType == expectedType
+        then case fromJSON typedTriggerInfoValue of
+                 JSON.Error _ -> Nothing
+                 Success ti -> Just ti
+        else Nothing
+
+data IntrayTriggerInfo = IntrayTriggerInfo
+    { intrayTriggerInfoUrl :: BaseUrl
+    } deriving (Show, Eq, Ord, Generic)
+
+instance Validity IntrayTriggerInfo
+
+instance FromJSON IntrayTriggerInfo
+
+instance ToJSON IntrayTriggerInfo
+
+instance ToSample IntrayTriggerInfo
+
+data EmailTriggerInfo = EmailTriggerInfo
+    { emailTriggerInfoEmailAddress :: EmailAddress
+    } deriving (Show, Eq, Ord, Generic)
+
+instance Validity EmailTriggerInfo
+
+instance FromJSON EmailTriggerInfo
+
+instance ToJSON EmailTriggerInfo
+
+instance ToSample EmailTriggerInfo
 
 data AddIntrayTrigger = AddIntrayTrigger
     { addIntrayTriggerUrl :: BaseUrl

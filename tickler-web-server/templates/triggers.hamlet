@@ -1,0 +1,9 @@
+<div .ui .segment>
+  $if null triggers
+    <h1> No triggers configured, your tickles will not be delivered anywhere.
+  $else
+    $forall w <- triggerWidgets
+      ^{w}
+
+^{addIntrayTriggerWidget}
+^{addEmailTriggerWidget}

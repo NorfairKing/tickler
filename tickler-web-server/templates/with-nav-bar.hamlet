@@ -10,6 +10,8 @@
         Tickles
       <a .item href=@{TriggeredR}>
         Triggered
+      <a .item href=@{TriggersR}>
+        Triggers
       <a .item href=@{AccountR}>
         Account
     <div .right .menu>

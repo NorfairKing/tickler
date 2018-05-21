@@ -1,0 +1,5 @@
+<div .ui .segment>
+  <p>
+    Intray Trigger
+  <p>
+    Intray URL: #{showBaseUrl intrayTriggerInfoUrl}

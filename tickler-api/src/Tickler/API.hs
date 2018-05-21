@@ -30,11 +30,28 @@ module Tickler.API
     , SyncRequest(..)
     , NewSyncItem(..)
     , SyncResponse(..)
-    , TriggerInfo(..)
     , TriggerUUID
+    , TriggerType(..)
+    , TriggerInfo(..)
+    , decodeTriggerInfo
+    , TypedTriggerInfo(..)
+    , decodeTypedTriggerInfo
+    , IntrayTriggerInfo(..)
+    , EmailTriggerInfo(..)
     , GetTriggers
     , AddIntrayTrigger(..)
     , PostAddIntrayTrigger
+    , EmailAddress
+    , normalizeEmail
+    , unsafeEmailAddress
+    , emailValidateFromText
+    , emailValidateFromString
+    , emailAddressFromText
+    , emailAddressFromString
+    , emailAddressText
+    , emailAddressByteString
+    , domainPart
+    , localPart
     , AddEmailTrigger(..)
     , PostAddEmailTrigger
     , AccountInfo(..)

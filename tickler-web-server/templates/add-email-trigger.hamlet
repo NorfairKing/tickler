@@ -1,0 +1,17 @@
+<div .ui .segment>
+  <h1> Add Email Trigger
+
+  <form
+    .ui .form
+    method=post
+    action=@{AddEmailTriggerR}>
+    <div .field>
+      <label>
+        Email Address
+      <input 
+        type="email" 
+        name="email" 
+        autofocus>
+    ^{token}
+    <button .ui .primary .button type="submit">
+      Create Email Trigger

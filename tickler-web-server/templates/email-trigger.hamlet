@@ -1,0 +1,5 @@
+<div .ui .segment>
+  <p>
+    Email Trigger
+  <p>
+    Email Address: #{emailAddressText emailTriggerInfoEmailAddress}

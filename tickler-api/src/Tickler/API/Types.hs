@@ -62,9 +62,6 @@ instance FromJWT AuthCookie
 
 instance ToJWT AuthCookie
 
-instance ToCapture (Capture "id" ItemUUID) where
-    toCapture _ = DocCapture "id" "The UUID of the item"
-
 instance ToSample UTCTime where
     toSamples Proxy = singleSample $ UTCTime (fromGregorian 2018 2 10) 42
 
@@ -145,4 +142,9 @@ instance ToSample BaseUrl where
     toSamples Proxy = singleSample $ BaseUrl Https "intray.cs-syd.eu" 8000 ""
 
 instance ToSample EmailAddress where
-    toSamples Proxy = singleSample  $ unsafeEmailAddress "user" "example.com"
+    toSamples Proxy = singleSample $ unsafeEmailAddress "user" "example.com"
+
+instance ToSample TriggerType
+
+instance ToSample JSON.Value where
+    toSamples Proxy = singleSample $ object ["Here" .=( "Be"::Text), "A" .= ("Value"::Text)]

@@ -3,8 +3,12 @@
 /add                               AddR                 POST GET
 /tickles                           TicklesR             GET
 /triggered                         TriggeredR           GET
+/triggers                          TriggersR            GET
 
 /delete                            DeleteR              POST
+
+/add-intray-trigger                AddIntrayTriggerR    POST
+/add-email-trigger                 AddEmailTriggerR     POST
 
 /account                           AccountR             GET
 /account/settings                  AccountSettingsR     POST

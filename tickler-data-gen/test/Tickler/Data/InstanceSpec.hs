@@ -57,6 +57,10 @@ spec = do
     ordSpec @EmailAddress
     genValidSpec @EmailAddress
     jsonSpecOnValid @EmailAddress
+    eqSpec @EmailVerificationKey
+    ordSpec @EmailVerificationKey
+    genValidSpec @EmailVerificationKey
+    describe "Encode and Decode EmailVerificationKey" $ it "are inverses" $ forAllUnchecked $ \evk -> parseEmailVerificationKeyText (emailVerificationKeyText evk) `shouldBe` Just evk
     eqSpec @EmailTrigger
     ordSpec @EmailTrigger
     genValidSpec @EmailTrigger

@@ -26,8 +26,16 @@ module Tickler.API.Protected
     , NewSyncItem(..)
     , SyncResponse(..)
     , PostSync
+    , TriggerUUID
+    , TriggerType(..)
     , TriggerInfo(..)
+    , decodeTriggerInfo
+    , TypedTriggerInfo(..)
+    , decodeTypedTriggerInfo
+    , IntrayTriggerInfo(..)
+    , EmailTriggerInfo(..)
     , GetTriggers
+    , GetTrigger
     , AddIntrayTrigger(..)
     , PostAddIntrayTrigger
     , AddEmailTrigger(..)
@@ -76,6 +84,7 @@ data TicklerProtectedSite route = TicklerProtectedSite
     , deleteItem :: route :- DeleteItem
     , postSync :: route :- PostSync
     , getTriggers :: route :- GetTriggers
+    , getTrigger :: route :- GetTrigger
     , postAddIntrayTrigger :: route :- PostAddIntrayTrigger
     , postAddEmailTrigger :: route :- PostAddEmailTrigger
     , getAccountInfo :: route :- GetAccountInfo
@@ -106,13 +115,23 @@ type PostAddItem
 type GetItem
      = ProtectAPI :> "tickler" :> "item" :> Capture "id" ItemUUID :> Get '[ JSON] (ItemInfo TypedItem)
 
+instance ToCapture (Capture "id" ItemUUID) where
+    toCapture _ = DocCapture "id" "The UUID of the item"
+
 type DeleteItem
      = ProtectAPI :> "item" :> Capture "id" ItemUUID :> Delete '[ JSON] NoContent
 
 type PostSync
      = ProtectAPI :> "sync" :> ReqBody '[ JSON] SyncRequest :> Post '[ JSON] SyncResponse
 
-type GetTriggers = ProtectAPI :> "trigger" :> Get '[ JSON] [TriggerInfo]
+type GetTriggers
+     = ProtectAPI :> "trigger" :> Get '[ JSON] [TriggerInfo TypedTriggerInfo]
+
+type GetTrigger
+     = ProtectAPI :> "trigger" :> "info" :> Capture "id" TriggerUUID :> Get '[ JSON] (TriggerInfo TypedTriggerInfo)
+
+instance ToCapture (Capture "id" TriggerUUID) where
+    toCapture _ = DocCapture "id" "The UUID of the trigger"
 
 type PostAddIntrayTrigger
      = ProtectAPI :> "trigger" :> "intray" :> ReqBody '[ JSON] AddIntrayTrigger :> Post '[ JSON] TriggerUUID
