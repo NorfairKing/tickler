@@ -18,8 +18,8 @@ import Data.Proxy as X
 import Data.Text as X (Text)
 
 import Data.Validity as X
+import Data.Validity.Aeson as X ()
 import Data.Validity.ByteString as X ()
 import Data.Validity.Text as X ()
 import Data.Validity.Time as X ()
-import Data.Validity.Aeson as X ()
 import Data.Validity.UUID as X ()

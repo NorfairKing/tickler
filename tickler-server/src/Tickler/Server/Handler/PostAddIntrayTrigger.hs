@@ -18,8 +18,8 @@ import Servant hiding (BadPassword, NoSuchUser)
 import Servant.Auth.Server as Auth
 import Servant.Auth.Server.SetCookieOrphan ()
 
-import Tickler.Data
 import Tickler.API
+import Tickler.Data
 
 import Tickler.Server.Types
 
@@ -43,6 +43,5 @@ servePostAddIntrayTrigger (Authenticated AuthCookie {..}) AddIntrayTrigger {..} 
             , userTriggerTriggerType = EmailTriggerType
             , userTriggerTriggerId = uuid
             }
-
     pure uuid
 servePostAddIntrayTrigger _ _ = throwAll err401

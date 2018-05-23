@@ -90,7 +90,8 @@ clientGetItem :: Token -> ItemUUID -> ClientM (ItemInfo TypedItem)
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
 clientPostSync :: Token -> SyncRequest -> ClientM SyncResponse
 clientGetTriggers :: Token -> ClientM [TriggerInfo TypedTriggerInfo]
-clientGetTrigger :: Token -> TriggerUUID -> ClientM (TriggerInfo TypedTriggerInfo)
+clientGetTrigger ::
+       Token -> TriggerUUID -> ClientM (TriggerInfo TypedTriggerInfo)
 clientPostAddIntrayTrigger :: Token -> AddIntrayTrigger -> ClientM TriggerUUID
 clientPostAddEmailTrigger :: Token -> AddEmailTrigger -> ClientM TriggerUUID
 clientGetAccountInfo :: Token -> ClientM AccountInfo

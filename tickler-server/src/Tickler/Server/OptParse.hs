@@ -9,9 +9,11 @@ module Tickler.Server.OptParse
 import Import
 
 import qualified Data.Text as T
-import Database.Persist.Sqlite
 
 import System.Environment (getArgs)
+
+import Control.Monad.Trans.AWS as AWS
+import Database.Persist.Sqlite
 
 import Options.Applicative
 
@@ -45,16 +47,19 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration = do
                     LooperSettings
                     { looperSetConnectionInfo = connInfo
                     , looperSetConnectionCount = connCount
-                    , looperSetTriggerSets =
-                          LooperSetsWith
-                          { looperSets = TriggerSettings
-                          , looperSetPeriod = Just 5
-                          }
-                    , looperSetEmailerSets =
-                          LooperSetsWith
-                          { looperSets = EmailerSettings
-                          , looperSetPeriod = Just 5
-                          }
+                    , looperSetTriggerSets = LooperEnabled 5 TriggerSettings
+                    , looperSetEmailerSets = LooperDisabled
+                    , looperSetVerificationEmailConverterSets =
+                          LooperEnabled 5 ()
+                    , looperSetTriggeredEmailSchedulerSets = LooperEnabled 5 ()
+                    , looperSetTriggeredEmailConverterSets =
+                          LooperEnabled
+                              5
+                              TriggeredEmailConverterSettings
+                              { triggeredEmailConverterSetFromAddress =
+                                    unsafeEmailAddress "tickler" "cs-syd.eu"
+                              , triggeredEmailConverterSetFromName = "Tickler"
+                              }
                     }
               }
         , Settings)

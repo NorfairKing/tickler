@@ -84,7 +84,7 @@ TriggeredItem
     created UTCTime
     scheduled UTCTime
     UniqueTriggeredItem identifier userId type contents
-    UniqueTriggeredIdentifier identifier userId
+    UniqueTriggeredIdentifier identifier
     deriving Show
     deriving Eq
     deriving Ord
@@ -149,6 +149,19 @@ VerificationEmail
     deriving Typeable
 
 
+TriggeredEmail
+    item            ItemUUID
+    trigger         TriggerUUID
+    email           EmailId     Maybe
+    UniqueTriggeredEmail item trigger
+
+    deriving Show
+    deriving Eq
+    deriving Ord
+    deriving Generic
+    deriving Typeable
+
+
 Email
     to              EmailAddress
     from            EmailAddress
@@ -157,10 +170,10 @@ Email
     textContent     Text
     htmlContent     Text
     status          EmailStatus
-    error           Text         Maybe
+    sendError       Text         Maybe
     sesId           Text         Maybe
     scheduled       UTCTime
-    sent            UTCTime
+    sendAttempt     UTCTime      Maybe
     deriving Show
     deriving Eq
     deriving Ord

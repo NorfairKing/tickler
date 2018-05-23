@@ -35,15 +35,15 @@ getTriggersR =
 
 makeTriggerInfoWidget :: TriggerInfo TypedTriggerInfo -> Handler Widget
 makeTriggerInfoWidget tti = do
-        case typedTriggerInfoType $ triggerInfo tti of
-            IntrayTriggerType ->
-                case decodeTriggerInfo IntrayTriggerType tti of
-                    Nothing -> pure "Failed to decode intray trigger."
-                    Just iti -> makeIntrayTriggerWidget iti
-            EmailTriggerType ->
-                case decodeTriggerInfo EmailTriggerType tti of
-                    Nothing -> pure "Failed to decode email trigger."
-                    Just eti -> makeEmailTriggerWidget eti
+    case typedTriggerInfoType $ triggerInfo tti of
+        IntrayTriggerType ->
+            case decodeTriggerInfo IntrayTriggerType tti of
+                Nothing -> pure "Failed to decode intray trigger."
+                Just iti -> makeIntrayTriggerWidget iti
+        EmailTriggerType ->
+            case decodeTriggerInfo EmailTriggerType tti of
+                Nothing -> pure "Failed to decode email trigger."
+                Just eti -> makeEmailTriggerWidget eti
 
 makeIntrayTriggerWidget :: TriggerInfo IntrayTriggerInfo -> Handler Widget
 makeIntrayTriggerWidget TriggerInfo {..} = do

@@ -147,4 +147,6 @@ instance ToSample EmailAddress where
 instance ToSample TriggerType
 
 instance ToSample JSON.Value where
-    toSamples Proxy = singleSample $ object ["Here" .=( "Be"::Text), "A" .= ("Value"::Text)]
+    toSamples Proxy =
+        singleSample $
+        object ["Here" .= ("Be" :: Text), "A" .= ("Value" :: Text)]

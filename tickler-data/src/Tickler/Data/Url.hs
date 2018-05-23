@@ -45,7 +45,8 @@ instance Validity BaseUrl where
               all Char.isLatin1 baseUrlPath
             , declare "The path is entirely alphanumeric" $
               all Char.isAlphaNum baseUrlPath
-            , declare "Parsing the url after rendering it yields the same url" $ parseBaseUrl (showBaseUrl burl) == Just burl
+            , declare "Parsing the url after rendering it yields the same url" $
+              parseBaseUrl (showBaseUrl burl) == Just burl
             ]
 
 instance PersistField BaseUrl where

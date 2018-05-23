@@ -1,4 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Tickler.Server.Looper.Triggerer
@@ -24,6 +25,7 @@ import Tickler.Server.Looper.Utils
 
 runTriggerer :: TriggerSettings -> Looper ()
 runTriggerer TriggerSettings = do
+    logInfoNS "Triggerer" "Starting triggering tickles."
     now <- liftIO getCurrentTime
     runDb $ do
         items <-
@@ -41,3 +43,4 @@ runTriggerer TriggerSettings = do
         -- TODO if something goes wrong here, we should rollback the transaction
         unless (null items) $
             deleteWhere [TicklerItemId <-. map entityKey items]
+    logInfoNS "Triggerer" "Finished triggering tickles."

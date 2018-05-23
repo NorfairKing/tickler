@@ -22,7 +22,7 @@ newtype Looper a = Looper
                , Monad
                , MonadIO
                , MonadReader (Pool SqlBackend)
-                , MonadLogger
+               , MonadLogger
                )
 
 runLooper :: Looper a -> Pool SqlBackend -> LoggingT IO a

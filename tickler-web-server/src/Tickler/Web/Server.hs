@@ -1,4 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Web.Server
     ( ticklerWebServer
@@ -9,11 +10,15 @@ import Import
 
 import Control.Concurrent
 import Control.Concurrent.Async (concurrently_)
+import Control.Monad.Trans.AWS as AWS
 import qualified Data.HashMap.Strict as HM
 import qualified Network.HTTP.Client as Http
+
 import Yesod
 
 import Servant.Client (parseBaseUrl)
+
+import Tickler.Data
 
 import qualified Tickler.Server as API
 import qualified Tickler.Server.OptParse as API
@@ -30,8 +35,8 @@ ticklerWebServer = do
 
 runTicklerWebServer :: ServeSettings -> IO ()
 runTicklerWebServer ss@ServeSettings {..} = do
-    app <- makeTicklerApp ss
-    warp serveSetPort app
+    appl <- makeTicklerApp ss
+    warp serveSetPort appl
 
 makeTicklerApp :: ServeSettings -> IO App
 makeTicklerApp ServeSettings {..} = do
@@ -58,16 +63,18 @@ makeTicklerAPIServeSettings ServeSettings {..} =
           API.LooperSettings
           { API.looperSetConnectionInfo = serveSetAPIConnectionInfo
           , API.looperSetConnectionCount = serveSetAPIConnectionCount
-          , API.looperSetTriggerSets =
-                API.LooperSetsWith
-                { API.looperSets = API.TriggerSettings
-                , API.looperSetPeriod = Just 5
-                }
-          , API.looperSetEmailerSets =
-                API.LooperSetsWith
-                { API.looperSets = API.EmailerSettings
-                , API.looperSetPeriod = Just 5
-                }
+          , API.looperSetTriggerSets = API.LooperEnabled 5 API.TriggerSettings
+          , API.looperSetEmailerSets = API.LooperDisabled
+          , API.looperSetVerificationEmailConverterSets = API.LooperEnabled 5 ()
+          , API.looperSetTriggeredEmailSchedulerSets = API.LooperEnabled 5 ()
+          , API.looperSetTriggeredEmailConverterSets =
+                API.LooperEnabled
+                    5
+                    API.TriggeredEmailConverterSettings
+                    { triggeredEmailConverterSetFromAddress =
+                          unsafeEmailAddress "tickler" "cs-syd.eu"
+                    , triggeredEmailConverterSetFromName = "Tickler"
+                    }
           }
     }
 

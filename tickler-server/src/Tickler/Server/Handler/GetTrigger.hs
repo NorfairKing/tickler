@@ -23,7 +23,9 @@ import Tickler.Server.Handler.GetTriggers
 import Tickler.Server.Handler.Utils
 
 serveGetTrigger ::
-       AuthResult AuthCookie -> TriggerUUID -> TicklerHandler (TriggerInfo TypedTriggerInfo)
+       AuthResult AuthCookie
+    -> TriggerUUID
+    -> TicklerHandler (TriggerInfo TypedTriggerInfo)
 serveGetTrigger (Authenticated AuthCookie {..}) uuid = do
     mit <-
         (fmap $ makeIntrayTriggerInfo . entityVal) <$>

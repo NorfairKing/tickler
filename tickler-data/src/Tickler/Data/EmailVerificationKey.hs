@@ -29,9 +29,10 @@ emailVerificationKeyText (EmailVerificationKey bs) =
     TE.decodeUtf8 $ SB16.encode bs
 
 parseEmailVerificationKeyText :: Text -> Maybe EmailVerificationKey
-parseEmailVerificationKeyText t = case SB16.decode $ TE.encodeUtf8 t of
-    (d, "") -> Just $ EmailVerificationKey d
-    _ -> Nothing
+parseEmailVerificationKeyText t =
+    case SB16.decode $ TE.encodeUtf8 t of
+        (d, "") -> Just $ EmailVerificationKey d
+        _ -> Nothing
 
 generateRandomVerificationKey :: IO EmailVerificationKey
 generateRandomVerificationKey =

@@ -9,6 +9,7 @@ library:
   dependencies:
   - aeson
   - aeson-pretty
+  - amazonka
   - async
   - base >=4.9 && <5
   - base16-bytestring
@@ -19,10 +20,7 @@ library:
   - http-client
   - http-media
   - http-types
-  - tickler-api
-  - tickler-client
-  - tickler-data
-  - tickler-server
+  - lens
   - mtl
   - optparse-applicative >=0.13 && <0.15
   - path
@@ -31,6 +29,10 @@ library:
   - pretty-relative-time
   - pretty-show
   - servant
+  - tickler-api
+  - tickler-client
+  - tickler-data
+  - tickler-server
   - servant-auth-client
   - servant-client
   - servant-client-core

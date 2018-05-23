@@ -12,9 +12,9 @@ import Control.Monad.Fail as X
 import Control.Monad.IO.Class as X
 
 import Data.ByteString as X (ByteString)
+import Data.Data as X
 import Data.Monoid as X
 import Data.Proxy as X
-import Data.Data as X
 import Data.Text as X (Text)
 
 import Data.Validity as X

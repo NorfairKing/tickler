@@ -101,7 +101,9 @@ instance GenValid BaseUrl
 instance GenUnchecked IntrayTrigger
 
 instance GenValid IntrayTrigger where
-    genValid = (IntrayTrigger <$>  genValid <*>genValid <*> genValid) `suchThat` isValid
+    genValid =
+        (IntrayTrigger <$> genValid <*> genValid <*> genValid) `suchThat`
+        isValid
 
 instance GenUnchecked EmailAddress where
     genUnchecked = unsafeEmailAddress <$> genUnchecked <*> genUnchecked
@@ -129,7 +131,8 @@ instance GenUnchecked EmailTrigger
 
 instance GenValid EmailTrigger where
     genValid =
-        (EmailTrigger <$> genValid <*> genValid <*> genValid <*> genValid <*> genValid) `suchThat`
+        (EmailTrigger <$> genValid <*> genValid <*> genValid <*> genValid <*>
+         genValid) `suchThat`
         isValid
 
 instance GenUnchecked VerificationEmail

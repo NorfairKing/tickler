@@ -17,12 +17,14 @@ import Tickler.Server.Handler.GetAccountSettings
 import Tickler.Server.Handler.GetItem (serveGetItem)
 import Tickler.Server.Handler.GetItemUUIDs (serveGetItemUUIDs)
 import Tickler.Server.Handler.GetItems (serveGetItems)
+import Tickler.Server.Handler.GetTrigger (serveGetTrigger)
+import Tickler.Server.Handler.GetTriggers (serveGetTriggers)
+import Tickler.Server.Handler.PostAddEmailTrigger
+       (servePostAddEmailTrigger)
+import Tickler.Server.Handler.PostAddIntrayTrigger
+       (servePostAddIntrayTrigger)
 import Tickler.Server.Handler.PostAddItem (servePostAddItem)
 import Tickler.Server.Handler.PostSync (servePostSync)
-import Tickler.Server.Handler.GetTriggers (serveGetTriggers)
-import Tickler.Server.Handler.GetTrigger (serveGetTrigger)
-import Tickler.Server.Handler.PostAddIntrayTrigger (servePostAddIntrayTrigger)
-import Tickler.Server.Handler.PostAddEmailTrigger (servePostAddEmailTrigger)
 import Tickler.Server.Handler.Public (ticklerPublicServer)
 import Tickler.Server.Handler.PutAccountSettings
        (servePutAccountSettings)

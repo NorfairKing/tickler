@@ -63,7 +63,7 @@ instance FromJSON EmailAddress where
                 Right ea -> pure ea
 
 instance ToJSON EmailAddress where
-    toJSON  = JSON.String . emailAddressText
+    toJSON = JSON.String . emailAddressText
 
 normalizeEmail :: Text -> Text
 normalizeEmail = T.map Char.toLower

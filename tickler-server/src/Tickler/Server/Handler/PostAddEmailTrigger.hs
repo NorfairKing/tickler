@@ -41,6 +41,11 @@ servePostAddEmailTrigger (Authenticated AuthCookie {..}) AddEmailTrigger {..} = 
             , emailTriggerVerified = False
             , emailTriggerAdded = now
             }
-        insert_ UserTrigger { userTriggerUserId = authCookieUserUUID, userTriggerTriggerType = EmailTriggerType, userTriggerTriggerId = uuid}
+        insert_
+            UserTrigger
+            { userTriggerUserId = authCookieUserUUID
+            , userTriggerTriggerType = EmailTriggerType
+            , userTriggerTriggerId = uuid
+            }
     pure uuid
 servePostAddEmailTrigger _ _ = throwAll err401

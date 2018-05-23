@@ -26,7 +26,8 @@ serveGetTriggers ::
        AuthResult AuthCookie -> TicklerHandler [TriggerInfo TypedTriggerInfo]
 serveGetTriggers (Authenticated AuthCookie {..}) = do
     uts <- runDb $ selectList [UserTriggerUserId ==. authCookieUserUUID] []
-    runDb $ fmap catMaybes $
+    runDb $
+        fmap catMaybes $
         forM uts $ \(Entity _ UserTrigger {..}) ->
             liftA2
                 mplus

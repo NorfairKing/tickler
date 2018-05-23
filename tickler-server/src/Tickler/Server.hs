@@ -37,16 +37,10 @@ import Tickler.Server.Looper
 import Tickler.Server.SigningKey
 
 runTicklerServer :: ServeSettings -> IO ()
-runTicklerServer sets@ServeSettings {..} = do
-    runStderrLoggingT $
-        withSqlitePoolInfo serveSetConnectionInfo serveSetConnectionCount $ \pool ->
-            runResourceT $ flip runSqlPool pool $ runMigration migrateAll
-    concurrently_ (runServer_ sets) (runLoopers_ sets)
-
-runServer_ :: ServeSettings -> IO ()
-runServer_ ServeSettings {..} = do
+runTicklerServer ServeSettings {..} = do
     runStderrLoggingT $
         withSqlitePoolInfo serveSetConnectionInfo serveSetConnectionCount $ \pool -> do
+            runResourceT $ flip runSqlPool pool $ runMigration migrateAll
             signingKey <- liftIO loadSigningKey
             let jwtCfg = defaultJWTSettings signingKey
             let cookieCfg = defaultCookieSettings
@@ -57,11 +51,10 @@ runServer_ ServeSettings {..} = do
                     , envJWTSettings = jwtCfg
                     , envAdmins = serveSetAdmins
                     }
-            liftIO $ Warp.run serveSetPort $ ticklerApp ticklerEnv
-
-runLoopers_ :: ServeSettings -> IO ()
-runLoopers_ ServeSettings {..} = do
-    runLoopers serveSetLooperSettings
+            liftIO $
+                concurrently_
+                    (liftIO $ Warp.run serveSetPort $ ticklerApp ticklerEnv)
+                    (runLoopers pool serveSetLooperSettings)
 
 ticklerApp :: TicklerServerEnv -> Wai.Application
 ticklerApp se =

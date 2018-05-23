@@ -22,7 +22,7 @@ module Tickler.API.Protected.Types
     , TriggerInfo(..)
     , decodeTriggerInfo
     , TypedTriggerInfo(..)
-    ,decodeTypedTriggerInfo
+    , decodeTypedTriggerInfo
     , IntrayTriggerInfo(..)
     , EmailTriggerInfo(..)
     , AddIntrayTrigger(..)

@@ -70,12 +70,13 @@ instance GenValid TypedTriggerInfo where
 instance GenUnchecked IntrayTriggerInfo
 
 instance GenValid IntrayTriggerInfo where
-    genValid = (IntrayTriggerInfo <$>genValid) `suchThat` isValid
+    genValid = (IntrayTriggerInfo <$> genValid) `suchThat` isValid
 
 instance GenUnchecked EmailTriggerInfo
 
 instance GenValid EmailTriggerInfo where
-    genValid = (EmailTriggerInfo <$>genValid) `suchThat` isValid
+    genValid = (EmailTriggerInfo <$> genValid) `suchThat` isValid
+
 instance GenUnchecked AddIntrayTrigger
 
 instance GenValid AddIntrayTrigger where

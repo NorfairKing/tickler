@@ -2,6 +2,7 @@ module Tickler.Server.OptParse.Types where
 
 import Import
 
+import Control.Monad.Trans.AWS as AWS
 import Database.Persist.Sqlite
 
 import Tickler.API
@@ -50,17 +51,26 @@ data LooperSettings = LooperSettings
     , looperSetConnectionCount :: Int
     , looperSetTriggerSets :: LooperSetsWith TriggerSettings
     , looperSetEmailerSets :: LooperSetsWith EmailerSettings
+    , looperSetVerificationEmailConverterSets :: LooperSetsWith ()
+    , looperSetTriggeredEmailSchedulerSets :: LooperSetsWith ()
+    , looperSetTriggeredEmailConverterSets :: LooperSetsWith TriggeredEmailConverterSettings
     } deriving (Show)
 
-data LooperSetsWith a = LooperSetsWith
-    { looperSets :: a
-    , looperSetPeriod :: Maybe Int -- Nothing means turned off. In number of seconds
-    } deriving (Show, Eq)
+data LooperSetsWith a
+    = LooperEnabled Int
+                    a -- Int number of seconds
+    | LooperDisabled
+    deriving (Show, Eq)
 
 data TriggerSettings =
     TriggerSettings
     deriving (Show)
 
-data EmailerSettings =
-    EmailerSettings
-    deriving (Show)
+data EmailerSettings = EmailerSettings
+    { emailerSetAWSCredentials :: AWS.Credentials
+    } deriving (Show)
+
+data TriggeredEmailConverterSettings = TriggeredEmailConverterSettings
+    { triggeredEmailConverterSetFromAddress :: EmailAddress
+    , triggeredEmailConverterSetFromName :: Text
+    } deriving (Show)
