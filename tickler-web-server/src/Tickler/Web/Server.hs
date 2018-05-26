@@ -65,10 +65,14 @@ makeTicklerAPIServeSettings ServeSettings {..} =
           , API.looperSetConnectionCount = serveSetAPIConnectionCount
           , API.looperSetTriggerSets = API.LooperEnabled 5 API.TriggerSettings
           , API.looperSetEmailerSets = API.LooperDisabled
+          , API.looperSetTriggeredIntrayItemSchedulerSets =
+                API.LooperEnabled 5 ()
+          , API.looperSetTriggeredIntrayItemSenderSets = API.LooperEnabled 5 ()
           , API.looperSetVerificationEmailConverterSets = API.LooperEnabled 5 ()
           , API.looperSetTriggeredEmailSchedulerSets = API.LooperEnabled 5 ()
           , API.looperSetTriggeredEmailConverterSets =
-                API.LooperEnabled
+                API.LooperDisabled
+                    API.LooperEnabled
                     5
                     API.TriggeredEmailConverterSettings
                     { triggeredEmailConverterSetFromAddress =

@@ -68,7 +68,7 @@ TicklerItem
     created UTCTime
     scheduled UTCTime
     UniqueItem identifier userId type contents
-    UniqueIdentifier identifier userId
+    UniqueItemIdentifier identifier
     deriving Show
     deriving Eq
     deriving Ord
@@ -84,7 +84,7 @@ TriggeredItem
     created UTCTime
     scheduled UTCTime
     UniqueTriggeredItem identifier userId type contents
-    UniqueTriggeredIdentifier identifier
+    UniqueTriggeredItemIdentifier identifier
     deriving Show
     deriving Eq
     deriving Ord
@@ -107,7 +107,8 @@ UserTrigger
 IntrayTrigger
     identifier TriggerUUID
     url BaseUrl
-    -- accessKey ByteString
+    username Text
+    accessKey Text
     added UTCTime
 
     UniqueIntrayTrigger identifier
@@ -148,6 +149,18 @@ VerificationEmail
     deriving Generic
     deriving Typeable
 
+
+TriggeredIntrayItem
+    item            ItemUUID
+    trigger         TriggerUUID
+    intrayItemUUID  Text        Maybe
+    UniqueTriggeredIntrayItem item trigger
+
+    deriving Show
+    deriving Eq
+    deriving Ord
+    deriving Generic
+    deriving Typeable
 
 TriggeredEmail
     item            ItemUUID
@@ -195,7 +208,11 @@ instance Validity IntrayTrigger
 
 instance Validity EmailTrigger
 
+instance Validity TriggeredIntrayItem
+
 instance Validity VerificationEmail
+
+instance Validity TriggeredEmail
 
 instance Validity Email
 

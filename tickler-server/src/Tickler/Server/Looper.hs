@@ -1,11 +1,14 @@
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Looper
     ( runLoopers
     ) where
 
 import Import
+
+import qualified Data.Text as T
 
 import Control.Concurrent
 import Control.Concurrent.Async
@@ -18,6 +21,8 @@ import Tickler.Server.OptParse.Types
 import Tickler.Server.Looper.Emailer
 import Tickler.Server.Looper.TriggeredEmailConverter
 import Tickler.Server.Looper.TriggeredEmailScheduler
+import Tickler.Server.Looper.TriggeredIntrayItemScheduler
+import Tickler.Server.Looper.TriggeredIntrayItemSender
 import Tickler.Server.Looper.Triggerer
 import Tickler.Server.Looper.Types
 import Tickler.Server.Looper.VerificationEmailConverter
@@ -34,6 +39,14 @@ runLoopers pool LooperSettings {..} =
               pool
               looperSetVerificationEmailConverterSets
               runVerificationEmailConverter
+        , runLooperWithSets
+              pool
+              looperSetTriggeredIntrayItemSchedulerSets
+              runTriggeredIntrayItemScheduler
+        , runLooperWithSets
+              pool
+              looperSetTriggeredIntrayItemSenderSets
+              runTriggeredIntrayItemSender
         , runLooperWithSets
               pool
               looperSetTriggeredEmailSchedulerSets
@@ -56,6 +69,6 @@ runLooperContinuously :: MonadIO m => Int -> m b -> m ()
 runLooperContinuously period func = go
   where
     go = do
-        void $ func
+        void func
         liftIO $ threadDelay $ period * 1000 * 1000
         go

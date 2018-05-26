@@ -12,6 +12,18 @@
         type="url" 
         name="url" 
         autofocus>
+    <div .field>
+      <label>
+        Username
+      <input
+        type="text"
+        name="username">
+    <div .field>
+      <label>
+        Access Key
+      <input
+        type="text"
+        name="access-key">
     ^{token}
     <button .ui .primary .button type="submit">
       Create Intray Trigger

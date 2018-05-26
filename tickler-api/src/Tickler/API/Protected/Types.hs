@@ -346,6 +346,8 @@ instance ToSample EmailTriggerInfo
 
 data AddIntrayTrigger = AddIntrayTrigger
     { addIntrayTriggerUrl :: BaseUrl
+    , addIntrayTriggerUsername :: Text
+    , addIntrayTriggerAccessKey :: Text
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity AddIntrayTrigger

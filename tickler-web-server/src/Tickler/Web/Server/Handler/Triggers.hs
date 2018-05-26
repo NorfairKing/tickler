@@ -78,7 +78,9 @@ addIntrayTriggerForm =
               parseBaseUrl . T.unpack)
              (T.pack . showBaseUrl)
              textField)
-        "url"
+        "url" <*>
+    ireq textField "username" <*>
+    ireq textField "access-key"
 
 postAddIntrayTriggerR :: Handler Html
 postAddIntrayTriggerR =

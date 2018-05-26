@@ -51,6 +51,8 @@ data LooperSettings = LooperSettings
     , looperSetConnectionCount :: Int
     , looperSetTriggerSets :: LooperSetsWith TriggerSettings
     , looperSetEmailerSets :: LooperSetsWith EmailerSettings
+    , looperSetTriggeredIntrayItemSchedulerSets :: LooperSetsWith ()
+    , looperSetTriggeredIntrayItemSenderSets :: LooperSetsWith ()
     , looperSetVerificationEmailConverterSets :: LooperSetsWith ()
     , looperSetTriggeredEmailSchedulerSets :: LooperSetsWith ()
     , looperSetTriggeredEmailConverterSets :: LooperSetsWith TriggeredEmailConverterSettings

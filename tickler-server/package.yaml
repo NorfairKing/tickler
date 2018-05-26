@@ -32,11 +32,13 @@ library:
   - base >=4.7 && <5
   - blaze-html
   - bytestring
+  - cookie
   - data-default
   - email-validate
   - file-embed
   - http-client
   - http-types
+  - intray-client
   - jose
   - lens
   - monad-logger
@@ -55,6 +57,8 @@ library:
   - safe
   - servant
   - servant-auth-server
+  - servant-auth-client
+  - servant-client
   - servant-docs
   - servant-generic
   - servant-server

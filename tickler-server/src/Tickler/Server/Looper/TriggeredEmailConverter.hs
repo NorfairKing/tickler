@@ -40,7 +40,8 @@ runTriggeredEmailConverter tess = do
     tups <-
         fmap catMaybes $
         forM tes $ \(Entity tid TriggeredEmail {..}) -> do
-            meti <- runDb $ getBy $ UniqueTriggeredIdentifier triggeredEmailItem
+            meti <-
+                runDb $ getBy $ UniqueTriggeredItemIdentifier triggeredEmailItem
             meet <- runDb $ getBy $ UniqueEmailTrigger triggeredEmailTrigger
             case (,) <$> meti <*> meet of
                 Nothing -> pure Nothing

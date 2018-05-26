@@ -30,6 +30,7 @@ library:
   - bytestring
   - email-validate
   - hashable
+  - intray-data
   - persistent
   - persistent-template
   - random

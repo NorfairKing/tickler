@@ -49,6 +49,10 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration = do
                     , looperSetConnectionCount = connCount
                     , looperSetTriggerSets = LooperEnabled 5 TriggerSettings
                     , looperSetEmailerSets = LooperDisabled
+                    , looperSetTriggeredIntrayItemSchedulerSets =
+                          LooperEnabled 5 ()
+                    , looperSetTriggeredIntrayItemSenderSets =
+                          LooperEnabled 5 ()
                     , looperSetVerificationEmailConverterSets =
                           LooperEnabled 5 ()
                     , looperSetTriggeredEmailSchedulerSets = LooperEnabled 5 ()
