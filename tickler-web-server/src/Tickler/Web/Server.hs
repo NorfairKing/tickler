@@ -50,6 +50,7 @@ makeTicklerApp ServeSettings {..} = do
         , appPersistLogins = serveSetPersistLogins
         , appLoginTokens = tokens
         , appAPIBaseUrl = burl
+        , appDefaultIntrayUrl = serveSetDefaultIntrayUrl
         }
 
 makeTicklerAPIServeSettings :: ServeSettings -> API.ServeSettings
@@ -71,7 +72,7 @@ makeTicklerAPIServeSettings ServeSettings {..} =
           , API.looperSetVerificationEmailConverterSets = API.LooperEnabled 5 ()
           , API.looperSetTriggeredEmailSchedulerSets = API.LooperEnabled 5 ()
           , API.looperSetTriggeredEmailConverterSets =
-                    API.LooperEnabled
+                API.LooperEnabled
                     5
                     API.TriggeredEmailConverterSettings
                     { triggeredEmailConverterSetFromAddress =

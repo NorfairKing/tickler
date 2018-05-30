@@ -22,6 +22,7 @@ import Tickler.API
 import Tickler.Client
 
 import Tickler.Web.Server.Foundation
+import Tickler.Web.Server.OptParse.Types
 import Tickler.Web.Server.Time
 
 getTriggersR :: Handler Html
@@ -57,6 +58,7 @@ makeEmailTriggerWidget TriggerInfo {..} = do
 
 makeAddIntrayTriggerWidget :: Handler Widget
 makeAddIntrayTriggerWidget = do
+    defaultIntrayUrl <- getsYesod appDefaultIntrayUrl
     token <- genToken
     pure $(widgetFile "add-intray-trigger")
 

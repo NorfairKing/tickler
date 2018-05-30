@@ -62,6 +62,7 @@ data App = App
     , appAPIBaseUrl :: BaseUrl
     , appPersistLogins :: Bool
     , appLoginTokens :: MVar (HashMap Username Token)
+    , appDefaultIntrayUrl :: Maybe BaseUrl
     }
 
 mkYesodData "App" $(parseRoutesFile "routes")

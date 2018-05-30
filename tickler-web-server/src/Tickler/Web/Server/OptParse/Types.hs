@@ -3,6 +3,7 @@ module Tickler.Web.Server.OptParse.Types where
 import Import
 
 import Database.Persist.Sqlite
+import Servant.Client.Core
 
 import Tickler.API
 
@@ -17,6 +18,7 @@ newtype Command =
 data ServeFlags = ServeFlags
     { serveFlagPort :: Maybe Int
     , serveFlagPersistLogins :: Maybe Bool
+    , serveFlagDefaultIntrayUrl :: Maybe BaseUrl
     , serveFlagAPIPort :: Maybe Int
     , serveFlagAPIDB :: Maybe Text
     , serveFlagAPIConnectionCount :: Maybe Int
@@ -43,6 +45,7 @@ newtype Dispatch =
 data ServeSettings = ServeSettings
     { serveSetPort :: Int
     , serveSetPersistLogins :: Bool
+    , serveSetDefaultIntrayUrl :: Maybe BaseUrl
     , serveSetAPIPort :: Int
     , serveSetAPIConnectionInfo :: SqliteConnectionInfo
     , serveSetAPIConnectionCount :: Int

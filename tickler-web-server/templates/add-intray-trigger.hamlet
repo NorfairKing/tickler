@@ -12,6 +12,8 @@
         type="url" 
         name="url" 
         autofocus>
+        $maybe u <- defaultIntrayUrl
+          #{showBaseUrl u}
     <div .field>
       <label>
         Username

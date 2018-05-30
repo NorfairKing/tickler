@@ -14,6 +14,7 @@ import Data.UUID.Typed as X
 import Control.Applicative as X
 import Control.Arrow as X
 import Control.Monad as X
+import Control.Monad.Reader as X
 
 import System.Exit as X
 
