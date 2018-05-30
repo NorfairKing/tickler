@@ -307,7 +307,7 @@ login form = do
                     recordLoginToken (loginFormUsername form) session
                 _ -> undefined -- TODO deal with this error
 
-withLogin :: (Token -> Handler Html) -> Handler Html
+withLogin :: (Token -> Handler a) -> Handler a
 withLogin func = do
     un <- requireAuthId
     mLoginToken <- lookupToginToken un

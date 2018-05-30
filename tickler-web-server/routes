@@ -9,6 +9,7 @@
 
 /add-intray-trigger                AddIntrayTriggerR    POST
 /add-email-trigger                 AddEmailTriggerR     POST
+/delete-trigger/#TriggerUUID       DeleteTriggerR       POST
 
 /account                           AccountR             GET
 /account/settings                  AccountSettingsR     POST

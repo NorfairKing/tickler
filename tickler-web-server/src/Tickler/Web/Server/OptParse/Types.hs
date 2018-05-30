@@ -35,6 +35,7 @@ data Configuration =
 
 data Environment = Environment
     { envPort :: Maybe Int
+    , envDefaultIntrayUrl :: Maybe BaseUrl
     , envAPIPort :: Maybe Int
     } deriving (Show, Eq)
 

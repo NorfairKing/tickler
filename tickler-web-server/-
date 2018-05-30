@@ -7,7 +7,7 @@ module Tickler.Web.Server.Handler.Triggers
     ( getTriggersR
     , postAddIntrayTriggerR
     , postAddEmailTriggerR
-    , postDeleteTriggerR
+    , deleteTriggerR
     ) where
 
 import Import
@@ -67,7 +67,7 @@ makeAddIntrayTriggerWidget =
             do errOrAi <- runClient $ clientGetAccountInfo t
                case errOrAi of
                    Left _ -> pure Nothing
-                   Right AccountInfo {..} -> pure $ Just accountInfoUsername
+                   Right AccountInfo {..} -> pure accountInfoUsername
         token <- genToken
         pure $(widgetFile "add-intray-trigger")
 
@@ -117,8 +117,9 @@ postAddEmailTriggerR =
         runClientOrErr $ clientPostAddEmailTrigger t aet
         redirect TriggersR
 
-postDeleteTriggerR :: TriggerUUID -> Handler Html
-postDeleteTriggerR uuid =
+deleteTriggerR :: Handler Html
+deleteTriggerR =
     withLogin $ \t -> do
+        uuid <- runInputPost $ ireq textField "trigger"
         runClientOrErr $ clientDeleteTrigger t uuid
         redirect TriggersR

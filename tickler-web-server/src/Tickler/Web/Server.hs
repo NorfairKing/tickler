@@ -10,7 +10,6 @@ import Import
 
 import Control.Concurrent
 import Control.Concurrent.Async (concurrently_)
-import Control.Monad.Trans.AWS as AWS
 import qualified Data.HashMap.Strict as HM
 import qualified Network.HTTP.Client as Http
 

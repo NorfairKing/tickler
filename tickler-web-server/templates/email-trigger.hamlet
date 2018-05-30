@@ -1,5 +1,19 @@
 <div .ui .segment>
   <p>
     Email Trigger
+
   <p>
     Email Address: #{emailAddressText emailTriggerInfoEmailAddress}
+
+  <form
+    method="post"
+    action=@{DeleteTriggerR triggerInfoIdentifier}
+    onclick="return confirm('Are you sure you want to delete this trigger? This cannot be undone.');">
+    <input
+      name="trigger"
+      type="hidden"
+      value=#{uuidText triggerInfoIdentifier}>
+    ^{token}
+    <button .ui .button .negative type="submit">
+      Delete
+

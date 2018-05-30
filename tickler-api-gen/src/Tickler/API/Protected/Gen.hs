@@ -80,7 +80,7 @@ instance GenValid EmailTriggerInfo where
 instance GenUnchecked AddIntrayTrigger
 
 instance GenValid AddIntrayTrigger where
-    genValid = (AddIntrayTrigger <$> genValid) `suchThat` isValid
+    genValid = (AddIntrayTrigger <$> genValid<*> genValid<*> genValid) `suchThat` isValid
 
 instance GenUnchecked AddEmailTrigger
 

@@ -12,6 +12,7 @@ module Tickler.Client
     , clientGetTrigger
     , clientPostAddIntrayTrigger
     , clientPostAddEmailTrigger
+    , clientDeleteTrigger
     , clientPostRegister
     , clientPostLogin
     , clientGetDocs
@@ -94,6 +95,7 @@ clientGetTrigger ::
        Token -> TriggerUUID -> ClientM (TriggerInfo TypedTriggerInfo)
 clientPostAddIntrayTrigger :: Token -> AddIntrayTrigger -> ClientM TriggerUUID
 clientPostAddEmailTrigger :: Token -> AddEmailTrigger -> ClientM TriggerUUID
+clientDeleteTrigger :: Token -> TriggerUUID -> ClientM NoContent
 clientGetAccountInfo :: Token -> ClientM AccountInfo
 clientGetAccountSettings :: Token -> ClientM AccountSettings
 clientPutAccountSettings :: Token -> AccountSettings -> ClientM NoContent
@@ -106,5 +108,5 @@ clientGetDocs :: ClientM GetDocsResponse
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientDeleteTrigger:<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
     client (flatten ticklerAPI)

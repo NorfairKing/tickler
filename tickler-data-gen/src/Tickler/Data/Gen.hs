@@ -102,7 +102,7 @@ instance GenUnchecked IntrayTrigger
 
 instance GenValid IntrayTrigger where
     genValid =
-        (IntrayTrigger <$> genValid <*> genValid <*> genValid) `suchThat`
+        (IntrayTrigger <$> genValid <*> genValid <*> genValid <*> genValid <*> genValid) `suchThat`
         isValid
 
 instance GenUnchecked EmailAddress where

@@ -11,14 +11,14 @@
       <input 
         type="url" 
         name="url" 
+        value=#{maybe "" showBaseUrl defaultIntrayUrl}
         autofocus>
-        $maybe u <- defaultIntrayUrl
-          #{showBaseUrl u}
     <div .field>
       <label>
         Username
       <input
         type="text"
+        value=#{maybe "" usernameText mun}
         name="username">
     <div .field>
       <label>

@@ -54,7 +54,7 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
               ServeSettings
               { serveSetPort = port
               , serveSetPersistLogins = fromMaybe False serveFlagPersistLogins
-              , serveSetDefaultIntrayUrl = serveFlagDefaultIntrayUrl
+              , serveSetDefaultIntrayUrl = serveFlagDefaultIntrayUrl `mplus` envDefaultIntrayUrl
               , serveSetAPIPort = apiPort
               , serveSetAPIConnectionInfo = connInfo
               , serveSetAPIConnectionCount = connCount
@@ -68,12 +68,31 @@ getConfiguration _ _ = pure Configuration
 getEnv :: IO Environment
 getEnv = do
     env <- getEnvironment
-    let mv k = lookup k env
-    pure
-        Environment
-        { envPort = mv "PORT" >>= readMaybe
-        , envAPIPort = mv "API_PORT" >>= readMaybe
-        }
+    let mre k func =
+            forM (lookup k env) $ \s ->
+                case func s of
+                    Left e ->
+                        die $
+                        unwords
+                            [ "Unable to read ENV Var:"
+                            , k
+                            , "which has value:"
+                            , show s
+                            , "with error:"
+                            , e
+                            ]
+                    Right v -> pure v
+        mrf k func =
+            mre k $ \s ->
+                case func s of
+                    Nothing ->
+                        Left "Parsing failed without a good error message."
+                    Just v -> Right v
+        mr k = mrf k readMaybe
+    envPort <- mr "PORT"
+    envAPIPort <- mr "API_PORT"
+    envDefaultIntrayUrl <- mre "DEFAULT_INTRAY_URL" (left show . parseBaseUrl)
+    pure Environment {..}
 
 getArguments :: IO Arguments
 getArguments = do

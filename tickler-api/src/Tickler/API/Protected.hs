@@ -40,6 +40,7 @@ module Tickler.API.Protected
     , PostAddIntrayTrigger
     , AddEmailTrigger(..)
     , PostAddEmailTrigger
+    , DeleteTrigger
     , AccountInfo(..)
     , GetAccountInfo
     , AccountSettings(..)
@@ -87,6 +88,7 @@ data TicklerProtectedSite route = TicklerProtectedSite
     , getTrigger :: route :- GetTrigger
     , postAddIntrayTrigger :: route :- PostAddIntrayTrigger
     , postAddEmailTrigger :: route :- PostAddEmailTrigger
+    , deleteTrigger :: route :- DeleteTrigger
     , getAccountInfo :: route :- GetAccountInfo
     , getAccountSettings :: route :- GetAccountSettings
     , putAccountSettings :: route :- PutAccountSettings
@@ -138,6 +140,8 @@ type PostAddIntrayTrigger
 
 type PostAddEmailTrigger
      = ProtectAPI :> "trigger" :> "email" :> ReqBody '[ JSON] AddEmailTrigger :> Post '[ JSON] TriggerUUID
+type DeleteTrigger
+     = ProtectAPI :> "trigger" :> "delete" :> Capture "id" TriggerUUID :> Delete '[ JSON] NoContent
 
 type GetAccountInfo = ProtectAPI :> "account" :> Get '[ JSON] AccountInfo
 
