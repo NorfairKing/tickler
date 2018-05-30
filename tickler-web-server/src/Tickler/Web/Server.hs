@@ -71,7 +71,6 @@ makeTicklerAPIServeSettings ServeSettings {..} =
           , API.looperSetVerificationEmailConverterSets = API.LooperEnabled 5 ()
           , API.looperSetTriggeredEmailSchedulerSets = API.LooperEnabled 5 ()
           , API.looperSetTriggeredEmailConverterSets =
-                API.LooperDisabled
                     API.LooperEnabled
                     5
                     API.TriggeredEmailConverterSettings
