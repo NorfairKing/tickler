@@ -17,7 +17,6 @@ import Yesod
 
 import Servant.Client (parseBaseUrl)
 
-import Tickler.Data
 
 import qualified Tickler.Server as API
 import qualified Tickler.Server.OptParse as API
@@ -29,7 +28,8 @@ import Tickler.Web.Server.OptParse
 ticklerWebServer :: IO ()
 ticklerWebServer = do
     (DispatchServe ss, Settings) <- getInstructions
-    putStrLn $ ppShow ss
+    putStrLn $
+        unlines ["Running tickler-web-server with these settings:", ppShow ss]
     concurrently_ (runTicklerWebServer ss) (runTicklerAPIServer ss)
 
 runTicklerWebServer :: ServeSettings -> IO ()
@@ -41,7 +41,8 @@ makeTicklerApp :: ServeSettings -> IO App
 makeTicklerApp ServeSettings {..} = do
     man <- Http.newManager Http.defaultManagerSettings
     tokens <- newMVar HM.empty
-    burl <- parseBaseUrl $ "http://127.0.0.1:" ++ show serveSetAPIPort
+    let apiPort = API.serveSetPort serveSetAPISettings
+    burl <- parseBaseUrl $ "http://127.0.0.1:" ++ show apiPort
     pure
         App
         { appHttpManager = man
@@ -52,36 +53,5 @@ makeTicklerApp ServeSettings {..} = do
         , appDefaultIntrayUrl = serveSetDefaultIntrayUrl
         }
 
-makeTicklerAPIServeSettings :: ServeSettings -> API.ServeSettings
-makeTicklerAPIServeSettings ServeSettings {..} =
-    API.ServeSettings
-    { API.serveSetPort = serveSetAPIPort
-    , API.serveSetConnectionInfo = serveSetAPIConnectionInfo
-    , API.serveSetConnectionCount = serveSetAPIConnectionCount
-    , API.serveSetAdmins = serveSetAPIAdmins
-    , API.serveSetLooperSettings =
-          API.LooperSettings
-          { API.looperSetConnectionInfo = serveSetAPIConnectionInfo
-          , API.looperSetConnectionCount = serveSetAPIConnectionCount
-          , API.looperSetTriggerSets = API.LooperEnabled 5 API.TriggerSettings
-          , API.looperSetEmailerSets = API.LooperDisabled
-          , API.looperSetTriggeredIntrayItemSchedulerSets =
-                API.LooperEnabled 5 ()
-          , API.looperSetTriggeredIntrayItemSenderSets = API.LooperEnabled 5 ()
-          , API.looperSetVerificationEmailConverterSets = API.LooperEnabled 5 ()
-          , API.looperSetTriggeredEmailSchedulerSets = API.LooperEnabled 5 ()
-          , API.looperSetTriggeredEmailConverterSets =
-                API.LooperEnabled
-                    5
-                    API.TriggeredEmailConverterSettings
-                    { triggeredEmailConverterSetFromAddress =
-                          unsafeEmailAddress "tickler" "cs-syd.eu"
-                    , triggeredEmailConverterSetFromName = "Tickler"
-                    }
-          }
-    }
-
 runTicklerAPIServer :: ServeSettings -> IO ()
-runTicklerAPIServer ss = do
-    let apiServeSets = makeTicklerAPIServeSettings ss
-    API.runTicklerServer apiServeSets
+runTicklerAPIServer ss = API.runTicklerServer $ serveSetAPISettings ss

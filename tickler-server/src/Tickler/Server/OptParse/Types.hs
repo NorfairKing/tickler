@@ -7,9 +7,13 @@ import Database.Persist.Sqlite
 
 import Tickler.API
 
-type Arguments = (Command, Flags)
+data Arguments =
+    Arguments Command
+              Flags
 
-type Instructions = (Dispatch, Settings)
+data Instructions =
+    Instructions Dispatch
+                 Settings
 
 newtype Command =
     CommandServe ServeFlags
@@ -20,6 +24,25 @@ data ServeFlags = ServeFlags
     , serveFlagDb :: Maybe Text
     , serveFlagConnectionCount :: Maybe Int
     , serveFlagAdmins :: [String]
+    , serveFlagsLooperFlags :: LooperFlags
+    } deriving (Show, Eq)
+
+data LooperFlags = LooperFlags
+    { looperFlagDefaultEnabled :: Maybe Bool
+    , looperFlagDefaultPeriod :: Maybe Int
+    , looperFlagTriggererFlags :: LooperFlagsWith ()
+    , looperFlagEmailerFlags :: LooperFlagsWith ()
+    , looperFlagTriggeredIntrayItemSchedulerFlags :: LooperFlagsWith ()
+    , looperFlagTriggeredIntrayItemSenderFlags :: LooperFlagsWith ()
+    , looperFlagVerificationEmailConverterFlags :: LooperFlagsWith ()
+    , looperFlagTriggeredEmailSchedulerFlags :: LooperFlagsWith ()
+    , looperFlagTriggeredEmailConverterFlags :: LooperFlagsWith ()
+    } deriving (Show, Eq)
+
+data LooperFlagsWith a = LooperFlagsWith
+    { looperFlagEnable :: Maybe Bool
+    , looperFlagsPeriod :: Maybe Int
+    , looperFlags :: a
     } deriving (Show, Eq)
 
 data Flags =
@@ -29,6 +52,10 @@ data Flags =
 data Configuration =
     Configuration
     deriving (Show, Eq)
+
+data Environment = Environment
+    { envPort :: Maybe Int
+    } deriving (Show, Eq)
 
 newtype Dispatch =
     DispatchServe ServeSettings
@@ -49,7 +76,7 @@ data ServeSettings = ServeSettings
 data LooperSettings = LooperSettings
     { looperSetConnectionInfo :: SqliteConnectionInfo
     , looperSetConnectionCount :: Int
-    , looperSetTriggerSets :: LooperSetsWith TriggerSettings
+    , looperSetTriggererSets :: LooperSetsWith TriggererSettings
     , looperSetEmailerSets :: LooperSetsWith EmailerSettings
     , looperSetTriggeredIntrayItemSchedulerSets :: LooperSetsWith ()
     , looperSetTriggeredIntrayItemSenderSets :: LooperSetsWith ()
@@ -64,8 +91,8 @@ data LooperSetsWith a
     | LooperDisabled
     deriving (Show, Eq)
 
-data TriggerSettings =
-    TriggerSettings
+data TriggererSettings =
+    TriggererSettings
     deriving (Show)
 
 data EmailerSettings = EmailerSettings

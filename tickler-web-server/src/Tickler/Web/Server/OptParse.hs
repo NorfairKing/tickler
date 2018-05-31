@@ -21,6 +21,9 @@ import Database.Persist.Sqlite
 import Options.Applicative
 
 import Tickler.API
+
+import qualified Tickler.Server.OptParse as API
+
 import Tickler.Web.Server.OptParse.Types
 
 getInstructions :: IO Instructions
@@ -33,32 +36,27 @@ getInstructions = do
 combineToInstructions ::
        Command -> Flags -> Configuration -> Environment -> IO Instructions
 combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environment {..} = do
-    let port = fromMaybe 8000 $ serveFlagPort `mplus` envPort
-    let apiPort = fromMaybe 8001 $ serveFlagAPIPort `mplus` envAPIPort
-    let connInfo =
-            mkSqliteConnectionInfo $ fromMaybe "tickler.db" serveFlagAPIDB
-    let connCount = fromMaybe 4 serveFlagAPIConnectionCount
-    when (apiPort == port) $
+    API.Instructions (API.DispatchServe apiServeSets) API.Settings <-
+        API.combineToInstructions
+            (API.CommandServe serveFlagAPIServeFlags)
+            API.Flags
+            API.Configuration
+            envAPIEnvironment
+    let webPort = fromMaybe 8000 $ serveFlagPort `mplus` envPort
+    when (API.serveSetPort apiServeSets == webPort) $
         die $
         unlines
             [ "Web server port and API port must not be the same."
-            , "They are both: " ++ show port
+            , "They are both: " ++ show webPort
             ]
-    admins <-
-        forM serveFlagAPIAdmins $ \s ->
-            case parseUsername $ T.pack s of
-                Nothing -> die $ unwords ["Invalid admin username:", s]
-                Just u -> pure u
     pure
         ( DispatchServe
               ServeSettings
-              { serveSetPort = port
+              { serveSetPort = webPort
               , serveSetPersistLogins = fromMaybe False serveFlagPersistLogins
-              , serveSetDefaultIntrayUrl = serveFlagDefaultIntrayUrl `mplus` envDefaultIntrayUrl
-              , serveSetAPIPort = apiPort
-              , serveSetAPIConnectionInfo = connInfo
-              , serveSetAPIConnectionCount = connCount
-              , serveSetAPIAdmins = admins
+              , serveSetDefaultIntrayUrl =
+                    serveFlagDefaultIntrayUrl `mplus` envDefaultIntrayUrl
+              , serveSetAPISettings = apiServeSets
               }
         , Settings)
 
@@ -89,9 +87,10 @@ getEnv = do
                         Left "Parsing failed without a good error message."
                     Just v -> Right v
         mr k = mrf k readMaybe
-    envPort <- mr "PORT"
-    envAPIPort <- mr "API_PORT"
-    envDefaultIntrayUrl <- mre "DEFAULT_INTRAY_URL" (left show . parseBaseUrl)
+    envPort <- mr "WEB_PORT"
+    envDefaultIntrayUrl <-
+        mre "WEB_DEFAULT_INTRAY_URL" (left show . parseBaseUrl)
+    envAPIEnvironment <- API.getEnv
     pure Environment {..}
 
 getArguments :: IO Arguments
@@ -134,10 +133,10 @@ parseCommandServe = info parser modifier
          option
              (Just <$> auto)
              (mconcat
-                  [ long "port"
+                  [ long "web-port"
                   , metavar "PORT"
                   , value Nothing
-                  , help "the port to serve on"
+                  , help "the port to serve the web interface on"
                   ]) <*>
          flag
              Nothing
@@ -155,36 +154,7 @@ parseCommandServe = info parser modifier
                   , help
                         "The default intray url to suggest when adding an intray trigger."
                   ]) <*>
-         option
-             (Just <$> auto)
-             (mconcat
-                  [ long "api-port"
-                  , value Nothing
-                  , help "the port to serve the API on"
-                  ]) <*>
-         option
-             (Just . T.pack <$> str)
-             (mconcat
-                  [ long "database"
-                  , value Nothing
-                  , metavar "DATABASE_CONNECTION_STRING"
-                  , help "The sqlite connection string"
-                  ]) <*>
-         option
-             (Just <$> auto)
-             (mconcat
-                  [ long "connection-count"
-                  , value Nothing
-                  , metavar "CONNECTION_COUNT"
-                  , help "the number of database connections to use"
-                  ]) <*>
-         many
-             (strOption
-                  (mconcat
-                       [ long "admin"
-                       , metavar "USERNAME"
-                       , help "An admin to use"
-                       ])))
+         API.parseServeFlags)
     modifier = fullDesc <> progDesc "Serve."
 
 parseFlags :: Parser Flags

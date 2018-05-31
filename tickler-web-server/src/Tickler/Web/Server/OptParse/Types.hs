@@ -6,6 +6,7 @@ import Database.Persist.Sqlite
 import Servant.Client.Core
 
 import Tickler.API
+import qualified Tickler.Server.OptParse.Types as API
 
 type Arguments = (Command, Flags)
 
@@ -19,10 +20,7 @@ data ServeFlags = ServeFlags
     { serveFlagPort :: Maybe Int
     , serveFlagPersistLogins :: Maybe Bool
     , serveFlagDefaultIntrayUrl :: Maybe BaseUrl
-    , serveFlagAPIPort :: Maybe Int
-    , serveFlagAPIDB :: Maybe Text
-    , serveFlagAPIConnectionCount :: Maybe Int
-    , serveFlagAPIAdmins :: [String]
+    , serveFlagAPIServeFlags :: API.ServeFlags
     } deriving (Show, Eq)
 
 data Flags =
@@ -36,7 +34,7 @@ data Configuration =
 data Environment = Environment
     { envPort :: Maybe Int
     , envDefaultIntrayUrl :: Maybe BaseUrl
-    , envAPIPort :: Maybe Int
+    , envAPIEnvironment :: API.Environment
     } deriving (Show, Eq)
 
 newtype Dispatch =
@@ -47,10 +45,7 @@ data ServeSettings = ServeSettings
     { serveSetPort :: Int
     , serveSetPersistLogins :: Bool
     , serveSetDefaultIntrayUrl :: Maybe BaseUrl
-    , serveSetAPIPort :: Int
-    , serveSetAPIConnectionInfo :: SqliteConnectionInfo
-    , serveSetAPIConnectionCount :: Int
-    , serveSetAPIAdmins :: [Username]
+    , serveSetAPISettings :: API.ServeSettings
     } deriving (Show)
 
 data Settings =

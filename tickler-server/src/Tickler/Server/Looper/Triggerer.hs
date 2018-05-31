@@ -23,8 +23,8 @@ import Tickler.Server.OptParse.Types
 import Tickler.Server.Looper.Types
 import Tickler.Server.Looper.Utils
 
-runTriggerer :: TriggerSettings -> Looper ()
-runTriggerer TriggerSettings = do
+runTriggerer :: TriggererSettings -> Looper ()
+runTriggerer TriggererSettings = do
     logInfoNS "Triggerer" "Starting triggering tickles."
     now <- liftIO getCurrentTime
     runDb $ do

@@ -33,7 +33,7 @@ runLoopers pool LooperSettings {..} =
     liftIO $
     mapConcurrently_
         (liftIO . runStderrLoggingT)
-        [ runLooperWithSets pool looperSetTriggerSets runTriggerer
+        [ runLooperWithSets pool looperSetTriggererSets runTriggerer
         , runLooperWithSets pool looperSetEmailerSets runEmailer
         , runLooperWithSets
               pool
