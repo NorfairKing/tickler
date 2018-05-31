@@ -8,34 +8,22 @@ module Tickler.Server.Looper.TriggeredIntrayItemSender
 
 import Import
 
-import Control.Concurrent
 
 import qualified Data.Text as T
-import qualified Data.Text.Lazy as LT
-import qualified Data.Text.Lazy.Builder as LTB
-import Data.Time
 
 import Control.Monad.Logger
-import Control.Monad.Trans.Resource (runResourceT)
-import Data.Pool
 import Database.Persist.Sqlite
 import qualified Network.HTTP.Client as Http
 import Web.Cookie
 
-import Text.Blaze.Html.Renderer.Text (renderHtml)
-import Text.Hamlet
-import Text.Shakespeare.Text
 
 import Servant
 import Servant.Auth.Client
-import Servant.Auth.Server as Auth
 import Servant.Client
 
 import qualified Intray.Client as Intray
 
 import Tickler.Data
-
-import Tickler.Server.OptParse.Types
 
 import Tickler.Server.Looper.Types
 import Tickler.Server.Looper.Utils
@@ -123,7 +111,7 @@ runTriggeredIntrayItemSender _ = do
                                             logErrorNS "TriggeredIntraySender" $
                                             T.unwords
                                                 [ "The intray server did something wrong:"
-                                                , T.pack (show err)
+                                                , T.pack err
                                                 ]
                                         Right (Right uuid) ->
                                             runDb $

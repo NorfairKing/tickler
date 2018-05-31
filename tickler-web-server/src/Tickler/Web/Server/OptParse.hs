@@ -11,16 +11,12 @@ module Tickler.Web.Server.OptParse
 
 import Import
 
-import qualified Data.Text as T
 import Servant.Client.Core
 import System.Environment (getArgs, getEnvironment)
 import Text.Read
 
-import Database.Persist.Sqlite
 
 import Options.Applicative
-
-import Tickler.API
 
 import qualified Tickler.Server.OptParse as API
 

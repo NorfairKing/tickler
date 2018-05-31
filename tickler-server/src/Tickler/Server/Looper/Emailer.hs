@@ -8,13 +8,10 @@ module Tickler.Server.Looper.Emailer
 
 import Import
 
-import Control.Concurrent
 import Control.Lens
-import Control.Monad.Logger
 import Control.Monad.Trans.AWS
 import Control.Monad.Trans.AWS as AWS
 import Control.Monad.Trans.Resource (runResourceT)
-import Data.Pool
 import Data.Time
 import Database.Persist.Sqlite
 import Network.AWS.SES

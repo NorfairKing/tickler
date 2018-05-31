@@ -2,10 +2,8 @@ module Tickler.Web.Server.OptParse.Types where
 
 import Import
 
-import Database.Persist.Sqlite
 import Servant.Client.Core
 
-import Tickler.API
 import qualified Tickler.Server.OptParse.Types as API
 
 type Arguments = (Command, Flags)

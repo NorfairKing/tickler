@@ -9,15 +9,11 @@ module Tickler.Server.Looper.TriggeredEmailConverter
 
 import Import
 
-import Control.Concurrent
-
 import qualified Data.Text.Lazy as LT
 import qualified Data.Text.Lazy.Builder as LTB
 import Data.Time
 
 import Control.Monad.Logger
-import Control.Monad.Trans.Resource (runResourceT)
-import Data.Pool
 import Database.Persist.Sqlite
 
 import Text.Blaze.Html.Renderer.Text (renderHtml)

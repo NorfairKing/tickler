@@ -55,6 +55,25 @@ data Configuration =
 
 data Environment = Environment
     { envPort :: Maybe Int
+    , envLoopersEnvironment :: LoopersEnvironment
+    } deriving (Show, Eq)
+
+data LoopersEnvironment = LoopersEnvironment
+    { looperEnvDefaultEnabled :: Maybe Bool
+    , looperEnvDefaultPeriod :: Maybe Int
+    , looperEnvTriggererEnv :: LooperEnvWith ()
+    , looperEnvEmailerEnv :: LooperEnvWith ()
+    , looperEnvTriggeredIntrayItemSchedulerEnv :: LooperEnvWith ()
+    , looperEnvTriggeredIntrayItemSenderEnv :: LooperEnvWith ()
+    , looperEnvVerificationEmailConverterEnv :: LooperEnvWith ()
+    , looperEnvTriggeredEmailSchedulerEnv :: LooperEnvWith ()
+    , looperEnvTriggeredEmailConverterEnv :: LooperEnvWith ()
+    } deriving (Show, Eq)
+
+data LooperEnvWith a = LooperEnvWith
+    { looperEnvEnable :: Maybe Bool
+    , looperEnvPeriod :: Maybe Int
+    , looperEnv :: a
     } deriving (Show, Eq)
 
 newtype Dispatch =

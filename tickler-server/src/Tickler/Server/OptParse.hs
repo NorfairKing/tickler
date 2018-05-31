@@ -15,7 +15,6 @@ import System.Environment (getArgs, getEnvironment)
 
 import Control.Monad.Trans.AWS as AWS
 import Database.Persist.Sqlite
-import Servant.Client.Core
 
 import Options.Applicative
 
@@ -42,40 +41,61 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
                 Nothing -> die $ unwords ["Invalid admin username:", s]
                 Just u -> pure u
     let LooperFlags {..} = serveFlagsLooperFlags
-    let defaultLoopersEnabled = fromMaybe True looperFlagDefaultEnabled
-    let defaultLoopersPeriod = fromMaybe 60 looperFlagDefaultPeriod
+    let LoopersEnvironment {..} = envLoopersEnvironment
+    let defaultLoopersEnabled =
+            fromMaybe True $
+            looperFlagDefaultEnabled `mplus` looperEnvDefaultEnabled
+    let defaultLoopersPeriod =
+            fromMaybe 60 $
+            looperFlagDefaultPeriod `mplus` looperEnvDefaultPeriod
     let looperSetConnectionInfo = serveSetConnectionInfo
     let looperSetConnectionCount = serveSetConnectionCount
     let combineToLooperSets ::
-               LooperFlagsWith a -> (a -> IO b) -> IO (LooperSetsWith b)
-        combineToLooperSets LooperFlagsWith {..} func = do
-            let enabled = fromMaybe defaultLoopersEnabled looperFlagEnable
+               LooperFlagsWith a
+            -> LooperEnvWith b
+            -> (a -> b -> IO c)
+            -> IO (LooperSetsWith c)
+        combineToLooperSets LooperFlagsWith {..} LooperEnvWith {..} func = do
+            let enabled =
+                    fromMaybe defaultLoopersEnabled $
+                    looperFlagEnable `mplus` looperEnvEnable
             if enabled
                 then do
                     let period =
-                            fromMaybe defaultLoopersPeriod looperFlagsPeriod
-                    LooperEnabled period <$> func looperFlags
+                            fromMaybe defaultLoopersPeriod $
+                            looperFlagsPeriod `mplus` looperEnvPeriod
+                    LooperEnabled period <$> func looperFlags looperEnv
                 else pure LooperDisabled
     looperSetTriggererSets <-
-        combineToLooperSets looperFlagTriggererFlags $
-        const $ pure TriggererSettings
+        combineToLooperSets looperFlagTriggererFlags looperEnvTriggererEnv $
+        const $ const $ pure TriggererSettings
     looperSetEmailerSets <-
-        combineToLooperSets looperFlagEmailerFlags $
-        const $ pure $ EmailerSettings Discover
+        combineToLooperSets looperFlagEmailerFlags looperEnvEmailerEnv $
+        const $ const $ pure $ EmailerSettings Discover
     looperSetTriggeredIntrayItemSchedulerSets <-
-        combineToLooperSets looperFlagTriggeredIntrayItemSchedulerFlags $
-        const $ pure ()
+        combineToLooperSets
+            looperFlagTriggeredIntrayItemSchedulerFlags
+            looperEnvTriggeredIntrayItemSchedulerEnv $
+        const $ const $ pure ()
     looperSetTriggeredIntrayItemSenderSets <-
-        combineToLooperSets looperFlagTriggeredIntrayItemSenderFlags $
-        const $ pure ()
+        combineToLooperSets
+            looperFlagTriggeredIntrayItemSenderFlags
+            looperEnvTriggeredIntrayItemSenderEnv $
+        const $ const $ pure ()
     looperSetVerificationEmailConverterSets <-
-        combineToLooperSets looperFlagVerificationEmailConverterFlags $
-        const $ pure ()
+        combineToLooperSets
+            looperFlagVerificationEmailConverterFlags
+            looperEnvVerificationEmailConverterEnv $
+        const $ const $ pure ()
     looperSetTriggeredEmailSchedulerSets <-
-        combineToLooperSets looperFlagTriggeredEmailSchedulerFlags $
-        const $ pure ()
+        combineToLooperSets
+            looperFlagTriggeredEmailSchedulerFlags
+            looperEnvTriggeredEmailSchedulerEnv $
+        const $ const $ pure ()
     looperSetTriggeredEmailConverterSets <-
-        combineToLooperSets looperFlagTriggeredEmailConverterFlags $ \() -> do
+        combineToLooperSets
+            looperFlagTriggeredEmailConverterFlags
+            looperEnvTriggeredEmailConverterEnv $ \() () -> do
             pure
                 TriggeredEmailConverterSettings
                 { triggeredEmailConverterSetFromAddress =
@@ -91,29 +111,70 @@ getConfiguration _ _ = pure Configuration
 getEnv :: IO Environment
 getEnv = do
     env <- getEnvironment
-    let mre k func =
-            forM (lookup k env) $ \s ->
-                case func s of
-                    Left e ->
-                        die $
-                        unwords
-                            [ "Unable to read ENV Var:"
-                            , k
-                            , "which has value:"
-                            , show s
-                            , "with error:"
-                            , e
-                            ]
-                    Right v -> pure v
-        mrf k func =
-            mre k $ \s ->
-                case func s of
-                    Nothing ->
-                        Left "Parsing failed without a good error message."
-                    Just v -> Right v
-        mr k = mrf k readMaybe
-    envPort <- mr "API_PORT"
+    envPort <- maybeReadEnv "API_PORT" env
+    envLoopersEnvironment <- getLoopersEnv
     pure Environment {..}
+
+getLoopersEnv :: IO LoopersEnvironment
+getLoopersEnv = do
+    env <- getEnvironment
+    looperEnvDefaultEnabled <- maybeReadEnv "LOOPERS_DEFAULT_ENABLED" env
+    looperEnvDefaultPeriod <- maybeReadEnv "LOOPERS_DEFAULT_PERIOD" env
+    looperEnvTriggererEnv <- getLooperEnvWith "TRIGGERER" $ pure ()
+    looperEnvEmailerEnv <- getLooperEnvWith "EMAILER" $ pure ()
+    looperEnvTriggeredIntrayItemSchedulerEnv <-
+        getLooperEnvWith "TRIGGERED_INTRAY_ITEM_SCHEDULER" $ pure ()
+    looperEnvTriggeredIntrayItemSenderEnv <-
+        getLooperEnvWith "TRIGGERED_INTRAY_ITEM_SENDER" $ pure ()
+    looperEnvVerificationEmailConverterEnv <-
+        getLooperEnvWith "VERIFICATION_EMAIL_CONVERTER" $ pure ()
+    looperEnvTriggeredEmailSchedulerEnv <-
+        getLooperEnvWith "TRIGGERED_EMAIL_SCHEDULER" $ pure ()
+    looperEnvTriggeredEmailConverterEnv <-
+        getLooperEnvWith "TRIGGERED_EMAIL_CONVERTER" $ pure ()
+    pure LoopersEnvironment {..}
+
+getLooperEnvWith :: String -> IO a -> IO (LooperEnvWith a)
+getLooperEnvWith name func = do
+    env <- getEnvironment
+    looperEnvEnable <-
+        maybeReadEnv (intercalate "_" ["LOOPER", name, "ENABLED"]) env
+    looperEnvPeriod <-
+        maybeReadEnv (intercalate "_" ["LOOPER", name, "PERIOD"]) env
+    looperEnv <- func
+    pure LooperEnvWith {..}
+
+eitherParseEnv ::
+       Show a
+    => String
+    -> (a -> Either String b)
+    -> [(String, a)]
+    -> IO (Maybe b)
+eitherParseEnv k func env =
+    forM (lookup k env) $ \s ->
+        case func s of
+            Left e ->
+                die $
+                unwords
+                    [ "Unable to read ENV Var:"
+                    , k
+                    , "which has value:"
+                    , show s
+                    , "with error:"
+                    , e
+                    ]
+            Right v -> pure v
+
+maybeParseEnv ::
+       Show a => [Char] -> (a -> Maybe b) -> [(String, a)] -> IO (Maybe b)
+maybeParseEnv k func =
+    eitherParseEnv k $ \s ->
+        case func s of
+            Nothing -> Left "Parsing failed without a good error message."
+            Just v -> Right v
+
+maybeReadEnv :: Read b => String -> [(String, String)] -> IO (Maybe b)
+maybeReadEnv k = maybeParseEnv k readMaybe
 
 getArguments :: IO Arguments
 getArguments = do

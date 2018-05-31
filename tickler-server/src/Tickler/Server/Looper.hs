@@ -8,7 +8,6 @@ module Tickler.Server.Looper
 
 import Import
 
-import qualified Data.Text as T
 
 import Control.Concurrent
 import Control.Concurrent.Async
