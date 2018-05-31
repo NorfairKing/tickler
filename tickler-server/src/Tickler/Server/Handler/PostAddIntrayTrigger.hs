@@ -19,7 +19,6 @@ import Database.Persist
 import qualified Network.HTTP.Client as Http
 
 import Servant hiding (BadPassword, NoSuchUser)
-import Servant.Auth.Client
 import Servant.Auth.Server as Auth
 import Servant.Auth.Server.SetCookieOrphan ()
 import Servant.Client
@@ -53,7 +52,7 @@ servePostAddIntrayTrigger (Authenticated AuthCookie {..}) AddIntrayTrigger {..} 
                                , Intray.loginFormPassword =
                                      addIntrayTriggerAccessKey
                                }
-                       Headers Intray.NoContent (HCons _ (HCons sessionHeader HNil)) <-
+                       Headers Intray.NoContent (HCons _ (HCons _ HNil)) <-
                            Intray.clientPostLogin loginForm
                        pure ()
     case errOrOk of

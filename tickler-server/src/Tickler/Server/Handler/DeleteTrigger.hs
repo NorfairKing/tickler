@@ -7,9 +7,6 @@ module Tickler.Server.Handler.DeleteTrigger
 
 import Import
 
-import qualified Data.ByteString as SB
-import Data.Time
-import Data.UUID.Typed
 import Database.Persist
 
 import Servant
@@ -31,4 +28,4 @@ serveDeleteTrigger (Authenticated AuthCookie {..}) uuid = do
         Just (Entity i _) -> runDb $ delete i
     pure NoContent
 
-servePostAddEmailTrigger _ _ = throwAll err401
+serveDeleteTrigger _ _ = throwAll err401

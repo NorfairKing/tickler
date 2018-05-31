@@ -8,10 +8,7 @@ module Tickler.Server.Looper.Types
 
 import Import
 
-import Control.Concurrent
-
 import Control.Monad.Logger
-import Control.Monad.Trans.Resource (runResourceT)
 import Data.Pool
 import Database.Persist.Sqlite
 

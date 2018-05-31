@@ -85,7 +85,7 @@ getEnv = do
         mr k = mrf k readMaybe
     envPort <- mr "WEB_PORT"
     envDefaultIntrayUrl <-
-        mre "WEB_DEFAULT_INTRAY_URL" (left show . parseBaseUrl)
+        mre "DEFAULT_INTRAY_URL" (left show . parseBaseUrl)
     envAPIEnvironment <- API.getEnv
     pure Environment {..}
 

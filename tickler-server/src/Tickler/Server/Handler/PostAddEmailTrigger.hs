@@ -10,7 +10,6 @@ module Tickler.Server.Handler.PostAddEmailTrigger
 
 import Import
 
-import qualified Data.ByteString as SB
 import Data.Time
 import Data.UUID.Typed
 import Database.Persist
