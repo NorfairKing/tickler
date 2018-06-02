@@ -15,7 +15,6 @@ import Tickler.API
 import Tickler.Client
 
 import Tickler.Web.Server.Foundation
-import Tickler.Web.Server.Time
 
 newtype DeleteItem = DeleteItem
     { deleteItemUUID :: ItemUUID

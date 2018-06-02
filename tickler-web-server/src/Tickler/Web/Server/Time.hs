@@ -10,7 +10,6 @@ import Import
 import Data.Time
 import Text.Time.Pretty
 
-import Yesod
 
 import Tickler.Web.Server.Foundation
 

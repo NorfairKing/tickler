@@ -2,8 +2,6 @@ module Tickler.Web.Server.Handler.TicklesSpec where
 
 import TestImport
 
-import Network.HTTP.Types
-
 import Yesod.Test
 
 import Tickler.Web.Server.Foundation

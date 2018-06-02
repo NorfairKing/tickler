@@ -29,6 +29,7 @@ import Servant.Client (BaseUrl(..), ClientEnv(..))
 
 import Tickler.Data
 
+import qualified Tickler.Server.OptParse.Types as API
 import qualified Tickler.Server.TestUtils as API
 
 import Tickler.Web.Server
@@ -46,10 +47,31 @@ ticklerTestServeSettings = do
         ServeSettings
         { serveSetPort = 8000
         , serveSetPersistLogins = False
-        , serveSetAPIPort = 8001
-        , serveSetAPIConnectionInfo = connInfo
-        , serveSetAPIConnectionCount = 4
-        , serveSetAPIAdmins = [fromJust $ parseUsername "admin"]
+        , serveSetDefaultIntrayUrl = Nothing
+        , serveSetAPISettings =
+              API.ServeSettings
+              { API.serveSetPort = 8001
+              , API.serveSetConnectionInfo = connInfo
+              , API.serveSetConnectionCount = 1
+              , API.serveSetAdmins = catMaybes [parseUsername "admin"]
+              , API.serveSetLooperSettings =
+                    API.LooperSettings
+                    { API.looperSetConnectionInfo = connInfo
+                    , API.looperSetConnectionCount = 1
+                    , API.looperSetTriggererSets = API.LooperDisabled
+                    , API.looperSetEmailerSets = API.LooperDisabled
+                    , API.looperSetTriggeredIntrayItemSchedulerSets =
+                          API.LooperDisabled
+                    , API.looperSetTriggeredIntrayItemSenderSets =
+                          API.LooperDisabled
+                    , API.looperSetVerificationEmailConverterSets =
+                          API.LooperDisabled
+                    , API.looperSetTriggeredEmailSchedulerSets =
+                          API.LooperDisabled
+                    , API.looperSetTriggeredEmailConverterSets =
+                          API.LooperDisabled
+                    }
+              }
         }
 
 ticklerWebServerSpec :: YesodSpec App -> Spec
@@ -60,7 +82,10 @@ ticklerWebServerSpec = b . a
         yesodSpecWithSiteGeneratorAndArgument
             (\(ClientEnv _ burl _) -> do
                  sets <- ticklerTestServeSettings
-                 let sets' = sets {serveSetAPIPort = baseUrlPort burl}
+                 let apiSets =
+                         serveSetAPISettings
+                             sets {serveSetPort = baseUrlPort burl}
+                 let sets' = sets {serveSetAPISettings = apiSets}
                  makeTicklerApp sets')
     b :: SpecWith ClientEnv -> Spec
     b = API.withTicklerServer

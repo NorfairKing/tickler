@@ -13,7 +13,6 @@ module Tickler.Web.Server.Handler.Triggers
 import Import
 
 import qualified Data.Text as T
-import Data.Time
 
 import Servant.Client.Core
 
@@ -23,8 +22,6 @@ import Tickler.API
 import Tickler.Client
 
 import Tickler.Web.Server.Foundation
-import Tickler.Web.Server.OptParse.Types
-import Tickler.Web.Server.Time
 
 getTriggersR :: Handler Html
 getTriggersR =
@@ -97,7 +94,7 @@ postAddIntrayTriggerR :: Handler Html
 postAddIntrayTriggerR =
     withLogin $ \t -> do
         ait <- runInputPost addIntrayTriggerForm
-        runClientOrErr $ clientPostAddIntrayTrigger t ait
+        void $ runClientOrErr $ clientPostAddIntrayTrigger t ait
         redirect TriggersR
 
 addEmailTriggerForm :: FormInput Handler AddEmailTrigger
@@ -114,11 +111,11 @@ postAddEmailTriggerR :: Handler Html
 postAddEmailTriggerR =
     withLogin $ \t -> do
         aet <- runInputPost addEmailTriggerForm
-        runClientOrErr $ clientPostAddEmailTrigger t aet
+        void $ runClientOrErr $ clientPostAddEmailTrigger t aet
         redirect TriggersR
 
 postDeleteTriggerR :: TriggerUUID -> Handler Html
 postDeleteTriggerR uuid =
     withLogin $ \t -> do
-        runClientOrErr $ clientDeleteTrigger t uuid
+        NoContent<-runClientOrErr $ clientDeleteTrigger t uuid
         redirect TriggersR

@@ -80,6 +80,7 @@ tests:
     - http-types
     - tickler-data
     - tickler-data-gen
+    - tickler-server
     - tickler-server-test-utils
     - tickler-web-server
     - mtl

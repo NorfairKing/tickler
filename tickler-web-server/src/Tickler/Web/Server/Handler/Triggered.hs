@@ -9,8 +9,6 @@ module Tickler.Web.Server.Handler.Triggered
 
 import Import
 
-import Data.Time
-
 import Yesod
 
 import Tickler.API

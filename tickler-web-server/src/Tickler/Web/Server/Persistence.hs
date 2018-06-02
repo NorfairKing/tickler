@@ -20,7 +20,7 @@ import Servant.Auth.Client (Token(..))
 import Tickler.Client
 
 loginsFile :: IO (Path Abs File)
-loginsFile = resolveFile' "logins.json"
+loginsFile = resolveFile' "tickler-logins.json"
 
 readLogins :: IO (Maybe (HashMap Username Token))
 readLogins = do

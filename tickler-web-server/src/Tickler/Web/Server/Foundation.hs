@@ -24,7 +24,6 @@ import qualified Data.Text as T
 
 import Control.Concurrent
 
-import Control.Monad.Except
 import Control.Monad.Trans.Maybe
 
 import qualified Network.HTTP.Client as Http
