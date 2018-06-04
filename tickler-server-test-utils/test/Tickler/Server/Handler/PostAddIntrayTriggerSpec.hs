@@ -1,12 +1,18 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Handler.PostAddIntrayTriggerSpec
     ( spec
     ) where
 
 import TestImport
+
+import qualified Data.Set as S
+
+import qualified Intray.Client as Intray
+import qualified Intray.Server.TestUtils as Intray
 
 import Tickler.API
 import Tickler.Client
@@ -17,14 +23,32 @@ import Tickler.Server.TestUtils
 
 spec :: Spec
 spec =
-    withTicklerServer $
+    withBothTicklerAndIntrayServer $
     describe "GetTrigger and PostAddIntrayTrigger" $
-    it "gets the trigger that was just added" $ \cenv ->
-        forAllValid $ \t ->
-            withValidNewUser cenv $ \token -> do
-                (uuid, ti) <-
-                    runClientOrError cenv $ do
-                        uuid <- clientPostAddIntrayTrigger token t
-                        ti <- clientGetTrigger token uuid
-                        pure (uuid, ti)
-                triggerInfoIdentifier ti `shouldBe` uuid
+    it "gets the trigger that was just added" $ \(tenv, ienv) ->
+        forAllValid $ \name ->
+            withValidNewUser tenv $ \ttoken ->
+                Intray.withValidNewUserAndData ienv $ \un _ itoken -> do
+                    akc <-
+                        runClientOrError ienv $
+                        Intray.clientPostAddAccessKey
+                            itoken
+                            Intray.AddAccessKey
+                            { Intray.addAccessKeyName = name
+                            , Intray.addAccessKeyPermissions =
+                                  S.singleton Intray.PermitAdd
+                            }
+                    (uuid, ti) <-
+                        runClientOrError tenv $ do
+                            uuid <-
+                                clientPostAddIntrayTrigger
+                                    ttoken
+                                    AddIntrayTrigger
+                                    { addIntrayTriggerUrl = baseUrl ienv
+                                    , addIntrayTriggerUsername = un
+                                    , addIntrayTriggerAccessKey =
+                                          Intray.accessKeyCreatedKey akc
+                                    }
+                            ti <- clientGetTrigger ttoken uuid
+                            pure (uuid, ti)
+                    triggerInfoIdentifier ti `shouldBe` uuid

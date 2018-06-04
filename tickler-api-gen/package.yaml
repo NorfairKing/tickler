@@ -29,6 +29,7 @@ library:
   - genvalidity-text
   - genvalidity-time
   - genvalidity-uuid
+  - intray-data-gen
   - tickler-api
   - tickler-data
   - tickler-data-gen

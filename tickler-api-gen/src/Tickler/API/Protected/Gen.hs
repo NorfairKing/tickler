@@ -14,6 +14,7 @@ import Data.GenValidity.Time ()
 import Data.GenValidity.UUID ()
 
 import Tickler.Data.Gen ()
+import Intray.Data.Gen ()
 
 import Tickler.API.Protected.Types
 

@@ -18,6 +18,8 @@ import Data.Time
 import Database.Persist.Sql
 import Database.Persist.TH
 
+import qualified Intray.Data as Intray
+
 import Tickler.Data.AccountUUID
 import Tickler.Data.EmailAddress
 import Tickler.Data.EmailStatus
@@ -107,8 +109,8 @@ UserTrigger
 IntrayTrigger
     identifier TriggerUUID
     url BaseUrl
-    username Text
-    accessKey Text
+    username Intray.Username
+    accessKey Intray.AccessKeySecret
     added UTCTime
 
     UniqueIntrayTrigger identifier

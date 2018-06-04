@@ -51,6 +51,8 @@ import Data.UUID.Typed
 import Servant.Docs
 import Web.HttpApiData
 
+import qualified Intray.Data as Intray
+
 import Tickler.Data
 
 import Tickler.API.Types
@@ -346,8 +348,8 @@ instance ToSample EmailTriggerInfo
 
 data AddIntrayTrigger = AddIntrayTrigger
     { addIntrayTriggerUrl :: BaseUrl
-    , addIntrayTriggerUsername :: Text
-    , addIntrayTriggerAccessKey :: Text
+    , addIntrayTriggerUsername :: Intray.Username
+    , addIntrayTriggerAccessKey :: Intray.AccessKeySecret
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity AddIntrayTrigger
@@ -357,6 +359,15 @@ instance FromJSON AddIntrayTrigger
 instance ToJSON AddIntrayTrigger
 
 instance ToSample AddIntrayTrigger
+
+instance ToSample Intray.Username
+
+instance ToSample Intray.AccessKeySecret where
+    toSamples Proxy =
+        samples $
+        mapMaybe
+            Intray.parseAccessKeySecretText
+            ["12a0f2ecabfe38a5c692e08fb92b7f90"]
 
 data AddEmailTrigger = AddEmailTrigger
     { addEmailTrigger :: EmailAddress

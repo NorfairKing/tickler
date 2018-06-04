@@ -10,6 +10,7 @@ module Tickler.Server.TestUtils
     , setupTicklerTestApp
     , withTicklerApp
     , cleanupTicklerTestServer
+    , withBothTicklerAndIntrayServer
     , runClient
     , runClientOrError
     , randomRegistration
@@ -41,6 +42,9 @@ import Database.Persist.Sqlite
 import Network.Wai as Wai
 import Network.Wai.Handler.Warp (testWithApplication)
 
+import Intray.Server.TestUtils
+       (cleanupIntrayTestServer, setupIntrayTestApp)
+
 import Tickler.API
 import Tickler.Client
 import Tickler.Data
@@ -53,8 +57,25 @@ import Tickler.Data.Gen ()
 withTicklerServer :: SpecWith ClientEnv -> Spec
 withTicklerServer specFunc =
     afterAll_ cleanupTicklerTestServer $
-    beforeAll setupTicklerTestApp $
+    beforeAll ((,) <$> setupTestHttpManager <*> setupTicklerTestApp) $
     aroundWith withTicklerApp $ modifyMaxSuccess (`div` 20) specFunc
+
+withBothTicklerAndIntrayServer :: SpecWith (ClientEnv, ClientEnv) -> Spec
+withBothTicklerAndIntrayServer specFunc =
+    afterAll_ cleanupTicklerTestServer $
+    afterAll_ cleanupIntrayTestServer $
+    beforeAll ((,) <$> setupTicklerTestApp <*> setupIntrayTestApp) $
+    aroundWith withBoth $ modifyMaxSuccess (`div` 20) specFunc
+  where
+    withBoth ::
+           ActionWith (ClientEnv, ClientEnv)
+        -> ActionWith (Application, (HTTP.Manager, Application))
+    withBoth func (tapp, (man, iapp)) =
+        testWithApplication (pure tapp) $ \tport ->
+            testWithApplication (pure iapp) $ \iport ->
+                func
+                    (ClientEnv man (BaseUrl Http "127.0.0.1" tport "") Nothing
+                    ,ClientEnv man (BaseUrl Http "127.0.0.1" iport "") Nothing)
 
 testdbFile :: String
 testdbFile = "test.db"
@@ -71,10 +92,9 @@ setupTicklerTestConn = do
 setupTestHttpManager :: IO HTTP.Manager
 setupTestHttpManager = HTTP.newManager HTTP.defaultManagerSettings
 
-setupTicklerTestApp :: IO (HTTP.Manager, Wai.Application)
+setupTicklerTestApp :: IO Wai.Application
 setupTicklerTestApp = do
     pool <- setupTicklerTestConn
-    man <- setupTestHttpManager
     signingKey <- Auth.generateKey
     let jwtCfg = defaultJWTSettings signingKey
     let cookieCfg = defaultCookieSettings
@@ -85,12 +105,11 @@ setupTicklerTestApp = do
             , envJWTSettings = jwtCfg
             , envAdmins = [fromJust $ parseUsername "admin"]
             }
-    pure
-        ( man
-        , serveWithContext
-              ticklerAPI
-              (ticklerAppContext ticklerEnv)
-              (makeTicklerServer ticklerEnv))
+    pure $
+        serveWithContext
+            ticklerAPI
+            (ticklerAppContext ticklerEnv)
+            (makeTicklerServer ticklerEnv)
 
 withTicklerApp ::
        (ClientEnv -> IO ()) -> (HTTP.Manager, Wai.Application) -> IO ()

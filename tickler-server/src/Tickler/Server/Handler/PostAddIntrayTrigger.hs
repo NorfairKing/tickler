@@ -40,21 +40,19 @@ servePostAddIntrayTrigger (Authenticated AuthCookie {..}) AddIntrayTrigger {..} 
     man <- liftIO $ Http.newManager Http.defaultManagerSettings
     errOrOk <-
         do let env = ClientEnv man addIntrayTriggerUrl Nothing
-           case Intray.parseUsername addIntrayTriggerUsername of
-               Nothing -> pure $ Left "Invalid Intray username"
-               Just un ->
-                   liftIO $
-                   fmap (left show) $
-                   flip runClientM env $ do
-                       let loginForm =
-                               Intray.LoginForm
-                               { Intray.loginFormUsername = un
-                               , Intray.loginFormPassword =
+           liftIO $
+               fmap (left show) $
+               flip runClientM env $ do
+                   let loginForm =
+                           Intray.LoginForm
+                           { Intray.loginFormUsername = addIntrayTriggerUsername
+                           , Intray.loginFormPassword =
+                                 Intray.accessKeySecretText
                                      addIntrayTriggerAccessKey
-                               }
-                       Headers Intray.NoContent (HCons _ (HCons _ HNil)) <-
-                           Intray.clientPostLogin loginForm
-                       pure ()
+                           }
+                   Headers Intray.NoContent (HCons _ (HCons _ HNil)) <-
+                       Intray.clientPostLogin loginForm
+                   pure ()
     case errOrOk of
         Left err ->
             throwAll

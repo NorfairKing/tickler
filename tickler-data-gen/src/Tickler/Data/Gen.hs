@@ -20,6 +20,8 @@ import qualified Data.Text as T
 import Database.Persist.Sql
 import Servant.Client.Core
 
+import Intray.API.Gen ()
+
 import Tickler.Data
 
 instance ToBackendKey SqlBackend a => GenUnchecked (Key a) where

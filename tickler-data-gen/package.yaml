@@ -26,6 +26,7 @@ library:
   - genvalidity-time
   - genvalidity-typed-uuid
   - genvalidity-uuid
+  - intray-api-gen
   - persistent
   - servant-client-core
   - text
