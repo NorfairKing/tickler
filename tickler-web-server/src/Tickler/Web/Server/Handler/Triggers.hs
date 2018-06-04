@@ -18,6 +18,8 @@ import Servant.Client.Core
 
 import Yesod
 
+import qualified Intray.Data as Intray
+
 import Tickler.API
 import Tickler.Client
 
@@ -87,8 +89,26 @@ addIntrayTriggerForm =
              (T.pack . showBaseUrl)
              textField)
         "url" <*>
-    ireq textField "username" <*>
-    ireq textField "access-key"
+    ireq
+        (checkMMap
+             (pure .
+              (\t ->
+                   case Intray.parseUsername t of
+                       Nothing -> Left ("Invalid Intray Username" :: Text)
+                       Just un -> pure un))
+             Intray.usernameText
+             textField)
+        "username" <*>
+    ireq
+        (checkMMap
+             (pure .
+              (\t ->
+                   case Intray.parseAccessKeySecretText t of
+                       Nothing -> Left ("Invalid access key" :: Text)
+                       Just aks -> pure aks))
+             Intray.accessKeySecretText
+             textField)
+        "access-key"
 
 postAddIntrayTriggerR :: Handler Html
 postAddIntrayTriggerR =
@@ -117,5 +137,5 @@ postAddEmailTriggerR =
 postDeleteTriggerR :: TriggerUUID -> Handler Html
 postDeleteTriggerR uuid =
     withLogin $ \t -> do
-        NoContent<-runClientOrErr $ clientDeleteTrigger t uuid
+        NoContent <- runClientOrErr $ clientDeleteTrigger t uuid
         redirect TriggersR
