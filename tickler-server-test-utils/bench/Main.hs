@@ -68,4 +68,5 @@ registrationLoginForm Registration {..} =
     }
 
 withServer :: (ClientEnv -> IO ()) -> IO ()
-withServer func = setupTicklerTestApp >>= withTicklerApp func
+withServer func =
+    (,) <$> setupTestHttpManager<*> setupTicklerTestApp  >>= withTicklerApp func
