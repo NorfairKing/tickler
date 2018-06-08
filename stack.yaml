@@ -10,11 +10,12 @@ packages:
 - tickler-server
 - tickler-server-test-utils
 - tickler-web-server
+- /home/syd/mergeless/mergeless
+- /home/syd/mergeless/genvalidity-mergeless
 - /home/syd/cs-syd/code/open-source/intray/intray-data-gen
 - /home/syd/cs-syd/code/open-source/intray/intray-data
 - /home/syd/cs-syd/code/open-source/intray/intray-api-gen
 - /home/syd/cs-syd/code/open-source/intray/intray-api
-- /home/syd/cs-syd/code/open-source/intray/intray-client-gen
 - /home/syd/cs-syd/code/open-source/intray/intray-client
 - /home/syd/cs-syd/code/open-source/intray/intray-server-test-utils
 - /home/syd/cs-syd/code/open-source/intray/intray-server
