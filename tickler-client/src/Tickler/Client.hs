@@ -94,7 +94,7 @@ clientPostSync :: Token -> SyncRequest -> ClientM SyncResponse
 clientGetTriggers :: Token -> ClientM [TriggerInfo TypedTriggerInfo]
 clientGetTrigger ::
        Token -> TriggerUUID -> ClientM (TriggerInfo TypedTriggerInfo)
-clientPostAddIntrayTrigger :: Token -> AddIntrayTrigger -> ClientM TriggerUUID
+clientPostAddIntrayTrigger :: Token -> AddIntrayTrigger -> ClientM(Either Text TriggerUUID)
 clientPostAddEmailTrigger :: Token -> AddEmailTrigger -> ClientM TriggerUUID
 clientDeleteTrigger :: Token -> TriggerUUID -> ClientM NoContent
 clientGetAccountInfo :: Token -> ClientM AccountInfo

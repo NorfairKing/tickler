@@ -114,8 +114,21 @@ postAddIntrayTriggerR :: Handler Html
 postAddIntrayTriggerR =
     withLogin $ \t -> do
         ait <- runInputPost addIntrayTriggerForm
-        void $ runClientOrErr $ clientPostAddIntrayTrigger t ait
-        redirect TriggersR
+        errOrRes <- runClientOrErr $ clientPostAddIntrayTrigger t ait
+        case errOrRes of
+            Left err -> do
+                addMessage
+                    "error"
+                    [shamlet|
+                        <div .ui .segment>
+                            Failed to login to the intray instance:
+                            <pre>
+                                #{err}
+                    |]
+                redirect TriggersR
+            Right _ -> do
+                addMessage "success" "New intray trigger added."
+                redirect TriggersR
 
 addEmailTriggerForm :: FormInput Handler AddEmailTrigger
 addEmailTriggerForm =

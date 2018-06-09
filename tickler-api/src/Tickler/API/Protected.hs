@@ -136,7 +136,7 @@ instance ToCapture (Capture "id" TriggerUUID) where
     toCapture _ = DocCapture "id" "The UUID of the trigger"
 
 type PostAddIntrayTrigger
-     = ProtectAPI :> "trigger" :> "intray" :> ReqBody '[ JSON] AddIntrayTrigger :> Post '[ JSON] TriggerUUID
+     = ProtectAPI :> "trigger" :> "intray" :> ReqBody '[ JSON] AddIntrayTrigger :> Post '[ JSON] (Either Text TriggerUUID)
 
 type PostAddEmailTrigger
      = ProtectAPI :> "trigger" :> "email" :> ReqBody '[ JSON] AddEmailTrigger :> Post '[ JSON] TriggerUUID

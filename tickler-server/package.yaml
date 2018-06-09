@@ -38,6 +38,7 @@ library:
   - email-validate
   - file-embed
   - http-client
+  - http-client-tls
   - http-types
   - intray-client
   - jose

@@ -13,10 +13,12 @@ module Tickler.Server.Handler.PostAddIntrayTrigger
 import Import
 
 import qualified Data.ByteString.Lazy.Char8 as LB8
+import qualified Data.Text as T
 import Data.Time
 import Data.UUID.Typed
 import Database.Persist
 import qualified Network.HTTP.Client as Http
+import qualified Network.HTTP.Client.TLS as Http
 
 import Servant hiding (BadPassword, NoSuchUser)
 import Servant.Auth.Server as Auth
@@ -33,15 +35,16 @@ import Tickler.Server.Types
 import Tickler.Server.Handler.Utils
 
 servePostAddIntrayTrigger ::
-       AuthResult AuthCookie -> AddIntrayTrigger -> TicklerHandler TriggerUUID
+       AuthResult AuthCookie
+    -> AddIntrayTrigger
+    -> TicklerHandler (Either Text TriggerUUID)
 servePostAddIntrayTrigger (Authenticated AuthCookie {..}) AddIntrayTrigger {..} = do
     now <- liftIO getCurrentTime
     uuid <- liftIO nextRandomUUID
-    man <- liftIO $ Http.newManager Http.defaultManagerSettings
+    man <- liftIO $ Http.newManager Http.tlsManagerSettings
     errOrOk <-
         do let env = ClientEnv man addIntrayTriggerUrl Nothing
            liftIO $
-               fmap (left show) $
                flip runClientM env $ do
                    let loginForm =
                            Intray.LoginForm
@@ -55,12 +58,9 @@ servePostAddIntrayTrigger (Authenticated AuthCookie {..}) AddIntrayTrigger {..} 
                    pure ()
     case errOrOk of
         Left err ->
-            throwAll
-                err400
-                { errBody =
-                      "Failed to login to the intray instance with the given credentials:" <>
-                      LB8.pack err
-                }
+            case err of
+                ConnectionError t -> pure $ Left t
+                _ -> pure $ Left $ T.pack $ ppShow err
         Right () -> do
             runDb $ do
                 insert_
@@ -77,5 +77,5 @@ servePostAddIntrayTrigger (Authenticated AuthCookie {..}) AddIntrayTrigger {..} 
                     , userTriggerTriggerType = IntrayTriggerType
                     , userTriggerTriggerId = uuid
                     }
-            pure uuid
+            pure $ Right uuid
 servePostAddIntrayTrigger _ _ = throwAll err401
