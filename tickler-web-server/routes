@@ -1,5 +1,7 @@
 /                                  HomeR                GET
 
+/loopers                           LoopersR             GET
+
 /add                               AddR                 POST GET
 /tickles                           TicklesR             GET
 /triggered                         TriggeredR           GET

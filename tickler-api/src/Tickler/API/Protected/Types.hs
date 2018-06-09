@@ -54,6 +54,8 @@ import Web.HttpApiData
 
 import qualified Intray.Data as Intray
 
+import Intray.API ()
+
 import Tickler.Data
 
 import Tickler.API.Types
@@ -360,15 +362,6 @@ instance FromJSON AddIntrayTrigger
 instance ToJSON AddIntrayTrigger
 
 instance ToSample AddIntrayTrigger
-
-instance ToSample Intray.Username
-
-instance ToSample Intray.AccessKeySecret where
-    toSamples Proxy =
-        samples $
-        mapMaybe
-            Intray.parseAccessKeySecretText
-            ["12a0f2ecabfe38a5c692e08fb92b7f90"]
 
 data AddEmailTrigger = AddEmailTrigger
     { addEmailTrigger :: EmailAddress

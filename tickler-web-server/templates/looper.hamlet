@@ -1,0 +1,14 @@
+<div .ui .#{loopersColor ls} .segment>
+  <h4 .ui .header>
+    #{name}
+  $case ls
+    $of LooperStatusDisabled
+      Disabled
+    $of LooperStatusRunning
+      Running
+    $of LooperStatusErrored t
+      Error:
+      <pre>
+        #{t}
+    $of LooperStatusStopped
+      Stopped

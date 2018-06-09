@@ -1,0 +1,7 @@
+^{mkLooperStatusWidget "Emailer" emailerLooperStatus}
+^{mkLooperStatusWidget "Triggerer" triggererLooperStatus}
+^{mkLooperStatusWidget "Verification Email Converter" verificationEmailConverterLooperStatus}
+^{mkLooperStatusWidget "Triggered Intray Item Scheduler" triggeredIntrayItemSchedulerLooperStatus}
+^{mkLooperStatusWidget "Triggered Intray Item Sender" triggeredIntrayItemSenderLooperStatus} 
+^{mkLooperStatusWidget "Triggered Email Scheduler" triggeredEmailSchedulerLooperStatus}
+^{mkLooperStatusWidget "Triggered Email Converter" triggeredEmailConverterLooperStatus}

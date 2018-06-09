@@ -3,15 +3,15 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Looper
-    ( runLoopers
+    ( LoopersHandle(..)
+    , LooperHandle(..)
+    , startLoopers
     ) where
 
 import Import
 
-
 import Control.Concurrent
 import Control.Concurrent.Async
-import Control.Monad.Logger
 import Data.Pool
 import Database.Persist.Sqlite
 
@@ -26,43 +26,57 @@ import Tickler.Server.Looper.Triggerer
 import Tickler.Server.Looper.Types
 import Tickler.Server.Looper.VerificationEmailConverter
 
--- | Blocks
-runLoopers :: Pool SqlBackend -> LooperSettings -> IO ()
-runLoopers pool LooperSettings {..} =
-    liftIO $
-    mapConcurrently_
-        (liftIO . runStderrLoggingT)
-        [ runLooperWithSets pool looperSetTriggererSets runTriggerer
-        , runLooperWithSets pool looperSetEmailerSets runEmailer
-        , runLooperWithSets
-              pool
-              looperSetVerificationEmailConverterSets
-              runVerificationEmailConverter
-        , runLooperWithSets
-              pool
-              looperSetTriggeredIntrayItemSchedulerSets
-              runTriggeredIntrayItemScheduler
-        , runLooperWithSets
-              pool
-              looperSetTriggeredIntrayItemSenderSets
-              runTriggeredIntrayItemSender
-        , runLooperWithSets
-              pool
-              looperSetTriggeredEmailSchedulerSets
-              runTriggeredEmailScheduler
-        , runLooperWithSets
-              pool
-              looperSetTriggeredEmailConverterSets
-              runTriggeredEmailConverter
-        ]
+data LoopersHandle = LoopersHandle
+    { emailerLooperHandle :: LooperHandle
+    , triggererLooperHandle :: LooperHandle
+    , verificationEmailConverterLooperHandle :: LooperHandle
+    , triggeredIntrayItemSchedulerLooperHandle :: LooperHandle
+    , triggeredIntrayItemSenderLooperHandle :: LooperHandle
+    , triggeredEmailSchedulerLooperHandle :: LooperHandle
+    , triggeredEmailConverterLooperHandle :: LooperHandle
+    }
 
-runLooperWithSets ::
-       Pool SqlBackend -> LooperSetsWith a -> (a -> Looper b) -> LoggingT IO ()
-runLooperWithSets pool lsw func =
+startLoopers :: Pool SqlBackend -> LooperSettings -> IO LoopersHandle
+startLoopers pool LooperSettings {..} = do
+    emailerLooperHandle <-
+        startLooperWithSets pool looperSetEmailerSets runEmailer
+    triggererLooperHandle <-
+        startLooperWithSets pool looperSetTriggererSets runTriggerer
+    verificationEmailConverterLooperHandle <-
+        startLooperWithSets
+            pool
+            looperSetVerificationEmailConverterSets
+            runVerificationEmailConverter
+    triggeredIntrayItemSchedulerLooperHandle <-
+        startLooperWithSets
+            pool
+            looperSetTriggeredIntrayItemSchedulerSets
+            runTriggeredIntrayItemScheduler
+    triggeredIntrayItemSenderLooperHandle <-
+        startLooperWithSets
+            pool
+            looperSetTriggeredIntrayItemSenderSets
+            runTriggeredIntrayItemSender
+    triggeredEmailSchedulerLooperHandle <-
+        startLooperWithSets
+            pool
+            looperSetTriggeredEmailSchedulerSets
+            runTriggeredEmailScheduler
+    triggeredEmailConverterLooperHandle <-
+        startLooperWithSets
+            pool
+            looperSetTriggeredEmailConverterSets
+            runTriggeredEmailConverter
+    pure LoopersHandle {..}
+
+startLooperWithSets ::
+       Pool SqlBackend -> LooperSetsWith a -> (a -> Looper b) -> IO LooperHandle
+startLooperWithSets pool lsw func =
     case lsw of
-        LooperDisabled -> pure ()
+        LooperDisabled -> pure LooperHandleDisabled
         LooperEnabled period sets ->
-            runLooper (runLooperContinuously period $ func sets) pool
+            fmap LooperHandleEnabled $
+            async $ runLooper (runLooperContinuously period $ func sets) pool
 
 runLooperContinuously :: MonadIO m => Int -> m b -> m ()
 runLooperContinuously period func = go

@@ -13,6 +13,8 @@ module Tickler.API.Types
     , AuthCookie(..)
     , Registration(..)
     , LoginForm(..)
+    , LoopersStatus(..)
+    , LooperStatus(..)
     , GetDocsResponse(..)
     , HashedPassword
     , passwordHash
@@ -50,6 +52,8 @@ import Servant.Client.Core
 import Servant.Docs
 import Servant.HTML.Blaze
 
+import Intray.API ()
+
 import Tickler.Data
 
 type ProtectAPI = Auth '[ JWT] AuthCookie
@@ -61,18 +65,6 @@ newtype AuthCookie = AuthCookie
 instance FromJWT AuthCookie
 
 instance ToJWT AuthCookie
-
-instance ToSample UTCTime where
-    toSamples Proxy = singleSample $ UTCTime (fromGregorian 2018 2 10) 42
-
-instance ToSample Text where
-    toSamples Proxy = singleSample "Example Text"
-
-instance ToSample (UUID a) where
-    toSamples Proxy = singleSample (UUID $ UUID.fromWords 0 0 0 0)
-
-instance ToSample Int where
-    toSamples Proxy = singleSample 42
 
 data Registration = Registration
     { registrationUsername :: Username
@@ -114,8 +106,38 @@ instance ToSample LoginForm
 
 instance ToSample Username
 
-instance ToSample SetCookie where
-    toSamples Proxy = singleSample def
+data LoopersStatus = LoopersStatus
+    { emailerLooperStatus :: LooperStatus
+    , triggererLooperStatus :: LooperStatus
+    , verificationEmailConverterLooperStatus :: LooperStatus
+    , triggeredIntrayItemSchedulerLooperStatus :: LooperStatus
+    , triggeredIntrayItemSenderLooperStatus :: LooperStatus
+    , triggeredEmailSchedulerLooperStatus :: LooperStatus
+    , triggeredEmailConverterLooperStatus :: LooperStatus
+    } deriving (Show, Eq, Generic)
+
+instance Validity LoopersStatus
+
+instance FromJSON LoopersStatus
+
+instance ToJSON LoopersStatus
+
+instance ToSample LoopersStatus
+
+data LooperStatus
+    = LooperStatusDisabled
+    | LooperStatusRunning
+    | LooperStatusErrored Text
+    | LooperStatusStopped
+    deriving (Show, Eq, Generic)
+
+instance Validity LooperStatus
+
+instance FromJSON LooperStatus
+
+instance ToJSON LooperStatus
+
+instance ToSample LooperStatus
 
 newtype GetDocsResponse = GetDocsResponse
     { unGetDocsResponse :: HTML.Html

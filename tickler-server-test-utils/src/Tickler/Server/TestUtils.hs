@@ -50,6 +50,7 @@ import Tickler.Client
 import Tickler.Data
 import Tickler.Server
 import Tickler.Server.Types
+import Tickler.Server.Looper
 
 import Tickler.Client.Gen ()
 import Tickler.Data.Gen ()
@@ -74,8 +75,8 @@ withBothTicklerAndIntrayServer specFunc =
         testWithApplication (pure tapp) $ \tport ->
             testWithApplication (pure iapp) $ \iport ->
                 func
-                    (ClientEnv man (BaseUrl Http "127.0.0.1" tport "") Nothing
-                    ,ClientEnv man (BaseUrl Http "127.0.0.1" iport "") Nothing)
+                    ( ClientEnv man (BaseUrl Http "127.0.0.1" tport "") Nothing
+                    , ClientEnv man (BaseUrl Http "127.0.0.1" iport "") Nothing)
 
 testdbFile :: String
 testdbFile = "test.db"
@@ -104,6 +105,18 @@ setupTicklerTestApp = do
             , envCookieSettings = cookieCfg
             , envJWTSettings = jwtCfg
             , envAdmins = [fromJust $ parseUsername "admin"]
+            , envLoopersHandle =
+                  LoopersHandle
+                  { emailerLooperHandle = LooperHandleDisabled
+                  , triggererLooperHandle = LooperHandleDisabled
+                  , verificationEmailConverterLooperHandle =
+                        LooperHandleDisabled
+                  , triggeredIntrayItemSchedulerLooperHandle =
+                        LooperHandleDisabled
+                  , triggeredIntrayItemSenderLooperHandle = LooperHandleDisabled
+                  , triggeredEmailSchedulerLooperHandle = LooperHandleDisabled
+                  , triggeredEmailConverterLooperHandle = LooperHandleDisabled
+                  }
             }
     pure $
         serveWithContext

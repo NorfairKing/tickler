@@ -13,7 +13,6 @@ module Tickler.Server
 
 import Import
 
-import Control.Concurrent.Async (concurrently_)
 import Control.Monad.Logger
 import Control.Monad.Trans.Resource (runResourceT)
 import Database.Persist.Sqlite
@@ -44,17 +43,16 @@ runTicklerServer ServeSettings {..} = do
             signingKey <- liftIO loadSigningKey
             let jwtCfg = defaultJWTSettings signingKey
             let cookieCfg = defaultCookieSettings
+            loopersHandle <-liftIO $ startLoopers pool serveSetLooperSettings
             let ticklerEnv =
                     TicklerServerEnv
                     { envConnectionPool = pool
                     , envCookieSettings = cookieCfg
                     , envJWTSettings = jwtCfg
                     , envAdmins = serveSetAdmins
+                    , envLoopersHandle = loopersHandle
                     }
-            liftIO $
-                concurrently_
-                    (liftIO $ Warp.run serveSetPort $ ticklerApp ticklerEnv)
-                    (runLoopers pool serveSetLooperSettings)
+            liftIO $ Warp.run serveSetPort $ ticklerApp ticklerEnv
 
 ticklerApp :: TicklerServerEnv -> Wai.Application
 ticklerApp se =

@@ -62,6 +62,9 @@ module Tickler.API
     , PostRegister
     , LoginForm(..)
     , PostLogin
+    , GetLoopersStatus
+    , LoopersStatus(..)
+    , LooperStatus(..)
     , GetDocs
     , GetDocsResponse(..)
     , AdminStats(..)
@@ -94,6 +97,7 @@ import Servant.HTML.Blaze
 
 import Tickler.Data
 
+import Tickler.API.Types
 import Tickler.API.Admin
 import Tickler.API.Protected
 
@@ -122,6 +126,7 @@ type TicklerPublicAPI = ToServant (TicklerPublicSite AsApi)
 data TicklerPublicSite route = TicklerPublicSite
     { postRegister :: route :- PostRegister
     , postLogin :: route :- PostLogin
+    , getLoopersStatus :: route :- GetLoopersStatus
     , getDocs :: route :- GetDocs
     } deriving (Generic)
 
@@ -131,5 +136,7 @@ type PostRegister
 
 type PostLogin
      = "login" :> ReqBody '[ JSON] LoginForm :> PostNoContent '[ JSON] (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
+
+type GetLoopersStatus = "loopers" :> Get '[ JSON] LoopersStatus
 
 type GetDocs = Get '[ HTML] GetDocsResponse
