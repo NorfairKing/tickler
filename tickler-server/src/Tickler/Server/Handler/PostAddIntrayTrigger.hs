@@ -12,7 +12,6 @@ module Tickler.Server.Handler.PostAddIntrayTrigger
 
 import Import
 
-import qualified Data.ByteString.Lazy.Char8 as LB8
 import qualified Data.Text as T
 import Data.Time
 import Data.UUID.Typed

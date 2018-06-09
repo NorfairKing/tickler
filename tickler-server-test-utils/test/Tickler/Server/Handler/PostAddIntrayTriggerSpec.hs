@@ -40,7 +40,7 @@ spec =
                             }
                     (uuid, ti) <-
                         runClientOrError tenv $ do
-                            uuid <-
+                            Right uuid <-
                                 clientPostAddIntrayTrigger
                                     ttoken
                                     AddIntrayTrigger
