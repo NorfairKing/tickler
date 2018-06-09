@@ -10,11 +10,8 @@ import Import
 
 import Data.Aeson as JSON
 
-import qualified Data.ByteString.Lazy as LB
 import Data.Char as Char
 import qualified Data.Text as T
-import qualified Data.UUID as UUID
-import Data.UUID.Typed
 
 import Servant.Client.Core
 

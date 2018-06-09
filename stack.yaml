@@ -10,15 +10,6 @@ packages:
 - tickler-server
 - tickler-server-test-utils
 - tickler-web-server
-- /home/syd/mergeless/mergeless
-- /home/syd/mergeless/genvalidity-mergeless
-- /home/syd/cs-syd/code/open-source/intray/intray-data-gen
-- /home/syd/cs-syd/code/open-source/intray/intray-data
-- /home/syd/cs-syd/code/open-source/intray/intray-api-gen
-- /home/syd/cs-syd/code/open-source/intray/intray-api
-- /home/syd/cs-syd/code/open-source/intray/intray-client
-- /home/syd/cs-syd/code/open-source/intray/intray-server-test-utils
-- /home/syd/cs-syd/code/open-source/intray/intray-server
 extra-deps:
 - hlint-2.0.15
 - extra-1.6.5
@@ -33,17 +24,21 @@ extra-deps:
 - amazonka-1.6.0
 - amazonka-core-1.6.0
 - amazonka-ses-1.6.0
-  # - git: git@github.com:NorfairKing/intray.git
-  #   commit: a44433f29939af93959aa13e6362f5a369a14f55
-  #   subdirs:
-  #     - intray-data
-  #     - intray-data-gen
-  #     - intray-api
-  #     - intray-api-gen
-  #     - intray-client
-  #     - intray-client-gen
-  #     - intray-server
-  #     - intray-server-test-utils
+- git: git@github.com:NorfairKing/intray.git
+  commit: 32865df46659d40a39ecf516ebf7ca7624281fc5
+  subdirs:
+    - intray-data
+    - intray-data-gen
+    - intray-api
+    - intray-api-gen
+    - intray-client
+    - intray-server
+    - intray-server-test-utils
+- git: https://github.com/NorfairKing/mergeless.git
+  commit: f0dc884343a682afdc8f9a39bee419d99d85c4c3
+  subdirs:
+    - mergeless
+    - genvalidity-mergeless
 - git: git@github.com:NorfairKing/validity.git
   commit: a86dd3e4830c14c056a0d5d8712864d395d25b2a
   subdirs:
