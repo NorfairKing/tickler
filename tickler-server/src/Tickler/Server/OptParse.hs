@@ -99,7 +99,7 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
             pure
                 TriggeredEmailConverterSettings
                 { triggeredEmailConverterSetFromAddress =
-                      unsafeEmailAddress "tickler" "cs-syd.eu"
+                      unsafeEmailAddress "triggered" "tickler.cs-syd.eu"
                 , triggeredEmailConverterSetFromName = "Tickler"
                 }
     let serveSetLooperSettings = LooperSettings {..}
