@@ -24,7 +24,7 @@ extra-deps:
 - amazonka-core-1.6.0
 - amazonka-ses-1.6.0
 - git: git@github.com:NorfairKing/intray.git
-  commit: 2ebf6d6600f45f5bb19cd3abd2b7e43fdd657852
+  commit: c36c825b2031bf30bb13a522b7bd6cf2419ceb68
   subdirs:
     - intray-data
     - intray-data-gen
