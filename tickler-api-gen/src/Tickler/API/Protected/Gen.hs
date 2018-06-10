@@ -25,7 +25,12 @@ instance GenValid ItemFilter
 instance GenUnchecked TypedItem
 
 instance GenValid TypedItem where
-    genValid = (TypedItem <$> genValid <*>genValid <*> genValid) `suchThat` isValid
+    genValid = (TypedItem <$> genValid <*> genValid) `suchThat` isValid
+
+instance GenUnchecked a => GenUnchecked (Tickle a)
+
+instance GenValid a => GenValid (Tickle a) where
+    genValid = (Tickle <$> genValid <*> genValid) `suchThat` isValid
 
 instance GenUnchecked a => GenUnchecked (ItemInfo a)
 
@@ -34,7 +39,6 @@ instance GenValid a => GenValid (ItemInfo a) where
         (ItemInfo <$> genValid <*> genValid <*> genValid <*> genValid <*>
          genValid) `suchThat`
         isValid
-
 
 instance GenUnchecked a => GenUnchecked (TriggerInfo a)
 
@@ -67,3 +71,13 @@ instance GenUnchecked AddEmailTrigger
 
 instance GenValid AddEmailTrigger where
     genValid = (AddEmailTrigger <$> genValid) `suchThat` isValid
+
+instance GenUnchecked SyncRequest
+
+instance GenValid SyncRequest where
+    genValid = (SyncRequest <$> genValid) `suchThat` isValid
+
+instance GenUnchecked SyncResponse
+
+instance GenValid SyncResponse where
+    genValid = (SyncResponse <$> genValid) `suchThat` isValid

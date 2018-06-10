@@ -42,7 +42,8 @@ import Database.Persist.Sqlite
 import Network.Wai as Wai
 import Network.Wai.Handler.Warp (testWithApplication)
 
-import Intray.Server.TestUtils (cleanupIntrayTestServer, setupIntrayTestApp)
+import Intray.Server.TestUtils
+       (cleanupIntrayTestServer, setupIntrayTestApp)
 
 import Tickler.API
 import Tickler.Client
@@ -77,7 +78,7 @@ withBothTicklerAndIntrayServer specFunc =
                     , ClientEnv man (BaseUrl Http "127.0.0.1" iport "") Nothing)
 
 testdbFile :: String
-testdbFile = "test.db"
+testdbFile = "tickler-test.db"
 
 setupTicklerTestConn :: IO ConnectionPool
 setupTicklerTestConn = do
@@ -99,26 +100,23 @@ setupTicklerTestApp = do
     let cookieCfg = defaultCookieSettings
     let ticklerEnv =
             TicklerServerEnv
-                { envConnectionPool = pool
-                , envCookieSettings = cookieCfg
-                , envJWTSettings = jwtCfg
-                , envAdmins = [fromJust $ parseUsername "admin"]
-                , envLoopersHandle =
-                      LoopersHandle
-                          { emailerLooperHandle = LooperHandleDisabled
-                          , triggererLooperHandle = LooperHandleDisabled
-                          , verificationEmailConverterLooperHandle =
-                                LooperHandleDisabled
-                          , triggeredIntrayItemSchedulerLooperHandle =
-                                LooperHandleDisabled
-                          , triggeredIntrayItemSenderLooperHandle =
-                                LooperHandleDisabled
-                          , triggeredEmailSchedulerLooperHandle =
-                                LooperHandleDisabled
-                          , triggeredEmailConverterLooperHandle =
-                                LooperHandleDisabled
-                          }
-                }
+            { envConnectionPool = pool
+            , envCookieSettings = cookieCfg
+            , envJWTSettings = jwtCfg
+            , envAdmins = [fromJust $ parseUsername "admin"]
+            , envLoopersHandle =
+                  LoopersHandle
+                  { emailerLooperHandle = LooperHandleDisabled
+                  , triggererLooperHandle = LooperHandleDisabled
+                  , verificationEmailConverterLooperHandle =
+                        LooperHandleDisabled
+                  , triggeredIntrayItemSchedulerLooperHandle =
+                        LooperHandleDisabled
+                  , triggeredIntrayItemSenderLooperHandle = LooperHandleDisabled
+                  , triggeredEmailSchedulerLooperHandle = LooperHandleDisabled
+                  , triggeredEmailConverterLooperHandle = LooperHandleDisabled
+                  }
+            }
     pure $
         serveWithContext
             ticklerAPI
@@ -161,9 +159,9 @@ randomRegistration = do
     u2 <- nextRandomUUID :: IO (UUID Text)
     pure
         Registration
-            { registrationUsername = fromJust $ parseUsername $ uuidText u1
-            , registrationPassword = uuidText u2
-            }
+        { registrationUsername = fromJust $ parseUsername $ uuidText u1
+        , registrationPassword = uuidText u2
+        }
 
 withValidNewUserAndData ::
        ClientEnv -> (Username -> Text -> Token -> IO ()) -> Expectation
@@ -184,9 +182,9 @@ withNewUser cenv r func = do
         Right NoContent -> do
             let lf =
                     LoginForm
-                        { loginFormUsername = registrationUsername r
-                        , loginFormPassword = registrationPassword r
-                        }
+                    { loginFormUsername = registrationUsername r
+                    , loginFormPassword = registrationPassword r
+                    }
             Headers NoContent (HCons _ (HCons sessionHeader HNil)) <-
                 runClientOrError cenv $ clientPostLogin lf
             case sessionHeader of

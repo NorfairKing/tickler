@@ -8,11 +8,9 @@ module Tickler.Server.Handler.SyncSpec
 
 import TestImport
 
-import Data.Mergeless
-
 import Tickler.Client
 
-import Tickler.API.Gen ()
+import Tickler.Client.Gen ()
 import Tickler.Server.TestUtils
 
 spec :: Spec

@@ -35,7 +35,7 @@ serveGetAccountInfo (Authenticated AuthCookie {..}) = do
                 AccountInfo
                 { accountInfoUUID = authCookieUserUUID
                 , accountInfoUsername = userUsername
-                , accountInfoCreatedTimestamp = userCreatedTimestamp
+                , accountInfoCreated = userCreated
                 , accountInfoLastLogin = userLastLogin
                 , accountInfoAdmin = userUsername `elem` admins
                 }

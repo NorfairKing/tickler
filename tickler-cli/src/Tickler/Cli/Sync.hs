@@ -7,8 +7,6 @@ module Tickler.Cli.Sync
 
 import Import
 
-import Data.Mergeless
-
 import Tickler.Client
 
 import Tickler.Cli.Client
@@ -16,8 +14,7 @@ import Tickler.Cli.OptParse
 import Tickler.Cli.Session
 import Tickler.Cli.Store
 
-withStoreAndSync ::
-       (Store ItemUUID TypedItem -> CliM (Store ItemUUID TypedItem)) -> CliM ()
+withStoreAndSync :: (Store -> CliM Store) -> CliM ()
 withStoreAndSync func = do
     before <- readStoreOrEmpty
     processed <- func before
@@ -44,11 +41,10 @@ withStoreAndSync func = do
                     Right r -> pure $ mergeSyncResponse before r
     writeStore after
 
-modifyStoreAndSync ::
-       (Store ItemUUID TypedItem -> Store ItemUUID TypedItem) -> CliM ()
+modifyStoreAndSync :: (Store -> Store) -> CliM ()
 modifyStoreAndSync func = withStoreAndSync (pure . func)
 
-syncAndGet :: (Store ItemUUID TypedItem -> CliM a) -> CliM a
+syncAndGet :: (Store -> CliM a) -> CliM a
 syncAndGet func = do
     before <- readStoreOrEmpty
     let req = makeSyncRequest before
@@ -75,5 +71,5 @@ syncAndGet func = do
                     writeStore after
                     func after
 
-syncAndReturn :: (Store ItemUUID TypedItem -> a) -> CliM a
+syncAndReturn :: (Store -> a) -> CliM a
 syncAndReturn func = syncAndGet $ pure . func

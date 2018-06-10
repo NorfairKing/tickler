@@ -6,7 +6,7 @@ module Tickler.Cli.Commands.Sync
 
 import Import
 
-import Data.Mergeless
+import qualified Data.Mergeless as Mergeless
 
 import Tickler.API
 
@@ -34,17 +34,30 @@ sync = do
                         pure $ mergeSyncResponse before resp
     writeStore after
 
-showMergeStats ::
-       SyncRequest ItemUUID TypedItem
-    -> SyncResponse ItemUUID TypedItem
-    -> String
+showMergeStats :: SyncRequest -> SyncResponse -> String
 showMergeStats SyncRequest {..} SyncResponse {..} =
     unlines
-        [ unwords [show $ length syncResponseAddedItems, "added   remotely"]
-        , unwords [show $ length syncRequestUndeletedItems, "deleted remotely"]
-        , unwords [show $ length syncResponseNewRemoteItems, "added   locally"]
+        [ unwords
+              [ show $
+                length $ Mergeless.syncResponseAddedItems syncResponseTickles
+              , "tickles added   remotely"
+              ]
         , unwords
-              [ show $ length syncResponseItemsToBeDeletedLocally
-              , "deleted locally"
+              [ show $
+                length $ Mergeless.syncRequestUndeletedItems syncRequestTickles
+              , "tickles deleted remotely"
+              ]
+        , unwords
+              [ show $
+                length $
+                Mergeless.syncResponseNewRemoteItems syncResponseTickles
+              , "tickles added   locally"
+              ]
+        , unwords
+              [ show $
+                length $
+                Mergeless.syncResponseItemsToBeDeletedLocally
+                    syncResponseTickles
+              , "tickles deleted locally"
               ]
         ]

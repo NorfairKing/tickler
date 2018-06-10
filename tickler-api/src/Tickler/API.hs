@@ -25,7 +25,10 @@ module Tickler.API
     , textTypedItem
     , TypedItemCase(..)
     , typedItemCase
+    , Tickle(..)
+    , TypedTickle
     , ItemInfo(..)
+    , TypedItemInfo
     , AddItem
     , Added(..)
     , Synced(..)

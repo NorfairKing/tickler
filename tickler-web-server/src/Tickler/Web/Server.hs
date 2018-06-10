@@ -12,12 +12,12 @@ import Control.Concurrent
 import Control.Concurrent.Async (concurrently_)
 import qualified Data.HashMap.Strict as HM
 import qualified Network.HTTP.Client as Http
+import qualified Network.HTTP.Client.TLS as Http
 
 import Yesod
 
 import Servant.Client (parseBaseUrl)
 
-import Tickler.Client
 
 import qualified Tickler.Server as API
 import qualified Tickler.Server.OptParse as API
@@ -42,17 +42,17 @@ makeTicklerApp :: ServeSettings -> IO App
 makeTicklerApp ServeSettings {..} = do
     let apiPort = API.serveSetPort serveSetAPISettings
     burl <- parseBaseUrl $ "http://127.0.0.1:" ++ show apiPort
-    man <- Http.newManager $ managerSetsFor burl
+    man <- Http.newManager Http.tlsManagerSettings
     tokens <- newMVar HM.empty
     pure
         App
-            { appHttpManager = man
-            , appStatic = myStatic
-            , appPersistLogins = serveSetPersistLogins
-            , appLoginTokens = tokens
-            , appAPIBaseUrl = burl
-            , appDefaultIntrayUrl = serveSetDefaultIntrayUrl
-            }
+        { appHttpManager = man
+        , appStatic = myStatic
+        , appPersistLogins = serveSetPersistLogins
+        , appLoginTokens = tokens
+        , appAPIBaseUrl = burl
+        , appDefaultIntrayUrl = serveSetDefaultIntrayUrl
+        }
 
 runTicklerAPIServer :: ServeSettings -> IO ()
 runTicklerAPIServer ss = API.runTicklerServer $ serveSetAPISettings ss

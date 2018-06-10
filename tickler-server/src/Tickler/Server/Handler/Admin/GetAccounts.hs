@@ -33,7 +33,7 @@ serveAdminGetAccounts (Authenticated AuthCookie {..}) =
                 AccountInfo
                 { accountInfoUUID = userIdentifier
                 , accountInfoUsername = userUsername
-                , accountInfoCreatedTimestamp = userCreatedTimestamp
+                , accountInfoCreated = userCreated
                 , accountInfoLastLogin = userLastLogin
                 , accountInfoAdmin = userUsername `elem` admins
                 }

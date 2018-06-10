@@ -3,13 +3,16 @@
    Created: ^{createdWidget}
   <p>
     Scheduled: ^{scheduledWidget}
+  $maybe triggeredWidget <- mTriggeredWidget
+    <p>
+      Triggered: ^{triggeredWidget}
   <p>
-    $case typedItemCase itemInfoContents
+    $case typedItemCase $ tickleContent itemInfoContents
       $of Left err
         Invalid item: #{err}
       $of Right i
         $case i 
-          $of CaseTextItem t _
+          $of CaseTextItem t
             #{t}
   <form
     method="post"

@@ -20,7 +20,10 @@ module Tickler.API.Protected
     , textTypedItem
     , TypedItemCase(..)
     , typedItemCase
+    , Tickle(..)
+    , TypedTickle
     , ItemInfo(..)
+    , TypedItemInfo
     , AddItem
     , Added(..)
     , Synced(..)
@@ -125,7 +128,7 @@ type DeleteItem
      = ProtectAPI :> "tickler" :> "item" :> "delete" :> Capture "id" ItemUUID :> Delete '[ JSON] NoContent
 
 type PostSync
-     = ProtectAPI :> "sync" :> ReqBody '[ JSON] (SyncRequest ItemUUID TypedItem) :> Post '[ JSON] (SyncResponse ItemUUID TypedItem)
+     = ProtectAPI :> "sync" :> ReqBody '[ JSON] SyncRequest :> Post '[ JSON] SyncResponse
 
 type GetTriggers
      = ProtectAPI :> "trigger" :> Get '[ JSON] [TriggerInfo TypedTriggerInfo]

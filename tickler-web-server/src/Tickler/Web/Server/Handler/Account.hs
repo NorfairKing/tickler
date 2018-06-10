@@ -52,7 +52,7 @@ getAccountPage mfr =
     withLogin $ \t -> do
         AccountInfo {..} <- runClientOrErr $ clientGetAccountInfo t
         as <- runClientOrErr $ clientGetAccountSettings t
-        timestampWidget <- makeTimestampWidget accountInfoCreatedTimestamp
+        timestampWidget <- makeTimestampWidget accountInfoCreated
         token <- genToken
         (accountSettingsFormWidget, formEnctype) <-
             generateFormPost $ accountSettingsForm $ Just as

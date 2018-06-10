@@ -51,7 +51,7 @@ runTriggeredIntrayItemScheduler _ = do
                                     , triggeredIntrayItemTrigger =
                                           userTriggerTriggerId ut
                                     , triggeredIntrayItemIntrayItemUUID =
-                                          Nothing
+                                          Nothing, triggeredIntrayItemError = Nothing
                                     }
                             Just _ -> Nothing
     runDb $ insertMany_ tes

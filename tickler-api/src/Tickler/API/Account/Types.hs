@@ -32,7 +32,7 @@ import Tickler.API.Types ()
 data AccountInfo = AccountInfo
     { accountInfoUUID :: AccountUUID
     , accountInfoUsername :: Username
-    , accountInfoCreatedTimestamp :: UTCTime
+    , accountInfoCreated :: UTCTime
     , accountInfoLastLogin :: Maybe UTCTime
     , accountInfoAdmin :: Bool
     } deriving (Show, Eq, Ord, Generic)
@@ -51,7 +51,7 @@ instance ToJSON AccountInfo where
         object
             [ "uuid" .= accountInfoUUID
             , "username" .= accountInfoUsername
-            , "created" .= accountInfoCreatedTimestamp
+            , "created" .= accountInfoCreated
             , "last-login" .= accountInfoLastLogin
             , "admin" .= accountInfoAdmin
             ]

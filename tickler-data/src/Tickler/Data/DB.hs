@@ -40,7 +40,7 @@ User
     identifier AccountUUID
     username Username
     hashedPassword HashedPassword
-    createdTimestamp UTCTime
+    created UTCTime
     lastLogin UTCTime Maybe
     UniqueUserIdentifier identifier
     UniqueUsername username
@@ -159,6 +159,7 @@ TriggeredIntrayItem
     item            ItemUUID
     trigger         TriggerUUID
     intrayItemUUID  Text        Maybe
+    error           Text        Maybe
     UniqueTriggeredIntrayItem item trigger
 
     deriving Show

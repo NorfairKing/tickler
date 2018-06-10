@@ -21,6 +21,10 @@ spec = do
     genValidSpec @TypedItem
     jsonSpecOnValid @TypedItem
     jsonSpecOnValid @TypedItem
+    eqSpec @(Tickle TypedItem)
+    ordSpec @(Tickle TypedItem)
+    genValidSpec @(Tickle TypedItem)
+    jsonSpecOnValid @(Tickle TypedItem)
     eqSpec @(ItemInfo TypedItem)
     ordSpec @(ItemInfo TypedItem)
     genValidSpec @(ItemInfo TypedItem)
@@ -51,3 +55,11 @@ spec = do
     ordSpec @AddEmailTrigger
     genValidSpec @AddEmailTrigger
     jsonSpecOnValid @AddEmailTrigger
+    eqSpec @SyncRequest
+    ordSpec @SyncRequest
+    genValidSpec @SyncRequest
+    jsonSpecOnValid @SyncRequest
+    eqSpec @SyncResponse
+    ordSpec @SyncResponse
+    genValidSpec @SyncResponse
+    jsonSpecOnValid @SyncResponse

@@ -24,14 +24,17 @@ module Tickler.Client
     , clientAdminGetStats
     , clientAdminDeleteAccount
     , clientAdminGetAccounts
-    , managerSetsFor
+    , module Tickler.Client.Store
     , ItemFilter(..)
     , ItemType(..)
     , TypedItem(..)
     , textTypedItem
     , TypedItemCase(..)
     , typedItemCase
+    , Tickle(..)
+    , TypedTickle
     , ItemInfo(..)
+    , TypedItemInfo
     , AddItem
     , Added(..)
     , Synced(..)
@@ -75,8 +78,6 @@ module Tickler.Client
 import Import
 
 import qualified Data.UUID.Typed
-import qualified Network.HTTP.Client as Http
-import qualified Network.HTTP.Client.TLS as Http
 
 import Servant.API
 import Servant.API.Flatten
@@ -87,6 +88,8 @@ import Servant.Client
 
 import Tickler.API
 
+import Tickler.Client.Store
+
 clientGetAllItems :: Token -> ClientM [ItemInfo TypedItem]
 clientGetAllItems t = clientGetItems t Nothing
 
@@ -95,10 +98,7 @@ clientGetItems :: Token -> Maybe ItemFilter -> ClientM [ItemInfo TypedItem]
 clientPostAddItem :: Token -> AddItem -> ClientM ItemUUID
 clientGetItem :: Token -> ItemUUID -> ClientM (ItemInfo TypedItem)
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
-clientPostSync ::
-       Token
-    -> (SyncRequest ItemUUID TypedItem)
-    -> ClientM (SyncResponse ItemUUID TypedItem)
+clientPostSync :: Token -> SyncRequest -> ClientM SyncResponse
 clientGetTriggers :: Token -> ClientM [TriggerInfo TypedTriggerInfo]
 clientGetTrigger ::
        Token -> TriggerUUID -> ClientM (TriggerInfo TypedTriggerInfo)
@@ -121,9 +121,3 @@ clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
 clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetLoopersStatus :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
     client (flatten ticklerAPI)
-
-managerSetsFor :: BaseUrl -> Http.ManagerSettings
-managerSetsFor burl =
-    case baseUrlScheme burl of
-        Http -> Http.defaultManagerSettings
-        Https -> Http.tlsManagerSettings

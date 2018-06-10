@@ -7,7 +7,7 @@ module Tickler.Server.Handler.PostSync
 
 import Import
 
-import Data.Mergeless
+import qualified Data.Mergeless as Mergeless
 import qualified Data.Set as S
 import Data.Time
 import Data.UUID.Typed
@@ -25,10 +25,8 @@ import Tickler.Server.Item
 import Tickler.Server.Types
 
 servePostSync ::
-       AuthResult AuthCookie
-    -> SyncRequest ItemUUID TypedItem
-    -> TicklerHandler (SyncResponse ItemUUID TypedItem)
-servePostSync (Authenticated AuthCookie {..}) sr = do
+       AuthResult AuthCookie -> SyncRequest -> TicklerHandler SyncResponse
+servePostSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
     now <- liftIO getCurrentTime
     let syncProcessorDeleteMany s =
             runDb $
@@ -56,7 +54,14 @@ servePostSync (Authenticated AuthCookie {..}) sr = do
             runDb $
             insertMany_ $
             flip map (S.toList s) $ \Synced {..} ->
-                makeTicklerItem authCookieUserUUID syncedUuid syncedCreated syncedSynced syncedValue
-        proc = SyncProcessor {..}
-    processSyncCustom nextRandomUUID now proc sr
+                makeTicklerItem
+                    authCookieUserUUID
+                    syncedUuid
+                    syncedCreated
+                    syncedSynced
+                    syncedValue
+        proc = Mergeless.SyncProcessor {..}
+    syncResponseTickles <-
+        Mergeless.processSyncCustom nextRandomUUID now proc syncRequestTickles
+    pure SyncResponse {..}
 servePostSync _ _ = throwAll err401

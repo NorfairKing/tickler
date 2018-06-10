@@ -28,12 +28,16 @@ getTriggeredR =
         let nrItems = length items
         withNavBar $(widgetFile "triggered")
 
-makeItemInfosWidget :: [ItemInfo TypedItem] -> Handler Widget
+makeItemInfosWidget :: [TypedItemInfo] -> Handler Widget
 makeItemInfosWidget items = do
     token <- genToken
     fmap mconcat $
         forM items $ \ItemInfo {..} -> do
             createdWidget <- makeTimestampWidget itemInfoCreated
             scheduledWidget <-
-                makeTimestampWidget  $ itemScheduled itemInfoContents
+                makeTimestampWidget $ tickleScheduled itemInfoContents
+            mTriggeredWidget <-
+                case itemInfoTriggered of
+                    Nothing -> pure Nothing
+                    Just iit ->Just <$> makeTimestampWidget iit
             pure $(widgetFile "item")

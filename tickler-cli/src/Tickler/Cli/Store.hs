@@ -9,9 +9,7 @@ module Tickler.Cli.Store
 
 import Import
 
-import Data.Mergeless
-
-import Tickler.API
+import Tickler.Client
 
 import Tickler.Cli.JSON
 import Tickler.Cli.OptParse
@@ -19,12 +17,12 @@ import Tickler.Cli.Path
 
 {-# ANN module "HLint: ignore Use &&" #-}
 
-readStore :: CliM (Maybe (Store ItemUUID TypedItem))
+readStore :: CliM (Maybe Store)
 readStore = storePath >>= readJSON
 
-readStoreOrEmpty :: CliM (Store ItemUUID TypedItem)
+readStoreOrEmpty :: CliM Store
 readStoreOrEmpty = fromMaybe emptyStore <$> readStore
 
-writeStore :: (Store ItemUUID TypedItem) -> CliM ()
+writeStore :: Store -> CliM ()
 writeStore s = do
     storePath >>= (`writeJSON` s)

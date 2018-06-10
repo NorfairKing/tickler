@@ -35,6 +35,7 @@ library:
   - tickler-api
   - tickler-api-gen
   - tickler-client
+  - tickler-client-gen
   - tickler-data
   - tickler-data-gen
   - tickler-server
@@ -87,6 +88,7 @@ tests:
     - tickler-api
     - tickler-api-gen
     - tickler-client
+    - tickler-client-gen
     - tickler-data
     - tickler-data-gen
     - tickler-server-test-utils

@@ -42,11 +42,12 @@ postAddR =
         NewItem {..} <- runInputPost newItemForm
         void $
             runClientOrErr $
-            clientPostAddItem
-                t
-                (textTypedItem
-                     (unTextarea newItemText)
-                     (localTimeToUTC accountSettingsTimeZone $
-                      LocalTime newItemScheduledDay $
-                      fromMaybe midnight newItemScheduledTime))
+            clientPostAddItem t $
+            Tickle
+            { tickleContent = textTypedItem $ unTextarea newItemText
+            , tickleScheduled =
+                  localTimeToUTC accountSettingsTimeZone $
+                  LocalTime newItemScheduledDay $
+                  fromMaybe midnight newItemScheduledTime
+            }
         redirect AddR

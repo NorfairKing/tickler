@@ -6,6 +6,8 @@ import TestImport
 
 import Network.HTTP.Types
 
+import Control.Concurrent
+
 import Yesod.Test
 
 import Tickler.Data (parseUsername)
@@ -26,7 +28,6 @@ spec =
             statusIs 303
             loc <- getLocation
             void followRedirect
-            getResponse >>= (liftIO . print)
             liftIO $ loc `shouldBe` Right AddR
             statusIs 200
         yit

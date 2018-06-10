@@ -41,7 +41,7 @@ servePostRegister Registration {..} = do
                     { userIdentifier = uuid
                     , userUsername = registrationUsername
                     , userHashedPassword = hashedPassword
-                    , userCreatedTimestamp = now
+                    , userCreated = now
                     , userLastLogin = Nothing
                     }
             maybeUserEntity <-

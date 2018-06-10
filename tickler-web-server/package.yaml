@@ -18,6 +18,7 @@ library:
   - cookie
   - data-default
   - http-client
+  - http-client-tls
   - http-media
   - http-types
   - intray-data
@@ -79,17 +80,19 @@ tests:
     - hspec
     - hspec-core
     - http-types
+    - lens
+    - mtl
+    - path
+    - path-io
+    - persistent-sqlite
+    - pretty-show
+    - servant-client
+    - text
     - tickler-data
     - tickler-data-gen
     - tickler-server
     - tickler-server-test-utils
     - tickler-web-server
-    - mtl
-    - path
-    - path-io
-    - persistent-sqlite
-    - servant-client
-    - text
     - typed-uuid
     - yesod-auth
     - yesod-test

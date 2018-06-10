@@ -6,6 +6,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# OPTIONS_GHC -fno-warn-overlapping-patterns #-}
 
 module Tickler.API.Protected.Types
     ( ItemFilter(..)
@@ -14,10 +15,13 @@ module Tickler.API.Protected.Types
     , textTypedItem
     , TypedItemCase(..)
     , typedItemCase
+    , Tickle(..)
+    , TypedTickle
     , ItemInfo(..)
+    , TypedItemInfo
     , AddItem
-    , Added(..)
-    , Synced(..)
+    , Mergeless.Added(..)
+    , Mergeless.Synced(..)
     , SyncRequest(..)
     , SyncResponse(..)
     , TriggerType(..)
@@ -45,11 +49,10 @@ import Data.Aeson as JSON
 import qualified Data.Aeson as JSON (Result(Error))
 import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Char8 as SB8
-import Data.Mergeless
+import qualified Data.Mergeless as Mergeless
 import qualified Data.Text.Encoding as TE
 import Data.Time
 import Data.UUID.Typed
-import System.IO.Unsafe as Unsafe
 
 import Servant.Docs
 import Web.HttpApiData
@@ -78,62 +81,78 @@ instance FromHttpApiData ItemFilter where
 data TypedItem = TypedItem
     { itemType :: ItemType
     , itemData :: ByteString
-    , itemScheduled :: UTCTime
     } deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity TypedItem
 
 instance FromJSON TypedItem where
-    parseJSON =
-        withObject "TypedItem" $ \o ->
-            TypedItem <$> o .: "type" <*>
-            (do t <- o .: "data"
-                case Base64.decode $ SB8.pack t of
-                    Left err ->
-                        fail $
-                        unwords
-                            [ "Failed to decode base64-encoded typed item data:"
-                            , err
-                            ]
-                    Right r -> pure r) <*>
-            o .: "scheduled"
+    parseJSON v =
+        (withObject "TypedItem" $ \o ->
+             TypedItem <$> o .: "type" <*>
+             (do d <- o .: "data"
+                 case Base64.decode $ SB8.pack d of
+                     Left err ->
+                         fail $
+                         unwords
+                             [ "Failed to decode base64-encoded typed item data:"
+                             , err
+                             ]
+                     Right r -> pure r))
+            v <|>
+        (withText "TypedItem" $ \t ->
+             pure $ TypedItem {itemType = TextItem, itemData = TE.encodeUtf8 t})
+            v
 
 instance ToJSON TypedItem where
     toJSON TypedItem {..} =
-        object
-            [ "type" .= itemType
-            , "data" .= SB8.unpack (Base64.encode itemData)
-            , "scheduled" .= itemScheduled
-            ]
+        case itemType of
+            TextItem ->
+                case TE.decodeUtf8' itemData of
+                    Left _ ->
+                        object
+                            [ "type" .= itemType
+                            , "data" .= SB8.unpack (Base64.encode itemData)
+                            ]
+                    Right t -> JSON.String t
+            _ ->
+                object
+                    [ "type" .= itemType
+                    , "data" .= SB8.unpack (Base64.encode itemData)
+                    ]
 
 instance ToSample TypedItem where
-    toSamples Proxy =
-        singleSample $
-        TypedItem
-            TextItem
-            "Hello World!"
-            (Unsafe.unsafePerformIO getCurrentTime)
+    toSamples Proxy = singleSample $ TypedItem TextItem "Hello World!"
 
-textTypedItem :: Text -> UTCTime -> TypedItem
-textTypedItem t sch =
-    TypedItem
-        {itemType = TextItem, itemData = TE.encodeUtf8 t, itemScheduled = sch}
+textTypedItem :: Text -> TypedItem
+textTypedItem t = TypedItem {itemType = TextItem, itemData = TE.encodeUtf8 t}
 
 typedItemCase :: TypedItem -> Either String TypedItemCase
 typedItemCase TypedItem {..} =
     case itemType of
-        TextItem ->
-            left show $
-            CaseTextItem <$> TE.decodeUtf8' itemData <*> pure itemScheduled
+        TextItem -> left show $ CaseTextItem <$> TE.decodeUtf8' itemData
 
-data TypedItemCase =
+newtype TypedItemCase =
     CaseTextItem Text
-                 UTCTime
     deriving (Show, Read, Eq, Ord, Generic)
+
+data Tickle a = Tickle
+    { tickleContent :: a
+    , tickleScheduled :: UTCTime
+    } deriving (Show, Read, Eq, Ord, Generic)
+
+instance Validity a => Validity (Tickle a)
+
+instance ToJSON a => ToJSON (Tickle a)
+
+instance FromJSON a => FromJSON (Tickle a)
+
+instance ToSample a => ToSample (Tickle a)
+
+type TypedTickle = Tickle TypedItem
 
 data ItemInfo a = ItemInfo
     { itemInfoIdentifier :: ItemUUID
-    , itemInfoContents :: a
+    , itemInfoContents :: Tickle a
     , itemInfoCreated :: UTCTime
     , itemInfoSynced :: UTCTime
     , itemInfoTriggered :: Maybe UTCTime
@@ -154,13 +173,15 @@ instance ToJSON a => ToJSON (ItemInfo a) where
 instance FromJSON a => FromJSON (ItemInfo a) where
     parseJSON =
         withObject "ItemInfo TypedItem" $ \o ->
-            ItemInfo <$> o .: "id" <*> o .: "contents"<*> o .: "created" <*>
+            ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created" <*>
             o .: "synced" <*>
             o .: "triggered"
 
 instance ToSample a => ToSample (ItemInfo a)
 
-type AddItem = TypedItem
+type TypedItemInfo = ItemInfo TypedItem
+
+type AddItem = TypedTickle
 
 data TriggerInfo a = TriggerInfo
     { triggerInfoIdentifier :: TriggerUUID
@@ -183,9 +204,33 @@ instance ToSample a => ToSample (TriggerInfo a)
 instance Functor TriggerInfo where
     fmap f ti = ti {triggerInfo = f $ triggerInfo ti}
 
-instance ToSample (SyncRequest ItemUUID TypedItem)
+data SyncRequest = SyncRequest
+    { syncRequestTickles :: Mergeless.SyncRequest ItemUUID TypedTickle
+    } deriving (Show, Eq, Ord, Generic)
 
-instance ToSample (SyncResponse ItemUUID TypedItem)
+instance Validity SyncRequest
+
+instance FromJSON SyncRequest
+
+instance ToJSON SyncRequest
+
+instance ToSample SyncRequest
+
+instance ToSample (Mergeless.SyncRequest ItemUUID TypedTickle)
+
+data SyncResponse = SyncResponse
+    { syncResponseTickles :: Mergeless.SyncResponse ItemUUID TypedTickle
+    } deriving (Show, Eq, Ord, Generic)
+
+instance Validity SyncResponse
+
+instance FromJSON SyncResponse
+
+instance ToJSON SyncResponse
+
+instance ToSample SyncResponse
+
+instance ToSample (Mergeless.SyncResponse ItemUUID TypedTickle)
 
 decodeTriggerInfo ::
        FromJSON a
@@ -201,9 +246,9 @@ decodeTriggerInfo tt ti = unwrap $ decodeTypedTriggerInfo tt <$> ti
             Just i ->
                 Just $
                 TriggerInfo
-                    { triggerInfoIdentifier = triggerInfoIdentifier tmi
-                    , triggerInfo = i
-                    }
+                { triggerInfoIdentifier = triggerInfoIdentifier tmi
+                , triggerInfo = i
+                }
 
 data TypedTriggerInfo = TypedTriggerInfo
     { typedTriggerInfoType :: TriggerType

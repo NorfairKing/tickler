@@ -4,6 +4,7 @@ packages:
 - tickler-api-gen
 - tickler-cli
 - tickler-client
+- tickler-client-gen
 - tickler-data
 - tickler-data-gen
 - tickler-server

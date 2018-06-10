@@ -37,7 +37,7 @@
           <td>
             #{usernameText $ accountInfoUsername u}
           <td>
-            #{prettyTimestamp now $ accountInfoCreatedTimestamp u}
+            #{prettyTimestamp now $ accountInfoCreated u}
           <td>
             $maybe ll <- accountInfoLastLogin u
               #{prettyTimestamp now ll}

@@ -16,14 +16,15 @@ module Tickler.Web.Server.TestUtils
 
 import TestImport
 
+import Control.Lens
+import Data.Text (Text)
+
 import Yesod.Auth
 import Yesod.Test
 
-import Data.Text (Text)
-
 import Network.HTTP.Types
 
-import Database.Persist.Sqlite (mkSqliteConnectionInfo)
+import Database.Persist.Sqlite (mkSqliteConnectionInfo, walEnabled)
 
 import Servant.Client (BaseUrl(..), ClientEnv(..))
 
@@ -42,7 +43,8 @@ import Tickler.Data.Gen ()
 
 ticklerTestServeSettings :: IO ServeSettings
 ticklerTestServeSettings = do
-    let connInfo = mkSqliteConnectionInfo "test.db"
+    let connInfo =
+            mkSqliteConnectionInfo "tickler-test.db" & walEnabled .~ False
     pure
         ServeSettings
         { serveSetPort = 8000
@@ -81,11 +83,11 @@ ticklerWebServerSpec = b . a
     a =
         yesodSpecWithSiteGeneratorAndArgument
             (\(ClientEnv _ burl _) -> do
-                 sets <- ticklerTestServeSettings
+                 sets_ <- ticklerTestServeSettings
                  let apiSets =
-                         serveSetAPISettings
-                             sets {serveSetPort = baseUrlPort burl}
-                 let sets' = sets {serveSetAPISettings = apiSets}
+                         (serveSetAPISettings sets_)
+                         {API.serveSetPort = baseUrlPort burl}
+                 let sets' = sets_ {serveSetAPISettings = apiSets}
                  makeTicklerApp sets')
     b :: SpecWith ClientEnv -> Spec
     b = API.withTicklerServer
@@ -132,9 +134,9 @@ withExampleAccount =
 withExampleAccountAndLogin ::
        (Username -> Text -> YesodExample App a) -> YesodExample App a
 withExampleAccountAndLogin func =
-    withExampleAccount $ \un p -> do
-        loginTo un p
-        func un p
+    withExampleAccount $ \un_ p -> do
+        loginTo un_ p
+        func un_ p
 
 withExampleAccount_ :: YesodExample App a -> YesodExample App a
 withExampleAccount_ = withExampleAccount . const . const
@@ -152,9 +154,9 @@ withAdminAccount_ = withAdminAccount . const . const
 withAdminAccountAndLogin ::
        (Username -> Text -> YesodExample App a) -> YesodExample App a
 withAdminAccountAndLogin func =
-    withAdminAccount $ \un p -> do
-        loginTo un p
-        func un p
+    withAdminAccount $ \un_ p -> do
+        loginTo un_ p
+        func un_ p
 
 withAdminAccountAndLogin_ :: YesodExample App a -> YesodExample App a
 withAdminAccountAndLogin_ = withAdminAccountAndLogin . const . const

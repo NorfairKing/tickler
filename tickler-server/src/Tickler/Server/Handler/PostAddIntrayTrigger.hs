@@ -41,7 +41,7 @@ servePostAddIntrayTrigger ::
 servePostAddIntrayTrigger (Authenticated AuthCookie {..}) AddIntrayTrigger {..} = do
     now <- liftIO getCurrentTime
     uuid <- liftIO nextRandomUUID
-    man <- liftIO $ Http.newManager $ managerSetsFor addIntrayTriggerUrl
+    man <- liftIO $ Http.newManager Http.tlsManagerSettings
     errOrOk <-
         do let env = ClientEnv man addIntrayTriggerUrl Nothing
            liftIO $
