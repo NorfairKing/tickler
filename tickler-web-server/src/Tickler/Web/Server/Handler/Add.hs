@@ -44,11 +44,9 @@ postAddR =
             runClientOrErr $
             clientPostAddItem
                 t
-                AddItem
-                { addItemTypedItem = textTypedItem $ unTextarea newItemText
-                , addItemScheduled =
-                      localTimeToUTC accountSettingsTimeZone $
+                (textTypedItem
+                     (unTextarea newItemText)
+                     (localTimeToUTC accountSettingsTimeZone $
                       LocalTime newItemScheduledDay $
-                      fromMaybe midnight newItemScheduledTime
-                }
+                      fromMaybe midnight newItemScheduledTime))
         redirect AddR

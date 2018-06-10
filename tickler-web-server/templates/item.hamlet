@@ -9,7 +9,7 @@
         Invalid item: #{err}
       $of Right i
         $case i 
-          $of CaseTextItem t
+          $of CaseTextItem t _
             #{t}
   <form
     method="post"

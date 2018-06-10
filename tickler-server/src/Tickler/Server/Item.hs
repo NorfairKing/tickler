@@ -65,8 +65,8 @@ makeItemInfo (Left TicklerItem {..}) =
                   , itemScheduled = ticklerItemScheduled
                   }
         , itemInfoCreated = ticklerItemCreated
-        , itemInfoScheduled = ticklerItemScheduled
-        , itemInfoTriggered = False
+        , itemInfoSynced = ticklerItemSynced
+        , itemInfoTriggered = Nothing
         }
 makeItemInfo (Right TriggeredItem {..}) =
     ItemInfo
@@ -78,6 +78,6 @@ makeItemInfo (Right TriggeredItem {..}) =
                   , itemScheduled = triggeredItemScheduled
                   }
         , itemInfoCreated = triggeredItemCreated
-        , itemInfoScheduled = triggeredItemScheduled
-        , itemInfoTriggered = True
+        , itemInfoSynced = triggeredItemSynced
+        , itemInfoTriggered = Just triggeredItemTriggered
         }

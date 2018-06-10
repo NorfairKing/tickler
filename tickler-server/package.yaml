@@ -71,6 +71,7 @@ library:
   - template-haskell
   - text
   - tickler-api
+  - tickler-client
   - tickler-data
   - time
   - typed-uuid

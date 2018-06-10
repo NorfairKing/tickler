@@ -34,14 +34,12 @@ import Data.Aeson as JSON
 import qualified Data.ByteString.Lazy as LB
 import qualified Data.Text.Encoding as TE
 import Data.Time
-import qualified Data.UUID as UUID
 import Data.UUID.Typed
 
 import Text.Blaze as HTML
 import Text.Blaze.Html as HTML
 import Text.Pandoc as Pandoc
 
-import Web.Cookie
 
 import Servant.API
 import Servant.Auth

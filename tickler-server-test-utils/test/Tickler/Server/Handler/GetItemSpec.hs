@@ -11,8 +11,7 @@ import TestImport
 import Tickler.API
 import Tickler.Client
 
-import Tickler.Client.Gen ()
-import Tickler.Data.Gen ()
+import Tickler.API.Gen ()
 import Tickler.Server.TestUtils
 
 spec :: Spec
@@ -20,11 +19,10 @@ spec =
     withTicklerServer $
     describe "GetItem" $
     it "gets the same item that was just added" $ \cenv ->
-        forAllValid $ \t ->
+        forAllValid $ \ti ->
             withValidNewUser cenv $ \token -> do
                 i <-
                     runClientOrError cenv $ do
-                        uuid <- clientPostAddItem token t
+                        uuid <- clientPostAddItem token ti
                         clientGetItem token uuid
-                itemInfoContents i `shouldBe` addItemTypedItem t
-                itemInfoScheduled i `shouldBe` addItemScheduled t
+                itemInfoContents i `shouldBe` ti

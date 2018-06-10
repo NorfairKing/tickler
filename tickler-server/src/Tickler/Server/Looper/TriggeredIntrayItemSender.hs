@@ -21,6 +21,7 @@ import Servant.Client
 
 import qualified Intray.Client as Intray
 
+import Tickler.Client
 import Tickler.Data
 
 import Tickler.Server.Looper.Types
@@ -32,7 +33,6 @@ runTriggeredIntrayItemSender _ = do
     tiis <-
         runDb $ selectList [TriggeredIntrayItemIntrayItemUUID ==. Nothing] []
     unless (null tiis) $ do
-        man <- liftIO $ Http.newManager Http.defaultManagerSettings
         forM_ tiis $ \(Entity tii TriggeredIntrayItem {..}) -> do
             mtrig <-
                 runDb $ getBy $ UniqueIntrayTrigger $ triggeredIntrayItemTrigger
@@ -42,6 +42,9 @@ runTriggeredIntrayItemSender _ = do
                         "TriggeredIntraySender"
                         "Trigger does not exist anymore."
                 Just (Entity _ IntrayTrigger {..}) -> do
+                    man <-
+                        liftIO $
+                        Http.newManager $ managerSetsFor intrayTriggerUrl
                     mi <-
                         runDb $
                         getBy $
@@ -58,11 +61,12 @@ runTriggeredIntrayItemSender _ = do
                                 flip runClientM env $ do
                                     let loginForm =
                                             Intray.LoginForm
-                                            { Intray.loginFormUsername =
-                                                  intrayTriggerUsername
-                                            , Intray.loginFormPassword =
-                                                  Intray.accessKeySecretText intrayTriggerAccessKey
-                                            }
+                                                { Intray.loginFormUsername =
+                                                      intrayTriggerUsername
+                                                , Intray.loginFormPassword =
+                                                      Intray.accessKeySecretText
+                                                          intrayTriggerAccessKey
+                                                }
                                     Headers Intray.NoContent (HCons _ (HCons sessionHeader HNil)) <-
                                         Intray.clientPostLogin loginForm
                                     case sessionHeader of
@@ -80,13 +84,13 @@ runTriggeredIntrayItemSender _ = do
                                                     setCookieValue session
                                             let item =
                                                     Intray.TypedItem
-                                                    { Intray.itemType =
-                                                          case triggeredItemType of
-                                                              TextItem ->
-                                                                  Intray.TextItem
-                                                    , Intray.itemData =
-                                                          triggeredItemContents
-                                                    }
+                                                        { Intray.itemType =
+                                                              case triggeredItemType of
+                                                                  TextItem ->
+                                                                      Intray.TextItem
+                                                        , Intray.itemData =
+                                                              triggeredItemContents
+                                                        }
                                             Right <$>
                                                 Intray.clientPostAddItem
                                                     token

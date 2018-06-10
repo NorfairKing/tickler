@@ -78,6 +78,7 @@ tests:
     - http-types
     - intray-client
     - intray-server-test-utils
+    - mergeless
     - path
     - path-io
     - servant

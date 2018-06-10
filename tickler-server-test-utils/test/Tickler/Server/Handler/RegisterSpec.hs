@@ -16,8 +16,7 @@ import Servant.Client
 import Tickler.API
 import Tickler.Client
 
-import Tickler.Client.Gen ()
-import Tickler.Data.Gen ()
+import Tickler.API.Gen ()
 import Tickler.Server.TestUtils
 
 spec :: Spec

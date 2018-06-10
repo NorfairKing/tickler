@@ -17,6 +17,7 @@ import Yesod
 
 import Servant.Client (parseBaseUrl)
 
+import Tickler.Client
 
 import qualified Tickler.Server as API
 import qualified Tickler.Server.OptParse as API
@@ -39,19 +40,19 @@ runTicklerWebServer ss@ServeSettings {..} = do
 
 makeTicklerApp :: ServeSettings -> IO App
 makeTicklerApp ServeSettings {..} = do
-    man <- Http.newManager Http.defaultManagerSettings
-    tokens <- newMVar HM.empty
     let apiPort = API.serveSetPort serveSetAPISettings
     burl <- parseBaseUrl $ "http://127.0.0.1:" ++ show apiPort
+    man <- Http.newManager $ managerSetsFor burl
+    tokens <- newMVar HM.empty
     pure
         App
-        { appHttpManager = man
-        , appStatic = myStatic
-        , appPersistLogins = serveSetPersistLogins
-        , appLoginTokens = tokens
-        , appAPIBaseUrl = burl
-        , appDefaultIntrayUrl = serveSetDefaultIntrayUrl
-        }
+            { appHttpManager = man
+            , appStatic = myStatic
+            , appPersistLogins = serveSetPersistLogins
+            , appLoginTokens = tokens
+            , appAPIBaseUrl = burl
+            , appDefaultIntrayUrl = serveSetDefaultIntrayUrl
+            }
 
 runTicklerAPIServer :: ServeSettings -> IO ()
 runTicklerAPIServer ss = API.runTicklerServer $ serveSetAPISettings ss

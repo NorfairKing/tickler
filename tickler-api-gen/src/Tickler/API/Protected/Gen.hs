@@ -35,10 +35,6 @@ instance GenValid a => GenValid (ItemInfo a) where
          genValid) `suchThat`
         isValid
 
-instance GenUnchecked AddItem
-
-instance GenValid AddItem where
-    genValid = (AddItem <$> genValid <*> genValid) `suchThat` isValid
 
 instance GenUnchecked a => GenUnchecked (TriggerInfo a)
 

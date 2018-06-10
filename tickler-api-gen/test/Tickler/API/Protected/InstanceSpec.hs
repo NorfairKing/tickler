@@ -29,18 +29,6 @@ spec = do
     ordSpec @AddItem
     genValidSpec @AddItem
     jsonSpecOnValid @AddItem
-    eqSpec @SyncRequest
-    ordSpec @SyncRequest
-    genValidSpec @SyncRequest
-    jsonSpecOnValid @SyncRequest
-    eqSpec @NewSyncItem
-    ordSpec @NewSyncItem
-    genValidSpec @NewSyncItem
-    jsonSpecOnValid @NewSyncItem
-    eqSpec @SyncResponse
-    ordSpec @SyncResponse
-    genValidSpec @SyncResponse
-    jsonSpecOnValid @SyncResponse
     eqSpec @TypedTriggerInfo
     genValidSpec @TypedTriggerInfo
     jsonSpecOnValid @TypedTriggerInfo

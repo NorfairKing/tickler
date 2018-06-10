@@ -139,9 +139,9 @@ postLoginR = do
                         liftHandler $
                             login
                                 LoginForm
-                                { loginFormUsername = un
-                                , loginFormPassword = pwd
-                                }
+                                    { loginFormUsername = un
+                                    , loginFormPassword = pwd
+                                    }
                         pure $ Right un
     case muser of
         Left err -> loginErrorMessageI LoginR err
@@ -197,9 +197,9 @@ postNewAccountR = do
                 if newAccountPassword1 d == newAccountPassword2 d
                     then Right
                              Registration
-                             { registrationUsername = newAccountUsername d
-                             , registrationPassword = newAccountPassword1 d
-                             }
+                                 { registrationUsername = newAccountUsername d
+                                 , registrationPassword = newAccountPassword1 d
+                                 }
                     else Left [mr Msg.PassMismatch]
     case mdata of
         Left errs -> do
@@ -213,21 +213,29 @@ postNewAccountR = do
                         FailureResponse resp ->
                             case Http.statusCode $ responseStatusCode resp of
                                 409 ->
-                                    setMessage
+                                    addMessage
+                                        "error"
                                         "An account with this username already exists"
-                                _ ->
-                                    setMessage
-                                        "Failed to register for unknown reasons."
-                        _ ->
-                            setMessage "Failed to register for unknown reasons."
+                                c ->
+                                    addMessage "error" $
+                                    "Failed to register for unknown reasons, got status code: " <>
+                                    toHtml c
+                        ConnectionError t ->
+                            addMessage "error" $
+                            "Failed to register for unknown reasons. with connection error:" <>
+                            toHtml t
+                        e ->
+                            addMessage "error" $
+                            "Failed to register for unknown reasons. with error:" <>
+                            toHtml (show e)
                     liftHandler $ redirect $ AuthR registerR
                 Right NoContent ->
                     liftHandler $ do
                         login
                             LoginForm
-                            { loginFormUsername = registrationUsername reg
-                            , loginFormPassword = registrationPassword reg
-                            }
+                                { loginFormUsername = registrationUsername reg
+                                , loginFormPassword = registrationPassword reg
+                                }
                         setCredsRedirect $
                             Creds
                                 ticklerAuthPluginName
@@ -287,7 +295,7 @@ handleStandardServantErrs ::
 handleStandardServantErrs err func =
     case err of
         FailureResponse resp -> func resp
-        ConnectionError e -> redirect $ ErrorAPIDownR $ T.pack $ show e
+        ConnectionError e -> redirect $ ErrorAPIDownR e
         e -> error $ unwords ["Error while calling API:", show e]
 
 login :: LoginForm -> Handler ()

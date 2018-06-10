@@ -20,6 +20,8 @@ library:
   - aeson
   - bytestring >=0.10 && <0.11
   - containers
+  - http-client
+  - http-client-tls
   - mergeless
   - servant
   - servant-auth-client

@@ -14,11 +14,9 @@ import qualified Data.Set as S
 import qualified Intray.Client as Intray
 import qualified Intray.Server.TestUtils as Intray
 
-import Tickler.API
 import Tickler.Client
 
-import Tickler.Client.Gen ()
-import Tickler.Data.Gen ()
+import Tickler.API.Gen ()
 import Tickler.Server.TestUtils
 
 spec :: Spec
@@ -34,21 +32,21 @@ spec =
                         Intray.clientPostAddAccessKey
                             itoken
                             Intray.AddAccessKey
-                            { Intray.addAccessKeyName = name
-                            , Intray.addAccessKeyPermissions =
-                                  S.singleton Intray.PermitAdd
-                            }
+                                { Intray.addAccessKeyName = name
+                                , Intray.addAccessKeyPermissions =
+                                      S.singleton Intray.PermitAdd
+                                }
                     (uuid, ti) <-
                         runClientOrError tenv $ do
                             Right uuid <-
                                 clientPostAddIntrayTrigger
                                     ttoken
                                     AddIntrayTrigger
-                                    { addIntrayTriggerUrl = baseUrl ienv
-                                    , addIntrayTriggerUsername = un
-                                    , addIntrayTriggerAccessKey =
-                                          Intray.accessKeyCreatedKey akc
-                                    }
+                                        { addIntrayTriggerUrl = baseUrl ienv
+                                        , addIntrayTriggerUsername = un
+                                        , addIntrayTriggerAccessKey =
+                                              Intray.accessKeyCreatedKey akc
+                                        }
                             ti <- clientGetTrigger ttoken uuid
                             pure (uuid, ti)
                     triggerInfoIdentifier ti `shouldBe` uuid

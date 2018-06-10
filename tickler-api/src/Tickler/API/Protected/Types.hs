@@ -15,7 +15,7 @@ module Tickler.API.Protected.Types
     , TypedItemCase(..)
     , typedItemCase
     , ItemInfo(..)
-    , AddItem(..)
+    , AddItem
     , Added(..)
     , Synced(..)
     , SyncRequest(..)
@@ -41,16 +41,15 @@ module Tickler.API.Protected.Types
 
 import Import
 
-import System.IO.Unsafe as Unsafe
 import Data.Aeson as JSON
 import qualified Data.Aeson as JSON (Result(Error))
 import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Char8 as SB8
-import Data.List (nub)
 import Data.Mergeless
 import qualified Data.Text.Encoding as TE
 import Data.Time
 import Data.UUID.Typed
+import System.IO.Unsafe as Unsafe
 
 import Servant.Docs
 import Web.HttpApiData
@@ -115,24 +114,29 @@ instance ToSample TypedItem where
             "Hello World!"
             (Unsafe.unsafePerformIO getCurrentTime)
 
-textTypedItem :: Text -> TypedItem
-textTypedItem t = TypedItem {itemType = TextItem, itemData = TE.encodeUtf8 t}
+textTypedItem :: Text -> UTCTime -> TypedItem
+textTypedItem t sch =
+    TypedItem
+        {itemType = TextItem, itemData = TE.encodeUtf8 t, itemScheduled = sch}
 
 typedItemCase :: TypedItem -> Either String TypedItemCase
 typedItemCase TypedItem {..} =
     case itemType of
-        TextItem -> left show $ CaseTextItem <$> TE.decodeUtf8' itemData
+        TextItem ->
+            left show $
+            CaseTextItem <$> TE.decodeUtf8' itemData <*> pure itemScheduled
 
-newtype TypedItemCase =
+data TypedItemCase =
     CaseTextItem Text
+                 UTCTime
     deriving (Show, Read, Eq, Ord, Generic)
 
 data ItemInfo a = ItemInfo
     { itemInfoIdentifier :: ItemUUID
     , itemInfoContents :: a
     , itemInfoCreated :: UTCTime
-    , itemInfoScheduled :: UTCTime
-    , itemInfoTriggered :: Bool
+    , itemInfoSynced :: UTCTime
+    , itemInfoTriggered :: Maybe UTCTime
     } deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity a => Validity (ItemInfo a)
@@ -143,36 +147,20 @@ instance ToJSON a => ToJSON (ItemInfo a) where
             [ "id" .= itemInfoIdentifier
             , "contents" .= itemInfoContents
             , "created" .= itemInfoCreated
-            , "scheduled" .= itemInfoScheduled
+            , "synced" .= itemInfoSynced
             , "triggered" .= itemInfoTriggered
             ]
 
 instance FromJSON a => FromJSON (ItemInfo a) where
     parseJSON =
         withObject "ItemInfo TypedItem" $ \o ->
-            ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created" <*>
-            o .: "scheduled" <*>
+            ItemInfo <$> o .: "id" <*> o .: "contents"<*> o .: "created" <*>
+            o .: "synced" <*>
             o .: "triggered"
 
 instance ToSample a => ToSample (ItemInfo a)
 
-data AddItem = AddItem
-    { addItemTypedItem :: TypedItem
-    , addItemScheduled :: UTCTime
-    } deriving (Show, Eq, Ord, Generic)
-
-instance Validity AddItem
-
-instance FromJSON AddItem where
-    parseJSON =
-        withObject "AddItem" $ \o ->
-            AddItem <$> o .: "item" <*> o .: "scheduled"
-
-instance ToJSON AddItem where
-    toJSON AddItem {..} =
-        object ["item" .= addItemTypedItem, "scheduled" .= addItemScheduled]
-
-instance ToSample AddItem
+type AddItem = TypedItem
 
 data TriggerInfo a = TriggerInfo
     { triggerInfoIdentifier :: TriggerUUID
@@ -288,6 +276,3 @@ instance FromJSON AddEmailTrigger
 instance ToJSON AddEmailTrigger
 
 instance ToSample AddEmailTrigger
-
-distinct :: Eq a => [a] -> Bool
-distinct ls = length ls == length (nub ls)

@@ -21,7 +21,7 @@ module Tickler.API.Protected
     , TypedItemCase(..)
     , typedItemCase
     , ItemInfo(..)
-    , AddItem(..)
+    , AddItem
     , Added(..)
     , Synced(..)
     , SyncRequest(..)
@@ -116,13 +116,13 @@ type PostAddItem
      = ProtectAPI :> "tickler" :> "item" :> ReqBody '[ JSON] AddItem :> Post '[ JSON] ItemUUID
 
 type GetItem
-     = ProtectAPI :> "tickler" :> "item" :> Capture "id" ItemUUID :> Get '[ JSON] (ItemInfo TypedItem)
+     = ProtectAPI :> "tickler" :> "item" :> "info" :> Capture "id" ItemUUID :> Get '[ JSON] (ItemInfo TypedItem)
 
 instance ToCapture (Capture "id" ItemUUID) where
     toCapture _ = DocCapture "id" "The UUID of the item"
 
 type DeleteItem
-     = ProtectAPI :> "item" :> Capture "id" ItemUUID :> Delete '[ JSON] NoContent
+     = ProtectAPI :> "tickler" :> "item" :> "delete" :> Capture "id" ItemUUID :> Delete '[ JSON] NoContent
 
 type PostSync
      = ProtectAPI :> "sync" :> ReqBody '[ JSON] (SyncRequest ItemUUID TypedItem) :> Post '[ JSON] (SyncResponse ItemUUID TypedItem)

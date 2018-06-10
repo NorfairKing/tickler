@@ -87,6 +87,7 @@ TriggeredItem
     created UTCTime
     synced UTCTime
     scheduled UTCTime
+    triggered UTCTime
     UniqueTriggeredItem identifier userId type contents
     UniqueTriggeredItemIdentifier identifier
     deriving Show

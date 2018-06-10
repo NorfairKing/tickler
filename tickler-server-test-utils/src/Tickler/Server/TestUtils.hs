@@ -175,9 +175,12 @@ withNewUser :: ClientEnv -> Registration -> (Token -> IO ()) -> Expectation
 withNewUser cenv r func = do
     errOrUUID <- runClient cenv $ clientPostRegister r
     case errOrUUID of
+        Left (ConnectionError t) ->
+            expectationFailure $
+            unlines ["Registration should not fail with error: ", T.unpack t]
         Left err ->
             expectationFailure $
-            "Registration should not fail with error: " <> show err
+            unlines ["Registration should not fail with error: ", show err]
         Right NoContent -> do
             let lf =
                     LoginForm

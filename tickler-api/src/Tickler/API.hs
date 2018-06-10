@@ -26,7 +26,7 @@ module Tickler.API
     , TypedItemCase(..)
     , typedItemCase
     , ItemInfo(..)
-    , AddItem(..)
+    , AddItem
     , Added(..)
     , Synced(..)
     , SyncRequest(..)
@@ -131,9 +131,8 @@ data TicklerPublicSite route = TicklerPublicSite
     , getDocs :: route :- GetDocs
     } deriving (Generic)
 
--- | The order of the items is not guaranteed to be the same for every call.
 type PostRegister
-     = "item" :> ReqBody '[ JSON] Registration :> Post '[ JSON] NoContent
+     = "register" :> ReqBody '[ JSON] Registration :> Post '[ JSON] NoContent
 
 type PostLogin
      = "login" :> ReqBody '[ JSON] LoginForm :> PostNoContent '[ JSON] (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)

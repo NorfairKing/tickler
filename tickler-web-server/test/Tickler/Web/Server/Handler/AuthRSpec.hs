@@ -25,8 +25,9 @@ spec =
             registerFlow "example" "example"
             statusIs 303
             loc <- getLocation
-            liftIO $ loc `shouldBe` Right AddR
             void followRedirect
+            getResponse >>= (liftIO . print)
+            liftIO $ loc `shouldBe` Right AddR
             statusIs 200
         yit
             "fails to register and shows an error if an account with the same username exists" $ do

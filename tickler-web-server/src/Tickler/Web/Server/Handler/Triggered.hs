@@ -34,5 +34,6 @@ makeItemInfosWidget items = do
     fmap mconcat $
         forM items $ \ItemInfo {..} -> do
             createdWidget <- makeTimestampWidget itemInfoCreated
-            scheduledWidget <- makeTimestampWidget itemInfoScheduled
+            scheduledWidget <-
+                makeTimestampWidget  $ itemScheduled itemInfoContents
             pure $(widgetFile "item")

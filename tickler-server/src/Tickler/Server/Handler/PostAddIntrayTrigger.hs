@@ -26,8 +26,9 @@ import Servant.Client
 
 import qualified Intray.Client as Intray
 
-import Tickler.API
+import Tickler.Client
 import Tickler.Data
+import Tickler.API
 
 import Tickler.Server.Types
 
@@ -40,18 +41,19 @@ servePostAddIntrayTrigger ::
 servePostAddIntrayTrigger (Authenticated AuthCookie {..}) AddIntrayTrigger {..} = do
     now <- liftIO getCurrentTime
     uuid <- liftIO nextRandomUUID
-    man <- liftIO $ Http.newManager Http.tlsManagerSettings
+    man <- liftIO $ Http.newManager $ managerSetsFor addIntrayTriggerUrl
     errOrOk <-
         do let env = ClientEnv man addIntrayTriggerUrl Nothing
            liftIO $
                flip runClientM env $ do
                    let loginForm =
                            Intray.LoginForm
-                           { Intray.loginFormUsername = addIntrayTriggerUsername
-                           , Intray.loginFormPassword =
-                                 Intray.accessKeySecretText
-                                     addIntrayTriggerAccessKey
-                           }
+                               { Intray.loginFormUsername =
+                                     addIntrayTriggerUsername
+                               , Intray.loginFormPassword =
+                                     Intray.accessKeySecretText
+                                         addIntrayTriggerAccessKey
+                               }
                    Headers Intray.NoContent (HCons _ (HCons _ HNil)) <-
                        Intray.clientPostLogin loginForm
                    pure ()
@@ -64,17 +66,17 @@ servePostAddIntrayTrigger (Authenticated AuthCookie {..}) AddIntrayTrigger {..} 
             runDb $ do
                 insert_
                     IntrayTrigger
-                    { intrayTriggerIdentifier = uuid
-                    , intrayTriggerUrl = addIntrayTriggerUrl
-                    , intrayTriggerUsername = addIntrayTriggerUsername
-                    , intrayTriggerAccessKey = addIntrayTriggerAccessKey
-                    , intrayTriggerAdded = now
-                    }
+                        { intrayTriggerIdentifier = uuid
+                        , intrayTriggerUrl = addIntrayTriggerUrl
+                        , intrayTriggerUsername = addIntrayTriggerUsername
+                        , intrayTriggerAccessKey = addIntrayTriggerAccessKey
+                        , intrayTriggerAdded = now
+                        }
                 insert_
                     UserTrigger
-                    { userTriggerUserId = authCookieUserUUID
-                    , userTriggerTriggerType = IntrayTriggerType
-                    , userTriggerTriggerId = uuid
-                    }
+                        { userTriggerUserId = authCookieUserUUID
+                        , userTriggerTriggerType = IntrayTriggerType
+                        , userTriggerTriggerId = uuid
+                        }
             pure $ Right uuid
 servePostAddIntrayTrigger _ _ = throwAll err401
