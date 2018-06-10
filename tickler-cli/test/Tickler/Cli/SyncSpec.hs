@@ -14,7 +14,6 @@ import Servant.Client
 import Tickler.Client
 import Tickler.Server.TestUtils
 
-import Tickler.Cli.LastSeen (readLastSeen)
 import Tickler.Cli.OptParse
 import Tickler.Cli.Session (loadToken)
 import Tickler.Cli.TestUtils
@@ -43,11 +42,11 @@ spec =
                     ]
                 let sets =
                         Settings
-                        { setBaseUrl = Just burl
-                        , setUsername = Just un
-                        , setTicklerDir = dir
-                        , setSyncStrategy = NeverSync
-                        }
+                            { setBaseUrl = Just burl
+                            , setUsername = Just un
+                            , setTicklerDir = dir
+                            , setSyncStrategy = NeverSync
+                            }
                 mToken <- runReaderT loadToken sets
                 token <-
                     case mToken of
@@ -58,10 +57,5 @@ spec =
                         Just t -> pure t
                 uuid <- runClientOrError cenv $ clientPostAddItem token ti
                 tickler ["sync", "--url", showBaseUrl burl, "--tickler-dir", d]
-                tickler ["show", "--url", showBaseUrl burl, "--tickler-dir", d]
-                mLastSeen1 <- runReaderT readLastSeen sets
-                mLastSeen1 `shouldSatisfy` isJust
                 NoContent <- runClientOrError cenv $ clientDeleteItem token uuid
                 tickler ["sync", "--url", showBaseUrl burl, "--tickler-dir", d]
-                mLastSeen2 <- runReaderT readLastSeen sets
-                mLastSeen2 `shouldSatisfy` isNothing

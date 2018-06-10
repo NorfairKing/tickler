@@ -68,6 +68,7 @@ TicklerItem
     type ItemType
     contents ByteString
     created UTCTime
+    synced UTCTime
     scheduled UTCTime
     UniqueItem identifier userId type contents
     UniqueItemIdentifier identifier
@@ -84,6 +85,7 @@ TriggeredItem
     type ItemType
     contents ByteString
     created UTCTime
+    synced UTCTime
     scheduled UTCTime
     UniqueTriggeredItem identifier userId type contents
     UniqueTriggeredItemIdentifier identifier

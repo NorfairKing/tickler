@@ -1,4 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Tickler.Server.Handler.PostSync
     ( servePostSync
@@ -6,6 +7,8 @@ module Tickler.Server.Handler.PostSync
 
 import Import
 
+import Data.Mergeless
+import qualified Data.Set as S
 import Data.Time
 import Data.UUID.Typed
 import Database.Persist
@@ -22,74 +25,38 @@ import Tickler.Server.Item
 import Tickler.Server.Types
 
 servePostSync ::
-       AuthResult AuthCookie -> SyncRequest -> TicklerHandler SyncResponse
-servePostSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
-    deleteUndeleted
-    -- First we delete the items that were deleted locally but not yet remotely.
-    -- Then we find the items that have been deleted remotely but not locally
-    deletedRemotely <- syncItemsToBeDeletedLocally
-    -- Then we find the items that have appeared remotely but aren't known locally
-    newRemoteItems <- syncNewRemoteItems
-    -- Then we add the items that should be added.
-    newLocalItems <- syncAddedItems
-    pure
-        SyncResponse
-        { syncResponseNewRemoteItems = newRemoteItems
-        , syncResponseAddedItems = newLocalItems
-        , syncResponseItemsToBeDeletedLocally = deletedRemotely
-        }
-  where
-    deleteUndeleted :: TicklerHandler ()
-    deleteUndeleted =
-        runDb $
-        deleteWhere
-            [ TicklerItemUserId ==. authCookieUserUUID
-            , TicklerItemIdentifier <-. syncRequestUndeletedItems
-            ]
-    syncItemsToBeDeletedLocally :: TicklerHandler [ItemUUID]
-    syncItemsToBeDeletedLocally = do
-        foundItems <-
+       AuthResult AuthCookie
+    -> SyncRequest ItemUUID TypedItem
+    -> TicklerHandler (SyncResponse ItemUUID TypedItem)
+servePostSync (Authenticated AuthCookie {..}) sr = do
+    now <- liftIO getCurrentTime
+    let syncProcessorDeleteMany s =
             runDb $
-            selectList
+            deleteWhere
                 [ TicklerItemUserId ==. authCookieUserUUID
-                , TicklerItemIdentifier <-. syncRequestSyncedItems
+                , TicklerItemIdentifier <-. S.toList s
                 ]
-                []
-        -- 'foundItems' are the items that HAVEN'T been deleted
-        -- So, the items that have been deleted are the ones in 'syncRequestSyncedItems' but not
-        -- in 'foundItems'.
-        pure $
-            syncRequestSyncedItems \\
-            map (ticklerItemIdentifier . entityVal) foundItems
-    syncNewRemoteItems :: TicklerHandler [ItemInfo TypedItem]
-    syncNewRemoteItems =
-        map (makeItemInfo . Left . entityVal) <$>
-        runDb
-            (selectList
-                 [ TicklerItemUserId ==. authCookieUserUUID
-                 , TicklerItemIdentifier /<-. syncRequestSyncedItems
-                 ]
-                 [])
-    syncAddedItems :: TicklerHandler [ItemInfo TypedItem]
-    syncAddedItems = do
-        now <- liftIO getCurrentTime
-        forM syncRequestUnsyncedItems $ \NewSyncItem {..} -> do
-            let ts = fromMaybe now newSyncItemCreated
-            uuid <- liftIO nextRandomUUID
+        syncProcessorQuerySynced s =
+            S.fromList . map (ticklerItemIdentifier . entityVal) <$>
+            runDb
+                (selectList
+                     [ TicklerItemUserId ==. authCookieUserUUID
+                     , TicklerItemIdentifier <-. S.toList s
+                     ]
+                     [])
+        syncProcessorQueryNewRemote s =
+            S.fromList . map (makeTicklerSynced . entityVal) <$>
+            runDb
+                (selectList
+                     [ TicklerItemUserId ==. authCookieUserUUID
+                     , TicklerItemIdentifier /<-. S.toList s
+                     ]
+                     [])
+        syncProcessorInsertMany s =
             runDb $
-                insert_ $
-                makeTicklerItem
-                    authCookieUserUUID
-                    uuid
-                    now
-                    newSyncItemScheduled
-                    newSyncItemContents
-            pure
-                ItemInfo
-                { itemInfoIdentifier = uuid
-                , itemInfoCreated = ts
-                , itemInfoScheduled = newSyncItemScheduled
-                , itemInfoContents = newSyncItemContents
-                , itemInfoTriggered = False
-                }
+            insertMany_ $
+            flip map (S.toList s) $ \Synced {..} ->
+                makeTicklerItem authCookieUserUUID syncedUuid syncedCreated syncedSynced syncedValue
+        proc = SyncProcessor {..}
+    processSyncCustom nextRandomUUID now proc sr
 servePostSync _ _ = throwAll err401

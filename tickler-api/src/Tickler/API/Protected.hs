@@ -22,8 +22,9 @@ module Tickler.API.Protected
     , typedItemCase
     , ItemInfo(..)
     , AddItem(..)
+    , Added(..)
+    , Synced(..)
     , SyncRequest(..)
-    , NewSyncItem(..)
     , SyncResponse(..)
     , PostSync
     , TriggerUUID
@@ -124,7 +125,7 @@ type DeleteItem
      = ProtectAPI :> "item" :> Capture "id" ItemUUID :> Delete '[ JSON] NoContent
 
 type PostSync
-     = ProtectAPI :> "sync" :> ReqBody '[ JSON] SyncRequest :> Post '[ JSON] SyncResponse
+     = ProtectAPI :> "sync" :> ReqBody '[ JSON] (SyncRequest ItemUUID TypedItem) :> Post '[ JSON] (SyncResponse ItemUUID TypedItem)
 
 type GetTriggers
      = ProtectAPI :> "trigger" :> Get '[ JSON] [TriggerInfo TypedTriggerInfo]
@@ -140,6 +141,7 @@ type PostAddIntrayTrigger
 
 type PostAddEmailTrigger
      = ProtectAPI :> "trigger" :> "email" :> ReqBody '[ JSON] AddEmailTrigger :> Post '[ JSON] TriggerUUID
+
 type DeleteTrigger
      = ProtectAPI :> "trigger" :> "delete" :> Capture "id" TriggerUUID :> Delete '[ JSON] NoContent
 

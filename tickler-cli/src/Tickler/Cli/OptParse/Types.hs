@@ -25,11 +25,6 @@ data Instructions =
 data Command
     = CommandRegister RegisterArgs
     | CommandLogin LoginArgs
-    | CommandPostPostAddItem [String]
-    | CommandShowItem
-    | CommandDoneItem
-    | CommandSize
-    | CommandReview
     | CommandLogout
     | CommandSync
     deriving (Show, Eq, Generic)
@@ -68,11 +63,11 @@ instance FromJSON Configuration where
 emptyConfiguration :: Configuration
 emptyConfiguration =
     Configuration
-    { configUrl = Nothing
-    , configUsername = Nothing
-    , configTicklerDir = Nothing
-    , configSyncStrategy = Nothing
-    }
+        { configUrl = Nothing
+        , configUsername = Nothing
+        , configTicklerDir = Nothing
+        , configSyncStrategy = Nothing
+        }
 
 data Settings = Settings
     { setBaseUrl :: Maybe BaseUrl
@@ -93,11 +88,6 @@ instance ToJSON SyncStrategy
 data Dispatch
     = DispatchRegister RegisterSettings
     | DispatchLogin LoginSettings
-    | DispatchPostPostAddItem Text
-    | DispatchShowItem
-    | DispatchDoneItem
-    | DispatchSize
-    | DispatchReview
     | DispatchLogout
     | DispatchSync
     deriving (Show, Eq, Generic)

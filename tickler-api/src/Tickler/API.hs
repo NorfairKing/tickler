@@ -27,8 +27,9 @@ module Tickler.API
     , typedItemCase
     , ItemInfo(..)
     , AddItem(..)
+    , Added(..)
+    , Synced(..)
     , SyncRequest(..)
-    , NewSyncItem(..)
     , SyncResponse(..)
     , TriggerUUID
     , TriggerType(..)
@@ -97,9 +98,9 @@ import Servant.HTML.Blaze
 
 import Tickler.Data
 
-import Tickler.API.Types
 import Tickler.API.Admin
 import Tickler.API.Protected
+import Tickler.API.Types
 
 ticklerAPI :: Proxy TicklerAPI
 ticklerAPI = Proxy

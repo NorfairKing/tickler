@@ -16,32 +16,32 @@ library:
   - NoImplicitPrelude
   exposed-modules:
   - Tickler.Cli
-  - Tickler.Cli.LastSeen
   - Tickler.Cli.OptParse
   - Tickler.Cli.Session
   - Tickler.Cli.Store
   - Tickler.Cli.Sync
 
   dependencies:
-  - base >=4.9 && <5
   - aeson >=1.0
   - aeson-pretty >=0.8
+  - base >=4.9 && <5
   - bytestring >=0.10
   - cookie >=0.4
   - http-client >=0.5
   - http-client-tls >=0.3
-  - tickler-api
-  - tickler-client
-  - tickler-data
+  - mergeless
+  - mtl >=2.2
   - optparse-applicative >=0.13
   - path >=0.4
-  - pretty-relative-time
-  - mtl >=2.2
   - path-io >=1.2
+  - pretty-relative-time
   - servant >=0.9
   - servant-auth-client >=0.2
   - servant-auth-server >=0.3
   - servant-client >=0.9
+  - tickler-api
+  - tickler-client
+  - tickler-data
   - servant-server >=0.9
   - validity
   - text >=1.2

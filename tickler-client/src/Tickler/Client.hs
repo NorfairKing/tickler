@@ -32,8 +32,9 @@ module Tickler.Client
     , typedItemCase
     , ItemInfo(..)
     , AddItem(..)
+    , Added(..)
+    , Synced(..)
     , SyncRequest(..)
-    , NewSyncItem(..)
     , SyncResponse(..)
     , TriggerInfo(..)
     , TriggerUUID
@@ -90,11 +91,12 @@ clientGetItems :: Token -> Maybe ItemFilter -> ClientM [ItemInfo TypedItem]
 clientPostAddItem :: Token -> AddItem -> ClientM ItemUUID
 clientGetItem :: Token -> ItemUUID -> ClientM (ItemInfo TypedItem)
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
-clientPostSync :: Token -> SyncRequest -> ClientM SyncResponse
+clientPostSync :: Token -> (SyncRequest ItemUUID TypedItem )-> ClientM (SyncResponse ItemUUID TypedItem)
 clientGetTriggers :: Token -> ClientM [TriggerInfo TypedTriggerInfo]
 clientGetTrigger ::
        Token -> TriggerUUID -> ClientM (TriggerInfo TypedTriggerInfo)
-clientPostAddIntrayTrigger :: Token -> AddIntrayTrigger -> ClientM(Either Text TriggerUUID)
+clientPostAddIntrayTrigger ::
+       Token -> AddIntrayTrigger -> ClientM (Either Text TriggerUUID)
 clientPostAddEmailTrigger :: Token -> AddEmailTrigger -> ClientM TriggerUUID
 clientDeleteTrigger :: Token -> TriggerUUID -> ClientM NoContent
 clientGetAccountInfo :: Token -> ClientM AccountInfo
@@ -110,5 +112,5 @@ clientGetDocs :: ClientM GetDocsResponse
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientDeleteTrigger:<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetLoopersStatus :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetLoopersStatus :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
     client (flatten ticklerAPI)

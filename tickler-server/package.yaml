@@ -33,6 +33,7 @@ library:
   - base >=4.7 && <5
   - blaze-html
   - bytestring
+  - containers
   - cookie
   - data-default
   - email-validate
@@ -43,6 +44,7 @@ library:
   - intray-client
   - jose
   - lens
+  - mergeless
   - monad-logger
   - mtl >=2.2
   - nonce

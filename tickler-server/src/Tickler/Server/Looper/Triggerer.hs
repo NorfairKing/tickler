@@ -34,6 +34,7 @@ runTriggerer TriggererSettings = do
                 , triggeredItemType = ticklerItemType
                 , triggeredItemContents = ticklerItemContents
                 , triggeredItemCreated = ticklerItemCreated
+                , triggeredItemSynced = ticklerItemSynced
                 , triggeredItemScheduled = ticklerItemScheduled
                 }
         -- TODO if something goes wrong here, we should rollback the transaction

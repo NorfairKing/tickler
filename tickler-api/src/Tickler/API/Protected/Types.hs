@@ -16,8 +16,9 @@ module Tickler.API.Protected.Types
     , typedItemCase
     , ItemInfo(..)
     , AddItem(..)
+    , Added(..)
+    , Synced(..)
     , SyncRequest(..)
-    , NewSyncItem(..)
     , SyncResponse(..)
     , TriggerType(..)
     , TriggerInfo(..)
@@ -40,11 +41,13 @@ module Tickler.API.Protected.Types
 
 import Import
 
+import System.IO.Unsafe as Unsafe
 import Data.Aeson as JSON
 import qualified Data.Aeson as JSON (Result(Error))
 import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Char8 as SB8
 import Data.List (nub)
+import Data.Mergeless
 import qualified Data.Text.Encoding as TE
 import Data.Time
 import Data.UUID.Typed
@@ -76,6 +79,7 @@ instance FromHttpApiData ItemFilter where
 data TypedItem = TypedItem
     { itemType :: ItemType
     , itemData :: ByteString
+    , itemScheduled :: UTCTime
     } deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity TypedItem
@@ -92,15 +96,24 @@ instance FromJSON TypedItem where
                             [ "Failed to decode base64-encoded typed item data:"
                             , err
                             ]
-                    Right r -> pure r)
+                    Right r -> pure r) <*>
+            o .: "scheduled"
 
 instance ToJSON TypedItem where
     toJSON TypedItem {..} =
         object
-            ["type" .= itemType, "data" .= SB8.unpack (Base64.encode itemData)]
+            [ "type" .= itemType
+            , "data" .= SB8.unpack (Base64.encode itemData)
+            , "scheduled" .= itemScheduled
+            ]
 
 instance ToSample TypedItem where
-    toSamples Proxy = singleSample $ TypedItem TextItem "Hello World!"
+    toSamples Proxy =
+        singleSample $
+        TypedItem
+            TextItem
+            "Hello World!"
+            (Unsafe.unsafePerformIO getCurrentTime)
 
 textTypedItem :: Text -> TypedItem
 textTypedItem t = TypedItem {itemType = TextItem, itemData = TE.encodeUtf8 t}
@@ -161,109 +174,6 @@ instance ToJSON AddItem where
 
 instance ToSample AddItem
 
-data SyncRequest = SyncRequest
-    { syncRequestUnsyncedItems :: [NewSyncItem]
-    , syncRequestSyncedItems :: [ItemUUID]
-    , syncRequestUndeletedItems :: [ItemUUID]
-    } deriving (Show, Eq, Ord, Generic)
-
-instance Validity SyncRequest where
-    validate SyncRequest {..} =
-        mconcat
-            [ annotate syncRequestUnsyncedItems "syncRequestUnsyncedItems"
-            , annotate syncRequestSyncedItems "syncRequestSyncedItems"
-            , annotate syncRequestUndeletedItems "syncRequestUndeletedItems"
-            , check
-                  (distinct syncRequestUnsyncedItems)
-                  "Unsynced items are distinct"
-            , check
-                  (distinct syncRequestSyncedItems)
-                  "Synced items are distinct"
-            , check
-                  (distinct syncRequestUndeletedItems)
-                  "undeleted items are distinct"
-            ]
-
-instance FromJSON SyncRequest where
-    parseJSON =
-        withObject "SyncRequest" $ \o ->
-            SyncRequest <$> o .: "unsynced" <*> o .: "synced" <*>
-            o .: "undeleted"
-
-instance ToJSON SyncRequest where
-    toJSON SyncRequest {..} =
-        object
-            [ "unsynced" .= syncRequestUnsyncedItems
-            , "synced" .= syncRequestSyncedItems
-            , "undeleted" .= syncRequestUndeletedItems
-            ]
-
-instance ToSample SyncRequest
-
-data NewSyncItem = NewSyncItem
-    { newSyncItemContents :: TypedItem
-    , newSyncItemCreated :: Maybe UTCTime
-    , newSyncItemScheduled :: UTCTime
-    } deriving (Show, Eq, Ord, Generic)
-
-instance Validity NewSyncItem
-
-instance FromJSON NewSyncItem where
-    parseJSON =
-        withObject
-            "NewSyncItem"
-            (\o ->
-                 NewSyncItem <$> o .: "contents" <*> o .:? "created" <*>
-                 o .: "scheduled")
-
-instance ToJSON NewSyncItem where
-    toJSON NewSyncItem {..} =
-        object
-            [ "contents" .= newSyncItemContents
-            , "created" .= newSyncItemCreated
-            , "scheduled" .= newSyncItemScheduled
-            ]
-
-instance ToSample NewSyncItem
-
-data SyncResponse = SyncResponse
-    { syncResponseAddedItems :: [ItemInfo TypedItem]
-    , syncResponseNewRemoteItems :: [ItemInfo TypedItem]
-    , syncResponseItemsToBeDeletedLocally :: [ItemUUID]
-    } deriving (Show, Eq, Ord, Generic)
-
-instance Validity SyncResponse where
-    validate SyncResponse {..} =
-        mconcat
-            [ annotate syncResponseAddedItems "syncResponseAddedItems"
-            , annotate syncResponseNewRemoteItems "syncResponseNewRemoteItems"
-            , annotate
-                  syncResponseItemsToBeDeletedLocally
-                  "syncResponseItemsToBeDeletedLocally"
-            , check (distinct syncResponseAddedItems) "Added items are distinct"
-            , check
-                  (distinct syncResponseNewRemoteItems)
-                  "new items are distinct"
-            , check
-                  (distinct syncResponseItemsToBeDeletedLocally)
-                  "deleted items are distinct"
-            ]
-
-instance FromJSON SyncResponse where
-    parseJSON =
-        withObject "SyncResponse" $ \o ->
-            SyncResponse <$> o .: "added" <*> o .: "new" <*> o .: "deleted"
-
-instance ToJSON SyncResponse where
-    toJSON SyncResponse {..} =
-        object
-            [ "added" .= syncResponseAddedItems
-            , "new" .= syncResponseNewRemoteItems
-            , "deleted" .= syncResponseItemsToBeDeletedLocally
-            ]
-
-instance ToSample SyncResponse
-
 data TriggerInfo a = TriggerInfo
     { triggerInfoIdentifier :: TriggerUUID
     , triggerInfo :: a
@@ -285,6 +195,10 @@ instance ToSample a => ToSample (TriggerInfo a)
 instance Functor TriggerInfo where
     fmap f ti = ti {triggerInfo = f $ triggerInfo ti}
 
+instance ToSample (SyncRequest ItemUUID TypedItem)
+
+instance ToSample (SyncResponse ItemUUID TypedItem)
+
 decodeTriggerInfo ::
        FromJSON a
     => TriggerType
@@ -299,9 +213,9 @@ decodeTriggerInfo tt ti = unwrap $ decodeTypedTriggerInfo tt <$> ti
             Just i ->
                 Just $
                 TriggerInfo
-                { triggerInfoIdentifier = triggerInfoIdentifier tmi
-                , triggerInfo = i
-                }
+                    { triggerInfoIdentifier = triggerInfoIdentifier tmi
+                    , triggerInfo = i
+                    }
 
 data TypedTriggerInfo = TypedTriggerInfo
     { typedTriggerInfoType :: TriggerType

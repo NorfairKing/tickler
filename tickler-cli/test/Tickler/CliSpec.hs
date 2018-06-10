@@ -35,17 +35,5 @@ spec =
             , "--tickler-dir"
             , "/tmp"
             ]
-        tickler
-            [ "add"
-            , "hello"
-            , "world"
-            , "--url"
-            , showBaseUrl burl
-            , "--tickler-dir"
-            , "/tmp"
-            ]
-        tickler ["show", "--url", showBaseUrl burl, "--tickler-dir", "/tmp"]
-        tickler ["done", "--url", showBaseUrl burl, "--tickler-dir", "/tmp"]
-        tickler ["size", "--url", showBaseUrl burl, "--tickler-dir", "/tmp"]
         tickler ["sync", "--url", showBaseUrl burl, "--tickler-dir", "/tmp"]
         tickler ["logout", "--tickler-dir", "/tmp"]

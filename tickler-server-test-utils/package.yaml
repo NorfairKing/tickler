@@ -24,6 +24,7 @@ library:
   - cookie >=0.4 && <0.5
   - genvalidity-bytestring
   - genvalidity-hspec
+  - genvalidity-mergeless
   - genvalidity-text
   - genvalidity-time
   - hspec
@@ -32,8 +33,8 @@ library:
   - intray-server
   - intray-server-test-utils
   - tickler-api
+  - tickler-api-gen
   - tickler-client
-  - tickler-client-gen
   - tickler-data
   - tickler-data-gen
   - tickler-server
@@ -83,8 +84,8 @@ tests:
     - servant-client
     - text
     - tickler-api
+    - tickler-api-gen
     - tickler-client
-    - tickler-client-gen
     - tickler-data
     - tickler-data-gen
     - tickler-server-test-utils

@@ -64,24 +64,18 @@ getDispatch cmd =
             pure $
             DispatchRegister
                 RegisterSettings
-                { registerSetUsername =
-                      (T.pack <$> registerArgUsername) >>= parseUsername
-                , registerSetPassword = T.pack <$> registerArgPassword
-                }
+                    { registerSetUsername =
+                          (T.pack <$> registerArgUsername) >>= parseUsername
+                    , registerSetPassword = T.pack <$> registerArgPassword
+                    }
         CommandLogin LoginArgs {..} ->
             pure $
             DispatchLogin
                 LoginSettings
-                { loginSetUsername =
-                      (T.pack <$> loginArgUsername) >>= parseUsername
-                , loginSetPassword = T.pack <$> loginArgPassword
-                }
-        CommandPostPostAddItem ss ->
-            pure $ DispatchPostPostAddItem $ T.unwords $ map T.pack ss
-        CommandShowItem -> pure DispatchShowItem
-        CommandDoneItem -> pure DispatchDoneItem
-        CommandSize -> pure DispatchSize
-        CommandReview -> pure DispatchReview
+                    { loginSetUsername =
+                          (T.pack <$> loginArgUsername) >>= parseUsername
+                    , loginSetPassword = T.pack <$> loginArgPassword
+                    }
         CommandLogout -> pure DispatchLogout
         CommandSync -> pure DispatchSync
 
@@ -125,13 +119,13 @@ runArgumentsParser = execParserPure prefs_ argParser
 prefs_ :: ParserPrefs
 prefs_ =
     ParserPrefs
-    { prefMultiSuffix = ""
-    , prefDisambiguate = True
-    , prefShowHelpOnError = True
-    , prefShowHelpOnEmpty = True
-    , prefBacktrack = True
-    , prefColumns = 80
-    }
+        { prefMultiSuffix = ""
+        , prefDisambiguate = True
+        , prefShowHelpOnError = True
+        , prefShowHelpOnEmpty = True
+        , prefBacktrack = True
+        , prefColumns = 80
+        }
 
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_
@@ -148,11 +142,6 @@ parseCommand =
     mconcat
         [ command "register" parseCommandRegister
         , command "login" parseCommandLogin
-        , command "add" parseCommandPostPostAddItem
-        , command "show" parseCommandShowItem
-        , command "done" parseCommandDoneItem
-        , command "size" parseCommandSize
-        , command "review" parseCommandReview
         , command "logout" parseCommandLogout
         , command "sync" parseCommandSync
         ]
@@ -204,43 +193,6 @@ parseCommandLogin = info parser modifier
                   , value Nothing
                   , metavar "PASSWORD"
                   ]))
-
-parseCommandPostPostAddItem :: ParserInfo Command
-parseCommandPostPostAddItem = info parser modifier
-  where
-    modifier = fullDesc <> progDesc "Add an item"
-    parser =
-        CommandPostPostAddItem <$>
-        some
-            (strArgument
-                 (mconcat
-                      [ help "Give the contents of the item to be added."
-                      , metavar "TEXT"
-                      ]))
-
-parseCommandShowItem :: ParserInfo Command
-parseCommandShowItem = info parser modifier
-  where
-    modifier = fullDesc <> progDesc "Show one item."
-    parser = pure CommandShowItem
-
-parseCommandDoneItem :: ParserInfo Command
-parseCommandDoneItem = info parser modifier
-  where
-    modifier = fullDesc <> progDesc "Mark that item as done."
-    parser = pure CommandDoneItem
-
-parseCommandSize :: ParserInfo Command
-parseCommandSize = info parser modifier
-  where
-    modifier = fullDesc <> progDesc "Show the number of items in the tickler."
-    parser = pure CommandSize
-
-parseCommandReview :: ParserInfo Command
-parseCommandReview = info parser modifier
-  where
-    modifier = fullDesc <> progDesc "Start reviewing items one by one."
-    parser = pure CommandReview
 
 parseCommandLogout :: ParserInfo Command
 parseCommandLogout = info parser modifier

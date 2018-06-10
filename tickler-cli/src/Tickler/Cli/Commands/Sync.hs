@@ -6,10 +6,11 @@ module Tickler.Cli.Commands.Sync
 
 import Import
 
+import Data.Mergeless
+
 import Tickler.API
 
 import Tickler.Client
-import Tickler.Client.Store
 
 import Tickler.Cli.Client
 import Tickler.Cli.OptParse
@@ -30,10 +31,13 @@ sync = do
                         liftIO $ die $ unlines ["Sync failed:", show err]
                     Right resp -> do
                         liftIO $ putStr $ showMergeStats req resp
-                        pure $ mergeStore before resp
+                        pure $ mergeSyncResponse before resp
     writeStore after
 
-showMergeStats :: SyncRequest -> SyncResponse -> String
+showMergeStats ::
+       SyncRequest ItemUUID TypedItem
+    -> SyncResponse ItemUUID TypedItem
+    -> String
 showMergeStats SyncRequest {..} SyncResponse {..} =
     unlines
         [ unwords [show $ length syncResponseAddedItems, "added   remotely"]

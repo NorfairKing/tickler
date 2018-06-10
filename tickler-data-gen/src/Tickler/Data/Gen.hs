@@ -70,6 +70,7 @@ instance GenValid TicklerItem where
     genValid =
         (TicklerItem <$> genValid <*> genValid <*> genValid <*> genValid <*>
          genValid <*>
+         genValid <*>
          genValid) `suchThat`
         isValid
 
@@ -78,6 +79,7 @@ instance GenUnchecked TriggeredItem
 instance GenValid TriggeredItem where
     genValid =
         (TriggeredItem <$> genValid <*> genValid <*> genValid <*> genValid <*>
+         genValid <*>
          genValid <*>
          genValid) `suchThat`
         isValid
@@ -104,7 +106,8 @@ instance GenUnchecked IntrayTrigger
 
 instance GenValid IntrayTrigger where
     genValid =
-        (IntrayTrigger <$> genValid <*> genValid <*> genValid <*> genValid <*> genValid) `suchThat`
+        (IntrayTrigger <$> genValid <*> genValid <*> genValid <*> genValid <*>
+         genValid) `suchThat`
         isValid
 
 instance GenUnchecked EmailAddress where
