@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Client.Store
@@ -6,12 +7,14 @@ module Tickler.Client.Store
     , makeSyncRequest
     , mergeSyncResponse
     , emptyStore
+    , addTickleToStore
     ) where
 
 import Import
 
 import Data.Aeson
 import qualified Data.Mergeless as Mergeless
+import qualified Data.Set as S
 
 import Tickler.API
 
@@ -21,9 +24,11 @@ data Store = Store
 
 instance Validity Store
 
-instance FromJSON Store
+instance FromJSON Store where
+    parseJSON = withObject "Store" $ \o -> Store <$> o .: "tickles"
 
-instance ToJSON Store
+instance ToJSON Store where
+    toJSON Store {..} = object ["tickles" .= storeTickles]
 
 makeSyncRequest :: Store -> SyncRequest
 makeSyncRequest Store {..} =
@@ -38,3 +43,12 @@ mergeSyncResponse Store {..} SyncResponse {..} =
 
 emptyStore :: Store
 emptyStore = Store {storeTickles = Mergeless.emptyStore}
+
+addTickleToStore :: Store -> Added TypedTickle -> Store
+addTickleToStore Store {..} a =
+    Store
+    { storeTickles =
+          Mergeless.Store $
+          S.insert (Mergeless.UnsyncedItem a) $
+          Mergeless.storeItems storeTickles
+    }

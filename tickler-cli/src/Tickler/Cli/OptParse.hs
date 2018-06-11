@@ -11,6 +11,7 @@ module Tickler.Cli.OptParse
     , Dispatch(..)
     , RegisterSettings(..)
     , LoginSettings(..)
+    , AddSettings(..)
     , CliM
     ) where
 
@@ -18,6 +19,7 @@ import Import
 
 import qualified Data.ByteString as SB
 import qualified Data.Text as T
+import Data.Time
 import Data.Yaml as Yaml (decodeEither)
 
 import Options.Applicative
@@ -64,17 +66,34 @@ getDispatch cmd =
             pure $
             DispatchRegister
                 RegisterSettings
-                    { registerSetUsername =
-                          (T.pack <$> registerArgUsername) >>= parseUsername
-                    , registerSetPassword = T.pack <$> registerArgPassword
-                    }
+                { registerSetUsername =
+                      (T.pack <$> registerArgUsername) >>= parseUsername
+                , registerSetPassword = T.pack <$> registerArgPassword
+                }
         CommandLogin LoginArgs {..} ->
             pure $
             DispatchLogin
                 LoginSettings
-                    { loginSetUsername =
-                          (T.pack <$> loginArgUsername) >>= parseUsername
-                    , loginSetPassword = T.pack <$> loginArgPassword
+                { loginSetUsername =
+                      (T.pack <$> loginArgUsername) >>= parseUsername
+                , loginSetPassword = T.pack <$> loginArgPassword
+                }
+        CommandAdd AddArgs {..} -> do
+            tz <- getCurrentTimeZone
+            date <-
+                parseTimeM True defaultTimeLocale "%Y-%-m-%-d" addArgTickleDate
+            mTime <-
+                case addArgTickleTime of
+                    Nothing -> pure Nothing
+                    Just a -> pure $ parseTimeM True defaultTimeLocale "%H:%M" a
+            let time = fromMaybe midnight mTime
+            let localT = LocalTime date time
+            let utcT = localTimeToUTC tz localT
+            pure $
+                DispatchAdd
+                    AddSettings
+                    { addSetTickleContent = T.pack addArgContent
+                    , addSetTickleDateTime = utcT
                     }
         CommandLogout -> pure DispatchLogout
         CommandSync -> pure DispatchSync
@@ -119,13 +138,13 @@ runArgumentsParser = execParserPure prefs_ argParser
 prefs_ :: ParserPrefs
 prefs_ =
     ParserPrefs
-        { prefMultiSuffix = ""
-        , prefDisambiguate = True
-        , prefShowHelpOnError = True
-        , prefShowHelpOnEmpty = True
-        , prefBacktrack = True
-        , prefColumns = 80
-        }
+    { prefMultiSuffix = ""
+    , prefDisambiguate = True
+    , prefShowHelpOnError = True
+    , prefShowHelpOnEmpty = True
+    , prefBacktrack = True
+    , prefColumns = 80
+    }
 
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_
@@ -142,6 +161,7 @@ parseCommand =
     mconcat
         [ command "register" parseCommandRegister
         , command "login" parseCommandLogin
+        , command "add" parseCommandAdd
         , command "logout" parseCommandLogout
         , command "sync" parseCommandSync
         ]
@@ -192,6 +212,22 @@ parseCommandLogin = info parser modifier
                   , help "The password to login with"
                   , value Nothing
                   , metavar "PASSWORD"
+                  ]))
+
+parseCommandAdd :: ParserInfo Command
+parseCommandAdd = info parser modifier
+  where
+    modifier = fullDesc <> progDesc "Add a tickle"
+    parser = CommandAdd <$> (AddArgs <$>
+         strArgument (mconcat [metavar "CONTENT", help "The content of the tickle"])
+         <*> strArgument (mconcat [metavar "DATE", help "The scheduled date of the tickle"])
+         <*> option
+             (Just <$> str)
+             (mconcat
+                  [ long "time"
+                  , help "The scheduled time of the tickle"
+                  , value Nothing
+                  , metavar "TIME"
                   ]))
 
 parseCommandLogout :: ParserInfo Command

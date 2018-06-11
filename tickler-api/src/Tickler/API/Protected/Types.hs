@@ -142,10 +142,15 @@ data Tickle a = Tickle
 
 instance Validity a => Validity (Tickle a)
 
-instance ToJSON a => ToJSON (Tickle a)
 
-instance FromJSON a => FromJSON (Tickle a)
+instance FromJSON a => FromJSON (Tickle a) where
+    parseJSON =
+        withObject "Tickle" $ \o ->
+            Tickle <$> o .: "content" <*> o .: "scheduled"
 
+instance ToJSON a => ToJSON (Tickle a) where
+    toJSON Tickle {..} =
+        object ["content" .= tickleContent, "scheduled" .= tickleScheduled]
 instance ToSample a => ToSample (Tickle a)
 
 type TypedTickle = Tickle TypedItem

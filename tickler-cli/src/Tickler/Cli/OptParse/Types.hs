@@ -9,6 +9,7 @@ import Import
 
 import Data.Text (Text)
 import Data.Yaml as Yaml
+import Data.Time
 
 import Servant.Client
 
@@ -25,6 +26,7 @@ data Instructions =
 data Command
     = CommandRegister RegisterArgs
     | CommandLogin LoginArgs
+    | CommandAdd AddArgs
     | CommandLogout
     | CommandSync
     deriving (Show, Eq, Generic)
@@ -37,6 +39,12 @@ data RegisterArgs = RegisterArgs
 data LoginArgs = LoginArgs
     { loginArgUsername :: Maybe String
     , loginArgPassword :: Maybe String
+    } deriving (Show, Eq, Generic)
+
+data AddArgs = AddArgs
+    { addArgContent :: String
+    , addArgTickleDate :: String
+    , addArgTickleTime :: Maybe String
     } deriving (Show, Eq, Generic)
 
 data Flags = Flags
@@ -63,11 +71,11 @@ instance FromJSON Configuration where
 emptyConfiguration :: Configuration
 emptyConfiguration =
     Configuration
-        { configUrl = Nothing
-        , configUsername = Nothing
-        , configTicklerDir = Nothing
-        , configSyncStrategy = Nothing
-        }
+    { configUrl = Nothing
+    , configUsername = Nothing
+    , configTicklerDir = Nothing
+    , configSyncStrategy = Nothing
+    }
 
 data Settings = Settings
     { setBaseUrl :: Maybe BaseUrl
@@ -88,6 +96,7 @@ instance ToJSON SyncStrategy
 data Dispatch
     = DispatchRegister RegisterSettings
     | DispatchLogin LoginSettings
+    | DispatchAdd AddSettings
     | DispatchLogout
     | DispatchSync
     deriving (Show, Eq, Generic)
@@ -100,6 +109,11 @@ data RegisterSettings = RegisterSettings
 data LoginSettings = LoginSettings
     { loginSetUsername :: Maybe Username
     , loginSetPassword :: Maybe Text
+    } deriving (Show, Eq, Generic)
+
+data AddSettings = AddSettings
+    { addSetTickleContent :: Text
+    , addSetTickleDateTime :: UTCTime
     } deriving (Show, Eq, Generic)
 
 type CliM = ReaderT Settings IO
