@@ -23,6 +23,7 @@ runTriggeredIntrayItemScheduler _ = do
         "TriggeredIntrayScheduler"
         "Starting scheduling TriggeredIntrayItems from triggered items."
     tis <- runDb $ selectList [] [Asc TriggeredItemScheduled]
+    liftIO $ print tis
     tes <-
         fmap concat $
         forM tis $ \(Entity _ ti) -> do

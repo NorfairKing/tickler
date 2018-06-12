@@ -7,8 +7,8 @@ killall tickler-web-server
 
 set -e
 
-export WEB_PORT=8000
-export API_PORT=8001
+export WEB_PORT=8002
+export API_PORT=8003
 export DEFAULT_INTRAY_URL="https://api.intray.cs-syd.eu"
 
 tickler-web-server serve --persist-logins --admin admin $@ &

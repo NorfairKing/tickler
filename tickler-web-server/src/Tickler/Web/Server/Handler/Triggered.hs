@@ -39,5 +39,5 @@ makeItemInfosWidget items = do
             mTriggeredWidget <-
                 case itemInfoTriggered of
                     Nothing -> pure Nothing
-                    Just iit ->Just <$> makeTimestampWidget iit
+                    Just iit -> Just <$> makeTimestampWidget (triggeredInfoTriggered iit)
             pure $(widgetFile "item")

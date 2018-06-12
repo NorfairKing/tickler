@@ -4,7 +4,8 @@ module Tickler.Server.Item
     ( makeTicklerItem
     , makeTriggeredItem
     , makeTicklerSynced
-    , makeItemInfo
+    , makeTicklerItemInfo
+    , makeTriggeredItemInfo
     ) where
 
 import Import
@@ -67,8 +68,8 @@ makeTicklerSynced TicklerItem {..} =
     , syncedSynced = ticklerItemSynced
     }
 
-makeItemInfo :: Either TicklerItem TriggeredItem -> TypedItemInfo
-makeItemInfo (Left TicklerItem {..}) =
+makeTicklerItemInfo :: TicklerItem -> TypedItemInfo
+makeTicklerItemInfo TicklerItem {..} =
     ItemInfo
     { itemInfoIdentifier = ticklerItemIdentifier
     , itemInfoContents =
@@ -82,7 +83,9 @@ makeItemInfo (Left TicklerItem {..}) =
     , itemInfoSynced = ticklerItemSynced
     , itemInfoTriggered = Nothing
     }
-makeItemInfo (Right TriggeredItem {..}) =
+
+makeTriggeredItemInfo :: TriggeredItem -> [TriggeredIntrayItem] -> TypedItemInfo
+makeTriggeredItemInfo TriggeredItem {..} tiis =
     ItemInfo
     { itemInfoIdentifier = triggeredItemIdentifier
     , itemInfoContents =
@@ -94,5 +97,25 @@ makeItemInfo (Right TriggeredItem {..}) =
           }
     , itemInfoCreated = triggeredItemCreated
     , itemInfoSynced = triggeredItemSynced
-    , itemInfoTriggered = Just triggeredItemTriggered
+    , itemInfoTriggered =
+          Just
+              TriggeredInfo
+              { triggeredInfoTriggered = triggeredItemTriggered
+              , triggeredInfoTriggerTriggerAttempts =
+                    mapMaybe
+                        (\TriggeredIntrayItem {..} ->
+                             IntrayTriggerAttempt triggeredIntrayItemTrigger <$>
+                             case ( triggeredIntrayItemIntrayItemUUID
+                                  , triggeredIntrayItemError) of
+                                 (Nothing, Nothing) -> Nothing
+                                 (Just i, Nothing) ->
+                                     Just $ IntrayAdditionSuccess i
+                                 (Nothing, Just e) ->
+                                     Just $ IntrayAdditionFailure e
+                                 (Just _ ,Just e) ->
+                                     Just $ IntrayAdditionFailure e) $
+                    filter
+                        ((== triggeredItemIdentifier) . triggeredIntrayItemItem)
+                        tiis
+              }
     }

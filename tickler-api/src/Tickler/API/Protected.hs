@@ -24,6 +24,10 @@ module Tickler.API.Protected
     , TypedTickle
     , ItemInfo(..)
     , TypedItemInfo
+    , TriggeredInfo(..)
+    , TriggerAttempt(..)
+    , IntrayTriggerResult(..)
+    , EmailTriggerResult(..)
     , AddItem
     , Added(..)
     , Synced(..)

@@ -158,8 +158,8 @@ VerificationEmail
 TriggeredIntrayItem
     item            ItemUUID
     trigger         TriggerUUID
-    intrayItemUUID  Text        Maybe
-    error           Text        Maybe
+    intrayItemUUID  Intray.ItemUUID        Maybe
+    error           Text                   Maybe
     UniqueTriggeredIntrayItem item trigger
 
     deriving Show

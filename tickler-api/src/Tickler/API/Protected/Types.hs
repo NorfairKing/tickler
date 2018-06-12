@@ -19,6 +19,10 @@ module Tickler.API.Protected.Types
     , TypedTickle
     , ItemInfo(..)
     , TypedItemInfo
+    , TriggeredInfo(..)
+    , TriggerAttempt(..)
+    , IntrayTriggerResult(..)
+    , EmailTriggerResult(..)
     , AddItem
     , Mergeless.Added(..)
     , Mergeless.Synced(..)
@@ -142,7 +146,6 @@ data Tickle a = Tickle
 
 instance Validity a => Validity (Tickle a)
 
-
 instance FromJSON a => FromJSON (Tickle a) where
     parseJSON =
         withObject "Tickle" $ \o ->
@@ -151,6 +154,7 @@ instance FromJSON a => FromJSON (Tickle a) where
 instance ToJSON a => ToJSON (Tickle a) where
     toJSON Tickle {..} =
         object ["content" .= tickleContent, "scheduled" .= tickleScheduled]
+
 instance ToSample a => ToSample (Tickle a)
 
 type TypedTickle = Tickle TypedItem
@@ -160,7 +164,7 @@ data ItemInfo a = ItemInfo
     , itemInfoContents :: Tickle a
     , itemInfoCreated :: UTCTime
     , itemInfoSynced :: UTCTime
-    , itemInfoTriggered :: Maybe UTCTime
+    , itemInfoTriggered :: Maybe TriggeredInfo
     } deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity a => Validity (ItemInfo a)
@@ -185,6 +189,60 @@ instance FromJSON a => FromJSON (ItemInfo a) where
 instance ToSample a => ToSample (ItemInfo a)
 
 type TypedItemInfo = ItemInfo TypedItem
+
+data TriggeredInfo = TriggeredInfo
+    { triggeredInfoTriggered :: UTCTime
+    , triggeredInfoTriggerTriggerAttempts :: [TriggerAttempt]
+    } deriving (Show, Read, Eq, Ord, Generic)
+
+instance Validity TriggeredInfo
+
+instance FromJSON TriggeredInfo
+
+instance ToJSON TriggeredInfo
+
+instance ToSample TriggeredInfo
+
+data TriggerAttempt
+    = EmailTriggerAttempt TriggerUUID
+                          EmailTriggerResult
+    | IntrayTriggerAttempt TriggerUUID
+                           IntrayTriggerResult
+    deriving (Show, Read, Eq, Ord, Generic)
+
+instance Validity TriggerAttempt
+
+instance FromJSON TriggerAttempt
+
+instance ToJSON TriggerAttempt
+
+instance ToSample TriggerAttempt
+
+data EmailTriggerResult
+    = EmailSent
+    | EmailError Text
+    deriving (Show, Read, Eq, Ord, Generic)
+
+instance Validity EmailTriggerResult
+
+instance FromJSON EmailTriggerResult
+
+instance ToJSON EmailTriggerResult
+
+instance ToSample EmailTriggerResult
+
+data IntrayTriggerResult
+    = IntrayAdditionSuccess Intray.ItemUUID
+    | IntrayAdditionFailure Text
+    deriving (Show, Read, Eq, Ord, Generic)
+
+instance Validity IntrayTriggerResult
+
+instance FromJSON IntrayTriggerResult
+
+instance ToJSON IntrayTriggerResult
+
+instance ToSample IntrayTriggerResult
 
 type AddItem = TypedTickle
 

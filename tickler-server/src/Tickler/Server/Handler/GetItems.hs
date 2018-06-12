@@ -25,7 +25,7 @@ import Tickler.Server.Handler.Utils
 serveGetItems ::
        AuthResult AuthCookie
     -> Maybe ItemFilter
-    -> TicklerHandler [ItemInfo TypedItem]
+    -> TicklerHandler [TypedItemInfo]
 serveGetItems (Authenticated AuthCookie {..}) mif = do
     let getTicklerItems = do
             itemsEnts <-
@@ -33,14 +33,25 @@ serveGetItems (Authenticated AuthCookie {..}) mif = do
                 selectList
                     [TicklerItemUserId ==. authCookieUserUUID]
                     [Asc TicklerItemCreated]
-            pure $ map (makeItemInfo . Left . entityVal) itemsEnts
+            pure $ map (makeTicklerItemInfo . entityVal) itemsEnts
     let getTriggeredItems = do
             itemsEnts <-
                 runDb $
                 selectList
                     [TriggeredItemUserId ==. authCookieUserUUID]
                     [Asc TriggeredItemCreated]
-            pure $ map (makeItemInfo . Right . entityVal) itemsEnts
+            triggeredItemEns <-
+                runDb $
+                selectList
+                    [ TriggeredIntrayItemItem <-.
+                      map (triggeredItemIdentifier . entityVal) itemsEnts
+                    ]
+                    []
+            pure $
+                map
+                    ((`makeTriggeredItemInfo` map entityVal triggeredItemEns) .
+                     entityVal)
+                    itemsEnts
     case mif of
         Just OnlyUntriggered -> getTicklerItems
         Just OnlyTriggered -> getTriggeredItems

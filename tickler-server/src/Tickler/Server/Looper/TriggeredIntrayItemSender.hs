@@ -32,7 +32,7 @@ runTriggeredIntrayItemSender :: () -> Looper ()
 runTriggeredIntrayItemSender _ = do
     logInfoNS "TriggeredIntraySender" "Starting sending TriggeredIntrayItems."
     tiis <-
-        runDb $ selectList [TriggeredIntrayItemIntrayItemUUID ==. Nothing] []
+        runDb $ selectList [TriggeredIntrayItemIntrayItemUUID ==. Nothing, TriggeredIntrayItemError ==. Nothing] []
     unless (null tiis) $ do
         forM_ tiis $ \(Entity tii TriggeredIntrayItem {..}) -> do
             mtrig <-
@@ -95,23 +95,47 @@ runTriggeredIntrayItemSender _ = do
                                                     token
                                                     item
                             case errOrUuid of
-                                Left err ->
+                                Left (ConnectionError err) -> do
                                     logErrorNS "TriggeredIntraySender" $
-                                    T.unwords
-                                        [ "Failed to add item to intray:"
-                                        , T.pack (show err)
-                                        ]
-                                Right (Left err) ->
+                                        T.unwords
+                                            [ "Failed to add item to intray:"
+                                            , err
+                                            ]
+                                    runDb $
+                                        update
+                                            tii
+                                            [ TriggeredIntrayItemError =.
+                                              Just err
+                                            ]
+                                Left err -> do
                                     logErrorNS "TriggeredIntraySender" $
-                                    T.unwords
-                                        [ "The intray server did something wrong:"
-                                        , T.pack err
-                                        ]
+                                        T.unwords
+                                            [ "Failed to add item to intray:"
+                                            , T.pack (show err)
+                                            ]
+                                    runDb $
+                                        update
+                                            tii
+                                            [ TriggeredIntrayItemError =.
+                                              Just (T.pack (show err))
+                                            ]
+                                Right (Left err) -> do
+                                    logErrorNS "TriggeredIntraySender" $
+                                        T.unwords
+                                            [ "The intray server did something wrong:"
+                                            , T.pack err
+                                            ]
+                                    runDb $
+                                        update
+                                            tii
+                                            [ TriggeredIntrayItemError =.
+                                              Just (T.pack err)
+                                            ]
                                 Right (Right uuid) ->
                                     runDb $
                                     update
                                         tii
                                         [ TriggeredIntrayItemIntrayItemUUID =.
-                                          Just (uuidText uuid)
+                                          Just uuid
                                         ]
     logInfoNS "TriggeredIntraySender" "Finished sending TriggeredIntrayItems."

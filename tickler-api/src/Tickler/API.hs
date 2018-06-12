@@ -29,6 +29,10 @@ module Tickler.API
     , TypedTickle
     , ItemInfo(..)
     , TypedItemInfo
+    , TriggeredInfo(..)
+    , TriggerAttempt(..)
+    , IntrayTriggerResult(..)
+    , EmailTriggerResult(..)
     , AddItem
     , Added(..)
     , Synced(..)
