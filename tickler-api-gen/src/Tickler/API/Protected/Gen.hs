@@ -12,6 +12,7 @@ import Data.GenValidity.ByteString ()
 import Data.GenValidity.Text ()
 import Data.GenValidity.Time ()
 import Data.GenValidity.UUID ()
+import Data.GenValidity.UUID.Typed ()
 
 import Intray.Data.Gen ()
 import Tickler.Data.Gen ()
@@ -31,6 +32,22 @@ instance GenUnchecked a => GenUnchecked (Tickle a)
 
 instance GenValid a => GenValid (Tickle a) where
     genValid = (Tickle <$> genValid <*> genValid) `suchThat` isValid
+
+instance GenUnchecked TriggerAttempt
+
+instance GenValid TriggerAttempt
+
+instance GenUnchecked EmailTriggerResult
+
+instance GenValid EmailTriggerResult
+
+instance GenUnchecked IntrayTriggerResult
+
+instance GenValid IntrayTriggerResult
+
+instance GenUnchecked TriggeredInfo
+
+instance GenValid TriggeredInfo
 
 instance GenUnchecked a => GenUnchecked (ItemInfo a)
 

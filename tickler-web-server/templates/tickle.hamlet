@@ -1,0 +1,28 @@
+<div .ui .segment>
+  <p>
+    Created: ^{createdWidget}
+
+  <p>
+    Scheduled: ^{scheduledWidget}
+
+  <p>
+    $case typedItemCase $ tickleContent itemInfoContents
+      $of Left err
+        Invalid item: #{err}
+      $of Right i
+        $case i 
+          $of CaseTextItem t
+            #{t}
+
+  <form
+    method="post"
+    action=@{DeleteR}
+    onclick="return confirm('Are you sure you want to delete this item? This cannot be undone.');">
+    <input
+      name="item"
+      type="hidden"
+      value=#{uuidText itemInfoIdentifier}>
+    ^{token}
+    <button .ui .button .negative type="submit">
+      Delete
+
