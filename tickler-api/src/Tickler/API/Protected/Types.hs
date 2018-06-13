@@ -142,6 +142,7 @@ newtype TypedItemCase =
 data Tickle a = Tickle
     { tickleContent :: a
     , tickleScheduled :: UTCTime
+    , tickleRecurrence :: Maybe Recurrence
     } deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity a => Validity (Tickle a)
@@ -149,11 +150,11 @@ instance Validity a => Validity (Tickle a)
 instance FromJSON a => FromJSON (Tickle a) where
     parseJSON =
         withObject "Tickle" $ \o ->
-            Tickle <$> o .: "content" <*> o .: "scheduled"
+            Tickle <$> o .: "content" <*> o .: "scheduled" <*> o .:? "recurrence"
 
 instance ToJSON a => ToJSON (Tickle a) where
     toJSON Tickle {..} =
-        object ["content" .= tickleContent, "scheduled" .= tickleScheduled]
+        object ["content" .= tickleContent, "scheduled" .= tickleScheduled, "recurrence" .= tickleRecurrence]
 
 instance ToSample a => ToSample (Tickle a)
 
@@ -164,6 +165,7 @@ data ItemInfo a = ItemInfo
     , itemInfoContents :: Tickle a
     , itemInfoCreated :: UTCTime
     , itemInfoSynced :: UTCTime
+    , itemInfoRecurrence :: Maybe Recurrence
     , itemInfoTriggered :: Maybe TriggeredInfo
     } deriving (Show, Read, Eq, Ord, Generic)
 
@@ -176,6 +178,7 @@ instance ToJSON a => ToJSON (ItemInfo a) where
             , "contents" .= itemInfoContents
             , "created" .= itemInfoCreated
             , "synced" .= itemInfoSynced
+            , "recurrence" .= itemInfoRecurrence
             , "triggered" .= itemInfoTriggered
             ]
 
@@ -184,6 +187,7 @@ instance FromJSON a => FromJSON (ItemInfo a) where
         withObject "ItemInfo TypedItem" $ \o ->
             ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created" <*>
             o .: "synced" <*>
+            o .: "recurrence" <*>
             o .: "triggered"
 
 instance ToSample a => ToSample (ItemInfo a)
