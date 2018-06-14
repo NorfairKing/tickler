@@ -9,6 +9,8 @@ module Tickler.Web.Server.Handler.Tickles
 
 import Import
 
+import Data.Time
+
 import Yesod
 
 import Tickler.API
@@ -29,13 +31,18 @@ getTicklesR =
         withNavBar $(widgetFile "tickles")
 
 makeItemInfoWidget :: [ItemInfo TypedItem] -> Handler Widget
-makeItemInfoWidget items = do
+makeItemInfoWidget items =withLogin$ \t -> do
+    AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
     token <- genToken
     fmap mconcat $
         forM items $ \ItemInfo {..} -> do
             createdWidget <- makeTimestampWidget itemInfoCreated
             scheduledWidget <-
-                makeTimestampWidget $ tickleScheduled itemInfoContents
+                makeTimestampWidget $
+                localTimeToUTC accountSettingsTimeZone $
+                LocalTime
+                    (tickleScheduledDay itemInfoContents)
+                    (fromMaybe midnight $ tickleScheduledTime itemInfoContents)
             mTriggeredWidget <-
                 case itemInfoTriggered of
                     Nothing -> pure Nothing

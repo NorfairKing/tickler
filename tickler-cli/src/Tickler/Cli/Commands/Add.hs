@@ -27,7 +27,9 @@ add AddSettings {..} =
                 , addedValue =
                       Tickle
                       { tickleContent = textTypedItem addSetTickleContent
-                      , tickleScheduled = addSetTickleDateTime
+                      , tickleScheduledDay = addSetTickleDate
+                      , tickleScheduledTime = addSetTickleTime
+                      , tickleRecurrence = Nothing
                       }
                 }
         pure $ addTickleToStore s a

@@ -20,9 +20,10 @@ library:
   - Tickler.Server.Handler.PostSync
   - Tickler.Server.Handler.Utils
   - Tickler.Server.Looper
-  - Tickler.Server.Types
+  - Tickler.Server.Looper.Triggerer
   - Tickler.Server.OptParse
   - Tickler.Server.OptParse.Types
+  - Tickler.Server.Types
 
   dependencies:
   - aeson

@@ -9,6 +9,8 @@ module Tickler.Web.Server.Handler.Triggered
 
 import Import
 
+import Data.Time
+
 import Yesod
 
 import Tickler.API
@@ -29,15 +31,24 @@ getTriggeredR =
         withNavBar $(widgetFile "triggered")
 
 makeItemInfosWidget :: [TypedItemInfo] -> Handler Widget
-makeItemInfosWidget items = do
-    token <- genToken
-    fmap mconcat $
-        forM items $ \ItemInfo {..} -> do
-            createdWidget <- makeTimestampWidget itemInfoCreated
-            scheduledWidget <-
-                makeTimestampWidget $ tickleScheduled itemInfoContents
-            mTriggeredWidget <-
-                case itemInfoTriggered of
-                    Nothing -> pure Nothing
-                    Just iit -> Just <$> makeTimestampWidget (triggeredInfoTriggered iit)
-            pure $(widgetFile "item")
+makeItemInfosWidget items =
+    withLogin $ \t -> do
+        AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
+        token <- genToken
+        fmap mconcat $
+            forM items $ \ItemInfo {..} -> do
+                createdWidget <- makeTimestampWidget itemInfoCreated
+                scheduledWidget <-
+                    makeTimestampWidget $
+                    localTimeToUTC accountSettingsTimeZone $
+                    LocalTime
+                        (tickleScheduledDay itemInfoContents)
+                        (fromMaybe midnight $
+                         tickleScheduledTime itemInfoContents)
+                mTriggeredWidget <-
+                    case itemInfoTriggered of
+                        Nothing -> pure Nothing
+                        Just iit ->
+                            Just <$>
+                            makeTimestampWidget (triggeredInfoTriggered iit)
+                pure $(widgetFile "item")

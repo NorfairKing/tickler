@@ -91,7 +91,9 @@ tests:
     - tickler-client-gen
     - tickler-data
     - tickler-data-gen
+    - tickler-server
     - tickler-server-test-utils
+    - time
 
 benchmarks:
   tickler-server-bench:

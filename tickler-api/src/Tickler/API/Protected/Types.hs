@@ -16,7 +16,6 @@ module Tickler.API.Protected.Types
     , TypedItemCase(..)
     , typedItemCase
     , Recurrence(..)
-    , nominal
     , everyDaysAtTime
     , everyMonthsOnDayAtTime
     , Tickle(..)
@@ -145,7 +144,8 @@ newtype TypedItemCase =
 
 data Tickle a = Tickle
     { tickleContent :: !a
-    , tickleScheduled :: !UTCTime
+    , tickleScheduledDay :: !Day
+    , tickleScheduledTime :: !(Maybe TimeOfDay)
     , tickleRecurrence :: !(Maybe Recurrence)
     } deriving (Show, Eq, Ord, Generic)
 
@@ -154,24 +154,32 @@ instance Validity a => Validity (Tickle a)
 instance FromJSON a => FromJSON (Tickle a) where
     parseJSON =
         withObject "Tickle" $ \o ->
-            Tickle <$> o .: "content" <*> o .: "scheduled" <*>
+            Tickle <$> o .: "content" <*> o .: "scheduled-day" <*>
+            o .: "scheduled-time" <*>
             o .:? "recurrence"
 
 instance ToJSON a => ToJSON (Tickle a) where
     toJSON Tickle {..} =
         object
             [ "content" .= tickleContent
-            , "scheduled" .= tickleScheduled
+            , "scheduled-day" .= tickleScheduledDay
+            , "scheduled-time" .= tickleScheduledTime
             , "recurrence" .= tickleRecurrence
             ]
 
 instance ToSample a => ToSample (Tickle a)
 
+instance ToSample Day where
+    toSamples Proxy = singleSample $ fromGregorian 2018 06 14
+
+instance ToSample TimeOfDay where
+    toSamples Proxy = singleSample midday
+
+
 instance ToSample Recurrence where
     toSamples Proxy =
         mapMaybe (\(a, b) -> (,) a <$> b) $
-        [ ("Nominal", nominal 5)
-        , ("Every Day", everyDaysAtTime 1 Nothing)
+        [ ("Every Day", everyDaysAtTime 1 Nothing)
         , ("Every Month", everyMonthsOnDayAtTime 1 Nothing Nothing)
         ]
 

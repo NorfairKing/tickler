@@ -72,6 +72,7 @@ instance GenValid TicklerItem where
          genValid <*>
          genValid <*>
          genValid <*>
+         genValid <*>
          genValid) `suchThat`
         isValid
 
@@ -80,6 +81,7 @@ instance GenUnchecked TriggeredItem
 instance GenValid TriggeredItem where
     genValid =
         (TriggeredItem <$> genValid <*> genValid <*> genValid <*> genValid <*>
+         genValid <*>
          genValid <*>
          genValid <*>
          genValid <*>

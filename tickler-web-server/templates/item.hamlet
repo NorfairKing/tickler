@@ -18,9 +18,6 @@
   $maybe recurrence <- tickleRecurrence itemInfoContents
     <p>
       $case recurrence
-        $of Nominal ndt
-          #{show ndt} seconds.
-
         $of EveryDaysAtTime ds mtod
           $case ds
             $of 1

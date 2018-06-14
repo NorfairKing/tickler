@@ -42,18 +42,10 @@ spec = do
     genValidSpec @Recurrence
     jsonSpecOnValid @Recurrence
     describe "Recurrence" $ do
-        describe "nominal" $
-            it "produces valid recurrences" $ producesValid nominal
         describe "everyDaysAtTime" $
             it "produces valid recurrences" $ producesValid2 everyDaysAtTime
-        describe "everyDayAtTime" $
-            it "produces valid recurrences" $ producesValid everyDayAtTime
-        describe "everyDays" $
-            it "produces valid recurrences" $ producesValid everyDays
-        describe "everyDay" $ it "is valid" $ shouldBeValid everyDay
-        describe "everyMonths" $
-            it "produces valid recurrences" $ producesValid everyMonths
-        describe "everyMonth" $ it "is valid" $ shouldBeValid everyMonth
+        describe "everyMonthsOnDayAtTime" $
+            it "produces valid recurrences" $ producesValid3 everyMonthsOnDayAtTime
     eqSpec @TicklerItem
     ordSpec @TicklerItem
     genValidSpec @TicklerItem

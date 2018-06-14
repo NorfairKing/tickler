@@ -113,7 +113,8 @@ data LoginSettings = LoginSettings
 
 data AddSettings = AddSettings
     { addSetTickleContent :: Text
-    , addSetTickleDateTime :: UTCTime
+    , addSetTickleDate :: Day
+    , addSetTickleTime :: Maybe TimeOfDay
     } deriving (Show, Eq, Generic)
 
 type CliM = ReaderT Settings IO

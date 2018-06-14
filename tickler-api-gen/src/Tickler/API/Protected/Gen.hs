@@ -31,7 +31,9 @@ instance GenValid TypedItem where
 instance GenUnchecked a => GenUnchecked (Tickle a)
 
 instance GenValid a => GenValid (Tickle a) where
-    genValid = (Tickle <$> genValid  <*> genValid<*> genValid) `suchThat` isValid
+    genValid =
+        (Tickle <$> genValid <*> genValid <*> genValid <*> genValid) `suchThat`
+        isValid
 
 instance GenUnchecked TriggerAttempt
 

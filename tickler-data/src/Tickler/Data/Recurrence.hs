@@ -16,8 +16,7 @@ import Database.Persist
 import Database.Persist.Sql
 
 data Recurrence
-    = Nominal NominalDiffTime
-    | EveryDaysAtTime Word
+    = EveryDaysAtTime Word
                       (Maybe TimeOfDay)
     | EveryMonthsOnDay Word
                        (Maybe Word8)
@@ -25,12 +24,6 @@ data Recurrence
     deriving (Show, Eq, Ord, Generic)
 
 instance Validity Recurrence where
-    validate (Nominal ndt) =
-        decorate "Nominal" $
-        mconcat
-            [ delve "NominalDiffTime" ndt
-            , declare "the nominal time is positive" $ ndt >= 0
-            ]
     validate (EveryDaysAtTime ds mtod) =
         decorate "EveryDaysAtTime" $
         mconcat [delve "Word" ds, delve "Maybe TimeOfDay" mtod]
@@ -40,13 +33,14 @@ instance Validity Recurrence where
             [ delve "Word" ms
             , delve "Maybe Word8" md
             , delve "Maybe TimeOfDay" mtod
-            , declare "The day of the month is strictly positive" $ maybe True (>= 1) md
-            , declare "The day of the month is less than or equal to 31" $ maybe True (<= 31) md
+            , declare "The day of the month is strictly positive" $
+              maybe True (>= 1) md
+            , declare "The day of the month is less than or equal to 31" $
+              maybe True (<= 31) md
             ]
 
 instance FromJSON Recurrence where
     parseJSON v =
-        (Nominal <$> parseJSON v) <|>
         withObject
             "Recurrence"
             (\o ->
@@ -69,7 +63,6 @@ instance FromJSON Recurrence where
             v
 
 instance ToJSON Recurrence where
-    toJSON (Nominal ndt) = toJSON ndt
     toJSON (EveryDaysAtTime ds tod) =
         object ["every-x-days" .= object ["days" .= ds, "time-of-day" .= tod]]
     toJSON (EveryMonthsOnDay ms md mtod) =
@@ -84,9 +77,6 @@ instance PersistField Recurrence where
 
 instance PersistFieldSql Recurrence where
     sqlType Proxy = SqlString
-
-nominal :: NominalDiffTime -> Maybe Recurrence
-nominal = constructValid . Nominal
 
 everyDaysAtTime :: Word -> Maybe TimeOfDay -> Maybe Recurrence
 everyDaysAtTime ds mtod = constructValid $ EveryDaysAtTime ds mtod

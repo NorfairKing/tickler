@@ -31,7 +31,8 @@ makeTicklerItem u i cr sy Tickle {..} =
        , ticklerItemContents = itemData
        , ticklerItemCreated = cr
        , ticklerItemSynced = sy
-       , ticklerItemScheduled = tickleScheduled
+       , ticklerItemScheduledDay = tickleScheduledDay
+       , ticklerItemScheduledTime = tickleScheduledTime
        , ticklerItemRecurrence = tickleRecurrence
        }
 
@@ -51,7 +52,8 @@ makeTriggeredItem u i cr sy Tickle {..} =
        , ticklerItemContents = itemData
        , ticklerItemCreated = cr
        , ticklerItemSynced = sy
-       , ticklerItemScheduled = tickleScheduled
+       , ticklerItemScheduledDay = tickleScheduledDay
+       , ticklerItemScheduledTime = tickleScheduledTime
        , ticklerItemRecurrence = tickleRecurrence
        }
 
@@ -64,7 +66,8 @@ makeTicklerSynced TicklerItem {..} =
           { tickleContent =
                 TypedItem
                 {itemType = ticklerItemType, itemData = ticklerItemContents}
-          , tickleScheduled = ticklerItemScheduled
+          , tickleScheduledDay = ticklerItemScheduledDay
+          , tickleScheduledTime = ticklerItemScheduledTime
           , tickleRecurrence = ticklerItemRecurrence
           }
     , syncedCreated = ticklerItemCreated
@@ -80,7 +83,8 @@ makeTicklerItemInfo TicklerItem {..} =
           { tickleContent =
                 TypedItem
                 {itemType = ticklerItemType, itemData = ticklerItemContents}
-          , tickleScheduled = ticklerItemScheduled
+          , tickleScheduledDay =  ticklerItemScheduledDay
+          , tickleScheduledTime = ticklerItemScheduledTime
           , tickleRecurrence = ticklerItemRecurrence
           }
     , itemInfoCreated = ticklerItemCreated
@@ -98,8 +102,8 @@ makeTriggeredItemInfo TriggeredItem {..} tiis =
                 TypedItem
                 {itemType = triggeredItemType, itemData = triggeredItemContents}
           , tickleRecurrence = triggeredItemRecurrence
-
-          , tickleScheduled = triggeredItemScheduled
+          , tickleScheduledDay = triggeredItemScheduledDay
+          , tickleScheduledTime = triggeredItemScheduledTime
           }
     , itemInfoCreated = triggeredItemCreated
     , itemInfoSynced = triggeredItemSynced

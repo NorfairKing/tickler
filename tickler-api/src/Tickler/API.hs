@@ -26,7 +26,6 @@ module Tickler.API
     , TypedItemCase(..)
     , typedItemCase
     , Recurrence(..)
-    , nominal
     , everyDaysAtTime
     , everyMonthsOnDayAtTime
     , Tickle(..)

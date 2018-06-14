@@ -108,7 +108,6 @@ postAddR :: Handler Html
 postAddR =
     withLogin $ \t -> do
         AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
-        getPostParams >>= (liftIO . print)
         NewItem {..} <- runInputPost newItemForm
         recurrence <- mkRecurrence newItemRecurrenceData
         void $
@@ -116,10 +115,8 @@ postAddR =
             clientPostAddItem t $
             Tickle
             { tickleContent = textTypedItem $ unTextarea newItemText
-            , tickleScheduled =
-                  localTimeToUTC accountSettingsTimeZone $
-                  LocalTime newItemScheduledDay $
-                  fromMaybe midnight newItemScheduledTime
+            , tickleScheduledDay = newItemScheduledDay
+            , tickleScheduledTime = newItemScheduledTime
             , tickleRecurrence = recurrence
             }
         redirect AddR

@@ -22,7 +22,7 @@ runTriggeredIntrayItemScheduler _ = do
     logInfoNS
         "TriggeredIntrayScheduler"
         "Starting scheduling TriggeredIntrayItems from triggered items."
-    tis <- runDb $ selectList [] [Asc TriggeredItemScheduled]
+    tis <- runDb $ selectList [] [Asc TriggeredItemScheduledDay, Asc TriggeredItemScheduledTime]
     liftIO $ print tis
     tes <-
         fmap concat $

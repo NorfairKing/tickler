@@ -79,21 +79,18 @@ getDispatch cmd =
                 , loginSetPassword = T.pack <$> loginArgPassword
                 }
         CommandAdd AddArgs {..} -> do
-            tz <- getCurrentTimeZone
             date <-
                 parseTimeM True defaultTimeLocale "%Y-%-m-%-d" addArgTickleDate
             mTime <-
                 case addArgTickleTime of
                     Nothing -> pure Nothing
                     Just a -> pure $ parseTimeM True defaultTimeLocale "%H:%M" a
-            let time = fromMaybe midnight mTime
-            let localT = LocalTime date time
-            let utcT = localTimeToUTC tz localT
             pure $
                 DispatchAdd
                     AddSettings
                     { addSetTickleContent = T.pack addArgContent
-                    , addSetTickleDateTime = utcT
+                    , addSetTickleDate = date
+                    , addSetTickleTime = mTime
                     }
         CommandLogout -> pure DispatchLogout
         CommandSync -> pure DispatchSync
