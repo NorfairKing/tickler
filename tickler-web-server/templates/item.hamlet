@@ -15,6 +15,28 @@
           $of CaseTextItem t
             #{t}
 
+  $maybe recurrence <- tickleRecurrence itemInfoContents
+    <p>
+      $case recurrence
+        $of EveryDaysAtTime ds mtod
+          $case ds
+            $of 1
+              Every day&nbsp;
+            $of _
+              Every #{ds} days&nbsp;
+          $maybe tod <- mtod
+            at #{show tod}
+
+        $of EveryMonthsOnDay ms md mtod
+          $case ms
+            $of 1
+              Every month&nbsp;
+            $of _
+              Every #{ms} months&nbsp;
+          $maybe d <- md
+            on day #{show d} of the month
+          $maybe dt <- mtod
+            at #{show dt}
 
   $maybe TriggeredInfo{..} <- itemInfoTriggered
     $if length triggeredInfoTriggerTriggerAttempts /= 0

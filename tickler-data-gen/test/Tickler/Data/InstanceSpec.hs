@@ -37,6 +37,15 @@ spec = do
     eqSpec @TriggerType
     ordSpec @TriggerType
     genValidSpec @TriggerType
+    eqSpec @Recurrence
+    ordSpec @Recurrence
+    genValidSpec @Recurrence
+    jsonSpecOnValid @Recurrence
+    describe "Recurrence" $ do
+        describe "everyDaysAtTime" $
+            it "produces valid recurrences" $ producesValid2 everyDaysAtTime
+        describe "everyMonthsOnDayAtTime" $
+            it "produces valid recurrences" $ producesValid3 everyMonthsOnDayAtTime
     eqSpec @TicklerItem
     ordSpec @TicklerItem
     genValidSpec @TicklerItem

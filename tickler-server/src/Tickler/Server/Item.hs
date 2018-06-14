@@ -31,7 +31,9 @@ makeTicklerItem u i cr sy Tickle {..} =
        , ticklerItemContents = itemData
        , ticklerItemCreated = cr
        , ticklerItemSynced = sy
-       , ticklerItemScheduled = tickleScheduled
+       , ticklerItemScheduledDay = tickleScheduledDay
+       , ticklerItemScheduledTime = tickleScheduledTime
+       , ticklerItemRecurrence = tickleRecurrence
        }
 
 makeTriggeredItem ::
@@ -50,7 +52,9 @@ makeTriggeredItem u i cr sy Tickle {..} =
        , ticklerItemContents = itemData
        , ticklerItemCreated = cr
        , ticklerItemSynced = sy
-       , ticklerItemScheduled = tickleScheduled
+       , ticklerItemScheduledDay = tickleScheduledDay
+       , ticklerItemScheduledTime = tickleScheduledTime
+       , ticklerItemRecurrence = tickleRecurrence
        }
 
 makeTicklerSynced :: TicklerItem -> Synced ItemUUID TypedTickle
@@ -62,7 +66,9 @@ makeTicklerSynced TicklerItem {..} =
           { tickleContent =
                 TypedItem
                 {itemType = ticklerItemType, itemData = ticklerItemContents}
-          , tickleScheduled = ticklerItemScheduled
+          , tickleScheduledDay = ticklerItemScheduledDay
+          , tickleScheduledTime = ticklerItemScheduledTime
+          , tickleRecurrence = ticklerItemRecurrence
           }
     , syncedCreated = ticklerItemCreated
     , syncedSynced = ticklerItemSynced
@@ -77,7 +83,9 @@ makeTicklerItemInfo TicklerItem {..} =
           { tickleContent =
                 TypedItem
                 {itemType = ticklerItemType, itemData = ticklerItemContents}
-          , tickleScheduled = ticklerItemScheduled
+          , tickleScheduledDay =  ticklerItemScheduledDay
+          , tickleScheduledTime = ticklerItemScheduledTime
+          , tickleRecurrence = ticklerItemRecurrence
           }
     , itemInfoCreated = ticklerItemCreated
     , itemInfoSynced = ticklerItemSynced
@@ -93,7 +101,9 @@ makeTriggeredItemInfo TriggeredItem {..} tiis =
           { tickleContent =
                 TypedItem
                 {itemType = triggeredItemType, itemData = triggeredItemContents}
-          , tickleScheduled = triggeredItemScheduled
+          , tickleRecurrence = triggeredItemRecurrence
+          , tickleScheduledDay = triggeredItemScheduledDay
+          , tickleScheduledTime = triggeredItemScheduledTime
           }
     , itemInfoCreated = triggeredItemCreated
     , itemInfoSynced = triggeredItemSynced
@@ -112,7 +122,7 @@ makeTriggeredItemInfo TriggeredItem {..} tiis =
                                      Just $ IntrayAdditionSuccess i
                                  (Nothing, Just e) ->
                                      Just $ IntrayAdditionFailure e
-                                 (Just _ ,Just e) ->
+                                 (Just _, Just e) ->
                                      Just $ IntrayAdditionFailure e) $
                     filter
                         ((== triggeredItemIdentifier) . triggeredIntrayItemItem)

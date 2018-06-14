@@ -71,6 +71,8 @@ instance GenValid TicklerItem where
         (TicklerItem <$> genValid <*> genValid <*> genValid <*> genValid <*>
          genValid <*>
          genValid <*>
+         genValid <*>
+         genValid <*>
          genValid) `suchThat`
         isValid
 
@@ -79,6 +81,8 @@ instance GenUnchecked TriggeredItem
 instance GenValid TriggeredItem where
     genValid =
         (TriggeredItem <$> genValid <*> genValid <*> genValid <*> genValid <*>
+         genValid <*>
+         genValid <*>
          genValid <*>
          genValid <*>
          genValid <*>
@@ -165,3 +169,7 @@ instance GenValid Email where
          genValid <*>
          genValid) `suchThat`
         isValid
+
+instance GenUnchecked Recurrence
+
+instance GenValid Recurrence

@@ -27,6 +27,7 @@ import Tickler.Data.EmailVerificationKey
 import Tickler.Data.HashedPassword
 import Tickler.Data.ItemType
 import Tickler.Data.ItemUUID
+import Tickler.Data.Recurrence
 import Tickler.Data.Time ()
 import Tickler.Data.TriggerType
 import Tickler.Data.TriggerUUID
@@ -42,8 +43,10 @@ User
     hashedPassword HashedPassword
     created UTCTime
     lastLogin UTCTime Maybe
+
     UniqueUserIdentifier identifier
     UniqueUsername username
+
     deriving Show
     deriving Eq
     deriving Ord
@@ -54,7 +57,9 @@ User
 UserSettings
     userId AccountUUID
     timeZone TimeZone
+
     UniqueUserSettings userId
+
     deriving Show
     deriving Eq
     deriving Ord
@@ -69,9 +74,14 @@ TicklerItem
     contents ByteString
     created UTCTime
     synced UTCTime
-    scheduled UTCTime
-    UniqueItem identifier userId type contents
+
+    scheduledDay Day
+    scheduledTime TimeOfDay Maybe
+
+    recurrence Recurrence Maybe
+
     UniqueItemIdentifier identifier
+
     deriving Show
     deriving Eq
     deriving Ord
@@ -86,10 +96,16 @@ TriggeredItem
     contents ByteString
     created UTCTime
     synced UTCTime
-    scheduled UTCTime
+
+    scheduledDay Day
+    scheduledTime TimeOfDay Maybe
+
+    recurrence Recurrence Maybe
+
     triggered UTCTime
-    UniqueTriggeredItem identifier userId type contents
+
     UniqueTriggeredItemIdentifier identifier
+
     deriving Show
     deriving Eq
     deriving Ord
@@ -160,6 +176,7 @@ TriggeredIntrayItem
     trigger         TriggerUUID
     intrayItemUUID  Intray.ItemUUID        Maybe
     error           Text                   Maybe
+
     UniqueTriggeredIntrayItem item trigger
 
     deriving Show
@@ -168,10 +185,12 @@ TriggeredIntrayItem
     deriving Generic
     deriving Typeable
 
+
 TriggeredEmail
     item            ItemUUID
     trigger         TriggerUUID
     email           EmailId     Maybe
+
     UniqueTriggeredEmail item trigger
 
     deriving Show
@@ -193,6 +212,7 @@ Email
     sesId           Text         Maybe
     scheduled       UTCTime
     sendAttempt     UTCTime      Maybe
+
     deriving Show
     deriving Eq
     deriving Ord
