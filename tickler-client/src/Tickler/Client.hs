@@ -31,6 +31,11 @@ module Tickler.Client
     , textTypedItem
     , TypedItemCase(..)
     , typedItemCase
+    , Recurrence(..)
+    , nominal
+    , everyDaysAtTime
+    , everyMonthsOnDayAtTime
+
     , Tickle(..)
     , TypedTickle
     , ItemInfo(..)

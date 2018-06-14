@@ -20,6 +20,10 @@ module Tickler.API.Protected
     , textTypedItem
     , TypedItemCase(..)
     , typedItemCase
+    , Recurrence(..)
+    , nominal
+    , everyDaysAtTime
+    , everyMonthsOnDayAtTime
     , Tickle(..)
     , TypedTickle
     , ItemInfo(..)

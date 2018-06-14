@@ -48,7 +48,12 @@ spec = do
             it "produces valid recurrences" $ producesValid2 everyDaysAtTime
         describe "everyDayAtTime" $
             it "produces valid recurrences" $ producesValid everyDayAtTime
+        describe "everyDays" $
+            it "produces valid recurrences" $ producesValid everyDays
         describe "everyDay" $ it "is valid" $ shouldBeValid everyDay
+        describe "everyMonths" $
+            it "produces valid recurrences" $ producesValid everyMonths
+        describe "everyMonth" $ it "is valid" $ shouldBeValid everyMonth
     eqSpec @TicklerItem
     ordSpec @TicklerItem
     genValidSpec @TicklerItem

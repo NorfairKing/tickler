@@ -71,8 +71,7 @@ TicklerItem
     created UTCTime
     synced UTCTime
     scheduled UTCTime
-    recurrence Recurrence
-    UniqueItem identifier userId type contents
+    recurrence Recurrence Maybe
     UniqueItemIdentifier identifier
     deriving Show
     deriving Eq
@@ -89,8 +88,8 @@ TriggeredItem
     created UTCTime
     synced UTCTime
     scheduled UTCTime
+    recurrence Recurrence Maybe
     triggered UTCTime
-    UniqueTriggeredItem identifier userId type contents
     UniqueTriggeredItemIdentifier identifier
     deriving Show
     deriving Eq

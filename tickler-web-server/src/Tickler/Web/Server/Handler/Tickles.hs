@@ -21,7 +21,7 @@ getTicklesR :: Handler Html
 getTicklesR =
     withLogin $ \t -> do
         items <- runClientOrErr $ clientGetItems t (Just OnlyUntriggered)
-        mItemWidget <-
+        mItemsWidget <-
             case items of
                 [] -> pure Nothing
                 _ -> Just <$> makeItemInfoWidget items
@@ -39,6 +39,7 @@ makeItemInfoWidget items = do
             mTriggeredWidget <-
                 case itemInfoTriggered of
                     Nothing -> pure Nothing
-                    Just iit ->Just <$> makeTimestampWidget (triggeredInfoTriggered iit)
-
+                    Just iit ->
+                        Just <$>
+                        makeTimestampWidget (triggeredInfoTriggered iit)
             pure $(widgetFile "item")

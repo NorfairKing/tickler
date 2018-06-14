@@ -15,6 +15,10 @@ module Tickler.API.Protected.Types
     , textTypedItem
     , TypedItemCase(..)
     , typedItemCase
+    , Recurrence(..)
+    , nominal
+    , everyDaysAtTime
+    , everyMonthsOnDayAtTime
     , Tickle(..)
     , TypedTickle
     , ItemInfo(..)
@@ -83,8 +87,8 @@ instance FromHttpApiData ItemFilter where
     parseQueryParam = parseBoundedTextData
 
 data TypedItem = TypedItem
-    { itemType :: ItemType
-    , itemData :: ByteString
+    { itemType :: !ItemType
+    , itemData :: !ByteString
     } deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity TypedItem
@@ -140,34 +144,46 @@ newtype TypedItemCase =
     deriving (Show, Read, Eq, Ord, Generic)
 
 data Tickle a = Tickle
-    { tickleContent :: a
-    , tickleScheduled :: UTCTime
-    , tickleRecurrence :: Maybe Recurrence
-    } deriving (Show, Read, Eq, Ord, Generic)
+    { tickleContent :: !a
+    , tickleScheduled :: !UTCTime
+    , tickleRecurrence :: !(Maybe Recurrence)
+    } deriving (Show, Eq, Ord, Generic)
 
 instance Validity a => Validity (Tickle a)
 
 instance FromJSON a => FromJSON (Tickle a) where
     parseJSON =
         withObject "Tickle" $ \o ->
-            Tickle <$> o .: "content" <*> o .: "scheduled" <*> o .:? "recurrence"
+            Tickle <$> o .: "content" <*> o .: "scheduled" <*>
+            o .:? "recurrence"
 
 instance ToJSON a => ToJSON (Tickle a) where
     toJSON Tickle {..} =
-        object ["content" .= tickleContent, "scheduled" .= tickleScheduled, "recurrence" .= tickleRecurrence]
+        object
+            [ "content" .= tickleContent
+            , "scheduled" .= tickleScheduled
+            , "recurrence" .= tickleRecurrence
+            ]
 
 instance ToSample a => ToSample (Tickle a)
+
+instance ToSample Recurrence where
+    toSamples Proxy =
+        mapMaybe (\(a, b) -> (,) a <$> b) $
+        [ ("Nominal", nominal 5)
+        , ("Every Day", everyDaysAtTime 1 Nothing)
+        , ("Every Month", everyMonthsOnDayAtTime 1 Nothing Nothing)
+        ]
 
 type TypedTickle = Tickle TypedItem
 
 data ItemInfo a = ItemInfo
-    { itemInfoIdentifier :: ItemUUID
-    , itemInfoContents :: Tickle a
-    , itemInfoCreated :: UTCTime
-    , itemInfoSynced :: UTCTime
-    , itemInfoRecurrence :: Maybe Recurrence
-    , itemInfoTriggered :: Maybe TriggeredInfo
-    } deriving (Show, Read, Eq, Ord, Generic)
+    { itemInfoIdentifier :: !ItemUUID
+    , itemInfoContents :: !(Tickle a)
+    , itemInfoCreated :: !UTCTime
+    , itemInfoSynced :: !UTCTime
+    , itemInfoTriggered :: !(Maybe TriggeredInfo)
+    } deriving (Show, Eq, Ord, Generic)
 
 instance Validity a => Validity (ItemInfo a)
 
@@ -178,7 +194,6 @@ instance ToJSON a => ToJSON (ItemInfo a) where
             , "contents" .= itemInfoContents
             , "created" .= itemInfoCreated
             , "synced" .= itemInfoSynced
-            , "recurrence" .= itemInfoRecurrence
             , "triggered" .= itemInfoTriggered
             ]
 
@@ -187,7 +202,6 @@ instance FromJSON a => FromJSON (ItemInfo a) where
         withObject "ItemInfo TypedItem" $ \o ->
             ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created" <*>
             o .: "synced" <*>
-            o .: "recurrence" <*>
             o .: "triggered"
 
 instance ToSample a => ToSample (ItemInfo a)
@@ -195,8 +209,8 @@ instance ToSample a => ToSample (ItemInfo a)
 type TypedItemInfo = ItemInfo TypedItem
 
 data TriggeredInfo = TriggeredInfo
-    { triggeredInfoTriggered :: UTCTime
-    , triggeredInfoTriggerTriggerAttempts :: [TriggerAttempt]
+    { triggeredInfoTriggered :: !UTCTime
+    , triggeredInfoTriggerTriggerAttempts :: ![TriggerAttempt]
     } deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity TriggeredInfo
@@ -208,10 +222,10 @@ instance ToJSON TriggeredInfo
 instance ToSample TriggeredInfo
 
 data TriggerAttempt
-    = EmailTriggerAttempt TriggerUUID
-                          EmailTriggerResult
-    | IntrayTriggerAttempt TriggerUUID
-                           IntrayTriggerResult
+    = EmailTriggerAttempt !TriggerUUID
+                          !EmailTriggerResult
+    | IntrayTriggerAttempt !TriggerUUID
+                           !IntrayTriggerResult
     deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity TriggerAttempt
@@ -224,7 +238,7 @@ instance ToSample TriggerAttempt
 
 data EmailTriggerResult
     = EmailSent
-    | EmailError Text
+    | EmailError !Text
     deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity EmailTriggerResult
@@ -236,8 +250,8 @@ instance ToJSON EmailTriggerResult
 instance ToSample EmailTriggerResult
 
 data IntrayTriggerResult
-    = IntrayAdditionSuccess Intray.ItemUUID
-    | IntrayAdditionFailure Text
+    = IntrayAdditionSuccess !Intray.ItemUUID
+    | IntrayAdditionFailure !Text
     deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity IntrayTriggerResult
@@ -251,8 +265,8 @@ instance ToSample IntrayTriggerResult
 type AddItem = TypedTickle
 
 data TriggerInfo a = TriggerInfo
-    { triggerInfoIdentifier :: TriggerUUID
-    , triggerInfo :: a
+    { triggerInfoIdentifier :: !TriggerUUID
+    , triggerInfo :: !a
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity a => Validity (TriggerInfo a)
@@ -272,7 +286,7 @@ instance Functor TriggerInfo where
     fmap f ti = ti {triggerInfo = f $ triggerInfo ti}
 
 data SyncRequest = SyncRequest
-    { syncRequestTickles :: Mergeless.SyncRequest ItemUUID TypedTickle
+    { syncRequestTickles :: !(Mergeless.SyncRequest ItemUUID TypedTickle)
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity SyncRequest
@@ -286,7 +300,7 @@ instance ToSample SyncRequest
 instance ToSample (Mergeless.SyncRequest ItemUUID TypedTickle)
 
 data SyncResponse = SyncResponse
-    { syncResponseTickles :: Mergeless.SyncResponse ItemUUID TypedTickle
+    { syncResponseTickles :: !(Mergeless.SyncResponse ItemUUID TypedTickle)
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity SyncResponse
@@ -318,8 +332,8 @@ decodeTriggerInfo tt ti = unwrap $ decodeTypedTriggerInfo tt <$> ti
                 }
 
 data TypedTriggerInfo = TypedTriggerInfo
-    { typedTriggerInfoType :: TriggerType
-    , typedTriggerInfoValue :: JSON.Value
+    { typedTriggerInfoType :: !TriggerType
+    , typedTriggerInfoValue :: !JSON.Value
     } deriving (Show, Eq, Generic)
 
 instance Validity TypedTriggerInfo
@@ -340,7 +354,7 @@ decodeTypedTriggerInfo expectedType TypedTriggerInfo {..} =
         else Nothing
 
 data IntrayTriggerInfo = IntrayTriggerInfo
-    { intrayTriggerInfoUrl :: BaseUrl
+    { intrayTriggerInfoUrl :: !BaseUrl
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity IntrayTriggerInfo
@@ -352,7 +366,7 @@ instance ToJSON IntrayTriggerInfo
 instance ToSample IntrayTriggerInfo
 
 data EmailTriggerInfo = EmailTriggerInfo
-    { emailTriggerInfoEmailAddress :: EmailAddress
+    { emailTriggerInfoEmailAddress :: !EmailAddress
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity EmailTriggerInfo
@@ -364,9 +378,9 @@ instance ToJSON EmailTriggerInfo
 instance ToSample EmailTriggerInfo
 
 data AddIntrayTrigger = AddIntrayTrigger
-    { addIntrayTriggerUrl :: BaseUrl
-    , addIntrayTriggerUsername :: Intray.Username
-    , addIntrayTriggerAccessKey :: Intray.AccessKeySecret
+    { addIntrayTriggerUrl :: !BaseUrl
+    , addIntrayTriggerUsername :: !Intray.Username
+    , addIntrayTriggerAccessKey :: !Intray.AccessKeySecret
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity AddIntrayTrigger
@@ -378,7 +392,7 @@ instance ToJSON AddIntrayTrigger
 instance ToSample AddIntrayTrigger
 
 data AddEmailTrigger = AddEmailTrigger
-    { addEmailTrigger :: EmailAddress
+    { addEmailTrigger :: !EmailAddress
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity AddEmailTrigger

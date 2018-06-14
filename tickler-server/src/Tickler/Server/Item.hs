@@ -32,6 +32,7 @@ makeTicklerItem u i cr sy Tickle {..} =
        , ticklerItemCreated = cr
        , ticklerItemSynced = sy
        , ticklerItemScheduled = tickleScheduled
+       , ticklerItemRecurrence = tickleRecurrence
        }
 
 makeTriggeredItem ::
@@ -51,6 +52,7 @@ makeTriggeredItem u i cr sy Tickle {..} =
        , ticklerItemCreated = cr
        , ticklerItemSynced = sy
        , ticklerItemScheduled = tickleScheduled
+       , ticklerItemRecurrence = tickleRecurrence
        }
 
 makeTicklerSynced :: TicklerItem -> Synced ItemUUID TypedTickle
@@ -63,6 +65,7 @@ makeTicklerSynced TicklerItem {..} =
                 TypedItem
                 {itemType = ticklerItemType, itemData = ticklerItemContents}
           , tickleScheduled = ticklerItemScheduled
+          , tickleRecurrence = ticklerItemRecurrence
           }
     , syncedCreated = ticklerItemCreated
     , syncedSynced = ticklerItemSynced
@@ -78,6 +81,7 @@ makeTicklerItemInfo TicklerItem {..} =
                 TypedItem
                 {itemType = ticklerItemType, itemData = ticklerItemContents}
           , tickleScheduled = ticklerItemScheduled
+          , tickleRecurrence = ticklerItemRecurrence
           }
     , itemInfoCreated = ticklerItemCreated
     , itemInfoSynced = ticklerItemSynced
@@ -93,6 +97,8 @@ makeTriggeredItemInfo TriggeredItem {..} tiis =
           { tickleContent =
                 TypedItem
                 {itemType = triggeredItemType, itemData = triggeredItemContents}
+          , tickleRecurrence = triggeredItemRecurrence
+
           , tickleScheduled = triggeredItemScheduled
           }
     , itemInfoCreated = triggeredItemCreated
@@ -112,7 +118,7 @@ makeTriggeredItemInfo TriggeredItem {..} tiis =
                                      Just $ IntrayAdditionSuccess i
                                  (Nothing, Just e) ->
                                      Just $ IntrayAdditionFailure e
-                                 (Just _ ,Just e) ->
+                                 (Just _, Just e) ->
                                      Just $ IntrayAdditionFailure e) $
                     filter
                         ((== triggeredItemIdentifier) . triggeredIntrayItemItem)

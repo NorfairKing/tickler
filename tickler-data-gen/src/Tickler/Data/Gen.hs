@@ -83,6 +83,7 @@ instance GenValid TriggeredItem where
          genValid <*>
          genValid <*>
          genValid <*>
+         genValid <*>
          genValid) `suchThat`
         isValid
 

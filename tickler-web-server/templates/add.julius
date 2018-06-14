@@ -1,0 +1,16 @@
+var selected = null;
+document.querySelectorAll('.recurrence-option').forEach(function (element) {
+    element.addEventListener("click", function (thing) {
+        selected = thing.target.id;
+        updateDisplay();
+        });
+    });
+
+function updateDisplay () {
+  document.querySelectorAll('.changable').forEach(function (e) {
+      e.setAttribute("style", "display: none;");
+    });
+  document.querySelectorAll('.'+selected+'-input').forEach(function (e) {
+      e.removeAttribute("style");
+    });
+};

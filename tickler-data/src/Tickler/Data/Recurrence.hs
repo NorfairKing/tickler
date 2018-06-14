@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 module Tickler.Data.Recurrence where
 
@@ -23,18 +24,6 @@ data Recurrence
                        (Maybe TimeOfDay)
     deriving (Show, Eq, Ord, Generic)
 
-nominal :: NominalDiffTime -> Maybe Recurrence
-nominal = constructValid . Nominal
-
-everyDaysAtTime :: Word -> TimeOfDay -> Maybe Recurrence
-everyDaysAtTime w tod = constructValid $ EveryDaysAtTime w $ Just tod
-
-everyDayAtTime :: TimeOfDay -> Maybe Recurrence
-everyDayAtTime = constructValid . EveryDaysAtTime 1 . Just
-
-everyDay :: Recurrence
-everyDay = EveryDaysAtTime 1 Nothing
-
 instance Validity Recurrence where
     validate (Nominal ndt) =
         decorate "Nominal" $
@@ -50,7 +39,9 @@ instance Validity Recurrence where
         mconcat
             [ delve "Word" ms
             , delve "Maybe Word8" md
-            , delve "Maybe TimeOfDay" mtod, declare "The day of the month is positive" $ maybe True (>=0) md
+            , delve "Maybe TimeOfDay" mtod
+            , declare "The day of the month is strictly positive" $ maybe True (>= 1) md
+            , declare "The day of the month is less than or equal to 31" $ maybe True (<= 31) md
             ]
 
 instance FromJSON Recurrence where
@@ -93,3 +84,13 @@ instance PersistField Recurrence where
 
 instance PersistFieldSql Recurrence where
     sqlType Proxy = SqlString
+
+nominal :: NominalDiffTime -> Maybe Recurrence
+nominal = constructValid . Nominal
+
+everyDaysAtTime :: Word -> Maybe TimeOfDay -> Maybe Recurrence
+everyDaysAtTime ds mtod = constructValid $ EveryDaysAtTime ds mtod
+
+everyMonthsOnDayAtTime ::
+       Word -> Maybe Word8 -> Maybe TimeOfDay -> Maybe Recurrence
+everyMonthsOnDayAtTime ms md mtod = constructValid $ EveryMonthsOnDay ms md mtod

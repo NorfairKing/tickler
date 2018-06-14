@@ -29,15 +29,16 @@ runTriggerer TriggererSettings = do
         insertMany_ $
             flip map items $ \(Entity _ TicklerItem {..}) ->
                 TriggeredItem
-                    { triggeredItemIdentifier = ticklerItemIdentifier
-                    , triggeredItemUserId = ticklerItemUserId
-                    , triggeredItemType = ticklerItemType
-                    , triggeredItemContents = ticklerItemContents
-                    , triggeredItemCreated = ticklerItemCreated
-                    , triggeredItemSynced = ticklerItemSynced
-                    , triggeredItemScheduled = ticklerItemScheduled
-                    , triggeredItemTriggered = now
-                    }
+                { triggeredItemIdentifier = ticklerItemIdentifier
+                , triggeredItemUserId = ticklerItemUserId
+                , triggeredItemType = ticklerItemType
+                , triggeredItemContents = ticklerItemContents
+                , triggeredItemCreated = ticklerItemCreated
+                , triggeredItemSynced = ticklerItemSynced
+                , triggeredItemScheduled = ticklerItemScheduled
+                , triggeredItemRecurrence = ticklerItemRecurrence
+                , triggeredItemTriggered = now
+                }
         -- TODO if something goes wrong here, we should rollback the transaction
         unless (null items) $
             deleteWhere [TicklerItemId <-. map entityKey items]
