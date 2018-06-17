@@ -17,6 +17,11 @@ spec = do
     describe "nextScheduledTime" $ do
         it "produces valid utc times" $
             producesValidsOnValids3 nextScheduledTime
+        it "never produces the same scheduled time and day" $
+            forAllValid $ \d ->
+                forAllValid $ \mt ->
+                    forAllValid $ \r ->
+                        nextScheduledTime d mt r `shouldNotBe` (d, mt)
         it "works for this simple example" $
             nextScheduledTime
                 (fromGregorian 1970 01 01)
@@ -35,3 +40,4 @@ spec = do
         it "produces Nothing if there is no recurrence" $
             forAll ((\ti -> ti {ticklerItemRecurrence = Nothing}) <$> genValid) $ \ti ->
                 makeNextTickleItem ti `shouldBe` Nothing
+        it "never produces the same tickle item" $ forAllValid $ \ti -> makeNextTickleItem ti `shouldNotBe` (Just ti)

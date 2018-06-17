@@ -47,16 +47,11 @@ runTriggerer TriggererSettings = do
                         LocalTime ticklerItemScheduledDay $
                         fromMaybe midnight ticklerItemScheduledTime
                 pure $ utcTimeInUserTimezone <= now
-        unless (null items) $ do
-            let (trigIs, tickIs) =
-                    unzip $
-                    flip map items $ \(Entity _ ti) ->
-                        (makeTriggeredItem now ti, makeNextTickleItem ti)
-            insertMany_ trigIs
-            let newTicks = catMaybes tickIs
-            unless (null newTicks) $ insertMany_ newTicks
-            -- TODO if something goes wrong here, we should rollback the transaction
-            deleteWhere [TicklerItemId <-. map entityKey items]
+        forM items $ \(Entity tii ti) -> do
+            insert_ $ makeTriggeredItem now ti -- Make the triggered item
+            delete tii -- Delete the tickler item
+            forM (makeNextTickleItem ti) insert_ -- Insert the next tickler item if necessary
+        -- TODO if something goes wrong here, we should rollback the transaction
     logInfoNS "Triggerer" "Finished triggering tickles."
 
 makeTriggeredItem :: UTCTime -> TicklerItem -> TriggeredItem
