@@ -78,6 +78,9 @@ instance PersistField Recurrence where
 instance PersistFieldSql Recurrence where
     sqlType Proxy = SqlString
 
+everyDay :: Recurrence
+everyDay = EveryDaysAtTime 1 Nothing
+
 everyDaysAtTime :: Word -> Maybe TimeOfDay -> Maybe Recurrence
 everyDaysAtTime ds mtod = constructValid $ EveryDaysAtTime ds mtod
 

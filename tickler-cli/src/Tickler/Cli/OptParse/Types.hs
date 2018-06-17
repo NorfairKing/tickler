@@ -8,8 +8,9 @@ module Tickler.Cli.OptParse.Types where
 import Import
 
 import Data.Text (Text)
-import Data.Yaml as Yaml
 import Data.Time
+import Data.Word
+import Data.Yaml as Yaml
 
 import Servant.Client
 
@@ -45,7 +46,19 @@ data AddArgs = AddArgs
     { addArgContent :: String
     , addArgTickleDate :: String
     , addArgTickleTime :: Maybe String
+    , addArgRecurrence :: Maybe RecurrenceArgs
     } deriving (Show, Eq, Generic)
+
+data RecurrenceArgs
+    = RecurrenceArgEveryDayAt (Maybe String)
+    | RecurrenceArgEveryDaysAt Word
+                               (Maybe String)
+    | RecurrenceArgEveryMonthOnAt (Maybe Word8)
+                                  (Maybe String)
+    | RecurrenceArgEveryMonthsOnAt Word
+                                   (Maybe Word8)
+                                   (Maybe String)
+    deriving (Show, Eq, Generic)
 
 data Flags = Flags
     { flagConfigFile :: Maybe FilePath
@@ -115,6 +128,7 @@ data AddSettings = AddSettings
     { addSetTickleContent :: Text
     , addSetTickleDate :: Day
     , addSetTickleTime :: Maybe TimeOfDay
+    , addSetTickleRecurrence :: Maybe Recurrence
     } deriving (Show, Eq, Generic)
 
 type CliM = ReaderT Settings IO

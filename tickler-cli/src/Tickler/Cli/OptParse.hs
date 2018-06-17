@@ -81,19 +81,43 @@ getDispatch cmd =
         CommandAdd AddArgs {..} -> do
             date <-
                 parseTimeM True defaultTimeLocale "%Y-%-m-%-d" addArgTickleDate
-            mTime <-
-                case addArgTickleTime of
+            mTime <- mkTimeOfDay addArgTickleTime
+            r <-
+                case addArgRecurrence of
                     Nothing -> pure Nothing
-                    Just a -> pure $ parseTimeM True defaultTimeLocale "%H:%M" a
+                    Just ras -> Just <$> mkRecurrence ras
             pure $
                 DispatchAdd
                     AddSettings
                     { addSetTickleContent = T.pack addArgContent
                     , addSetTickleDate = date
                     , addSetTickleTime = mTime
+                    , addSetTickleRecurrence = r
                     }
         CommandLogout -> pure DispatchLogout
         CommandSync -> pure DispatchSync
+
+mkRecurrence :: RecurrenceArgs -> IO Recurrence
+mkRecurrence (RecurrenceArgEveryDayAt mtod) =
+    everyDaysAtTime 1 <$> mkTimeOfDay mtod >>= mkValidRecurrence
+mkRecurrence (RecurrenceArgEveryDaysAt ds mtod) =
+    everyDaysAtTime ds <$> mkTimeOfDay mtod >>= mkValidRecurrence
+mkRecurrence (RecurrenceArgEveryMonthOnAt md mtod) =
+    everyMonthsOnDayAtTime 1 md <$> mkTimeOfDay mtod >>= mkValidRecurrence
+mkRecurrence (RecurrenceArgEveryMonthsOnAt ms md mtod) =
+    everyMonthsOnDayAtTime ms md <$> mkTimeOfDay mtod >>= mkValidRecurrence
+
+mkTimeOfDay :: Maybe String -> IO (Maybe TimeOfDay)
+mkTimeOfDay Nothing = pure Nothing
+mkTimeOfDay (Just a) =
+    fmap Just $
+    case parseTimeM True defaultTimeLocale "%H:%M" a of
+        Nothing -> die $ unwords ["Invalid time of day:", a]
+        Just tod -> pure tod
+
+mkValidRecurrence :: Maybe Recurrence -> IO Recurrence
+mkValidRecurrence Nothing = die "Recurrence invalid:"
+mkValidRecurrence (Just r) = pure r
 
 getConfig :: Flags -> IO Configuration
 getConfig Flags {..} = do
@@ -215,17 +239,100 @@ parseCommandAdd :: ParserInfo Command
 parseCommandAdd = info parser modifier
   where
     modifier = fullDesc <> progDesc "Add a tickle"
-    parser = CommandAdd <$> (AddArgs <$>
-         strArgument (mconcat [metavar "CONTENT", help "The content of the tickle"])
-         <*> strArgument (mconcat [metavar "DATE", help "The scheduled date of the tickle"])
-         <*> option
+    parser =
+        CommandAdd <$>
+        (AddArgs <$>
+         strArgument
+             (mconcat [metavar "CONTENT", help "The content of the tickle"]) <*>
+         strArgument
+             (mconcat [metavar "DATE", help "The scheduled date of the tickle"]) <*>
+         option
              (Just <$> str)
              (mconcat
                   [ long "time"
                   , help "The scheduled time of the tickle"
                   , value Nothing
                   , metavar "TIME"
-                  ]))
+                  ]) <*>
+         optional parseRecurrence)
+
+parseRecurrence :: Parser RecurrenceArgs
+parseRecurrence = parseDaysAtTime <|> parseMonthsOnDay
+  where
+    parseDaysAtTime :: Parser RecurrenceArgs
+    parseDaysAtTime = parseEveryDay <|> parseEveryXDays
+    parseEveryDay :: Parser RecurrenceArgs
+    parseEveryDay =
+        flag'
+            RecurrenceArgEveryDayAt
+            (mconcat [long "every-day", help "Every day"]) <*>
+        option
+            (Just <$> str)
+            (mconcat
+                 [ long "at"
+                 , help "at a given time"
+                 , value Nothing
+                 , metavar "TIME"
+                 ])
+    parseEveryXDays :: Parser RecurrenceArgs
+    parseEveryXDays =
+        RecurrenceArgEveryDaysAt <$>
+        option
+            auto
+            (mconcat [long "every-x-days", metavar "X", help "Every X days"]) <*>
+        option
+            (Just <$> str)
+            (mconcat
+                 [ long "at"
+                 , help "at a given time"
+                 , value Nothing
+                 , metavar "TIME"
+                 ])
+    parseMonthsOnDay :: Parser RecurrenceArgs
+    parseMonthsOnDay = parseEveryMonthOnAt <|> parseEveryXMonthsOnAt
+    parseEveryMonthOnAt :: Parser RecurrenceArgs
+    parseEveryMonthOnAt =
+        flag'
+            RecurrenceArgEveryMonthOnAt
+            (mconcat [long "every-month", help "Every month"]) <*>
+        option
+            (Just <$> auto)
+            (mconcat
+                 [ long "on"
+                 , help "on a given day of the month"
+                 , value Nothing
+                 , metavar "DAY"
+                 ]) <*>
+        option
+            (Just <$> str)
+            (mconcat
+                 [ long "at"
+                 , help "at a given time"
+                 , value Nothing
+                 , metavar "TIME"
+                 ])
+    parseEveryXMonthsOnAt :: Parser RecurrenceArgs
+    parseEveryXMonthsOnAt =
+        RecurrenceArgEveryMonthsOnAt <$>
+        option
+            auto
+            (mconcat [long "every-x-months", metavar "X", help "Every X months"]) <*>
+        option
+            (Just <$> auto)
+            (mconcat
+                 [ long "on"
+                 , help "on a given day of the month"
+                 , value Nothing
+                 , metavar "DAY"
+                 ]) <*>
+        option
+            (Just <$> str)
+            (mconcat
+                 [ long "at"
+                 , help "at a given time"
+                 , value Nothing
+                 , metavar "TIME"
+                 ])
 
 parseCommandLogout :: ParserInfo Command
 parseCommandLogout = info parser modifier

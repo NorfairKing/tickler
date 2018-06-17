@@ -47,7 +47,7 @@ runTriggerer TriggererSettings = do
                         LocalTime ticklerItemScheduledDay $
                         fromMaybe midnight ticklerItemScheduledTime
                 pure $ utcTimeInUserTimezone <= now
-        forM items $ \(Entity tii ti) -> do
+        forM_ items $ \(Entity tii ti) -> do
             insert_ $ makeTriggeredItem now ti -- Make the triggered item
             delete tii -- Delete the tickler item
             forM (makeNextTickleItem ti) insert_ -- Insert the next tickler item if necessary
@@ -71,7 +71,7 @@ makeTriggeredItem now TicklerItem {..} =
 
 nextScheduledTime ::
        Day -> Maybe TimeOfDay -> Recurrence -> (Day, Maybe TimeOfDay)
-nextScheduledTime scheduledDay scheduledTime r =
+nextScheduledTime scheduledDay _ r =
     case r of
         EveryDaysAtTime ds mtod ->
             (addDays (fromIntegral ds) scheduledDay, mtod)
@@ -81,7 +81,7 @@ nextScheduledTime scheduledDay scheduledTime r =
                     case md of
                         Nothing -> clipped
                         Just d_ ->
-                            let (y, m, d) = toGregorian clipped
+                            let (y, m, _) = toGregorian clipped
                             in fromGregorian y m (fromIntegral d_)
             in (day, mtod)
 
