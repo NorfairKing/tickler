@@ -5,11 +5,10 @@ let
             import (pkgs.fetchFromGitHub {
               owner = "NorfairKing";
               repo = "intray";
-              rev = "6b9d8af5602db6decab3e2c04b07ac0183e43636";
-              sha256 = "11hcw4mv5m046zmf2ksdf12s846w7s67vra9rwvw49l9binvk38s";
+              rev = "c2e9cfa69553249f165b264dbb288e399d46509c";
+              sha256 = "18zb1w09l6sy35lsknkx45zdlq397qyaqv56y6mww9l9dlspa4w4";
               fetchSubmodules = true;
             } + "/overlay.nix");
-
 in pkgsv {
   overlays = [ intray-overlay (import ./overlay.nix) ];
   config.allowUnfree = true;
