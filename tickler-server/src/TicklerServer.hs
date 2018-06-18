@@ -4,7 +4,11 @@ import Import
 
 import Tickler.Server (runTicklerServer)
 import Tickler.Server.OptParse
-       (Instructions(..),Dispatch(..), Settings(..), getInstructions)
+    ( Dispatch(..)
+    , Instructions(..)
+    , Settings(..)
+    , getInstructions
+    )
 
 ticklerServer :: IO ()
 ticklerServer = do

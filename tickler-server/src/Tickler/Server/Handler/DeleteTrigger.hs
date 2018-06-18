@@ -27,9 +27,8 @@ serveDeleteTrigger (Authenticated AuthCookie {..}) uuid = do
         Nothing -> do
             ment2 <- runDb $ getBy $ UniqueEmailTrigger uuid
             case ment2 of
-                Nothing ->             throwAll err404 {errBody = "Trigger not found."}
+                Nothing -> throwAll err404 {errBody = "Trigger not found."}
                 Just (Entity i _) -> runDb $ delete i
         Just (Entity i _) -> runDb $ delete i
     pure NoContent
-
 serveDeleteTrigger _ _ = throwAll err401

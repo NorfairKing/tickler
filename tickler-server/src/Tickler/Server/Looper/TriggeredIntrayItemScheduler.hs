@@ -10,9 +10,7 @@ import Import
 import Control.Monad.Logger
 import Database.Persist.Sqlite
 
-
 import Tickler.Data
-
 
 import Tickler.Server.Looper.Types
 import Tickler.Server.Looper.Utils
@@ -22,7 +20,11 @@ runTriggeredIntrayItemScheduler _ = do
     logInfoNS
         "TriggeredIntrayScheduler"
         "Starting scheduling TriggeredIntrayItems from triggered items."
-    tis <- runDb $ selectList [] [Asc TriggeredItemScheduledDay, Asc TriggeredItemScheduledTime]
+    tis <-
+        runDb $
+        selectList
+            []
+            [Asc TriggeredItemScheduledDay, Asc TriggeredItemScheduledTime]
     liftIO $ print tis
     tes <-
         fmap concat $
@@ -47,13 +49,14 @@ runTriggeredIntrayItemScheduler _ = do
                             Nothing ->
                                 Just
                                     TriggeredIntrayItem
-                                    { triggeredIntrayItemItem =
-                                          triggeredItemIdentifier ti
-                                    , triggeredIntrayItemTrigger =
-                                          userTriggerTriggerId ut
-                                    , triggeredIntrayItemIntrayItemUUID =
-                                          Nothing, triggeredIntrayItemError = Nothing
-                                    }
+                                        { triggeredIntrayItemItem =
+                                              triggeredItemIdentifier ti
+                                        , triggeredIntrayItemTrigger =
+                                              userTriggerTriggerId ut
+                                        , triggeredIntrayItemIntrayItemUUID =
+                                              Nothing
+                                        , triggeredIntrayItemError = Nothing
+                                        }
                             Just _ -> Nothing
     runDb $ insertMany_ tes
     logInfoNS

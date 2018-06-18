@@ -83,10 +83,11 @@ makeAddEmailTriggerWidget :: Handler Widget
 makeAddEmailTriggerWidget = do
     LoopersStatus {..} <- runClientOrErr clientGetLoopersStatus
     if any (== LooperStatusDisabled)
-               [ verificationEmailConverterLooperStatus
-               , triggeredEmailSchedulerLooperStatus
-               , triggeredEmailConverterLooperStatus, emailerLooperStatus
-               ]
+           [ verificationEmailConverterLooperStatus
+           , triggeredEmailSchedulerLooperStatus
+           , triggeredEmailConverterLooperStatus
+           , emailerLooperStatus
+           ]
         then pure mempty
         else do
             token <- genToken

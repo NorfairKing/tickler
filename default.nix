@@ -5,8 +5,8 @@ let
             import (pkgs.fetchFromGitHub {
               owner = "NorfairKing";
               repo = "intray";
-              rev = "43f857d6fc3348b8251e169289dd6f264fe433af";
-              sha256 = "0vdfhzzkf0rq1d0a2pkn4mr2fs784p3vw6v6l34m0sm3pijyrsyx";
+              rev = "6b9d8af5602db6decab3e2c04b07ac0183e43636";
+              sha256 = "11hcw4mv5m046zmf2ksdf12s846w7s67vra9rwvw49l9binvk38s";
               fetchSubmodules = true;
             } + "/overlay.nix");
 

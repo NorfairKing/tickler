@@ -20,7 +20,11 @@ runTriggeredEmailScheduler _ = do
     logInfoNS
         "TriggeredEmailScheduler"
         "Starting scheduling TriggeredEmails from triggered items."
-    tis <- runDb $ selectList [] [Asc TriggeredItemScheduledDay, Asc TriggeredItemScheduledTime]
+    tis <-
+        runDb $
+        selectList
+            []
+            [Asc TriggeredItemScheduledDay, Asc TriggeredItemScheduledTime]
     tes <-
         fmap concat $
         forM tis $ \(Entity _ ti) -> do
@@ -44,12 +48,12 @@ runTriggeredEmailScheduler _ = do
                             Nothing ->
                                 Just
                                     TriggeredEmail
-                                    { triggeredEmailItem =
-                                          triggeredItemIdentifier ti
-                                    , triggeredEmailTrigger =
-                                          userTriggerTriggerId ut
-                                    , triggeredEmailEmail = Nothing
-                                    }
+                                        { triggeredEmailItem =
+                                              triggeredItemIdentifier ti
+                                        , triggeredEmailTrigger =
+                                              userTriggerTriggerId ut
+                                        , triggeredEmailEmail = Nothing
+                                        }
                             Just _ -> Nothing
     runDb $ insertMany_ tes
     logInfoNS

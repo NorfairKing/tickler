@@ -43,15 +43,15 @@ runTicklerServer ServeSettings {..} = do
             signingKey <- liftIO loadSigningKey
             let jwtCfg = defaultJWTSettings signingKey
             let cookieCfg = defaultCookieSettings
-            loopersHandle <-liftIO $ startLoopers pool serveSetLooperSettings
+            loopersHandle <- liftIO $ startLoopers pool serveSetLooperSettings
             let ticklerEnv =
                     TicklerServerEnv
-                    { envConnectionPool = pool
-                    , envCookieSettings = cookieCfg
-                    , envJWTSettings = jwtCfg
-                    , envAdmins = serveSetAdmins
-                    , envLoopersHandle = loopersHandle
-                    }
+                        { envConnectionPool = pool
+                        , envCookieSettings = cookieCfg
+                        , envJWTSettings = jwtCfg
+                        , envAdmins = serveSetAdmins
+                        , envLoopersHandle = loopersHandle
+                        }
             liftIO $ Warp.run serveSetPort $ ticklerApp ticklerEnv
 
 ticklerApp :: TicklerServerEnv -> Wai.Application
@@ -62,9 +62,9 @@ ticklerApp se =
     addPolicy = cors (const $ Just policy)
     policy =
         simpleCorsResourcePolicy
-        { corsRequestHeaders = ["content-type"]
-        , corsMethods = ["GET", "POST", "HEAD", "DELETE"]
-        }
+            { corsRequestHeaders = ["content-type"]
+            , corsMethods = ["GET", "POST", "HEAD", "DELETE"]
+            }
 
 makeTicklerServer :: TicklerServerEnv -> Server TicklerAPI
 makeTicklerServer cfg =

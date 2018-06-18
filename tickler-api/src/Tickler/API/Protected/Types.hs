@@ -175,7 +175,6 @@ instance ToSample Day where
 instance ToSample TimeOfDay where
     toSamples Proxy = singleSample midday
 
-
 instance ToSample Recurrence where
     toSamples Proxy =
         mapMaybe (\(a, b) -> (,) a <$> b) $
@@ -335,9 +334,9 @@ decodeTriggerInfo tt ti = unwrap $ decodeTypedTriggerInfo tt <$> ti
             Just i ->
                 Just $
                 TriggerInfo
-                { triggerInfoIdentifier = triggerInfoIdentifier tmi
-                , triggerInfo = i
-                }
+                    { triggerInfoIdentifier = triggerInfoIdentifier tmi
+                    , triggerInfo = i
+                    }
 
 data TypedTriggerInfo = TypedTriggerInfo
     { typedTriggerInfoType :: !TriggerType

@@ -8,8 +8,8 @@ module Tickler.Cli.OptParse.Types where
 import Import
 
 import Data.Text (Text)
-import Data.Yaml as Yaml
 import Data.Time
+import Data.Yaml as Yaml
 
 import Servant.Client
 
@@ -71,11 +71,11 @@ instance FromJSON Configuration where
 emptyConfiguration :: Configuration
 emptyConfiguration =
     Configuration
-    { configUrl = Nothing
-    , configUsername = Nothing
-    , configTicklerDir = Nothing
-    , configSyncStrategy = Nothing
-    }
+        { configUrl = Nothing
+        , configUsername = Nothing
+        , configTicklerDir = Nothing
+        , configSyncStrategy = Nothing
+        }
 
 data Settings = Settings
     { setBaseUrl :: Maybe BaseUrl

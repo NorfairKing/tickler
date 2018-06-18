@@ -17,8 +17,8 @@ import Tickler.Server.Handler.Public.PostRegister
 ticklerPublicServer :: TicklerPublicSite (AsServerT TicklerHandler)
 ticklerPublicServer =
     TicklerPublicSite
-    { postRegister = servePostRegister
-    , postLogin = servePostLogin
-    , getLoopersStatus = serveGetLoopersStatus
-    , getDocs = serveGetDocs
-    }
+        { postRegister = servePostRegister
+        , postLogin = servePostLogin
+        , getLoopersStatus = serveGetLoopersStatus
+        , getDocs = serveGetDocs
+        }

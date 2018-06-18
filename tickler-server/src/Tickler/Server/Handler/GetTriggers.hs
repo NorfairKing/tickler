@@ -44,26 +44,27 @@ serveGetTriggers _ = throwAll err401
 makeIntrayTriggerInfo :: IntrayTrigger -> TriggerInfo TypedTriggerInfo
 makeIntrayTriggerInfo IntrayTrigger {..} =
     TriggerInfo
-    { triggerInfoIdentifier = intrayTriggerIdentifier
-    , triggerInfo =
-          TypedTriggerInfo
-          { typedTriggerInfoType = IntrayTriggerType
-          , typedTriggerInfoValue =
-                toJSON $
-                IntrayTriggerInfo {intrayTriggerInfoUrl = intrayTriggerUrl}
-          }
-    }
+        { triggerInfoIdentifier = intrayTriggerIdentifier
+        , triggerInfo =
+              TypedTriggerInfo
+                  { typedTriggerInfoType = IntrayTriggerType
+                  , typedTriggerInfoValue =
+                        toJSON $
+                        IntrayTriggerInfo
+                            {intrayTriggerInfoUrl = intrayTriggerUrl}
+                  }
+        }
 
 makeEmailTriggerInfo :: EmailTrigger -> TriggerInfo TypedTriggerInfo
 makeEmailTriggerInfo EmailTrigger {..} =
     TriggerInfo
-    { triggerInfoIdentifier = emailTriggerIdentifier
-    , triggerInfo =
-          TypedTriggerInfo
-          { typedTriggerInfoType = EmailTriggerType
-          , typedTriggerInfoValue =
-                toJSON $
-                EmailTriggerInfo
-                {emailTriggerInfoEmailAddress = emailTriggerAddress}
-          }
-    }
+        { triggerInfoIdentifier = emailTriggerIdentifier
+        , triggerInfo =
+              TypedTriggerInfo
+                  { typedTriggerInfoType = EmailTriggerType
+                  , typedTriggerInfoValue =
+                        toJSON $
+                        EmailTriggerInfo
+                            {emailTriggerInfoEmailAddress = emailTriggerAddress}
+                  }
+        }

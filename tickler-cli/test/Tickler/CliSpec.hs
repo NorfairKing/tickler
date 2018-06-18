@@ -35,6 +35,14 @@ spec =
             , "--tickler-dir"
             , "/tmp"
             ]
-        tickler ["add", "test", "2200-06-16", "--time", "15:23", "--tickler-dir", "/tmp"]
+        tickler
+            [ "add"
+            , "test"
+            , "2200-06-16"
+            , "--time"
+            , "15:23"
+            , "--tickler-dir"
+            , "/tmp"
+            ]
         tickler ["sync", "--url", showBaseUrl burl, "--tickler-dir", "/tmp"]
         tickler ["logout", "--tickler-dir", "/tmp"]

@@ -50,24 +50,25 @@ runTriggerer TriggererSettings = do
         forM items $ \(Entity tii ti) -> do
             insert_ $ makeTriggeredItem now ti -- Make the triggered item
             delete tii -- Delete the tickler item
-            forM (makeNextTickleItem ti) insert_ -- Insert the next tickler item if necessary
+            nti <- liftIO $ makeNextTickleItem ti
+            forM nti insert_ -- Insert the next tickler item if necessary
         -- TODO if something goes wrong here, we should rollback the transaction
     logInfoNS "Triggerer" "Finished triggering tickles."
 
 makeTriggeredItem :: UTCTime -> TicklerItem -> TriggeredItem
 makeTriggeredItem now TicklerItem {..} =
     TriggeredItem
-    { triggeredItemIdentifier = ticklerItemIdentifier
-    , triggeredItemUserId = ticklerItemUserId
-    , triggeredItemType = ticklerItemType
-    , triggeredItemContents = ticklerItemContents
-    , triggeredItemCreated = ticklerItemCreated
-    , triggeredItemSynced = ticklerItemSynced
-    , triggeredItemScheduledDay = ticklerItemScheduledDay
-    , triggeredItemScheduledTime = ticklerItemScheduledTime
-    , triggeredItemRecurrence = ticklerItemRecurrence
-    , triggeredItemTriggered = now
-    }
+        { triggeredItemIdentifier = ticklerItemIdentifier
+        , triggeredItemUserId = ticklerItemUserId
+        , triggeredItemType = ticklerItemType
+        , triggeredItemContents = ticklerItemContents
+        , triggeredItemCreated = ticklerItemCreated
+        , triggeredItemSynced = ticklerItemSynced
+        , triggeredItemScheduledDay = ticklerItemScheduledDay
+        , triggeredItemScheduledTime = ticklerItemScheduledTime
+        , triggeredItemRecurrence = ticklerItemRecurrence
+        , triggeredItemTriggered = now
+        }
 
 nextScheduledTime ::
        Day -> Maybe TimeOfDay -> Recurrence -> (Day, Maybe TimeOfDay)
@@ -82,15 +83,23 @@ nextScheduledTime scheduledDay scheduledTime r =
                         Nothing -> clipped
                         Just d_ ->
                             let (y, m, d) = toGregorian clipped
-                            in fromGregorian y m (fromIntegral d_)
-            in (day, mtod)
+                             in fromGregorian y m (fromIntegral d_)
+             in (day, mtod)
 
-makeNextTickleItem :: TicklerItem -> Maybe TicklerItem
-makeNextTickleItem ti = do
-    r <- ticklerItemRecurrence ti
-    let (d, mtod) =
-            nextScheduledTime
-                (ticklerItemScheduledDay ti)
-                (ticklerItemScheduledTime ti)
-                r
-    pure $ ti {ticklerItemScheduledDay = d, ticklerItemScheduledTime = mtod}
+makeNextTickleItem :: TicklerItem -> IO (Maybe TicklerItem)
+makeNextTickleItem ti =
+    case ticklerItemRecurrence ti of
+        Nothing -> pure Nothing
+        Just r -> fmap Just $ do
+            let (d, mtod) =
+                    nextScheduledTime
+                        (ticklerItemScheduledDay ti)
+                        (ticklerItemScheduledTime ti)
+                        r
+            uuid <- nextRandomUUID
+            pure $
+                ti
+                    { ticklerItemIdentifier = uuid
+                    , ticklerItemScheduledDay = d
+                    , ticklerItemScheduledTime = mtod
+                    }

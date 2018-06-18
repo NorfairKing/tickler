@@ -38,12 +38,12 @@ servePostRegister Registration {..} = do
             now <- liftIO getCurrentTime
             let user =
                     User
-                    { userIdentifier = uuid
-                    , userUsername = registrationUsername
-                    , userHashedPassword = hashedPassword
-                    , userCreated = now
-                    , userLastLogin = Nothing
-                    }
+                        { userIdentifier = uuid
+                        , userUsername = registrationUsername
+                        , userHashedPassword = hashedPassword
+                        , userCreated = now
+                        , userLastLogin = Nothing
+                        }
             maybeUserEntity <-
                 runDb . getBy $ UniqueUsername $ userUsername user
             case maybeUserEntity of
@@ -51,13 +51,13 @@ servePostRegister Registration {..} = do
                 Just _ ->
                     throwError
                         err409
-                        { errBody =
-                              LB.fromStrict $
-                              TE.encodeUtf8 $
-                              T.unwords
-                                  [ "Account with the username"
-                                  , usernameText registrationUsername
-                                  , "already exists."
-                                  ]
-                        }
+                            { errBody =
+                                  LB.fromStrict $
+                                  TE.encodeUtf8 $
+                                  T.unwords
+                                      [ "Account with the username"
+                                      , usernameText registrationUsername
+                                      , "already exists."
+                                      ]
+                            }
     pure NoContent

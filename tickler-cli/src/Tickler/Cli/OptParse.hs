@@ -66,18 +66,18 @@ getDispatch cmd =
             pure $
             DispatchRegister
                 RegisterSettings
-                { registerSetUsername =
-                      (T.pack <$> registerArgUsername) >>= parseUsername
-                , registerSetPassword = T.pack <$> registerArgPassword
-                }
+                    { registerSetUsername =
+                          (T.pack <$> registerArgUsername) >>= parseUsername
+                    , registerSetPassword = T.pack <$> registerArgPassword
+                    }
         CommandLogin LoginArgs {..} ->
             pure $
             DispatchLogin
                 LoginSettings
-                { loginSetUsername =
-                      (T.pack <$> loginArgUsername) >>= parseUsername
-                , loginSetPassword = T.pack <$> loginArgPassword
-                }
+                    { loginSetUsername =
+                          (T.pack <$> loginArgUsername) >>= parseUsername
+                    , loginSetPassword = T.pack <$> loginArgPassword
+                    }
         CommandAdd AddArgs {..} -> do
             date <-
                 parseTimeM True defaultTimeLocale "%Y-%-m-%-d" addArgTickleDate
@@ -88,10 +88,10 @@ getDispatch cmd =
             pure $
                 DispatchAdd
                     AddSettings
-                    { addSetTickleContent = T.pack addArgContent
-                    , addSetTickleDate = date
-                    , addSetTickleTime = mTime
-                    }
+                        { addSetTickleContent = T.pack addArgContent
+                        , addSetTickleDate = date
+                        , addSetTickleTime = mTime
+                        }
         CommandLogout -> pure DispatchLogout
         CommandSync -> pure DispatchSync
 
@@ -135,13 +135,13 @@ runArgumentsParser = execParserPure prefs_ argParser
 prefs_ :: ParserPrefs
 prefs_ =
     ParserPrefs
-    { prefMultiSuffix = ""
-    , prefDisambiguate = True
-    , prefShowHelpOnError = True
-    , prefShowHelpOnEmpty = True
-    , prefBacktrack = True
-    , prefColumns = 80
-    }
+        { prefMultiSuffix = ""
+        , prefDisambiguate = True
+        , prefShowHelpOnError = True
+        , prefShowHelpOnEmpty = True
+        , prefBacktrack = True
+        , prefColumns = 80
+        }
 
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_
@@ -215,10 +215,14 @@ parseCommandAdd :: ParserInfo Command
 parseCommandAdd = info parser modifier
   where
     modifier = fullDesc <> progDesc "Add a tickle"
-    parser = CommandAdd <$> (AddArgs <$>
-         strArgument (mconcat [metavar "CONTENT", help "The content of the tickle"])
-         <*> strArgument (mconcat [metavar "DATE", help "The scheduled date of the tickle"])
-         <*> option
+    parser =
+        CommandAdd <$>
+        (AddArgs <$>
+         strArgument
+             (mconcat [metavar "CONTENT", help "The content of the tickle"]) <*>
+         strArgument
+             (mconcat [metavar "DATE", help "The scheduled date of the tickle"]) <*>
+         option
              (Just <$> str)
              (mconcat
                   [ long "time"

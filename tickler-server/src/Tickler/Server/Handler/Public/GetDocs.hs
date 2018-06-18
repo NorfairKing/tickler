@@ -27,7 +27,9 @@ serveGetDocs =
         Left _ ->
             throwError
                 err500
-                {errBody = "Failed to convert the docs from Markdown to HTML."}
+                    { errBody =
+                          "Failed to convert the docs from Markdown to HTML."
+                    }
         Right bs -> pure bs
 
 ticklerHtmlResponse :: Either String GetDocsResponse

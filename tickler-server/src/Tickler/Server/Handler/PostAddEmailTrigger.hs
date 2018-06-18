@@ -34,17 +34,17 @@ servePostAddEmailTrigger (Authenticated AuthCookie {..}) AddEmailTrigger {..} = 
     runDb $ do
         insert_
             EmailTrigger
-            { emailTriggerIdentifier = uuid
-            , emailTriggerAddress = addEmailTrigger
-            , emailTriggerVerificationKey = verificationKey
-            , emailTriggerVerified = False
-            , emailTriggerAdded = now
-            }
+                { emailTriggerIdentifier = uuid
+                , emailTriggerAddress = addEmailTrigger
+                , emailTriggerVerificationKey = verificationKey
+                , emailTriggerVerified = False
+                , emailTriggerAdded = now
+                }
         insert_
             UserTrigger
-            { userTriggerUserId = authCookieUserUUID
-            , userTriggerTriggerType = EmailTriggerType
-            , userTriggerTriggerId = uuid
-            }
+                { userTriggerUserId = authCookieUserUUID
+                , userTriggerTriggerType = EmailTriggerType
+                , userTriggerTriggerId = uuid
+                }
     pure uuid
 servePostAddEmailTrigger _ _ = throwAll err401

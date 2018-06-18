@@ -40,7 +40,6 @@ import Text.Blaze as HTML
 import Text.Blaze.Html as HTML
 import Text.Pandoc as Pandoc
 
-
 import Servant.API
 import Servant.Auth
 import Servant.Auth.Docs ()

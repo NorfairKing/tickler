@@ -40,7 +40,7 @@ servePostLogin LoginForm {..} = do
                 then do
                     let cookie =
                             AuthCookie
-                            {authCookieUserUUID = userIdentifier user}
+                                {authCookieUserUUID = userIdentifier user}
                     TicklerServerEnv {..} <- ask
                     mApplyCookies <-
                         liftIO $
