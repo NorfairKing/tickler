@@ -32,8 +32,8 @@ library:
   - http-api-data
   - intray-api
   - intray-data
+  - markdown
   - mergeless
-  - pandoc
   - servant
   - servant-auth
   - servant-auth-docs

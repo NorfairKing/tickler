@@ -45,12 +45,12 @@ library:
   - intray-client
   - jose
   - lens
+  - markdown
   - mergeless
   - monad-logger
   - mtl >=2.2
   - nonce
   - optparse-applicative >=0.13
-  - pandoc
   - path
   - path-io
   - persistent
