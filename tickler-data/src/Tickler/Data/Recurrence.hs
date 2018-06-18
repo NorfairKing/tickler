@@ -26,13 +26,18 @@ data Recurrence
 instance Validity Recurrence where
     validate (EveryDaysAtTime ds mtod) =
         decorate "EveryDaysAtTime" $
-        mconcat [delve "Word" ds, delve "Maybe TimeOfDay" mtod]
+        mconcat
+            [ delve "Word" ds
+            , delve "Maybe TimeOfDay" mtod
+            , declare "The number of days is strictly positive" $ ds >= 1
+            ]
     validate (EveryMonthsOnDay ms md mtod) =
         decorate "EveryMonthsOnDay" $
         mconcat
             [ delve "Word" ms
             , delve "Maybe Word8" md
             , delve "Maybe TimeOfDay" mtod
+            , declare "The number of months is strictly positive" $ ms >= 1
             , declare "The day of the month is strictly positive" $
               maybe True (>= 1) md
             , declare "The day of the month is less than or equal to 31" $
