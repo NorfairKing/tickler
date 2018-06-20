@@ -1,11 +1,12 @@
 let
   pkgsv = import (import ./nixpkgs.nix);
   pkgs = pkgsv {};
-  intray-overlay = import (
-    (pkgs.fetchFromGitHub (import ./intray-version.nix) 
-    + "/overlay.nix")
-  );
+  intray-version = import ./intray-version.nix;
+  intray-repo = pkgs.fetchFromGitHub intray-version;
+  intray-overlay = import (intray-repo + "/overlay.nix");
+  validity-version = import (intray-repo + "/validity-version.nix");
+  validity-overlay = import (pkgs.fetchFromGitHub validity-version + "/overlay.nix");
 in pkgsv {
-  overlays = [ intray-overlay (import ./overlay.nix) ];
+  overlays = [ validity-overlay intray-overlay (import ./overlay.nix) ];
   config.allowUnfree = true;
 }
