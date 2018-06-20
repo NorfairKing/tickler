@@ -38,15 +38,17 @@
           $maybe dt <- mtod
             at #{show dt}
 
-  <form
-    method="post"
-    action=@{DeleteR}
-    onclick="return confirm('Are you sure you want to delete this item? This cannot be undone.');">
-    <input
-      name="item"
-      type="hidden"
-      value=#{uuidText itemInfoIdentifier}>
-    ^{token}
-    <button .ui .button .negative type="submit">
-      Delete
-
+  <div .ui .buttons>
+    <a .ui .button href=@{EditR itemInfoIdentifier}>
+      Edit
+    <form
+      method="post"
+      action=@{DeleteR}
+      onclick="return confirm('Are you sure you want to delete this item? This cannot be undone.');">
+      <input
+        name="item"
+        type="hidden"
+        value=#{uuidText itemInfoIdentifier}>
+      ^{token}
+      <button .ui .negative .button type="submit">
+        Delete

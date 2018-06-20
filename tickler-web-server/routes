@@ -3,6 +3,7 @@
 /loopers                           LoopersR             GET
 
 /add                               AddR                 POST GET
+/edit/#ItemUUID                    EditR                POST GET
 /tickles                           TicklesR             GET
 /triggered                         TriggeredR           GET
 /triggers                          TriggersR            GET

@@ -5,6 +5,7 @@
 
 module Tickler.Web.Server.Handler.Tickles
     ( getTicklesR
+    , makeItemInfoWidget
     ) where
 
 import Import
