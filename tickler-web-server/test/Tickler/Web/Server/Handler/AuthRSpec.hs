@@ -6,8 +6,6 @@ import TestImport
 
 import Network.HTTP.Types
 
-import Control.Concurrent
-
 import Yesod.Test
 
 import Tickler.Data (parseUsername)

@@ -51,4 +51,4 @@ makeItemInfoWidget items =
                         Just iit ->
                             Just <$>
                             makeTimestampWidget (triggeredInfoTriggered iit)
-                pure $(widgetFile "item")
+                pure $(widgetFile "tickle")

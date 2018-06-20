@@ -38,38 +38,6 @@
           $maybe dt <- mtod
             at #{show dt}
 
-  $maybe TriggeredInfo{..} <- itemInfoTriggered
-    $if length triggeredInfoTriggerTriggerAttempts /= 0
-      <div .ui .list>
-        $forall ta <- triggeredInfoTriggerTriggerAttempts
-          $case ta  
-            $of EmailTriggerAttempt uuid etr
-              <div .item>
-                $case etr
-                  $of EmailSent
-                    <div .ui .green .segment>
-                      <i .check .icon>
-                      Succesfully sent an email.
-                  $of EmailError t
-                    <div .ui .red .segment>
-                      <i .exclamation .triangle .icon>
-                      Failed to send an email:
-                      #{t}
-            $of IntrayTriggerAttempt uuid itr
-              <div .item>
-                $case itr
-                  $of IntrayAdditionSuccess iuuid
-                    <div .ui .green .segment>
-                      <i .check .icon>
-                      Succesfully added to intray.
-                  $of IntrayAdditionFailure t
-                    <div .ui .red .segment>
-                      <i .exclamation .triangle .icon>
-                      Failed to add to intray:
-                      <pre>
-                        #{t}
-
-
   <form
     method="post"
     action=@{DeleteR}

@@ -28,7 +28,7 @@ getTriggeredR =
                 [] -> pure Nothing
                 _ -> Just <$> makeItemInfosWidget items
         let nrItems = length items
-        withNavBar $(widgetFile "triggered")
+        withNavBar $(widgetFile "triggereds")
 
 makeItemInfosWidget :: [TypedItemInfo] -> Handler Widget
 makeItemInfosWidget items =
@@ -51,4 +51,4 @@ makeItemInfosWidget items =
                         Just iit ->
                             Just <$>
                             makeTimestampWidget (triggeredInfoTriggered iit)
-                pure $(widgetFile "item")
+                pure $(widgetFile "triggered")

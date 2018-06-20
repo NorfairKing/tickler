@@ -37,9 +37,9 @@ spec =
                 addPostParam "day" ""
                 addPostParam "month-time-of-day" ""
             statusIs 303
-            loc <- getLocation
+            loc1 <- getLocation
             void followRedirect
-            liftIO $ loc `shouldBe` Right AddR
+            liftIO $ loc1 `shouldBe` Right AddR
             statusIs 200
             request $ do
                 setMethod methodPost
@@ -54,9 +54,9 @@ spec =
                 addPostParam "months" ""
                 addPostParam "day" ""
                 addPostParam "month-time-of-day" ""
-            loc <- getLocation
+            loc2 <- getLocation
             void followRedirect
-            liftIO $ loc `shouldBe` Right AddR
+            liftIO $ loc2 `shouldBe` Right AddR
             statusIs 200
             request $ do
                 setMethod methodPost
