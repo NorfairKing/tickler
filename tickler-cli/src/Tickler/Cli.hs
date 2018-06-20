@@ -5,9 +5,9 @@ module Tickler.Cli
 
 import Import
 
+import Tickler.Cli.Commands.Add
 import Tickler.Cli.Commands.Login
 import Tickler.Cli.Commands.Logout
-import Tickler.Cli.Commands.Add
 import Tickler.Cli.Commands.Register
 import Tickler.Cli.Commands.Sync
 import Tickler.Cli.OptParse

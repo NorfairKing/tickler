@@ -114,9 +114,9 @@ postAddR =
             runClientOrErr $
             clientPostAddItem t $
             Tickle
-            { tickleContent = textTypedItem $ unTextarea newItemText
-            , tickleScheduledDay = newItemScheduledDay
-            , tickleScheduledTime = newItemScheduledTime
-            , tickleRecurrence = recurrence
-            }
+                { tickleContent = textTypedItem $ unTextarea newItemText
+                , tickleScheduledDay = newItemScheduledDay
+                , tickleScheduledTime = newItemScheduledTime
+                , tickleRecurrence = recurrence
+                }
         redirect AddR

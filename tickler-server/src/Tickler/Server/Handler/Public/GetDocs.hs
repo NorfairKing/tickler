@@ -10,10 +10,9 @@ import Import
 import Data.FileEmbed
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import qualified Text.Pandoc as Pandoc
+import qualified Data.Text.Lazy as LT
+import qualified Text.Markdown as Markdown
 
-import Servant hiding (BadPassword, NoSuchUser)
-import Servant.Auth.Server as Auth
 import Servant.Auth.Server.SetCookieOrphan ()
 import Servant.Docs as Docs
 
@@ -22,25 +21,23 @@ import Tickler.API
 import Tickler.Server.Types
 
 serveGetDocs :: TicklerHandler GetDocsResponse
-serveGetDocs =
-    case ticklerHtmlResponse of
-        Left _ ->
-            throwError
-                err500
-                {errBody = "Failed to convert the docs from Markdown to HTML."}
-        Right bs -> pure bs
+serveGetDocs = pure ticklerHtmlResponse
 
-ticklerHtmlResponse :: Either String GetDocsResponse
+ticklerHtmlResponse :: GetDocsResponse
 ticklerHtmlResponse =
-    left show $
-    Pandoc.runPure $ do
-        md <- Pandoc.readMarkdown def ticklerDocs
-        html <- Pandoc.writeHtml5 def md
-        pure $ GetDocsResponse html
+    GetDocsResponse $
+    Markdown.markdown
+        Markdown.defaultMarkdownSettings {Markdown.msXssProtect = False} $
+    LT.fromStrict ticklerDocs
 
 ticklerDocs :: Text
 ticklerDocs =
-    T.pack $
+    T.unlines .
+    map (\t ->
+             if T.isPrefixOf "```" (T.stripStart t)
+                 then T.stripStart t
+                 else t) .
+    T.lines . T.pack $
     Docs.markdown $ Docs.docsWithIntros [intr] $ Docs.pretty ticklerOpenAPI
   where
     intr =

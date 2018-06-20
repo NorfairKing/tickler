@@ -7,9 +7,7 @@ module Tickler.Server.Looper.Utils
 
 import Import
 
-
 import Database.Persist.Sqlite
-
 
 import Tickler.Server.Looper.Types
 

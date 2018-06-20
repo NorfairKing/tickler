@@ -37,13 +37,13 @@ timeZoneChoices :: [TimeZone]
 timeZoneChoices =
     map (\i ->
              TimeZone
-             { timeZoneMinutes = 60 * i
-             , timeZoneSummerOnly = False
-             , timeZoneName =
-                   concat $
-                   "UTC" :
-                   (if i == 0
-                        then []
-                        else [printf "%+d" i])
-             })
+                 { timeZoneMinutes = 60 * i
+                 , timeZoneSummerOnly = False
+                 , timeZoneName =
+                       concat $
+                       "UTC" :
+                       (if i == 0
+                            then []
+                            else [printf "%+d" i])
+                 })
         [-12 .. 12]

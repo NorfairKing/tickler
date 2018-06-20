@@ -8,9 +8,7 @@ module Tickler.Server.Looper.VerificationEmailConverter
 
 import Import
 
-
 import Control.Monad.Logger
-
 
 import Tickler.Server.Looper.Types
 

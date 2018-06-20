@@ -62,18 +62,18 @@ makeTriggeredEmail TriggeredEmailConverterSettings {..} EmailTrigger {..} ti@Tri
     now <- liftIO getCurrentTime
     pure
         Email
-        { emailTo = emailTriggerAddress
-        , emailFrom = triggeredEmailConverterSetFromAddress
-        , emailFromName = triggeredEmailConverterSetFromName
-        , emailSubject = "Tickle triggered"
-        , emailTextContent = verificationEmailTextContent ti render
-        , emailHtmlContent = verificationEmailHtmlContent ti render
-        , emailStatus = EmailUnsent
-        , emailSendError = Nothing
-        , emailSesId = Nothing
-        , emailScheduled = now
-        , emailSendAttempt = Nothing
-        }
+            { emailTo = emailTriggerAddress
+            , emailFrom = triggeredEmailConverterSetFromAddress
+            , emailFromName = triggeredEmailConverterSetFromName
+            , emailSubject = "Tickle triggered"
+            , emailTextContent = verificationEmailTextContent ti render
+            , emailHtmlContent = verificationEmailHtmlContent ti render
+            , emailStatus = EmailUnsent
+            , emailSendError = Nothing
+            , emailSesId = Nothing
+            , emailScheduled = now
+            , emailSendAttempt = Nothing
+            }
 
 verificationEmailTextContent :: TriggeredItem -> Renderer -> Text
 verificationEmailTextContent TriggeredItem {..} render =

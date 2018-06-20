@@ -47,34 +47,35 @@ ticklerTestServeSettings = do
             mkSqliteConnectionInfo "tickler-test.db" & walEnabled .~ False
     pure
         ServeSettings
-        { serveSetPort = 8000
-        , serveSetPersistLogins = False
-        , serveSetDefaultIntrayUrl = Nothing
-        , serveSetAPISettings =
-              API.ServeSettings
-              { API.serveSetPort = 8001
-              , API.serveSetConnectionInfo = connInfo
-              , API.serveSetConnectionCount = 1
-              , API.serveSetAdmins = catMaybes [parseUsername "admin"]
-              , API.serveSetLooperSettings =
-                    API.LooperSettings
-                    { API.looperSetConnectionInfo = connInfo
-                    , API.looperSetConnectionCount = 1
-                    , API.looperSetTriggererSets = API.LooperDisabled
-                    , API.looperSetEmailerSets = API.LooperDisabled
-                    , API.looperSetTriggeredIntrayItemSchedulerSets =
-                          API.LooperDisabled
-                    , API.looperSetTriggeredIntrayItemSenderSets =
-                          API.LooperDisabled
-                    , API.looperSetVerificationEmailConverterSets =
-                          API.LooperDisabled
-                    , API.looperSetTriggeredEmailSchedulerSets =
-                          API.LooperDisabled
-                    , API.looperSetTriggeredEmailConverterSets =
-                          API.LooperDisabled
-                    }
-              }
-        }
+            { serveSetPort = 8000
+            , serveSetPersistLogins = False
+            , serveSetDefaultIntrayUrl = Nothing
+            , serveSetAPISettings =
+                  API.ServeSettings
+                      { API.serveSetPort = 8001
+                      , API.serveSetConnectionInfo = connInfo
+                      , API.serveSetConnectionCount = 1
+                      , API.serveSetAdmins = catMaybes [parseUsername "admin"]
+                      , API.serveSetLooperSettings =
+                            API.LooperSettings
+                                { API.looperSetConnectionInfo = connInfo
+                                , API.looperSetConnectionCount = 1
+                                , API.looperSetTriggererSets =
+                                      API.LooperDisabled
+                                , API.looperSetEmailerSets = API.LooperDisabled
+                                , API.looperSetTriggeredIntrayItemSchedulerSets =
+                                      API.LooperDisabled
+                                , API.looperSetTriggeredIntrayItemSenderSets =
+                                      API.LooperDisabled
+                                , API.looperSetVerificationEmailConverterSets =
+                                      API.LooperDisabled
+                                , API.looperSetTriggeredEmailSchedulerSets =
+                                      API.LooperDisabled
+                                , API.looperSetTriggeredEmailConverterSets =
+                                      API.LooperDisabled
+                                }
+                      }
+            }
 
 ticklerWebServerSpec :: YesodSpec App -> Spec
 ticklerWebServerSpec = b . a
@@ -86,7 +87,7 @@ ticklerWebServerSpec = b . a
                  sets_ <- ticklerTestServeSettings
                  let apiSets =
                          (serveSetAPISettings sets_)
-                         {API.serveSetPort = baseUrlPort burl}
+                             {API.serveSetPort = baseUrlPort burl}
                  let sets' = sets_ {serveSetAPISettings = apiSets}
                  makeTicklerApp sets')
     b :: SpecWith ClientEnv -> Spec

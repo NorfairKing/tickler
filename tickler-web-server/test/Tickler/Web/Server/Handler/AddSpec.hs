@@ -41,7 +41,6 @@ spec =
             void followRedirect
             liftIO $ loc `shouldBe` Right AddR
             statusIs 200
-
             request $ do
                 setMethod methodPost
                 setUrl AddR
@@ -59,7 +58,6 @@ spec =
             void followRedirect
             liftIO $ loc `shouldBe` Right AddR
             statusIs 200
-
             request $ do
                 setMethod methodPost
                 setUrl AddR

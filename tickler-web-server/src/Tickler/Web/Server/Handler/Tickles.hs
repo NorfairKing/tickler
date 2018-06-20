@@ -31,22 +31,24 @@ getTicklesR =
         withNavBar $(widgetFile "tickles")
 
 makeItemInfoWidget :: [ItemInfo TypedItem] -> Handler Widget
-makeItemInfoWidget items =withLogin$ \t -> do
-    AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
-    token <- genToken
-    fmap mconcat $
-        forM items $ \ItemInfo {..} -> do
-            createdWidget <- makeTimestampWidget itemInfoCreated
-            scheduledWidget <-
-                makeTimestampWidget $
-                localTimeToUTC accountSettingsTimeZone $
-                LocalTime
-                    (tickleScheduledDay itemInfoContents)
-                    (fromMaybe midnight $ tickleScheduledTime itemInfoContents)
-            mTriggeredWidget <-
-                case itemInfoTriggered of
-                    Nothing -> pure Nothing
-                    Just iit ->
-                        Just <$>
-                        makeTimestampWidget (triggeredInfoTriggered iit)
-            pure $(widgetFile "item")
+makeItemInfoWidget items =
+    withLogin $ \t -> do
+        AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
+        token <- genToken
+        fmap mconcat $
+            forM items $ \ItemInfo {..} -> do
+                createdWidget <- makeTimestampWidget itemInfoCreated
+                scheduledWidget <-
+                    makeTimestampWidget $
+                    localTimeToUTC accountSettingsTimeZone $
+                    LocalTime
+                        (tickleScheduledDay itemInfoContents)
+                        (fromMaybe midnight $
+                         tickleScheduledTime itemInfoContents)
+                mTriggeredWidget <-
+                    case itemInfoTriggered of
+                        Nothing -> pure Nothing
+                        Just iit ->
+                            Just <$>
+                            makeTimestampWidget (triggeredInfoTriggered iit)
+                pure $(widgetFile "item")

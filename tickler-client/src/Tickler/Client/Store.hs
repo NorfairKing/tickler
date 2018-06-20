@@ -37,9 +37,9 @@ makeSyncRequest Store {..} =
 mergeSyncResponse :: Store -> SyncResponse -> Store
 mergeSyncResponse Store {..} SyncResponse {..} =
     Store
-    { storeTickles =
-          Mergeless.mergeSyncResponse storeTickles syncResponseTickles
-    }
+        { storeTickles =
+              Mergeless.mergeSyncResponse storeTickles syncResponseTickles
+        }
 
 emptyStore :: Store
 emptyStore = Store {storeTickles = Mergeless.emptyStore}
@@ -47,8 +47,8 @@ emptyStore = Store {storeTickles = Mergeless.emptyStore}
 addTickleToStore :: Store -> Added TypedTickle -> Store
 addTickleToStore Store {..} a =
     Store
-    { storeTickles =
-          Mergeless.Store $
-          S.insert (Mergeless.UnsyncedItem a) $
-          Mergeless.storeItems storeTickles
-    }
+        { storeTickles =
+              Mergeless.Store $
+              S.insert (Mergeless.UnsyncedItem a) $
+              Mergeless.storeItems storeTickles
+        }

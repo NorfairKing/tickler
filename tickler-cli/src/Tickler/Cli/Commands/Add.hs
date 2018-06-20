@@ -23,13 +23,14 @@ add AddSettings {..} =
         now <- liftIO getCurrentTime
         let a =
                 Added
-                { addedCreated = now
-                , addedValue =
-                      Tickle
-                      { tickleContent = textTypedItem addSetTickleContent
-                      , tickleScheduledDay = addSetTickleDate
-                      , tickleScheduledTime = addSetTickleTime
-                      , tickleRecurrence = Nothing
-                      }
-                }
+                    { addedCreated = now
+                    , addedValue =
+                          Tickle
+                              { tickleContent =
+                                    textTypedItem addSetTickleContent
+                              , tickleScheduledDay = addSetTickleDate
+                              , tickleScheduledTime = addSetTickleTime
+                              , tickleRecurrence = Nothing
+                              }
+                    }
         pure $ addTickleToStore s a

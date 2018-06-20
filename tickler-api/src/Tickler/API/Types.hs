@@ -38,8 +38,6 @@ import Data.UUID.Typed
 
 import Text.Blaze as HTML
 import Text.Blaze.Html as HTML
-import Text.Pandoc as Pandoc
-
 
 import Servant.API
 import Servant.Auth
@@ -143,11 +141,7 @@ newtype GetDocsResponse = GetDocsResponse
 
 instance MimeUnrender HTML GetDocsResponse where
     mimeUnrender Proxy bs =
-        left show $
-        runPure $ do
-            pandoc <- Pandoc.readHtml def $ TE.decodeUtf8 $ LB.toStrict bs
-            html <- Pandoc.writeHtml5 def pandoc
-            pure $ GetDocsResponse html
+        Right $ GetDocsResponse $ HTML.unsafeLazyByteString bs
 
 instance ToSample GetDocsResponse where
     toSamples Proxy = singleSample $ GetDocsResponse "Documentation (In HTML)."
@@ -159,7 +153,7 @@ instance ToSample TimeZone where
     toSamples Proxy = singleSample utc
 
 instance ToSample BaseUrl where
-    toSamples Proxy = singleSample $ BaseUrl Https "intray.cs-syd.eu" 8000 ""
+    toSamples Proxy = singleSample $ BaseUrl Https "tickler.cs-syd.eu" 8000 ""
 
 instance ToSample EmailAddress where
     toSamples Proxy = singleSample $ unsafeEmailAddress "user" "example.com"

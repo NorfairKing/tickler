@@ -29,9 +29,9 @@ servePutAccountSettings (Authenticated AuthCookie {..}) AccountSettings {..} = d
         runDb $
         upsert
             UserSettings
-            { userSettingsUserId = authCookieUserUUID
-            , userSettingsTimeZone = accountSettingsTimeZone
-            }
+                { userSettingsUserId = authCookieUserUUID
+                , userSettingsTimeZone = accountSettingsTimeZone
+                }
             [ UserSettingsUserId =. authCookieUserUUID
             , UserSettingsTimeZone =. accountSettingsTimeZone
             ]

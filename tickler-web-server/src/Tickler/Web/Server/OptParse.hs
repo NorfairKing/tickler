@@ -15,7 +15,6 @@ import Servant.Client.Core
 import System.Environment (getArgs, getEnvironment)
 import Text.Read
 
-
 import Options.Applicative
 
 import qualified Tickler.Server.OptParse as API
@@ -48,12 +47,13 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
     pure
         ( DispatchServe
               ServeSettings
-              { serveSetPort = webPort
-              , serveSetPersistLogins = fromMaybe False serveFlagPersistLogins
-              , serveSetDefaultIntrayUrl =
-                    serveFlagDefaultIntrayUrl `mplus` envDefaultIntrayUrl
-              , serveSetAPISettings = apiServeSets
-              }
+                  { serveSetPort = webPort
+                  , serveSetPersistLogins =
+                        fromMaybe False serveFlagPersistLogins
+                  , serveSetDefaultIntrayUrl =
+                        serveFlagDefaultIntrayUrl `mplus` envDefaultIntrayUrl
+                  , serveSetAPISettings = apiServeSets
+                  }
         , Settings)
 
 getConfiguration :: Command -> Flags -> IO Configuration
@@ -84,8 +84,7 @@ getEnv = do
                     Just v -> Right v
         mr k = mrf k readMaybe
     envPort <- mr "WEB_PORT"
-    envDefaultIntrayUrl <-
-        mre "DEFAULT_INTRAY_URL" (left show . parseBaseUrl)
+    envDefaultIntrayUrl <- mre "DEFAULT_INTRAY_URL" (left show . parseBaseUrl)
     envAPIEnvironment <- API.getEnv
     pure Environment {..}
 
@@ -100,13 +99,13 @@ runArgumentsParser = execParserPure prefs_ argParser
   where
     prefs_ =
         ParserPrefs
-        { prefMultiSuffix = ""
-        , prefDisambiguate = True
-        , prefShowHelpOnError = True
-        , prefShowHelpOnEmpty = True
-        , prefBacktrack = True
-        , prefColumns = 80
-        }
+            { prefMultiSuffix = ""
+            , prefDisambiguate = True
+            , prefShowHelpOnError = True
+            , prefShowHelpOnEmpty = True
+            , prefBacktrack = True
+            , prefColumns = 80
+            }
 
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_
