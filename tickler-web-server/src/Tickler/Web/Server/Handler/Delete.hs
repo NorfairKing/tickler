@@ -4,7 +4,8 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Tickler.Web.Server.Handler.Delete
-    ( postDeleteR
+    ( postDeleteTickleR
+    , postDeleteTriggeredR
     ) where
 
 import Import
@@ -23,9 +24,16 @@ newtype DeleteItem = DeleteItem
 deleteItemForm :: FormInput Handler DeleteItem
 deleteItemForm = DeleteItem <$> ireq hiddenField "item"
 
-postDeleteR :: Handler Html
-postDeleteR =
+postDeleteTriggeredR :: Handler Html
+postDeleteTriggeredR =
     withLogin $ \t -> do
         DeleteItem {..} <- runInputPost deleteItemForm
         void $ runClientOrErr $ clientDeleteItem t deleteItemUUID
         redirect TriggeredR
+
+postDeleteTickleR :: Handler Html
+postDeleteTickleR =
+    withLogin $ \t -> do
+        DeleteItem {..} <- runInputPost deleteItemForm
+        void $ runClientOrErr $ clientDeleteItem t deleteItemUUID
+        redirect TicklesR

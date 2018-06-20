@@ -8,7 +8,8 @@
 /triggered                         TriggeredR           GET
 /triggers                          TriggersR            GET
 
-/delete                            DeleteR              POST
+/delete-tickle                     DeleteTickleR        POST
+/delete-triggered                  DeleteTriggeredR     POST
 
 /add-intray-trigger                AddIntrayTriggerR    POST
 /add-email-trigger                 AddEmailTriggerR     POST
