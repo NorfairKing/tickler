@@ -113,6 +113,19 @@ TriggeredItem
     deriving Typeable
 
 
+ItemTag
+    item ItemUUID
+    tag Text
+
+    UniqueItemTag item tag
+
+    deriving Show
+    deriving Eq
+    deriving Ord
+    deriving Generic
+    deriving Typeable
+
+
 UserTrigger
     userId AccountUUID
     triggerType TriggerType
@@ -227,6 +240,8 @@ instance Validity UserSettings
 instance Validity TicklerItem
 
 instance Validity TriggeredItem
+
+instance Validity ItemTag
 
 instance Validity UserTrigger
 
