@@ -190,6 +190,7 @@ TriggeredEmail
     item            ItemUUID
     trigger         TriggerUUID
     email           EmailId     Maybe
+    error           Text                   Maybe
 
     UniqueTriggeredEmail item trigger
 

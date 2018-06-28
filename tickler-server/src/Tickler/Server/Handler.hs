@@ -25,6 +25,7 @@ import Tickler.Server.Handler.PostAddItem (servePostAddItem)
 import Tickler.Server.Handler.PostSync (servePostSync)
 import Tickler.Server.Handler.Public (ticklerPublicServer)
 import Tickler.Server.Handler.PutAccountSettings (servePutAccountSettings)
+import Tickler.Server.Handler.RetryTriggered (serveRetryTriggered)
 
 ticklerServer :: TicklerSite (AsServerT TicklerHandler)
 ticklerServer =
@@ -48,6 +49,7 @@ ticklerProtectedServer =
         , postAddItem = servePostAddItem
         , getItem = serveGetItem
         , deleteItem = serveDeleteItem
+        , retryTriggered = serveRetryTriggered
         , postSync = servePostSync
         , getTriggers = serveGetTriggers
         , getTrigger = serveGetTrigger

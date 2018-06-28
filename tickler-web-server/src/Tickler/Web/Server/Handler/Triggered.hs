@@ -4,7 +4,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Tickler.Web.Server.Handler.Triggered
-    ( getTriggeredR
+    ( getTriggeredsR
     ) where
 
 import Import
@@ -19,8 +19,8 @@ import Tickler.Client
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.Time
 
-getTriggeredR :: Handler Html
-getTriggeredR =
+getTriggeredsR :: Handler Html
+getTriggeredsR =
     withLogin $ \t -> do
         items <- runClientOrErr $ clientGetItems t (Just OnlyTriggered)
         mItemWidget <-
@@ -28,6 +28,7 @@ getTriggeredR =
                 [] -> pure Nothing
                 _ -> Just <$> makeItemInfosWidget items
         let nrItems = length items
+        token <- genToken
         withNavBar $(widgetFile "triggereds")
 
 makeItemInfosWidget :: [TypedItemInfo] -> Handler Widget

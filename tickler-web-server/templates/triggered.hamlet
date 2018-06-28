@@ -70,15 +70,27 @@
                         #{t}
 
 
-  <form
-    method="post"
-    action=@{DeleteTriggeredR}
-    onclick="return confirm('Are you sure you want to delete this item? This cannot be undone.');">
-    <input
-      name="item"
-      type="hidden"
-      value=#{uuidText itemInfoIdentifier}>
-    ^{token}
-    <button .ui .button .negative type="submit">
-      Delete
+  <div .ui .buttons>
+    <form
+      method="post"
+      action=@{RetryTriggeredR}
+      onclick="return confirm('Are you sure you want to retry triggering this item? This cannot be undone.');">
+      <input
+        name="item"                      
+        type="hidden"
+        value=#{uuidText itemInfoIdentifier}>
+      ^{token}
+      <button .ui .button type="submit">
+        Retry Triggering
+    <form
+      method="post"
+      action=@{DeleteTriggeredR}
+      onclick="return confirm('Are you sure you want to delete this item? This cannot be undone.');">
+      <input
+        name="item"
+        type="hidden"
+        value=#{uuidText itemInfoIdentifier}>
+      ^{token}
+      <button .ui .button .negative type="submit">
+        Delete
 

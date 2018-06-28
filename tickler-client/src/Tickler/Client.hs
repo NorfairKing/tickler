@@ -7,6 +7,7 @@ module Tickler.Client
     , clientPostAddItem
     , clientGetItem
     , clientDeleteItem
+    , clientRetryTriggered
     , clientPostSync
     , clientGetTriggers
     , clientGetTrigger
@@ -38,6 +39,7 @@ module Tickler.Client
     , TypedTickle
     , ItemInfo(..)
     , TypedItemInfo
+    , TriggeredInfo(..)
     , AddItem
     , Added(..)
     , Synced(..)
@@ -101,6 +103,7 @@ clientGetItems :: Token -> Maybe ItemFilter -> ClientM [ItemInfo TypedItem]
 clientPostAddItem :: Token -> AddItem -> ClientM ItemUUID
 clientGetItem :: Token -> ItemUUID -> ClientM (ItemInfo TypedItem)
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
+clientRetryTriggered :: Token -> [ItemUUID] -> ClientM NoContent
 clientPostSync :: Token -> SyncRequest -> ClientM SyncResponse
 clientGetTriggers :: Token -> ClientM [TriggerInfo TypedTriggerInfo]
 clientGetTrigger ::
@@ -122,5 +125,5 @@ clientGetDocs :: ClientM GetDocsResponse
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetLoopersStatus :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientRetryTriggered :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetLoopersStatus :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
     client (flatten ticklerAPI)

@@ -10,6 +10,7 @@ import Yesod.Auth
 
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.Handler.APIDocs
+import Tickler.Web.Server.Handler.RetryTriggered
 import Tickler.Web.Server.Handler.Account
 import Tickler.Web.Server.Handler.Edit
 import Tickler.Web.Server.Handler.Add

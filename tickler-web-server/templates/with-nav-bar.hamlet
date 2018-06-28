@@ -8,8 +8,8 @@
         Add item
       <a .item href=@{TicklesR}>
         Tickles
-      <a .item href=@{TriggeredR}>
-        Triggered
+      <a .item href=@{TriggeredsR}>
+        Triggereds
       <a .item href=@{TriggersR}>
         Triggers
       <a .item href=@{AccountR}>

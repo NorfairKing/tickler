@@ -1,3 +1,12 @@
+<form
+  method="post"
+  action=@{RetryTriggeredsR}
+  onclick="return confirm('Are you sure you want to retry all items that failed to be triggered? This cannot be undone.');">
+  ^{token}
+  <button .ui .button type="submit">
+    Retry Triggering
+
+
 $maybe itemsWidget <- mItemWidget
   <h1> #{nrItems} tickles triggered
   ^{itemsWidget}

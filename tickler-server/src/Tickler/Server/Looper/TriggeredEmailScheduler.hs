@@ -53,6 +53,7 @@ runTriggeredEmailScheduler _ = do
                                         , triggeredEmailTrigger =
                                               userTriggerTriggerId ut
                                         , triggeredEmailEmail = Nothing
+                                        , triggeredEmailError = Nothing
                                         }
                             Just _ -> Nothing
     runDb $ insertMany_ tes

@@ -5,11 +5,14 @@
 /add                               AddR                 POST GET
 /edit/#ItemUUID                    EditR                POST GET
 /tickles                           TicklesR             GET
-/triggered                         TriggeredR           GET
+/triggereds                        TriggeredsR          GET
 /triggers                          TriggersR            GET
 
 /delete-tickle                     DeleteTickleR        POST
 /delete-triggered                  DeleteTriggeredR     POST
+
+/retry-triggered                   RetryTriggeredR      POST
+/retry-triggereds                  RetryTriggeredsR     POST
 
 /add-intray-trigger                AddIntrayTriggerR    POST
 /add-email-trigger                 AddEmailTriggerR     POST

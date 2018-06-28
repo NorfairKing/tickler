@@ -14,6 +14,7 @@ module Tickler.API.Protected
     , PostAddItem
     , GetItem
     , DeleteItem
+    , RetryTriggered
     , ItemFilter(..)
     , ItemType(..)
     , TypedItem(..)
@@ -94,6 +95,7 @@ data TicklerProtectedSite route = TicklerProtectedSite
     , postAddItem :: route :- PostAddItem
     , getItem :: route :- GetItem
     , deleteItem :: route :- DeleteItem
+    , retryTriggered :: route :- RetryTriggered
     , postSync :: route :- PostSync
     , getTriggers :: route :- GetTriggers
     , getTrigger :: route :- GetTrigger
@@ -133,6 +135,9 @@ instance ToCapture (Capture "id" ItemUUID) where
 
 type DeleteItem
      = ProtectAPI :> "tickler" :> "item" :> "delete" :> Capture "id" ItemUUID :> Delete '[ JSON] NoContent
+
+type RetryTriggered
+     = ProtectAPI :> "tickler" :> "item" :> "retry" :> ReqBody '[ JSON] [ItemUUID] :> Post '[ JSON] NoContent
 
 type PostSync
      = ProtectAPI :> "sync" :> ReqBody '[ JSON] SyncRequest :> Post '[ JSON] SyncResponse

@@ -29,7 +29,7 @@ postDeleteTriggeredR =
     withLogin $ \t -> do
         DeleteItem {..} <- runInputPost deleteItemForm
         void $ runClientOrErr $ clientDeleteItem t deleteItemUUID
-        redirect TriggeredR
+        redirect TriggeredsR
 
 postDeleteTickleR :: Handler Html
 postDeleteTickleR =
