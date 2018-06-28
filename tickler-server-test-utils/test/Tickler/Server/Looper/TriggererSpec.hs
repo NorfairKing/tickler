@@ -43,7 +43,8 @@ spec = do
             forAll ((\ti -> ti {ticklerItemRecurrence = Nothing}) <$> genValid) $ \ti ->
                 makeNextTickleItem ti `shouldReturn` Nothing
         it "never produces the same tickle item" $
-            forAllValid $ \ti -> makeNextTickleItem ti `shouldNotReturn` (Just ti)
+            forAllValid $ \ti ->
+                makeNextTickleItem ti `shouldNotReturn` (Just ti)
         it "has a seperate ID" $
             forAllValid $ \ti -> do
                 mti' <- makeNextTickleItem ti

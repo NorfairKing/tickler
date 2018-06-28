@@ -66,18 +66,18 @@ getDispatch cmd =
             pure $
             DispatchRegister
                 RegisterSettings
-                { registerSetUsername =
-                      (T.pack <$> registerArgUsername) >>= parseUsername
-                , registerSetPassword = T.pack <$> registerArgPassword
-                }
+                    { registerSetUsername =
+                          (T.pack <$> registerArgUsername) >>= parseUsername
+                    , registerSetPassword = T.pack <$> registerArgPassword
+                    }
         CommandLogin LoginArgs {..} ->
             pure $
             DispatchLogin
                 LoginSettings
-                { loginSetUsername =
-                      (T.pack <$> loginArgUsername) >>= parseUsername
-                , loginSetPassword = T.pack <$> loginArgPassword
-                }
+                    { loginSetUsername =
+                          (T.pack <$> loginArgUsername) >>= parseUsername
+                    , loginSetPassword = T.pack <$> loginArgPassword
+                    }
         CommandAdd AddArgs {..} -> do
             date <-
                 parseTimeM True defaultTimeLocale "%Y-%-m-%-d" addArgTickleDate
@@ -89,11 +89,11 @@ getDispatch cmd =
             pure $
                 DispatchAdd
                     AddSettings
-                    { addSetTickleContent = T.pack addArgContent
-                    , addSetTickleDate = date
-                    , addSetTickleTime = mTime
-                    , addSetTickleRecurrence = r
-                    }
+                        { addSetTickleContent = T.pack addArgContent
+                        , addSetTickleDate = date
+                        , addSetTickleTime = mTime
+                        , addSetTickleRecurrence = r
+                        }
         CommandLogout -> pure DispatchLogout
         CommandSync -> pure DispatchSync
 
@@ -159,13 +159,13 @@ runArgumentsParser = execParserPure prefs_ argParser
 prefs_ :: ParserPrefs
 prefs_ =
     ParserPrefs
-    { prefMultiSuffix = ""
-    , prefDisambiguate = True
-    , prefShowHelpOnError = True
-    , prefShowHelpOnEmpty = True
-    , prefBacktrack = True
-    , prefColumns = 80
-    }
+        { prefMultiSuffix = ""
+        , prefDisambiguate = True
+        , prefShowHelpOnError = True
+        , prefShowHelpOnEmpty = True
+        , prefBacktrack = True
+        , prefColumns = 80
+        }
 
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_

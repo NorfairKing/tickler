@@ -83,23 +83,24 @@ nextScheduledTime scheduledDay _ r =
                         Nothing -> clipped
                         Just d_ ->
                             let (y, m, _) = toGregorian clipped
-                            in fromGregorian y m (fromIntegral d_)
-            in (day, mtod)
+                             in fromGregorian y m (fromIntegral d_)
+             in (day, mtod)
 
 makeNextTickleItem :: TicklerItem -> IO (Maybe TicklerItem)
 makeNextTickleItem ti =
     case ticklerItemRecurrence ti of
         Nothing -> pure Nothing
-        Just r -> fmap Just $ do
-            let (d, mtod) =
-                    nextScheduledTime
-                        (ticklerItemScheduledDay ti)
-                        (ticklerItemScheduledTime ti)
-                        r
-            uuid <- nextRandomUUID
-            pure $
-                ti
-                    { ticklerItemIdentifier = uuid
-                    , ticklerItemScheduledDay = d
-                    , ticklerItemScheduledTime = mtod
-                    }
+        Just r ->
+            fmap Just $ do
+                let (d, mtod) =
+                        nextScheduledTime
+                            (ticklerItemScheduledDay ti)
+                            (ticklerItemScheduledTime ti)
+                            r
+                uuid <- nextRandomUUID
+                pure $
+                    ti
+                        { ticklerItemIdentifier = uuid
+                        , ticklerItemScheduledDay = d
+                        , ticklerItemScheduledTime = mtod
+                        }

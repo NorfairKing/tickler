@@ -26,7 +26,13 @@ import Tickler.Server.Handler.Utils
 serveRetryTriggered ::
        AuthResult AuthCookie -> [ItemUUID] -> TicklerHandler NoContent
 serveRetryTriggered (Authenticated AuthCookie {..}) ids = do
-    runDb $ updateWhere [TriggeredIntrayItemItem <-. ids] [TriggeredIntrayItemError =. Nothing]
-    runDb $ updateWhere [TriggeredEmailItem <-. ids] [TriggeredEmailError =. Nothing]
+    runDb $
+        updateWhere
+            [TriggeredIntrayItemItem <-. ids]
+            [TriggeredIntrayItemError =. Nothing]
+    runDb $
+        updateWhere
+            [TriggeredEmailItem <-. ids]
+            [TriggeredEmailError =. Nothing]
     pure NoContent
 serveRetryTriggered _ _ = throwAll err401
