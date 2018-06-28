@@ -1,4 +1,4 @@
-module Tickler.Web.Server.Handler.TriggeredSpec where
+module Tickler.Web.Server.Handler.TriggeredsSpec where
 
 import TestImport
 
@@ -10,8 +10,8 @@ import Tickler.Web.Server.TestUtils
 spec :: Spec
 spec =
     ticklerWebServerSpec $
-    ydescribe "Triggered" $
+    ydescribe "Triggereds" $
     yit "gets a 200 for a logged-in user" $ do
         withExampleAccountAndLogin_ $ do
-            get TriggeredR
+            get TriggeredsR
             statusIs 200
