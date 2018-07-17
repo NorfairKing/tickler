@@ -75,3 +75,5 @@ extra-deps:
 - git: git@github.com:NorfairKing/pretty-relative-time.git
   commit: 9a670db25ac68974045c75da364486c10970824f
 resolver: lts-11.9
+nix:
+  packages: [zlib]
