@@ -16,7 +16,7 @@ module Tickler.Client
     , clientDeleteTrigger
     , clientPostRegister
     , clientPostLogin
-    , clientGetLoopersStatus
+    , clientGetLoopersInfo
     , clientGetDocs
     , clientGetAccountInfo
     , clientGetAccountSettings
@@ -120,10 +120,10 @@ clientPostRegister :: Registration -> ClientM NoContent
 clientPostLogin ::
        LoginForm
     -> ClientM (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
-clientGetLoopersStatus :: ClientM LoopersStatus
+clientGetLoopersInfo :: ClientM LoopersInfo
 clientGetDocs :: ClientM GetDocsResponse
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientRetryTriggered :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetLoopersStatus :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientRetryTriggered :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetLoopersInfo :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
     client (flatten ticklerAPI)

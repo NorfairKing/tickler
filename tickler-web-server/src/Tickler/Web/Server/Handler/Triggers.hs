@@ -61,11 +61,11 @@ makeEmailTriggerWidget TriggerInfo {..} = do
 makeAddIntrayTriggerWidget :: Handler Widget
 makeAddIntrayTriggerWidget =
     withLogin $ \t -> do
-        LoopersStatus {..} <- runClientOrErr clientGetLoopersStatus
-        if any (== LooperStatusDisabled)
-               [ triggeredIntrayItemSenderLooperStatus
-               , triggeredIntrayItemSchedulerLooperStatus
-               , triggererLooperStatus
+        LoopersInfo {..} <- runClientOrErr clientGetLoopersInfo
+        if any ((== LooperStatusDisabled) . looperInfoStatus)
+               [ triggeredIntrayItemSenderLooperInfo
+               , triggeredIntrayItemSchedulerLooperInfo
+               , triggererLooperInfo
                ]
             then pure mempty
             else do
@@ -81,12 +81,12 @@ makeAddIntrayTriggerWidget =
 
 makeAddEmailTriggerWidget :: Handler Widget
 makeAddEmailTriggerWidget = do
-    LoopersStatus {..} <- runClientOrErr clientGetLoopersStatus
-    if any (== LooperStatusDisabled)
-           [ verificationEmailConverterLooperStatus
-           , triggeredEmailSchedulerLooperStatus
-           , triggeredEmailConverterLooperStatus
-           , emailerLooperStatus
+    LoopersInfo {..} <- runClientOrErr clientGetLoopersInfo
+    if any ((== LooperStatusDisabled) . looperInfoStatus)
+           [ verificationEmailConverterLooperInfo
+           , triggeredEmailSchedulerLooperInfo
+           , triggeredEmailConverterLooperInfo
+           , emailerLooperInfo
            ]
         then pure mempty
         else do

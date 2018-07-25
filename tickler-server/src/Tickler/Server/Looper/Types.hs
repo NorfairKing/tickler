@@ -16,6 +16,7 @@ import Control.Monad.Logger
 import Control.Retry
 import Data.Pool
 import Database.Persist.Sqlite
+import Tickler.Server.OptParse.Types
 
 newtype LooperEnv = LooperEnv
     { looperEnvPool :: Pool SqlBackend
@@ -40,3 +41,7 @@ runLooper (Looper func) = runStderrLoggingT . runReaderT func
 data LooperHandle
     = LooperHandleDisabled
     | LooperHandleEnabled (Async ())
+                          LooperStaticConfig
+
+data LooperConfig =
+    LooperC

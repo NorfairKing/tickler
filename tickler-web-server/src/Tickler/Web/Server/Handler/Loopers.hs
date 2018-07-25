@@ -17,11 +17,11 @@ import Tickler.Web.Server.Foundation
 
 getLoopersR :: Handler Html
 getLoopersR = do
-    LoopersStatus {..} <- runClientOrErr clientGetLoopersStatus
+    LoopersInfo {..} <- runClientOrErr clientGetLoopersInfo
     withNavBar $(widgetFile "loopers")
 
-mkLooperStatusWidget :: Text -> LooperStatus -> Widget
-mkLooperStatusWidget name ls = $(widgetFile "looper")
+mkLooperInfoWidget :: Text -> LooperInfo -> Widget
+mkLooperInfoWidget name ls = $(widgetFile "looper")
 
 loopersColor :: LooperStatus -> Text
 loopersColor LooperStatusDisabled = "black"

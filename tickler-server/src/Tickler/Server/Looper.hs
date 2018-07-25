@@ -77,32 +77,32 @@ startLooperWithSets ::
 startLooperWithSets pool lsw func =
     case lsw of
         LooperDisabled -> pure LooperHandleDisabled
-        LooperEnabled period lrs sets ->
+        LooperEnabled lsc@LooperStaticConfig {..} sets ->
             let env = LooperEnv {looperEnvPool = pool}
-                policy = retryPolicyFrom lrs
-             in fmap LooperHandleEnabled $
-                async $
-                runLooper
-                    (retryLooperWith policy $
-                     runLooperContinuously period $ func sets)
-                    env
+             in do a <-
+                       async $
+                       runLooper
+                           (retryLooperWith looperStaticConfigRetryPolicy $
+                            runLooperContinuously looperStaticConfigPeriod $
+                            func sets)
+                           env
+                   pure $ LooperHandleEnabled a lsc
 
-retryLooperWith :: RetryPolicyM Looper -> Looper b -> Looper b
-retryLooperWith policy looperFunc =
-    recoverAll policy $ \RetryStatus {..} -> do
-        unless (rsIterNumber == 0) $
-            logWarnNS "Looper" $
-            T.unwords
-                [ "Retry number"
-                , T.pack $ show rsIterNumber
-                , "after a total delay of"
-                , T.pack $ show rsCumulativeDelay
-                ]
-        looperFunc
-
-retryPolicyFrom :: LooperRetryPolicy -> RetryPolicyM Looper
-retryPolicyFrom LooperRetryPolicy {..} =
-    constantDelay looperRetryPolicyDelay <> limitRetries looperRetryPolicyAmount
+retryLooperWith :: LooperRetryPolicy -> Looper b -> Looper b
+retryLooperWith LooperRetryPolicy {..} looperFunc =
+    let policy =
+            constantDelay looperRetryPolicyDelay <>
+            limitRetries looperRetryPolicyAmount
+     in recoverAll policy $ \RetryStatus {..} -> do
+            unless (rsIterNumber == 0) $
+                logWarnNS "Looper" $
+                T.unwords
+                    [ "Retry number"
+                    , T.pack $ show rsIterNumber
+                    , "after a total delay of"
+                    , T.pack $ show rsCumulativeDelay
+                    ]
+            looperFunc
 
 runLooperContinuously :: MonadIO m => Int -> m b -> m ()
 runLooperContinuously period func = go

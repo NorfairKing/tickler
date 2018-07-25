@@ -13,7 +13,8 @@ module Tickler.API.Types
     , AuthCookie(..)
     , Registration(..)
     , LoginForm(..)
-    , LoopersStatus(..)
+    , LoopersInfo(..)
+    , LooperInfo(..)
     , LooperStatus(..)
     , GetDocsResponse(..)
     , HashedPassword
@@ -102,23 +103,38 @@ instance ToSample LoginForm
 
 instance ToSample Username
 
-data LoopersStatus = LoopersStatus
-    { emailerLooperStatus :: LooperStatus
-    , triggererLooperStatus :: LooperStatus
-    , verificationEmailConverterLooperStatus :: LooperStatus
-    , triggeredIntrayItemSchedulerLooperStatus :: LooperStatus
-    , triggeredIntrayItemSenderLooperStatus :: LooperStatus
-    , triggeredEmailSchedulerLooperStatus :: LooperStatus
-    , triggeredEmailConverterLooperStatus :: LooperStatus
+data LoopersInfo = LoopersInfo
+    { emailerLooperInfo :: LooperInfo
+    , triggererLooperInfo :: LooperInfo
+    , verificationEmailConverterLooperInfo :: LooperInfo
+    , triggeredIntrayItemSchedulerLooperInfo :: LooperInfo
+    , triggeredIntrayItemSenderLooperInfo :: LooperInfo
+    , triggeredEmailSchedulerLooperInfo :: LooperInfo
+    , triggeredEmailConverterLooperInfo :: LooperInfo
     } deriving (Show, Eq, Generic)
 
-instance Validity LoopersStatus
+instance Validity LoopersInfo
 
-instance FromJSON LoopersStatus
+instance FromJSON LoopersInfo
 
-instance ToJSON LoopersStatus
+instance ToJSON LoopersInfo
 
-instance ToSample LoopersStatus
+instance ToSample LoopersInfo
+
+data LooperInfo = LooperInfo
+    { looperInfoStatus :: LooperStatus
+    , looperInfoPeriod :: Maybe Int
+    , looperInfoRetryDelay :: Maybe Int
+    , looperInfoRetryAmount :: Maybe Int
+    } deriving (Show, Eq, Generic)
+
+instance Validity LooperInfo
+
+instance FromJSON LooperInfo
+
+instance ToJSON LooperInfo
+
+instance ToSample LooperInfo
 
 data LooperStatus
     = LooperStatusDisabled

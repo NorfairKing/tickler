@@ -1,7 +1,7 @@
-^{mkLooperStatusWidget "Emailer" emailerLooperStatus}
-^{mkLooperStatusWidget "Triggerer" triggererLooperStatus}
-^{mkLooperStatusWidget "Verification Email Converter" verificationEmailConverterLooperStatus}
-^{mkLooperStatusWidget "Triggered Intray Item Scheduler" triggeredIntrayItemSchedulerLooperStatus}
-^{mkLooperStatusWidget "Triggered Intray Item Sender" triggeredIntrayItemSenderLooperStatus} 
-^{mkLooperStatusWidget "Triggered Email Scheduler" triggeredEmailSchedulerLooperStatus}
-^{mkLooperStatusWidget "Triggered Email Converter" triggeredEmailConverterLooperStatus}
+^{mkLooperInfoWidget "Emailer" emailerLooperInfo}
+^{mkLooperInfoWidget "Triggerer" triggererLooperInfo}
+^{mkLooperInfoWidget "Verification Email Converter" verificationEmailConverterLooperInfo}
+^{mkLooperInfoWidget "Triggered Intray Item Scheduler" triggeredIntrayItemSchedulerLooperInfo}
+^{mkLooperInfoWidget "Triggered Intray Item Sender" triggeredIntrayItemSenderLooperInfo}
+^{mkLooperInfoWidget "Triggered Email Scheduler" triggeredEmailSchedulerLooperInfo}
+^{mkLooperInfoWidget "Triggered Email Converter" triggeredEmailConverterLooperInfo}

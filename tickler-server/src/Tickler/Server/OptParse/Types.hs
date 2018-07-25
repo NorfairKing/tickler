@@ -121,11 +121,15 @@ data LooperSettings = LooperSettings
     } deriving (Show)
 
 data LooperSetsWith a
-    = LooperEnabled Int
-                    LooperRetryPolicy
+    = LooperEnabled LooperStaticConfig
                     a -- Int number of seconds
     | LooperDisabled
     deriving (Show, Eq)
+
+data LooperStaticConfig = LooperStaticConfig
+    { looperStaticConfigPeriod :: Int
+    , looperStaticConfigRetryPolicy :: LooperRetryPolicy
+    } deriving (Show, Eq)
 
 data LooperRetryPolicy = LooperRetryPolicy
     { looperRetryPolicyDelay :: Int -- Microseconds

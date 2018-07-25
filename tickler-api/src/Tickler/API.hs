@@ -74,7 +74,8 @@ module Tickler.API
     , LoginForm(..)
     , PostLogin
     , GetLoopersStatus
-    , LoopersStatus(..)
+    , LoopersInfo(..)
+    , LooperInfo(..)
     , LooperStatus(..)
     , GetDocs
     , GetDocsResponse(..)
@@ -147,6 +148,6 @@ type PostRegister
 type PostLogin
      = "login" :> ReqBody '[ JSON] LoginForm :> PostNoContent '[ JSON] (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
 
-type GetLoopersStatus = "loopers" :> Get '[ JSON] LoopersStatus
+type GetLoopersStatus = "loopers" :> Get '[ JSON] LoopersInfo
 
 type GetDocs = Get '[ HTML] GetDocsResponse

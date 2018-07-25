@@ -67,23 +67,28 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
                     looperFlagEnable `mplus` looperEnvEnable
             if enabled
                 then do
-                    let period =
-                            fromMaybe defaultLoopersPeriod $
-                            looperFlagsPeriod `mplus` looperEnvPeriod
                     let LooperFlagsRetryPolicy {..} = looperFlagsRetryPolicy
                     let LooperEnvRetryPolicy {..} = looperEnvRetryPolicy
-                    let policy =
-                            LooperRetryPolicy
-                                { looperRetryPolicyDelay =
-                                      fromMaybe defaultLooperRetryDelay $
-                                      looperFlagsRetryDelay `mplus`
-                                      looperEnvRetryDelay
-                                , looperRetryPolicyAmount =
-                                      fromMaybe defaultLooperRetryAmount $
-                                      looperFlagsRetryAmount `mplus`
-                                      looperEnvRetryAmount
+                    let static =
+                            LooperStaticConfig
+                                { looperStaticConfigPeriod =
+                                      fromMaybe defaultLoopersPeriod $
+                                      looperFlagsPeriod `mplus` looperEnvPeriod
+                                , looperStaticConfigRetryPolicy =
+                                      LooperRetryPolicy
+                                          { looperRetryPolicyDelay =
+                                                fromMaybe
+                                                    defaultLooperRetryDelay $
+                                                looperFlagsRetryDelay `mplus`
+                                                looperEnvRetryDelay
+                                          , looperRetryPolicyAmount =
+                                                fromMaybe
+                                                    defaultLooperRetryAmount $
+                                                looperFlagsRetryAmount `mplus`
+                                                looperEnvRetryAmount
+                                          }
                                 }
-                    LooperEnabled period policy <$> func looperFlags looperEnv
+                    LooperEnabled static <$> func looperFlags looperEnv
                 else pure LooperDisabled
     looperSetTriggererSets <-
         combineToLooperSets looperFlagTriggererFlags looperEnvTriggererEnv $

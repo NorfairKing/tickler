@@ -14,35 +14,51 @@ import qualified Data.Text as T
 import Tickler.API
 
 import Tickler.Server.Looper
+import Tickler.Server.OptParse.Types
 import Tickler.Server.Types
 
-serveGetLoopersStatus :: TicklerHandler LoopersStatus
+serveGetLoopersStatus :: TicklerHandler LoopersInfo
 serveGetLoopersStatus = do
     handle <- asks envLoopersHandle
-    liftIO $ mkLoopersStatus handle
+    liftIO $ mkLoopersInfo handle
 
-mkLoopersStatus :: LoopersHandle -> IO LoopersStatus
-mkLoopersStatus LoopersHandle {..} = do
-    emailerLooperStatus <- mkLooperStatus emailerLooperHandle
-    triggererLooperStatus <- mkLooperStatus triggererLooperHandle
-    verificationEmailConverterLooperStatus <-
-        mkLooperStatus verificationEmailConverterLooperHandle
-    triggeredIntrayItemSchedulerLooperStatus <-
-        mkLooperStatus triggeredIntrayItemSchedulerLooperHandle
-    triggeredIntrayItemSenderLooperStatus <-
-        mkLooperStatus triggeredIntrayItemSenderLooperHandle
-    triggeredEmailSchedulerLooperStatus <-
-        mkLooperStatus triggeredEmailSchedulerLooperHandle
-    triggeredEmailConverterLooperStatus <-
-        mkLooperStatus triggeredEmailConverterLooperHandle
-    pure LoopersStatus {..}
+mkLoopersInfo :: LoopersHandle -> IO LoopersInfo
+mkLoopersInfo LoopersHandle {..} = do
+    emailerLooperInfo <- mkLooperInfo emailerLooperHandle
+    triggererLooperInfo <- mkLooperInfo triggererLooperHandle
+    verificationEmailConverterLooperInfo <-
+        mkLooperInfo verificationEmailConverterLooperHandle
+    triggeredIntrayItemSchedulerLooperInfo <-
+        mkLooperInfo triggeredIntrayItemSchedulerLooperHandle
+    triggeredIntrayItemSenderLooperInfo <-
+        mkLooperInfo triggeredIntrayItemSenderLooperHandle
+    triggeredEmailSchedulerLooperInfo <-
+        mkLooperInfo triggeredEmailSchedulerLooperHandle
+    triggeredEmailConverterLooperInfo <-
+        mkLooperInfo triggeredEmailConverterLooperHandle
+    pure LoopersInfo {..}
 
-mkLooperStatus :: LooperHandle -> IO LooperStatus
-mkLooperStatus LooperHandleDisabled = pure LooperStatusDisabled
-mkLooperStatus (LooperHandleEnabled a) = do
+mkLooperInfo :: LooperHandle -> IO LooperInfo
+mkLooperInfo LooperHandleDisabled =
+    pure
+        LooperInfo
+            { looperInfoStatus = LooperStatusDisabled
+            , looperInfoPeriod = Nothing
+            , looperInfoRetryDelay = Nothing
+            , looperInfoRetryAmount = Nothing
+            }
+mkLooperInfo (LooperHandleEnabled a LooperStaticConfig {..}) = do
     merr <- Async.poll a
+    let status =
+            case merr of
+                Nothing -> LooperStatusRunning
+                Just (Left err) -> LooperStatusErrored $ T.pack $ ppShow err
+                Just (Right ()) -> LooperStatusStopped
+    let LooperRetryPolicy {..} = looperStaticConfigRetryPolicy
     pure $
-        case merr of
-            Nothing -> LooperStatusRunning
-            Just (Left err) -> LooperStatusErrored $ T.pack $ ppShow err
-            Just (Right ()) -> LooperStatusStopped
+        LooperInfo
+            { looperInfoStatus = status
+            , looperInfoPeriod = Just looperStaticConfigPeriod
+            , looperInfoRetryDelay = Just looperRetryPolicyDelay
+            , looperInfoRetryAmount = Just looperRetryPolicyAmount
+            }
