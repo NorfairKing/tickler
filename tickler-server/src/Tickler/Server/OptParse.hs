@@ -145,7 +145,8 @@ getLoopersEnv = do
     looperEnvDefaultEnabled <- maybeReadEnv "LOOPERS_DEFAULT_ENABLED" env
     looperEnvDefaultPeriod <- maybeReadEnv "LOOPERS_DEFAULT_PERIOD" env
     looperEnvDefaultRetryDelay <- maybeReadEnv "LOOPERS_DEFAULT_RETRY_DELAY" env
-    looperEnvDefaultRetryTimes <- maybeReadEnv "LOOPERS_DEFAULT_RETRY_TIMES" env
+    looperEnvDefaultRetryTimes <-
+        maybeReadEnv "LOOPERS_DEFAULT_RETRY_AMOUNT" env
     looperEnvTriggererEnv <- getLooperEnvWith "TRIGGERER" $ pure ()
     looperEnvEmailerEnv <- getLooperEnvWith "EMAILER" $ pure ()
     looperEnvTriggeredIntrayItemSchedulerEnv <-
@@ -306,9 +307,9 @@ parseLooperFlags =
     option
         (Just <$> auto)
         (mconcat
-             [ long "default-retry-times"
+             [ long "default-retry-amount"
              , value Nothing
-             , metavar "TIMES"
+             , metavar "AMOUNT"
              , help
                    "The default amount of times to retry a looper before failing"
              ]) <*>
