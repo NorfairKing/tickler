@@ -30,6 +30,8 @@ data ServeFlags = ServeFlags
 data LooperFlags = LooperFlags
     { looperFlagDefaultEnabled :: Maybe Bool
     , looperFlagDefaultPeriod :: Maybe Int
+    , looperFlagDefaultRetryDelay :: Maybe Int
+    , looperFlagDefaultRetryTimes :: Maybe Int
     , looperFlagTriggererFlags :: LooperFlagsWith ()
     , looperFlagEmailerFlags :: LooperFlagsWith ()
     , looperFlagTriggeredIntrayItemSchedulerFlags :: LooperFlagsWith ()
@@ -42,7 +44,13 @@ data LooperFlags = LooperFlags
 data LooperFlagsWith a = LooperFlagsWith
     { looperFlagEnable :: Maybe Bool
     , looperFlagsPeriod :: Maybe Int
+    , looperFlagsRetryPolicy :: LooperFlagsRetryPolicy
     , looperFlags :: a
+    } deriving (Show, Eq)
+
+data LooperFlagsRetryPolicy = LooperFlagsRetryPolicy
+    { looperFlagsRetryDelay :: Maybe Int
+    , looperFlagsRetryAmount :: Maybe Int
     } deriving (Show, Eq)
 
 data Flags =
@@ -61,6 +69,8 @@ data Environment = Environment
 data LoopersEnvironment = LoopersEnvironment
     { looperEnvDefaultEnabled :: Maybe Bool
     , looperEnvDefaultPeriod :: Maybe Int
+    , looperEnvDefaultRetryDelay :: Maybe Int
+    , looperEnvDefaultRetryTimes :: Maybe Int
     , looperEnvTriggererEnv :: LooperEnvWith ()
     , looperEnvEmailerEnv :: LooperEnvWith ()
     , looperEnvTriggeredIntrayItemSchedulerEnv :: LooperEnvWith ()
@@ -73,7 +83,13 @@ data LoopersEnvironment = LoopersEnvironment
 data LooperEnvWith a = LooperEnvWith
     { looperEnvEnable :: Maybe Bool
     , looperEnvPeriod :: Maybe Int
+    , looperEnvRetryPolicy :: LooperEnvRetryPolicy
     , looperEnv :: a
+    } deriving (Show, Eq)
+
+data LooperEnvRetryPolicy = LooperEnvRetryPolicy
+    { looperEnvRetryDelay :: Maybe Int
+    , looperEnvRetryAmount :: Maybe Int
     } deriving (Show, Eq)
 
 newtype Dispatch =
@@ -106,9 +122,15 @@ data LooperSettings = LooperSettings
 
 data LooperSetsWith a
     = LooperEnabled Int
+                    LooperRetryPolicy
                     a -- Int number of seconds
     | LooperDisabled
     deriving (Show, Eq)
+
+data LooperRetryPolicy = LooperRetryPolicy
+    { looperRetryPolicyDelay :: Int -- Microseconds
+    , looperRetryPolicyAmount :: Int
+    } deriving (Show, Eq)
 
 data TriggererSettings =
     TriggererSettings

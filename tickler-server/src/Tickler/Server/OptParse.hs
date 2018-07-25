@@ -48,6 +48,12 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
     let defaultLoopersPeriod =
             fromMaybe 60 $
             looperFlagDefaultPeriod `mplus` looperEnvDefaultPeriod
+    let defaultLooperRetryDelay =
+            fromMaybe 1000000 $
+            looperFlagDefaultRetryDelay `mplus` looperEnvDefaultRetryDelay
+    let defaultLooperRetryAmount =
+            fromMaybe 7 $
+            looperFlagDefaultRetryTimes `mplus` looperEnvDefaultRetryTimes
     let looperSetConnectionInfo = serveSetConnectionInfo
     let looperSetConnectionCount = serveSetConnectionCount
     let combineToLooperSets ::
@@ -64,7 +70,20 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
                     let period =
                             fromMaybe defaultLoopersPeriod $
                             looperFlagsPeriod `mplus` looperEnvPeriod
-                    LooperEnabled period <$> func looperFlags looperEnv
+                    let LooperFlagsRetryPolicy {..} = looperFlagsRetryPolicy
+                    let LooperEnvRetryPolicy {..} = looperEnvRetryPolicy
+                    let policy =
+                            LooperRetryPolicy
+                                { looperRetryPolicyDelay =
+                                      fromMaybe defaultLooperRetryDelay $
+                                      looperFlagsRetryDelay `mplus`
+                                      looperEnvRetryDelay
+                                , looperRetryPolicyAmount =
+                                      fromMaybe defaultLooperRetryAmount $
+                                      looperFlagsRetryAmount `mplus`
+                                      looperEnvRetryAmount
+                                }
+                    LooperEnabled period policy <$> func looperFlags looperEnv
                 else pure LooperDisabled
     looperSetTriggererSets <-
         combineToLooperSets looperFlagTriggererFlags looperEnvTriggererEnv $
@@ -120,6 +139,8 @@ getLoopersEnv = do
     env <- getEnvironment
     looperEnvDefaultEnabled <- maybeReadEnv "LOOPERS_DEFAULT_ENABLED" env
     looperEnvDefaultPeriod <- maybeReadEnv "LOOPERS_DEFAULT_PERIOD" env
+    looperEnvDefaultRetryDelay <- maybeReadEnv "LOOPERS_DEFAULT_RETRY_DELAY" env
+    looperEnvDefaultRetryTimes <- maybeReadEnv "LOOPERS_DEFAULT_RETRY_TIMES" env
     looperEnvTriggererEnv <- getLooperEnvWith "TRIGGERER" $ pure ()
     looperEnvEmailerEnv <- getLooperEnvWith "EMAILER" $ pure ()
     looperEnvTriggeredIntrayItemSchedulerEnv <-
@@ -141,8 +162,18 @@ getLooperEnvWith name func = do
         maybeReadEnv (intercalate "_" ["LOOPER", name, "ENABLED"]) env
     looperEnvPeriod <-
         maybeReadEnv (intercalate "_" ["LOOPER", name, "PERIOD"]) env
+    looperEnvRetryPolicy <- getLooperRetryPolicyEnv name
     looperEnv <- func
     pure LooperEnvWith {..}
+
+getLooperRetryPolicyEnv :: String -> IO LooperEnvRetryPolicy
+getLooperRetryPolicyEnv name = do
+    env <- getEnvironment
+    looperEnvRetryDelay <-
+        maybeReadEnv (intercalate "_" ["LOOPER", name, "RETRY", "DELAY"]) env
+    looperEnvRetryAmount <-
+        maybeReadEnv (intercalate "_" ["LOOPER", name, "RETRY", "AMOUNT"]) env
+    pure LooperEnvRetryPolicy {..}
 
 eitherParseEnv ::
        Show a
@@ -259,6 +290,23 @@ parseLooperFlags =
              , metavar "SECONDS"
              , help "The default period for all loopers"
              ]) <*>
+    option
+        (Just <$> auto)
+        (mconcat
+             [ long "default-retry-delay"
+             , value Nothing
+             , metavar "MICROSECONDS"
+             , help "The retry delay for all loopers, in microseconds"
+             ]) <*>
+    option
+        (Just <$> auto)
+        (mconcat
+             [ long "default-retry-times"
+             , value Nothing
+             , metavar "TIMES"
+             , help
+                   "The default amount of times to retry a looper before failing"
+             ]) <*>
     parseLooperFlagsWith "triggerer" (pure ()) <*>
     parseLooperFlagsWith "emailer" (pure ()) <*>
     parseLooperFlagsWith "intray-item-scheduler" (pure ()) <*>
@@ -281,7 +329,28 @@ parseLooperFlagsWith name func =
              , metavar "SECONDS"
              , help $ unwords ["The period for", name]
              ]) <*>
+    parseLooperRetryPolicyFlags name <*>
     func
+
+parseLooperRetryPolicyFlags :: String -> Parser LooperFlagsRetryPolicy
+parseLooperRetryPolicyFlags name =
+    LooperFlagsRetryPolicy <$>
+    option
+        (Just <$> auto)
+        (mconcat
+             [ long $ intercalate "-" [name, "retry-delay"]
+             , value Nothing
+             , metavar "MICROSECONDS"
+             , help $ unwords ["The retry delay for", name]
+             ]) <*>
+    option
+        (Just <$> auto)
+        (mconcat
+             [ long $ intercalate "-" [name, "retry-amount"]
+             , value Nothing
+             , metavar "AMOUNT"
+             , help $ unwords ["The amount of times to retry for", name]
+             ])
 
 onOffFlag :: String -> Mod FlagFields (Maybe Bool) -> Parser (Maybe Bool)
 onOffFlag suffix mods =

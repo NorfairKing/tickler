@@ -12,7 +12,10 @@ import Import
 
 import Control.Concurrent
 import Control.Concurrent.Async
+import Control.Monad.Logger
+import Control.Retry
 import Data.Pool
+import qualified Data.Text as T
 import Database.Persist.Sqlite
 
 import Tickler.Server.OptParse.Types
@@ -74,9 +77,32 @@ startLooperWithSets ::
 startLooperWithSets pool lsw func =
     case lsw of
         LooperDisabled -> pure LooperHandleDisabled
-        LooperEnabled period sets ->
-            fmap LooperHandleEnabled $
-            async $ runLooper (runLooperContinuously period $ func sets) pool
+        LooperEnabled period lrs sets ->
+            let env = LooperEnv {looperEnvPool = pool}
+                policy = retryPolicyFrom lrs
+             in fmap LooperHandleEnabled $
+                async $
+                runLooper
+                    (retryLooperWith policy $
+                     runLooperContinuously period $ func sets)
+                    env
+
+retryLooperWith :: RetryPolicyM Looper -> Looper b -> Looper b
+retryLooperWith policy looperFunc =
+    recoverAll policy $ \RetryStatus {..} -> do
+        unless (rsIterNumber == 0) $
+            logWarnNS "Looper" $
+            T.unwords
+                [ "Retry number"
+                , T.pack $ show rsIterNumber
+                , "after a total delay of"
+                , T.pack $ show rsCumulativeDelay
+                ]
+        looperFunc
+
+retryPolicyFrom :: LooperRetryPolicy -> RetryPolicyM Looper
+retryPolicyFrom LooperRetryPolicy {..} =
+    constantDelay looperRetryPolicyDelay <> limitRetries looperRetryPolicyAmount
 
 runLooperContinuously :: MonadIO m => Int -> m b -> m ()
 runLooperContinuously period func = go

@@ -2,7 +2,8 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Tickler.Server.Looper.Types
-    ( Looper(..)
+    ( LooperEnv(..)
+    , Looper(..)
     , runLooper
     , LooperHandle(..)
     ) where
@@ -10,21 +11,30 @@ module Tickler.Server.Looper.Types
 import Import
 
 import Control.Concurrent.Async
+import Control.Monad.Catch
 import Control.Monad.Logger
+import Control.Retry
 import Data.Pool
 import Database.Persist.Sqlite
 
+newtype LooperEnv = LooperEnv
+    { looperEnvPool :: Pool SqlBackend
+    }
+
 newtype Looper a = Looper
-    { unLooper :: ReaderT (Pool SqlBackend) (LoggingT IO) a
+    { unLooper :: ReaderT LooperEnv (LoggingT IO) a
     } deriving ( Functor
                , Applicative
                , Monad
                , MonadIO
-               , MonadReader (Pool SqlBackend)
+               , MonadReader LooperEnv
                , MonadLogger
+               , MonadThrow
+               , MonadCatch
+               , MonadMask
                )
 
-runLooper :: Looper a -> Pool SqlBackend -> IO a
+runLooper :: Looper a -> LooperEnv -> IO a
 runLooper (Looper func) = runStderrLoggingT . runReaderT func
 
 data LooperHandle

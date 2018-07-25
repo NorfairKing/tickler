@@ -38,6 +38,7 @@ library:
   - cookie
   - data-default
   - email-validate
+  - exceptions
   - file-embed
   - http-client
   - http-client-tls
@@ -59,6 +60,7 @@ library:
   - pretty-show
   - resource-pool
   - resourcet
+  - retry
   - safe
   - servant
   - servant-auth-server

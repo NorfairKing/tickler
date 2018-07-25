@@ -11,8 +11,6 @@ import qualified Network.HTTP.Client as Http
 import qualified Network.HTTP.Client.TLS as Http
 import qualified Network.HTTP.Types as Http
 
-
-
 bootCheck :: IO ()
 bootCheck = do
     man <- Http.newManager Http.tlsManagerSettings
