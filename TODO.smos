@@ -13,6 +13,7 @@
     - Golden tests for rendered emails and items
     - Phase shift options for loopers
     - The looper overview should show when a looper will run next
+    - A way to fast-forward tickles at the user's request
   - entry: Web server
     forest:
     - Documentation to explain how ticlkler deals with time zones
