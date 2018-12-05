@@ -8,37 +8,39 @@ import TestImport
 
 import Test.Validity.Aeson
 
+import qualified Intray.Data as Intray
+
 import Tickler.Data
 
 import Tickler.Data.Gen ()
 
 spec :: Spec
 spec = do
-    eqSpec @(UUID Int)
-    ordSpec @(UUID Int)
+    eqSpecOnValid @(UUID Int)
+    ordSpecOnValid @(UUID Int)
     genValidSpec @(UUID Int)
     jsonSpecOnValid @(UUID Int)
-    eqSpec @Username
-    ordSpec @Username
+    eqSpecOnValid @Username
+    ordSpecOnValid @Username
     genValidSpec @Username
     jsonSpecOnValid @Username
-    eqSpec @HashedPassword
+    eqSpecOnValid @HashedPassword
     genValidSpec @HashedPassword
-    eqSpec @User
-    ordSpec @User
+    eqSpecOnValid @User
+    ordSpecOnValid @User
     genValidSpec @User
-    eqSpec @UserSettings
-    ordSpec @UserSettings
+    eqSpecOnValid @UserSettings
+    ordSpecOnValid @UserSettings
     genValidSpec @UserSettings
-    eqSpec @ItemType
-    ordSpec @ItemType
+    eqSpecOnValid @ItemType
+    ordSpecOnValid @ItemType
     jsonSpecOnValid @ItemType
     genValidSpec @ItemType
-    eqSpec @TriggerType
-    ordSpec @TriggerType
+    eqSpecOnValid @TriggerType
+    ordSpecOnValid @TriggerType
     genValidSpec @TriggerType
-    eqSpec @Recurrence
-    ordSpec @Recurrence
+    eqSpecOnValid @Recurrence
+    ordSpecOnValid @Recurrence
     genValidSpec @Recurrence
     jsonSpecOnValid @Recurrence
     describe "Recurrence" $ do
@@ -47,43 +49,51 @@ spec = do
         describe "everyMonthsOnDayAtTime" $
             it "produces valid recurrences" $
             producesValid3 everyMonthsOnDayAtTime
-    eqSpec @TicklerItem
-    ordSpec @TicklerItem
+    eqSpecOnValid @TicklerItem
+    ordSpecOnValid @TicklerItem
     genValidSpec @TicklerItem
-    eqSpec @TriggeredItem
-    ordSpec @TriggeredItem
+    eqSpecOnValid @TriggeredItem
+    ordSpecOnValid @TriggeredItem
     genValidSpec @TriggeredItem
-    eqSpec @UserTrigger
-    ordSpec @UserTrigger
+    eqSpecOnValid @UserTrigger
+    ordSpecOnValid @UserTrigger
     genValidSpec @UserTrigger
-    eqSpec @BaseUrl
-    ordSpec @BaseUrl
+    eqSpecOnValid @BaseUrl
+    ordSpecOnValid @BaseUrl
     genValidSpec @BaseUrl
     jsonSpecOnValid @BaseUrl
-    eqSpec @IntrayTrigger
-    ordSpec @IntrayTrigger
+    eqSpecOnValid @Intray.Username
+    ordSpecOnValid @Intray.Username
+    genValidSpec @Intray.Username
+    jsonSpecOnValid @Intray.Username
+    eqSpecOnValid @Intray.AccessKeySecret
+    ordSpecOnValid @Intray.AccessKeySecret
+    genValidSpec @Intray.AccessKeySecret
+    jsonSpecOnValid @Intray.AccessKeySecret
+    eqSpecOnValid @IntrayTrigger
+    ordSpecOnValid @IntrayTrigger
     genValidSpec @IntrayTrigger
-    eqSpec @EmailAddress
-    ordSpec @EmailAddress
+    eqSpecOnValid @EmailAddress
+    ordSpecOnValid @EmailAddress
     genValidSpec @EmailAddress
     jsonSpecOnValid @EmailAddress
-    eqSpec @EmailVerificationKey
-    ordSpec @EmailVerificationKey
+    eqSpecOnValid @EmailVerificationKey
+    ordSpecOnValid @EmailVerificationKey
     genValidSpec @EmailVerificationKey
     describe "Encode and Decode EmailVerificationKey" $
         it "are inverses" $
-        forAllUnchecked $ \evk ->
+        forAllValid $ \evk ->
             parseEmailVerificationKeyText (emailVerificationKeyText evk) `shouldBe`
             Just evk
-    eqSpec @EmailTrigger
-    ordSpec @EmailTrigger
+    eqSpecOnValid @EmailTrigger
+    ordSpecOnValid @EmailTrigger
     genValidSpec @EmailTrigger
-    eqSpec @VerificationEmail
-    ordSpec @VerificationEmail
+    eqSpecOnValid @VerificationEmail
+    ordSpecOnValid @VerificationEmail
     genValidSpec @VerificationEmail
-    eqSpec @EmailStatus
-    ordSpec @EmailStatus
+    eqSpecOnValid @EmailStatus
+    ordSpecOnValid @EmailStatus
     genValidSpec @EmailStatus
-    eqSpec @Email
-    ordSpec @Email
+    eqSpecOnValid @Email
+    ordSpecOnValid @Email
     genValidSpec @Email

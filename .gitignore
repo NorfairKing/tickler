@@ -1,6 +1,6 @@
 .shake/
 *.cabal
-result
+result*
 .stack-work/
 /out/
 /tmp/

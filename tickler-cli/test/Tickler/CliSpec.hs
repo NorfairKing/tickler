@@ -12,7 +12,13 @@ import Tickler.Server.TestUtils
 spec :: Spec
 spec =
     withTicklerServer $
-    it "Going through the usual manual steps 'just works'" $ \(ClientEnv _ burl _) -> do
+    aroundWith
+        (\adFunc ->
+             \a ->
+                 withSystemTempDir
+                     "tickler-cli-test"
+                     (\d -> adFunc (a, fromAbsDir d))) $
+    it "Going through the usual manual steps 'just works'" $ \(ClientEnv _ burl _, tdir) -> do
         tickler
             [ "register"
             , "--username"
@@ -22,7 +28,7 @@ spec =
             , "--url"
             , showBaseUrl burl
             , "--tickler-dir"
-            , "/tmp"
+            , tdir
             ]
         tickler
             [ "login"
@@ -33,7 +39,7 @@ spec =
             , "--url"
             , showBaseUrl burl
             , "--tickler-dir"
-            , "/tmp"
+            , tdir
             ]
         tickler
             [ "add"
@@ -42,16 +48,10 @@ spec =
             , "--time"
             , "15:23"
             , "--tickler-dir"
-            , "/tmp"
+            , tdir
             ]
         tickler
-            [ "add"
-            , "test2"
-            , "2100-05-13"
-            , "--every-day"
-            , "--tickler-dir"
-            , "/tmp"
-            ]
+            ["add", "test2", "2100-05-13", "--every-day", "--tickler-dir", tdir]
         tickler
             [ "add"
             , "test2"
@@ -60,7 +60,7 @@ spec =
             , "--at"
             , "12:08"
             , "--tickler-dir"
-            , "/tmp"
+            , tdir
             ]
         tickler
             [ "add"
@@ -69,7 +69,7 @@ spec =
             , "--every-x-days"
             , "4"
             , "--tickler-dir"
-            , "/tmp"
+            , tdir
             ]
         tickler
             [ "add"
@@ -80,16 +80,16 @@ spec =
             , "--at"
             , "14:54"
             , "--tickler-dir"
-            , "/tmp"
+            , tdir
             ]
-        tickler ["sync", "--url", showBaseUrl burl, "--tickler-dir", "/tmp"]
+        tickler ["sync", "--url", showBaseUrl burl, "--tickler-dir", tdir]
         tickler
             [ "add"
             , "test5"
             , "2100-04-13"
             , "--every-month"
             , "--tickler-dir"
-            , "/tmp"
+            , tdir
             ]
         tickler
             [ "add"
@@ -100,7 +100,7 @@ spec =
             , "--on"
             , "12"
             , "--tickler-dir"
-            , "/tmp"
+            , tdir
             ]
         tickler
             [ "add"
@@ -111,7 +111,7 @@ spec =
             , "--at"
             , "12:03"
             , "--tickler-dir"
-            , "/tmp"
+            , tdir
             ]
         tickler
             [ "add"
@@ -124,7 +124,7 @@ spec =
             , "--at"
             , "12:03"
             , "--tickler-dir"
-            , "/tmp"
+            , tdir
             ]
-        tickler ["sync", "--url", showBaseUrl burl, "--tickler-dir", "/tmp"]
-        tickler ["logout", "--tickler-dir", "/tmp"]
+        tickler ["sync", "--url", showBaseUrl burl, "--tickler-dir", tdir]
+        tickler ["logout", "--tickler-dir", tdir]

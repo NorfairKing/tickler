@@ -6,12 +6,6 @@ module Tickler.API.Account.Gen where
 
 import Import
 
-import Data.GenValidity
-import Data.GenValidity.ByteString ()
-import Data.GenValidity.Text ()
-import Data.GenValidity.Time ()
-import Data.GenValidity.UUID ()
-
 import Tickler.API
 import Tickler.Data.Gen ()
 
@@ -20,12 +14,9 @@ import Tickler.API.Admin.Gen ()
 instance GenUnchecked AccountInfo
 
 instance GenValid AccountInfo where
-    genValid =
-        (AccountInfo <$> genValid <*> genValid <*> genValid <*> genValid <*>
-         genValid) `suchThat`
-        isValid
+    genValid = genValidStructurally
 
 instance GenUnchecked AccountSettings
 
 instance GenValid AccountSettings where
-    genValid = (AccountSettings <$> genValid) `suchThat` isValid
+    genValid = genValidStructurally

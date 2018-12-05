@@ -13,53 +13,53 @@ import Tickler.API.Protected.Types
 
 spec :: Spec
 spec = do
-    eqSpec @(ItemInfo ByteString)
-    ordSpec @(ItemInfo ByteString)
+    eqSpecOnValid @(ItemInfo ByteString)
+    ordSpecOnValid @(ItemInfo ByteString)
     genValidSpec @(ItemInfo ByteString)
-    eqSpec @TypedItem
-    ordSpec @TypedItem
+    eqSpecOnValid @TypedItem
+    ordSpecOnValid @TypedItem
     genValidSpec @TypedItem
     jsonSpecOnValid @TypedItem
     jsonSpecOnValid @TypedItem
-    eqSpec @(Tickle TypedItem)
-    ordSpec @(Tickle TypedItem)
+    eqSpecOnValid @(Tickle TypedItem)
+    ordSpecOnValid @(Tickle TypedItem)
     genValidSpec @(Tickle TypedItem)
     jsonSpecOnValid @(Tickle TypedItem)
-    eqSpec @(ItemInfo TypedItem)
-    ordSpec @(ItemInfo TypedItem)
+    eqSpecOnValid @(ItemInfo TypedItem)
+    ordSpecOnValid @(ItemInfo TypedItem)
     genValidSpec @(ItemInfo TypedItem)
     jsonSpecOnValid @(ItemInfo TypedItem)
-    eqSpec @AddItem
-    ordSpec @AddItem
+    eqSpecOnValid @AddItem
+    ordSpecOnValid @AddItem
     genValidSpec @AddItem
     jsonSpecOnValid @AddItem
-    eqSpec @TypedTriggerInfo
+    eqSpecOnValid @TypedTriggerInfo
     genValidSpec @TypedTriggerInfo
     jsonSpecOnValid @TypedTriggerInfo
-    eqSpec @(TriggerInfo TypedTriggerInfo)
+    eqSpecOnValid @(TriggerInfo TypedTriggerInfo)
     genValidSpec @(TriggerInfo TypedTriggerInfo)
     jsonSpecOnValid @(TriggerInfo TypedTriggerInfo)
-    eqSpec @IntrayTriggerInfo
-    ordSpec @IntrayTriggerInfo
+    eqSpecOnValid @IntrayTriggerInfo
+    ordSpecOnValid @IntrayTriggerInfo
     genValidSpec @IntrayTriggerInfo
     jsonSpecOnValid @IntrayTriggerInfo
-    eqSpec @EmailTriggerInfo
-    ordSpec @EmailTriggerInfo
+    eqSpecOnValid @EmailTriggerInfo
+    ordSpecOnValid @EmailTriggerInfo
     genValidSpec @EmailTriggerInfo
     jsonSpecOnValid @EmailTriggerInfo
-    eqSpec @AddIntrayTrigger
-    ordSpec @AddIntrayTrigger
+    eqSpecOnValid @AddIntrayTrigger
+    ordSpecOnValid @AddIntrayTrigger
     genValidSpec @AddIntrayTrigger
     jsonSpecOnValid @AddIntrayTrigger
-    eqSpec @AddEmailTrigger
-    ordSpec @AddEmailTrigger
+    eqSpecOnValid @AddEmailTrigger
+    ordSpecOnValid @AddEmailTrigger
     genValidSpec @AddEmailTrigger
     jsonSpecOnValid @AddEmailTrigger
-    eqSpec @SyncRequest
-    ordSpec @SyncRequest
+    eqSpecOnValid @SyncRequest
+    ordSpecOnValid @SyncRequest
     genValidSpec @SyncRequest
     jsonSpecOnValid @SyncRequest
-    eqSpec @SyncResponse
-    ordSpec @SyncResponse
+    eqSpecOnValid @SyncResponse
+    ordSpecOnValid @SyncResponse
     genValidSpec @SyncResponse
     jsonSpecOnValid @SyncResponse

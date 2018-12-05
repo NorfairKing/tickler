@@ -25,7 +25,7 @@ extra-deps:
 - amazonka-core-1.6.0
 - amazonka-ses-1.6.0
 - git: git@github.com:NorfairKing/intray.git
-  commit: 44d7309b55bfe0a82f14d4c5fb741d590bdd4ee7
+  commit: 1cc6cbd63d9f9b0115e76a165b7f0752cb60e418
   subdirs:
     - intray-data
     - intray-data-gen
@@ -35,12 +35,12 @@ extra-deps:
     - intray-server
     - intray-server-test-utils
 - git: https://github.com/NorfairKing/mergeless.git
-  commit: c6d1d91ee661ffb106dda89a3df56175aea0dc2c
+  commit: 19e6361b555808b5d6dd29c7cc6c4f3b114288c4
   subdirs:
     - mergeless
     - genvalidity-mergeless
 - git: git@github.com:NorfairKing/validity.git
-  commit: a86dd3e4830c14c056a0d5d8712864d395d25b2a
+  commit: d128cc30bc886e31ea7f8161fb7708c08b162937
   subdirs:
     - validity
     - validity-aeson
@@ -73,7 +73,7 @@ extra-deps:
     - typed-uuid
     - genvalidity-typed-uuid
 - git: git@github.com:NorfairKing/pretty-relative-time.git
-  commit: 9a670db25ac68974045c75da364486c10970824f
+  commit: 85ee8a577fb576e2dd7643bf248ff8fbbe9598ec
 resolver: lts-11.9
 nix:
   packages: [zlib]

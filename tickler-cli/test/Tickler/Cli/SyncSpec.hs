@@ -21,13 +21,18 @@ import Tickler.Cli.TestUtils
 spec :: Spec
 spec =
     withTicklerServer $
-    it "correctly deletes the local LastSeen after a sync if the item has dissappeared remotely" $ \cenv ->
+    aroundWith
+        (\adFunc ->
+             \a ->
+                 withSystemTempDir
+                     "tickler-cli-test"
+                     (\d -> adFunc (a, fromAbsDir d))) $
+    it "correctly deletes the local LastSeen after a sync if the item has dissappeared remotely" $ \(cenv, d) ->
         forAllValid $ \ti ->
             withValidNewUserAndData cenv $ \un pw _ -> do
                 let (ClientEnv _ burl _) = cenv
                 let u = T.unpack $ usernameText un
                 let p = T.unpack pw
-                let d = "/tmp"
                 dir <- resolveDir' d
                 tickler
                     [ "login"

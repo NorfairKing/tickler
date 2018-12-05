@@ -52,9 +52,7 @@ instance GenValid HashedPassword
 instance GenUnchecked User
 
 instance GenValid User where
-    genValid =
-        (User <$> genValid <*> genValid <*> genValid <*> genValid <*> genValid) `suchThat`
-        isValid
+    genValid = genValidStructurally
 
 instance GenUnchecked UserSettings
 
@@ -67,27 +65,12 @@ instance GenValid ItemType
 instance GenUnchecked TicklerItem
 
 instance GenValid TicklerItem where
-    genValid =
-        (TicklerItem <$> genValid <*> genValid <*> genValid <*> genValid <*>
-         genValid <*>
-         genValid <*>
-         genValid <*>
-         genValid <*>
-         genValid) `suchThat`
-        isValid
+    genValid = genValidStructurally
 
 instance GenUnchecked TriggeredItem
 
 instance GenValid TriggeredItem where
-    genValid =
-        (TriggeredItem <$> genValid <*> genValid <*> genValid <*> genValid <*>
-         genValid <*>
-         genValid <*>
-         genValid <*>
-         genValid <*>
-         genValid <*>
-         genValid) `suchThat`
-        isValid
+    genValid = genValidStructurally
 
 instance GenUnchecked TriggerType
 
@@ -96,8 +79,7 @@ instance GenValid TriggerType
 instance GenUnchecked UserTrigger
 
 instance GenValid UserTrigger where
-    genValid =
-        (UserTrigger <$> genValid <*> genValid <*> genValid) `suchThat` isValid
+    genValid = genValidStructurally
 
 instance GenUnchecked Scheme
 
@@ -105,15 +87,21 @@ instance GenValid Scheme
 
 instance GenUnchecked BaseUrl
 
-instance GenValid BaseUrl
+instance GenValid BaseUrl where
+    genValid =
+        BaseUrl <$> genValid <*> ((:) <$> validChar <*> validString) <*>
+        (((`mod` 65536) . abs) <$> genValid) <*>
+        validString `suchThat` isValid
+      where
+        validString = genListOf validChar
+        validChar =
+            genValid `suchThat`
+            (\c -> Char.isAlphaNum c && Char.isLatin1 c && c /= ' ')
 
 instance GenUnchecked IntrayTrigger
 
 instance GenValid IntrayTrigger where
-    genValid =
-        (IntrayTrigger <$> genValid <*> genValid <*> genValid <*> genValid <*>
-         genValid) `suchThat`
-        isValid
+    genValid = genValidStructurally
 
 instance GenUnchecked EmailAddress where
     genUnchecked = unsafeEmailAddress <$> genUnchecked <*> genUnchecked
@@ -135,23 +123,17 @@ instance GenValid EmailAddress where
 instance GenUnchecked EmailVerificationKey
 
 instance GenValid EmailVerificationKey where
-    genValid = (EmailVerificationKey <$> genValid) `suchThat` isValid
+    genValid = genValidStructurally
 
 instance GenUnchecked EmailTrigger
 
 instance GenValid EmailTrigger where
-    genValid =
-        (EmailTrigger <$> genValid <*> genValid <*> genValid <*> genValid <*>
-         genValid) `suchThat`
-        isValid
+    genValid = genValidStructurally
 
 instance GenUnchecked VerificationEmail
 
 instance GenValid VerificationEmail where
-    genValid =
-        (VerificationEmail <$> genValid <*> genValid <*> genValid <*> genValid <*>
-         genValid) `suchThat`
-        isValid
+    genValid = genValidStructurally
 
 instance GenUnchecked EmailStatus
 
@@ -160,15 +142,7 @@ instance GenValid EmailStatus
 instance GenUnchecked Email
 
 instance GenValid Email where
-    genValid =
-        (Email <$> genValid <*> genValid <*> genValid <*> genValid <*> genValid <*>
-         genValid <*>
-         genValid <*>
-         genValid <*>
-         genValid <*>
-         genValid <*>
-         genValid) `suchThat`
-        isValid
+    genValid = genValidStructurally
 
 instance GenUnchecked Recurrence
 

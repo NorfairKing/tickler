@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Cli.NoSyncSpec
     ( spec
@@ -27,12 +26,13 @@ spec -- do
     --     -- tickler DispatchSize
     --     pure () :: IO ()
  =
-    specify "login fails immediately if no server is configured" $ do
+    around (withSystemTempDir "tickler-cli-test") $
+    specify "login fails immediately if no server is configured" $ \tdir -> do
         let sets =
                 Settings
                     { setBaseUrl = Nothing
                     , setUsername = Nothing
-                    , setTicklerDir = $(mkAbsDir "/tmp")
+                    , setTicklerDir = tdir
                     , setSyncStrategy = NeverSync
                     }
         let tickler d = runReaderT (dispatch d) sets

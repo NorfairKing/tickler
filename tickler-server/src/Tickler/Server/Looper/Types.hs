@@ -13,7 +13,6 @@ import Import
 import Control.Concurrent.Async
 import Control.Monad.Catch
 import Control.Monad.Logger
-import Control.Retry
 import Data.Pool
 import Database.Persist.Sqlite
 import Tickler.Server.OptParse.Types
@@ -42,6 +41,3 @@ data LooperHandle
     = LooperHandleDisabled
     | LooperHandleEnabled (Async ())
                           LooperStaticConfig
-
-data LooperConfig =
-    LooperC

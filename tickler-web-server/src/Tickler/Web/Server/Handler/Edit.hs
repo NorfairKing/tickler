@@ -11,16 +11,11 @@ module Tickler.Web.Server.Handler.Edit
 
 import Import
 
-import qualified Data.Text as T
-import Data.Time
-import Data.Word
-
 import Yesod
 
 import Tickler.Client
 
 import Tickler.Web.Server.Foundation
-import Tickler.Web.Server.Handler.Tickles
 
 getEditR :: ItemUUID -> Handler Html
 getEditR uuid =
@@ -50,6 +45,6 @@ postEditR uuid =
         newUuid <-
             runClientOrErr $ do
                 u <- clientPostAddItem t newVersion
-                clientDeleteItem t uuid
+                void $ clientDeleteItem t uuid
                 pure u
         redirect $ EditR newUuid

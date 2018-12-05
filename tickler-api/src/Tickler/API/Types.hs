@@ -32,8 +32,6 @@ module Tickler.API.Types
 import Import
 
 import Data.Aeson as JSON
-import qualified Data.ByteString.Lazy as LB
-import qualified Data.Text.Encoding as TE
 import Data.Time
 import Data.UUID.Typed
 
