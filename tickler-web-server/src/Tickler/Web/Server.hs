@@ -49,9 +49,11 @@ makeTicklerApp ServeSettings {..} = do
         App
             { appHttpManager = man
             , appStatic = myStatic
-            , appPersistLogins = serveSetPersistLogins
             , appLoginTokens = tokens
             , appAPIBaseUrl = burl
+            , appTracking = serveSetTracking
+            , appVerification = serveSetVerification
+            , appPersistLogins = serveSetPersistLogins
             , appDefaultIntrayUrl = serveSetDefaultIntrayUrl
             }
 

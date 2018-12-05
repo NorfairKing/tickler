@@ -60,6 +60,8 @@ data App = App
     , appStatic :: EmbeddedStatic
     , appAPIBaseUrl :: BaseUrl
     , appPersistLogins :: Bool
+    , appTracking :: Maybe Text
+    , appVerification :: Maybe Text
     , appLoginTokens :: MVar (HashMap Username Token)
     , appDefaultIntrayUrl :: Maybe BaseUrl
     }
@@ -69,6 +71,7 @@ mkYesodData "App" $(parseRoutesFile "routes")
 instance Yesod App where
     approot = ApprootRelative
     defaultLayout widget = do
+        app_ <- getYesod
         pc <- widgetToPageContent $(widgetFile "default-body")
         withUrlRenderer $(hamletFile "templates/default-page.hamlet")
     yesodMiddleware = defaultCsrfMiddleware . defaultYesodMiddleware

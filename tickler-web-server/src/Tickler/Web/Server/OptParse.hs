@@ -11,6 +11,8 @@ module Tickler.Web.Server.OptParse
 
 import Import
 
+import qualified Data.Text as T
+
 import Servant.Client.Core
 import System.Environment (getArgs, getEnvironment)
 import Text.Read
@@ -52,6 +54,9 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
                         fromMaybe False serveFlagPersistLogins
                   , serveSetDefaultIntrayUrl =
                         serveFlagDefaultIntrayUrl `mplus` envDefaultIntrayUrl
+                  , serveSetTracking = serveFlagTracking `mplus` envTracking
+                  , serveSetVerification =
+                        serveFlagVerification `mplus` envVerification
                   , serveSetAPISettings = apiServeSets
                   }
         , Settings)
@@ -62,7 +67,8 @@ getConfiguration _ _ = pure Configuration
 getEnv :: IO Environment
 getEnv = do
     env <- getEnvironment
-    let mre k func =
+    let ms k = fromString <$> lookup k env
+        mre k func =
             forM (lookup k env) $ \s ->
                 case func s of
                     Left e ->
@@ -85,6 +91,8 @@ getEnv = do
         mr k = mrf k readMaybe
     envPort <- mr "WEB_PORT"
     envDefaultIntrayUrl <- mre "DEFAULT_INTRAY_URL" (left show . parseBaseUrl)
+    let envTracking = ms "TRACKING"
+    let envVerification = ms "SEARCH_CONSOLE_VERIFICATION"
     envAPIEnvironment <- API.getEnv
     pure Environment {..}
 
@@ -148,6 +156,23 @@ parseCommandServe = info parser modifier
                   , value Nothing
                   , help
                         "The default intray url to suggest when adding an intray trigger."
+                  ]) <*>
+         option
+             (Just . T.pack <$> str)
+             (mconcat
+                  [ long "analytics-tracking-id"
+                  , value Nothing
+                  , metavar "TRACKING_ID"
+                  , help "The google analytics tracking ID"
+                  ]) <*>
+         option
+             (Just . T.pack <$> str)
+             (mconcat
+                  [ long "search-console-verification"
+                  , value Nothing
+                  , metavar "VERIFICATION_TAG"
+                  , help
+                        "The contents of the google search console verification tag"
                   ]) <*>
          API.parseServeFlags)
     modifier = fullDesc <> progDesc "Serve."

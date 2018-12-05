@@ -8,6 +8,7 @@ import Data.Function as X
 import Data.List as X
 import Data.Maybe as X
 import Data.Monoid as X
+import Data.String as X
 import Data.Text as X (Text)
 import Data.UUID.Typed as X
 

@@ -4,14 +4,30 @@ $doctype 5
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <title>#{pageTitle pc}
+
+    <!-- Google search console -->
+    $maybe searchConsoleId <- appVerification app_
+      <meta name="google-site-verification" content="#{searchConsoleId}" />
+
     <link rel="stylesheet" href=@{StaticR static_semantic_dist_semantic_min_css}>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" 
       integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
       crossorigin="anonymous">
     <script src=@{StaticR static_semantic_dist_semantic_min_js}>
-    <title>#{pageTitle pc}
 
     ^{pageHead pc}
+
+    <!-- Google Analytics -->
+    $maybe analyticsID <- appTracking app_
+      <script async src="https://www.googletagmanager.com/gtag/js?id=#{analyticsID}">
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', '#{analyticsID}');
+
 
   <body>
     ^{pageBody pc}

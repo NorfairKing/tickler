@@ -18,6 +18,8 @@ data ServeFlags = ServeFlags
     { serveFlagPort :: Maybe Int
     , serveFlagPersistLogins :: Maybe Bool
     , serveFlagDefaultIntrayUrl :: Maybe BaseUrl
+    , serveFlagTracking :: Maybe Text
+    , serveFlagVerification :: Maybe Text
     , serveFlagAPIServeFlags :: API.ServeFlags
     } deriving (Show, Eq)
 
@@ -32,6 +34,8 @@ data Configuration =
 data Environment = Environment
     { envPort :: Maybe Int
     , envDefaultIntrayUrl :: Maybe BaseUrl
+    , envTracking :: Maybe Text
+    , envVerification :: Maybe Text
     , envAPIEnvironment :: API.Environment
     } deriving (Show, Eq)
 
@@ -43,6 +47,8 @@ data ServeSettings = ServeSettings
     { serveSetPort :: Int
     , serveSetPersistLogins :: Bool
     , serveSetDefaultIntrayUrl :: Maybe BaseUrl
+    , serveSetTracking :: Maybe Text
+    , serveSetVerification :: Maybe Text
     , serveSetAPISettings :: API.ServeSettings
     } deriving (Show)
 
