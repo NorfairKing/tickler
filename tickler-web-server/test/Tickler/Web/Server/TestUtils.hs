@@ -50,6 +50,8 @@ ticklerTestServeSettings = do
             { serveSetPort = 8000
             , serveSetPersistLogins = False
             , serveSetDefaultIntrayUrl = Nothing
+            , serveSetTracking = Nothing
+            , serveSetVerification = Nothing
             , serveSetAPISettings =
                   API.ServeSettings
                       { API.serveSetPort = 8001
