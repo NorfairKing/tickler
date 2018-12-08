@@ -47,10 +47,20 @@ serveGetItems (Authenticated AuthCookie {..}) mif = do
                       map (triggeredItemIdentifier . entityVal) itemsEnts
                     ]
                     []
+            triggeredEmailEns <-
+                runDb $
+                selectList
+                    [ TriggeredEmailItem <-.
+                      map (triggeredItemIdentifier . entityVal) itemsEnts
+                    ]
+                    []
             pure $
                 map
-                    ((`makeTriggeredItemInfo` map entityVal triggeredItemEns) .
-                     entityVal)
+                    (\ie ->
+                         makeTriggeredItemInfo
+                             (entityVal ie)
+                             (map entityVal triggeredItemEns)
+                             (map entityVal triggeredEmailEns))
                     itemsEnts
     case mif of
         Just OnlyUntriggered -> getTicklerItems

@@ -248,8 +248,8 @@ instance ToJSON TriggerAttempt
 instance ToSample TriggerAttempt
 
 data EmailTriggerResult
-    = EmailSent
-    | EmailError !Text
+    = EmailResultSent
+    | EmailResultError !Text
     deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity EmailTriggerResult

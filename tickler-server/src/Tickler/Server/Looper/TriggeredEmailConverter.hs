@@ -47,7 +47,7 @@ runTriggeredEmailConverter tess = do
     runDb $
         forM_ tups $ \(tid, e) -> do
             eid <- insert e
-            -- This should be a transaction.
+            -- FIXME This should be a transaction.
             update tid [TriggeredEmailEmail =. Just eid]
     logInfoNS
         "TriggeredEmailConverter"

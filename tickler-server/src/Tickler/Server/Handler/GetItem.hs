@@ -42,9 +42,17 @@ serveGetItem (Authenticated AuthCookie {..}) id_ = do
                               triggeredItemIdentifier (entityVal item)
                             ]
                             []
+                    triggeredEmailEns <-
+                        runDb $
+                        selectList
+                            [ TriggeredEmailItem ==.
+                              triggeredItemIdentifier (entityVal item)
+                            ]
+                            []
                     pure $
                         makeTriggeredItemInfo
                             (entityVal item)
                             (map entityVal triggeredItemEns)
+                            (map entityVal triggeredEmailEns)
                 Nothing -> throwError err404 {errBody = "Item not found."}
 serveGetItem _ _ = throwAll err401

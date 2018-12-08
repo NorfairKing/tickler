@@ -96,8 +96,12 @@ makeTicklerItemInfo TicklerItem {..} =
         , itemInfoTriggered = Nothing
         }
 
-makeTriggeredItemInfo :: TriggeredItem -> [TriggeredIntrayItem] -> TypedItemInfo
-makeTriggeredItemInfo TriggeredItem {..} tiis =
+makeTriggeredItemInfo ::
+       TriggeredItem
+    -> [TriggeredIntrayItem]
+    -> [TriggeredEmail]
+    -> TypedItemInfo
+makeTriggeredItemInfo TriggeredItem {..} tiis tes =
     ItemInfo
         { itemInfoIdentifier = triggeredItemIdentifier
         , itemInfoContents =
@@ -118,22 +122,39 @@ makeTriggeredItemInfo TriggeredItem {..} tiis =
                   TriggeredInfo
                       { triggeredInfoTriggered = triggeredItemTriggered
                       , triggeredInfoTriggerTriggerAttempts =
-                            mapMaybe
-                                (\TriggeredIntrayItem {..} ->
-                                     IntrayTriggerAttempt
-                                         triggeredIntrayItemTrigger <$>
-                                     case ( triggeredIntrayItemIntrayItemUUID
-                                          , triggeredIntrayItemError) of
-                                         (Nothing, Nothing) -> Nothing
-                                         (Just i, Nothing) ->
-                                             Just $ IntrayAdditionSuccess i
-                                         (Nothing, Just e) ->
-                                             Just $ IntrayAdditionFailure e
-                                         (Just _, Just e) ->
-                                             Just $ IntrayAdditionFailure e) $
-                            filter
-                                ((== triggeredItemIdentifier) .
-                                 triggeredIntrayItemItem)
-                                tiis
+                            concat
+                                [ mapMaybe
+                                      (\TriggeredIntrayItem {..} ->
+                                           IntrayTriggerAttempt
+                                               triggeredIntrayItemTrigger <$>
+                                           case ( triggeredIntrayItemIntrayItemUUID
+                                                , triggeredIntrayItemError) of
+                                               (Nothing, Nothing) -> Nothing
+                                               (Just i, Nothing) ->
+                                                   Just $
+                                                   IntrayAdditionSuccess i
+                                               (_, Just e) ->
+                                                   Just $
+                                                   IntrayAdditionFailure e) $
+                                  filter
+                                      ((== triggeredItemIdentifier) .
+                                       triggeredIntrayItemItem)
+                                      tiis
+                                , mapMaybe
+                                      (\TriggeredEmail {..} ->
+                                           EmailTriggerAttempt
+                                               triggeredEmailTrigger <$>
+                                           case ( triggeredEmailEmail
+                                                , triggeredEmailError) of
+                                               (Nothing, Nothing) -> Nothing
+                                               (Just _, Nothing) ->
+                                                   Just EmailResultSent
+                                               (_, Just e) ->
+                                                   Just (EmailResultError e)) $
+                                  filter
+                                      ((== triggeredItemIdentifier) .
+                                       triggeredEmailItem)
+                                      tes
+                                ]
                       }
         }
