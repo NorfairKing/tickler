@@ -11,7 +11,6 @@ import Import
 
 import Yesod
 
-import Tickler.API
 import Tickler.Client
 
 import Tickler.Web.Server.Foundation
