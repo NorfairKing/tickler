@@ -80,6 +80,7 @@ spec = do
     eqSpecOnValid @EmailVerificationKey
     ordSpecOnValid @EmailVerificationKey
     genValidSpec @EmailVerificationKey
+    showReadSpecOnValid @EmailVerificationKey
     describe "Encode and Decode EmailVerificationKey" $
         it "are inverses" $
         forAllValid $ \evk ->

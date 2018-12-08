@@ -81,6 +81,10 @@ instance PathPiece Username where
     fromPathPiece = parseUsername
     toPathPiece = usernameText
 
+instance PathPiece EmailVerificationKey where
+    fromPathPiece = parseEmailVerificationKeyText
+    toPathPiece = emailVerificationKeyText
+
 instance YesodAuth App where
     type AuthId App = Username
     loginDest _ = AddR

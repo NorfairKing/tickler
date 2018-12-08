@@ -159,7 +159,8 @@ EmailTrigger
 
 VerificationEmail
     to          EmailAddress
-    key         Text
+    key         EmailVerificationKey
+    trigger     TriggerUUID
     scheduled   UTCTime
     email       EmailId      Maybe
 

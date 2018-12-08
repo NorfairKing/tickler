@@ -32,6 +32,10 @@ combineToInstructions ::
        Command -> Flags -> Configuration -> Environment -> IO Instructions
 combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environment {..} = do
     let serveSetPort = fromMaybe 8001 $ serveFlagPort `mplus` envPort
+    webHost <-
+        case serveFlagWebHost `mplus` envWebHost of
+            Nothing -> die "No web host configured."
+            Just wh -> pure $ T.pack wh
     dbPath <- resolveFile' $ fromMaybe "tickler.db" $ serveFlagDb <> envDb
     let serveSetConnectionInfo =
             mkSqliteConnectionInfo $ T.pack $ fromAbsFile dbPath
@@ -110,8 +114,14 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
     looperSetVerificationEmailConverterSets <-
         combineToLooperSets
             looperFlagVerificationEmailConverterFlags
-            looperEnvVerificationEmailConverterEnv $
-        const $ const $ pure ()
+            looperEnvVerificationEmailConverterEnv $ \() () -> do
+            pure
+                VerificationEmailConverterSettings
+                    { verificationEmailConverterSetFromAddress -- TODO make these configurable
+                       = unsafeEmailAddress "verification" "tickler.cs-syd.eu"
+                    , verificationEmailConverterSetFromName = "Tickler"
+                    , verificationEmailConverterSetWebHost = webHost
+                    }
     looperSetTriggeredEmailSchedulerSets <-
         combineToLooperSets
             looperFlagTriggeredEmailSchedulerFlags
@@ -126,7 +136,7 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
                     { triggeredEmailConverterSetFromAddress -- TODO make these configurable
                        = unsafeEmailAddress "triggered" "tickler.cs-syd.eu"
                     , triggeredEmailConverterSetFromName = "Tickler"
-                    , triggeredEmailConverterSetWebHost = "tickler.cs-syd.eu"
+                    , triggeredEmailConverterSetWebHost = webHost
                     }
     let serveSetLooperSettings = LooperSettings {..}
     pure $ Instructions (DispatchServe ServeSettings {..}) Settings
@@ -138,6 +148,7 @@ getEnv :: IO Environment
 getEnv = do
     env <- getEnvironment
     envDb <- lookupEnv "DATABASE"
+    envWebHost <- lookupEnv "WEB_HOST"
     envPort <- maybeReadEnv "API_PORT" env
     envLoopersEnvironment <- getLoopersEnv
     pure Environment {..}
@@ -256,6 +267,14 @@ parseCommandServe = info parser modifier
 parseServeFlags :: Parser ServeFlags
 parseServeFlags =
     ServeFlags <$>
+    option
+        (Just <$> auto)
+        (mconcat
+             [ long "web-host"
+             , value Nothing
+             , metavar "HOST"
+             , help "the host to serve the web server on"
+             ]) <*>
     option
         (Just <$> auto)
         (mconcat

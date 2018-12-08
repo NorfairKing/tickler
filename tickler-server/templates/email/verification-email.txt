@@ -1,0 +1,6 @@
+This email address was added as an email trigger at #{verificationEmailConverterSetWebHost}.
+Please verify by using the link below.
+
+#{verificationLink}
+
+You received this email because you signed up to receive triggered tickles via email at #{verificationEmailConverterSetWebHost}.

@@ -15,6 +15,8 @@ import Tickler.Web.Server.Handler.Add
 import Tickler.Web.Server.Handler.Admin
 import Tickler.Web.Server.Handler.Delete
 import Tickler.Web.Server.Handler.Edit
+import Tickler.Web.Server.Handler.EmailTriggerResend
+import Tickler.Web.Server.Handler.EmailTriggerVerify
 import Tickler.Web.Server.Handler.Error
 import Tickler.Web.Server.Handler.Home
 import Tickler.Web.Server.Handler.Loopers

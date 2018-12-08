@@ -49,8 +49,8 @@ servePostAddEmailTrigger (Authenticated AuthCookie {..}) AddEmailTrigger {..} = 
         insert_
             VerificationEmail
                 { verificationEmailTo = addEmailTrigger
-                , verificationEmailKey =
-                      emailVerificationKeyText verificationKey
+                , verificationEmailKey = verificationKey
+                , verificationEmailTrigger = uuid
                 , verificationEmailScheduled = now
                 , verificationEmailEmail = Nothing
                 }

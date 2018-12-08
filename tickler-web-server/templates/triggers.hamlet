@@ -5,5 +5,5 @@
     $forall w <- triggerWidgets
       ^{w}
 
-^{addIntrayTriggerWidget}
 ^{addEmailTriggerWidget}
+^{addIntrayTriggerWidget}

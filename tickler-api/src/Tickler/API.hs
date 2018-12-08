@@ -67,8 +67,9 @@ module Tickler.API
     , PostAddEmailTrigger
     , PostEmailTriggerVerify
     , EmailVerificationKey(..)
+    , emailVerificationKeyText
+    , parseEmailVerificationKeyText
     , PostEmailTriggerResendVerificationEmail
-
     , AccountInfo(..)
     , AccountSettings(..)
     , GetAccountSettings

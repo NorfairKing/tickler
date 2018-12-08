@@ -9,7 +9,14 @@
     $if emailTriggerInfoVerified
       Verified
     $else
-      Not Verified
+      Not Verified.
+      <form
+        method="post"
+        action=@{EmailTriggerResendR triggerInfoIdentifier}
+        onclick="return confirm('Are you sure? It can take a few minutes for a verification email to arrive.');">
+        ^{token}
+        <button .ui .button .warning type="submit">
+          Resend verification email.
 
   <form
     method="post"

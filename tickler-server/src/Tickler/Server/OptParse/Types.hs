@@ -21,6 +21,7 @@ newtype Command =
 
 data ServeFlags = ServeFlags
     { serveFlagPort :: Maybe Int
+    , serveFlagWebHost :: Maybe String
     , serveFlagDb :: Maybe FilePath
     , serveFlagConnectionCount :: Maybe Int
     , serveFlagAdmins :: [String]
@@ -63,6 +64,7 @@ data Configuration =
 
 data Environment = Environment
     { envDb :: Maybe FilePath
+    , envWebHost :: Maybe String
     , envPort :: Maybe Int
     , envLoopersEnvironment :: LoopersEnvironment
     } deriving (Show, Eq)
@@ -116,7 +118,7 @@ data LooperSettings = LooperSettings
     , looperSetEmailerSets :: LooperSetsWith EmailerSettings
     , looperSetTriggeredIntrayItemSchedulerSets :: LooperSetsWith ()
     , looperSetTriggeredIntrayItemSenderSets :: LooperSetsWith ()
-    , looperSetVerificationEmailConverterSets :: LooperSetsWith ()
+    , looperSetVerificationEmailConverterSets :: LooperSetsWith VerificationEmailConverterSettings
     , looperSetTriggeredEmailSchedulerSets :: LooperSetsWith ()
     , looperSetTriggeredEmailConverterSets :: LooperSetsWith TriggeredEmailConverterSettings
     } deriving (Show)
@@ -143,6 +145,12 @@ data TriggererSettings =
 
 data EmailerSettings = EmailerSettings
     { emailerSetAWSCredentials :: AWS.Credentials
+    } deriving (Show)
+
+data VerificationEmailConverterSettings = VerificationEmailConverterSettings
+    { verificationEmailConverterSetFromAddress :: !EmailAddress
+    , verificationEmailConverterSetFromName :: !Text
+    , verificationEmailConverterSetWebHost :: !Text
     } deriving (Show)
 
 data TriggeredEmailConverterSettings = TriggeredEmailConverterSettings

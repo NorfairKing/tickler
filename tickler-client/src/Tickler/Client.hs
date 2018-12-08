@@ -13,6 +13,8 @@ module Tickler.Client
     , clientGetTrigger
     , clientPostAddIntrayTrigger
     , clientPostAddEmailTrigger
+    , clientPostEmailTriggerVerify
+    , clientPostEmailTriggerResendVerificationEmail
     , clientDeleteTrigger
     , clientPostRegister
     , clientPostLogin
@@ -63,6 +65,9 @@ module Tickler.Client
     , localPart
     , AddEmailTrigger(..)
     , PostAddEmailTrigger
+    , EmailVerificationKey
+    , emailVerificationKeyText
+    , parseEmailVerificationKeyText
     , AccountInfo(..)
     , AccountSettings(..)
     , Registration(..)

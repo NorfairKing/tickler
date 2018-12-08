@@ -11,6 +11,7 @@ import Import
 
 import qualified Data.ByteString as SB
 import qualified Data.ByteString.Base16 as SB16
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import System.Random
 
@@ -19,9 +20,18 @@ import Database.Persist.Sql
 
 newtype EmailVerificationKey =
     EmailVerificationKey ByteString
-    deriving (Show, Eq, Ord, Generic, PersistField, PersistFieldSql)
+    deriving (Eq, Ord, Generic, PersistField, PersistFieldSql)
 
 instance Validity EmailVerificationKey
+
+instance Show EmailVerificationKey where
+    show = T.unpack . emailVerificationKeyText
+
+instance Read EmailVerificationKey where
+    readsPrec _ s =
+        case parseEmailVerificationKeyText $ T.pack s of
+            Nothing -> []
+            Just evk -> [(evk, "")]
 
 emailVerificationKeyText :: EmailVerificationKey -> Text
 emailVerificationKeyText (EmailVerificationKey bs) =

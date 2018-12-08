@@ -57,7 +57,7 @@ makeTriggeredEmail ::
        TriggeredEmailConverterSettings
     -> EmailTrigger
     -> TriggeredItem
-    -> Renderer
+    -> Render Text
     -> Looper Email
 makeTriggeredEmail tecs@TriggeredEmailConverterSettings {..} EmailTrigger {..} ti@TriggeredItem {..} render = do
     now <- liftIO getCurrentTime
@@ -67,8 +67,8 @@ makeTriggeredEmail tecs@TriggeredEmailConverterSettings {..} EmailTrigger {..} t
             , emailFrom = triggeredEmailConverterSetFromAddress
             , emailFromName = triggeredEmailConverterSetFromName
             , emailSubject = "Tickle triggered"
-            , emailTextContent = verificationEmailTextContent tecs ti render
-            , emailHtmlContent = verificationEmailHtmlContent tecs ti render
+            , emailTextContent = triggeredEmailTextContent tecs ti render
+            , emailHtmlContent = triggeredEmailHtmlContent tecs ti render
             , emailStatus = EmailUnsent
             , emailSendError = Nothing
             , emailSesId = Nothing
@@ -76,9 +76,9 @@ makeTriggeredEmail tecs@TriggeredEmailConverterSettings {..} EmailTrigger {..} t
             , emailSendAttempt = Nothing
             }
 
-verificationEmailTextContent ::
-       TriggeredEmailConverterSettings -> TriggeredItem -> Renderer -> Text
-verificationEmailTextContent TriggeredEmailConverterSettings {..} TriggeredItem {..} render =
+triggeredEmailTextContent ::
+       TriggeredEmailConverterSettings -> TriggeredItem -> Render Text -> Text
+triggeredEmailTextContent TriggeredEmailConverterSettings {..} TriggeredItem {..} render =
     case triggeredItemType of
         TextItem ->
             let textContents = TE.decodeUtf8 triggeredItemContents
@@ -86,14 +86,12 @@ verificationEmailTextContent TriggeredEmailConverterSettings {..} TriggeredItem 
                 LTB.toLazyText $
                 $(textFile "templates/email/triggered-email.txt") render
 
-verificationEmailHtmlContent ::
-       TriggeredEmailConverterSettings -> TriggeredItem -> Renderer -> Text
-verificationEmailHtmlContent TriggeredEmailConverterSettings {..} TriggeredItem {..} render =
+triggeredEmailHtmlContent ::
+       TriggeredEmailConverterSettings -> TriggeredItem -> Render Text -> Text
+triggeredEmailHtmlContent TriggeredEmailConverterSettings {..} TriggeredItem {..} render =
     case triggeredItemType of
         TextItem ->
             let textContents = TE.decodeUtf8 triggeredItemContents
              in LT.toStrict $
                 renderHtml $
                 $(hamletFile "templates/email/triggered-email.hamlet") render
-
-type Renderer = Render Text
