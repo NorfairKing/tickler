@@ -39,6 +39,8 @@ tests:
     - genvalidity-hspec
     - genvalidity-hspec-aeson
     - hspec
+    - tickler-api
     - tickler-client
     - tickler-client-gen
     - tickler-data-gen
+    - text

@@ -12,4 +12,4 @@ import Tickler.API.Gen ()
 instance GenUnchecked Store
 
 instance GenValid Store where
-    genValid = Store <$> genValid
+    genValid = genValidStructurallyWithoutExtraChecking

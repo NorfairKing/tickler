@@ -6,6 +6,8 @@ module Tickler.API.Protected.Gen where
 
 import Import
 
+import qualified Data.Text.Encoding as TE
+
 import Intray.Data.Gen ()
 import Tickler.Data.Gen ()
 
@@ -18,7 +20,12 @@ instance GenValid ItemFilter
 instance GenUnchecked TypedItem
 
 instance GenValid TypedItem where
-    genValid = genValidStructurally
+    genValid = do
+        ti <- genValid
+        case ti of
+            TextItem -> do
+                t <- genValid
+                pure TypedItem { itemType = TextItem ,itemData= TE.encodeUtf8 t}
 
 instance GenUnchecked a => GenUnchecked (Tickle a)
 

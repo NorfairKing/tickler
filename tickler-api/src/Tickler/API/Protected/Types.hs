@@ -93,8 +93,8 @@ data TypedItem = TypedItem
 instance Validity TypedItem
 
 instance FromJSON TypedItem where
-    parseJSON v =
-        (withObject "TypedItem" $ \o ->
+    parseJSON v = case v of
+        Object o ->
              TypedItem <$> o .: "type" <*>
              (do d <- o .: "data"
                  case Base64.decode $ SB8.pack d of
@@ -104,11 +104,10 @@ instance FromJSON TypedItem where
                              [ "Failed to decode base64-encoded typed item data:"
                              , err
                              ]
-                     Right r -> pure r))
-            v <|>
-        (withText "TypedItem" $ \t ->
-             pure $ TypedItem {itemType = TextItem, itemData = TE.encodeUtf8 t})
-            v
+                     Right r -> pure r)
+        String t ->
+             pure $ TypedItem {itemType = TextItem, itemData = TE.encodeUtf8 t}
+        _ -> fail "Invalid json object for 'TypedItem'"
 
 instance ToJSON TypedItem where
     toJSON TypedItem {..} =

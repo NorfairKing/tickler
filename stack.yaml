@@ -25,7 +25,7 @@ extra-deps:
 - amazonka-core-1.6.0
 - amazonka-ses-1.6.0
 - git: git@github.com:NorfairKing/intray.git
-  commit: 1cc6cbd63d9f9b0115e76a165b7f0752cb60e418
+  commit: d6a5e1143ebf073742f1d2fc135b746b17f21d45
   subdirs:
     - intray-data
     - intray-data-gen
@@ -35,7 +35,7 @@ extra-deps:
     - intray-server
     - intray-server-test-utils
 - git: https://github.com/NorfairKing/mergeless.git
-  commit: 19e6361b555808b5d6dd29c7cc6c4f3b114288c4
+  commit: 0198f9393e2ef71f26de6427541387be44fd499b
   subdirs:
     - mergeless
     - genvalidity-mergeless
