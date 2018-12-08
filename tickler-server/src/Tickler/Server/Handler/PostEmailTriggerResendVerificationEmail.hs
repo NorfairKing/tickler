@@ -59,7 +59,8 @@ servePostEmailTriggerResendVerificationEmail (Authenticated AuthCookie {..}) tuu
                                               emailTriggerAddress
                                         , verificationEmailKey =
                                               emailTriggerVerificationKey
-                                        , verificationEmailTrigger = emailTriggerIdentifier
+                                        , verificationEmailTrigger =
+                                              emailTriggerIdentifier
                                         , verificationEmailScheduled = now
                                         , verificationEmailEmail = Nothing
                                         }

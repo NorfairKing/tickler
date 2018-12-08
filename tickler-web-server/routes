@@ -14,6 +14,8 @@
 /retry-triggered                                          RetryTriggeredR      POST
 /retry-triggereds                                         RetryTriggeredsR     POST
 
+/delete-triggereds                                        DeleteTriggeredsR    POST
+
 /add-intray-trigger                                       AddIntrayTriggerR    POST
 /add-email-trigger                                        AddEmailTriggerR     POST
 /email-trigger/#TriggerUUID/verify/#EmailVerificationKey  EmailTriggerVerifyR  GET

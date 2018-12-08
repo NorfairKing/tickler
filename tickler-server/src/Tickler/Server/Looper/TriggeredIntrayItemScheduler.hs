@@ -25,7 +25,6 @@ runTriggeredIntrayItemScheduler _ = do
         selectList
             []
             [Asc TriggeredItemScheduledDay, Asc TriggeredItemScheduledTime]
-    liftIO $ print tis
     tes <-
         fmap concat $
         forM tis $ \(Entity _ ti) -> do

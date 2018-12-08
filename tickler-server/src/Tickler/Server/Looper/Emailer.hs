@@ -25,12 +25,7 @@ import Tickler.Server.Looper.Types
 import Tickler.Server.Looper.Utils
 
 runEmailer :: EmailerSettings -> Looper ()
-runEmailer es = do
-    liftIO $ putStrLn "Placeholder to send emails."
-    sendEmails es
-
-sendEmails :: EmailerSettings -> Looper ()
-sendEmails EmailerSettings {..} = go
+runEmailer EmailerSettings {..} = go
   where
     go = do
         list <-

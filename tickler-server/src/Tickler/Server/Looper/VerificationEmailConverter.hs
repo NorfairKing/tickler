@@ -39,8 +39,6 @@ runVerificationEmailConverter vecs@VerificationEmailConverterSettings {..} = do
         runDb $ do
             eid <- insert e
             update vid [VerificationEmailEmail =. Just eid]
-    liftIO $
-        putStrLn "placeholder to convert verification emails to regular emails"
     logInfoNS
         "TriggeredEmailConverter"
         "Finished converting VerificationEmails to Emails."

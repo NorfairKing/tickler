@@ -12,6 +12,7 @@ import Tickler.Server.Handler.Admin (ticklerAdminServer)
 import Tickler.Server.Handler.DeleteAccount (serveDeleteAccount)
 import Tickler.Server.Handler.DeleteItem (serveDeleteItem)
 import Tickler.Server.Handler.DeleteTrigger (serveDeleteTrigger)
+import Tickler.Server.Handler.DeleteTriggereds (serveDeleteTriggereds)
 import Tickler.Server.Handler.GetAccountInfo (serveGetAccountInfo)
 import Tickler.Server.Handler.GetAccountSettings (serveGetAccountSettings)
 import Tickler.Server.Handler.GetItem (serveGetItem)
@@ -56,6 +57,7 @@ ticklerProtectedServer =
         , getItem = serveGetItem
         , deleteItem = serveDeleteItem
         , retryTriggered = serveRetryTriggered
+        , deleteTriggereds = serveDeleteTriggereds
         , postSync = servePostSync
         , getTriggers = serveGetTriggers
         , getTrigger = serveGetTrigger
