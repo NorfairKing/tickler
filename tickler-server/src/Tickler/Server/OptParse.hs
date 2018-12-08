@@ -11,7 +11,7 @@ import Import
 import qualified Data.Text as T
 import Text.Read
 
-import System.Environment (getArgs, getEnvironment)
+import System.Environment (getArgs, getEnvironment, lookupEnv)
 
 import Control.Monad.Trans.AWS as AWS
 import Database.Persist.Sqlite
@@ -32,8 +32,9 @@ combineToInstructions ::
        Command -> Flags -> Configuration -> Environment -> IO Instructions
 combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environment {..} = do
     let serveSetPort = fromMaybe 8001 $ serveFlagPort `mplus` envPort
+    dbPath <- resolveFile' $ fromMaybe "tickler.db" $ serveFlagDb <> envDb
     let serveSetConnectionInfo =
-            mkSqliteConnectionInfo $ fromMaybe "tickler.db" serveFlagDb
+            mkSqliteConnectionInfo $ T.pack $ fromAbsFile dbPath
     let serveSetConnectionCount = fromMaybe 4 serveFlagConnectionCount
     serveSetAdmins <-
         forM serveFlagAdmins $ \s ->
@@ -136,6 +137,7 @@ getConfiguration _ _ = pure Configuration
 getEnv :: IO Environment
 getEnv = do
     env <- getEnvironment
+    envDb <- lookupEnv "DATABASE"
     envPort <- maybeReadEnv "API_PORT" env
     envLoopersEnvironment <- getLoopersEnv
     pure Environment {..}
@@ -263,7 +265,7 @@ parseServeFlags =
              , help "the port to serve the API on"
              ]) <*>
     option
-        (Just . T.pack <$> str)
+        (Just <$> str)
         (mconcat
              [ long "database"
              , value Nothing

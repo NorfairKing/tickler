@@ -21,7 +21,7 @@ newtype Command =
 
 data ServeFlags = ServeFlags
     { serveFlagPort :: Maybe Int
-    , serveFlagDb :: Maybe Text
+    , serveFlagDb :: Maybe FilePath
     , serveFlagConnectionCount :: Maybe Int
     , serveFlagAdmins :: [String]
     , serveFlagsLooperFlags :: LooperFlags
@@ -62,7 +62,8 @@ data Configuration =
     deriving (Show, Eq)
 
 data Environment = Environment
-    { envPort :: Maybe Int
+    { envDb :: Maybe FilePath
+    , envPort :: Maybe Int
     , envLoopersEnvironment :: LoopersEnvironment
     } deriving (Show, Eq)
 

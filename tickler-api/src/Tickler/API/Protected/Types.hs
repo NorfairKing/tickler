@@ -40,6 +40,9 @@ module Tickler.API.Protected.Types
     , EmailTriggerInfo(..)
     , AddIntrayTrigger(..)
     , AddEmailTrigger(..)
+    , EmailVerificationKey(..)
+    , emailVerificationKeyText
+    , parseEmailVerificationKeyText
     , Registration(..)
     , LoginForm(..)
     , GetDocsResponse(..)
@@ -93,21 +96,23 @@ data TypedItem = TypedItem
 instance Validity TypedItem
 
 instance FromJSON TypedItem where
-    parseJSON v = case v of
-        Object o ->
-             TypedItem <$> o .: "type" <*>
-             (do d <- o .: "data"
-                 case Base64.decode $ SB8.pack d of
-                     Left err ->
-                         fail $
-                         unwords
-                             [ "Failed to decode base64-encoded typed item data:"
-                             , err
-                             ]
-                     Right r -> pure r)
-        String t ->
-             pure $ TypedItem {itemType = TextItem, itemData = TE.encodeUtf8 t}
-        _ -> fail "Invalid json object for 'TypedItem'"
+    parseJSON v =
+        case v of
+            Object o ->
+                TypedItem <$> o .: "type" <*>
+                (do d <- o .: "data"
+                    case Base64.decode $ SB8.pack d of
+                        Left err ->
+                            fail $
+                            unwords
+                                [ "Failed to decode base64-encoded typed item data:"
+                                , err
+                                ]
+                        Right r -> pure r)
+            String t ->
+                pure $
+                TypedItem {itemType = TextItem, itemData = TE.encodeUtf8 t}
+            _ -> fail "Invalid json object for 'TypedItem'"
 
 instance ToJSON TypedItem where
     toJSON TypedItem {..} =
@@ -254,6 +259,14 @@ instance FromJSON EmailTriggerResult
 instance ToJSON EmailTriggerResult
 
 instance ToSample EmailTriggerResult
+
+instance ToHttpApiData EmailVerificationKey where
+    toUrlPiece = emailVerificationKeyText
+
+instance FromHttpApiData EmailVerificationKey where
+    parseUrlPiece t = case parseEmailVerificationKeyText t of
+        Nothing -> Left "Invalid email verification key"
+        Just evk -> pure evk
 
 data IntrayTriggerResult
     = IntrayAdditionSuccess !Intray.ItemUUID

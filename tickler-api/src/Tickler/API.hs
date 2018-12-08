@@ -65,6 +65,10 @@ module Tickler.API
     , localPart
     , AddEmailTrigger(..)
     , PostAddEmailTrigger
+    , PostEmailTriggerVerify
+    , EmailVerificationKey(..)
+    , PostEmailTriggerResendVerificationEmail
+
     , AccountInfo(..)
     , AccountSettings(..)
     , GetAccountSettings

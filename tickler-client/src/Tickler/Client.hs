@@ -111,6 +111,10 @@ clientGetTrigger ::
 clientPostAddIntrayTrigger ::
        Token -> AddIntrayTrigger -> ClientM (Either Text TriggerUUID)
 clientPostAddEmailTrigger :: Token -> AddEmailTrigger -> ClientM TriggerUUID
+clientPostEmailTriggerVerify ::
+       Token -> TriggerUUID -> EmailVerificationKey -> ClientM NoContent
+clientPostEmailTriggerResendVerificationEmail ::
+       Token -> TriggerUUID -> ClientM NoContent
 clientDeleteTrigger :: Token -> TriggerUUID -> ClientM NoContent
 clientGetAccountInfo :: Token -> ClientM AccountInfo
 clientGetAccountSettings :: Token -> ClientM AccountSettings
@@ -125,5 +129,5 @@ clientGetDocs :: ClientM GetDocsResponse
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientRetryTriggered :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetLoopersInfo :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientRetryTriggered :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientPostEmailTriggerVerify :<|> clientPostEmailTriggerResendVerificationEmail :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetLoopersInfo :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
     client (flatten ticklerAPI)

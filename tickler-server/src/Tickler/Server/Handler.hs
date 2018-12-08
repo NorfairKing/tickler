@@ -22,6 +22,12 @@ import Tickler.Server.Handler.GetTriggers (serveGetTriggers)
 import Tickler.Server.Handler.PostAddEmailTrigger (servePostAddEmailTrigger)
 import Tickler.Server.Handler.PostAddIntrayTrigger (servePostAddIntrayTrigger)
 import Tickler.Server.Handler.PostAddItem (servePostAddItem)
+import Tickler.Server.Handler.PostEmailTriggerResendVerificationEmail
+    ( servePostEmailTriggerResendVerificationEmail
+    )
+import Tickler.Server.Handler.PostEmailTriggerVerify
+    ( servePostEmailTriggerVerify
+    )
 import Tickler.Server.Handler.PostSync (servePostSync)
 import Tickler.Server.Handler.Public (ticklerPublicServer)
 import Tickler.Server.Handler.PutAccountSettings (servePutAccountSettings)
@@ -55,6 +61,9 @@ ticklerProtectedServer =
         , getTrigger = serveGetTrigger
         , postAddIntrayTrigger = servePostAddIntrayTrigger
         , postAddEmailTrigger = servePostAddEmailTrigger
+        , postEmailTriggerVerify = servePostEmailTriggerVerify
+        , postEmailTriggerResendVerificationEmail =
+              servePostEmailTriggerResendVerificationEmail
         , deleteTrigger = serveDeleteTrigger
         , getAccountInfo = serveGetAccountInfo
         , getAccountSettings = serveGetAccountSettings

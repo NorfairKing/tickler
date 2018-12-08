@@ -52,6 +52,9 @@ module Tickler.API.Protected
     , PostAddIntrayTrigger
     , AddEmailTrigger(..)
     , PostAddEmailTrigger
+    , PostEmailTriggerVerify
+    , EmailVerificationKey(..)
+    , PostEmailTriggerResendVerificationEmail
     , DeleteTrigger
     , AccountInfo(..)
     , GetAccountInfo
@@ -101,6 +104,8 @@ data TicklerProtectedSite route = TicklerProtectedSite
     , getTrigger :: route :- GetTrigger
     , postAddIntrayTrigger :: route :- PostAddIntrayTrigger
     , postAddEmailTrigger :: route :- PostAddEmailTrigger
+    , postEmailTriggerVerify :: route :- PostEmailTriggerVerify
+    , postEmailTriggerResendVerificationEmail :: route :- PostEmailTriggerResendVerificationEmail
     , deleteTrigger :: route :- DeleteTrigger
     , getAccountInfo :: route :- GetAccountInfo
     , getAccountSettings :: route :- GetAccountSettings
@@ -156,6 +161,18 @@ type PostAddIntrayTrigger
 
 type PostAddEmailTrigger
      = ProtectAPI :> "trigger" :> "email" :> ReqBody '[ JSON] AddEmailTrigger :> Post '[ JSON] TriggerUUID
+
+type PostEmailTriggerVerify
+     = ProtectAPI :> "trigger" :> "email" :> "verify" :> Capture "id" TriggerUUID :> Capture "key" EmailVerificationKey :> Post '[ JSON] NoContent
+
+instance ToCapture (Capture "key" EmailVerificationKey) where
+    toCapture _ =
+        DocCapture
+            "key"
+            "The verification key that was sent in the verification email"
+
+type PostEmailTriggerResendVerificationEmail
+     = ProtectAPI :> "trigger" :> "email" :> "resend" :> Capture "id" TriggerUUID :> Post '[ JSON] NoContent
 
 type DeleteTrigger
      = ProtectAPI :> "trigger" :> "delete" :> Capture "id" TriggerUUID :> Delete '[ JSON] NoContent

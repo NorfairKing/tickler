@@ -160,7 +160,6 @@ EmailTrigger
 VerificationEmail
     to          EmailAddress
     key         Text
-    link        Text
     scheduled   UTCTime
     email       EmailId      Maybe
 

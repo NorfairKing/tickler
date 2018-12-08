@@ -37,25 +37,42 @@ runTriggeredEmailScheduler _ = do
                     []
             fmap catMaybes $
                 forM uts $ \(Entity _ ut) -> do
-                    mte <-
+                    met <-
                         runDb $
-                        getBy $
-                        UniqueTriggeredEmail
-                            (triggeredItemIdentifier ti)
-                            (userTriggerTriggerId ut)
-                    pure $
-                        case mte of
-                            Nothing ->
-                                Just
-                                    TriggeredEmail
-                                        { triggeredEmailItem =
-                                              triggeredItemIdentifier ti
-                                        , triggeredEmailTrigger =
-                                              userTriggerTriggerId ut
-                                        , triggeredEmailEmail = Nothing
-                                        , triggeredEmailError = Nothing
-                                        }
-                            Just _ -> Nothing
+                        selectFirst
+                            [ EmailTriggerIdentifier ==.
+                              userTriggerTriggerId ut
+                            ]
+                            []
+                    case met of
+                        Nothing -> pure Nothing
+                        Just (Entity _ EmailTrigger {..}) ->
+                            if emailTriggerVerified
+                                then do
+                                    mte <-
+                                        runDb $
+                                        getBy $
+                                        UniqueTriggeredEmail
+                                            (triggeredItemIdentifier ti)
+                                            (userTriggerTriggerId ut)
+                                    pure $
+                                        case mte of
+                                            Nothing ->
+                                                Just
+                                                    TriggeredEmail
+                                                        { triggeredEmailItem =
+                                                              triggeredItemIdentifier
+                                                                  ti
+                                                        , triggeredEmailTrigger =
+                                                              userTriggerTriggerId
+                                                                  ut
+                                                        , triggeredEmailEmail =
+                                                              Nothing
+                                                        , triggeredEmailError =
+                                                              Nothing
+                                                        }
+                                            Just _ -> Nothing
+                                else pure Nothing
     runDb $ insertMany_ tes
     logInfoNS
         "TriggeredEmailScheduler"
