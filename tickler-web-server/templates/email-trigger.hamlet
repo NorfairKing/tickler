@@ -5,6 +5,12 @@
   <p>
     Email Address: #{emailAddressText emailTriggerInfoEmailAddress}
 
+  <p>
+    $if emailTriggerInfoVerified
+      Verified
+    $else
+      Not Verified
+
   <form
     method="post"
     action=@{DeleteTriggerR triggerInfoIdentifier}

@@ -65,6 +65,6 @@ makeEmailTriggerInfo EmailTrigger {..} =
                   , typedTriggerInfoValue =
                         toJSON $
                         EmailTriggerInfo
-                            {emailTriggerInfoEmailAddress = emailTriggerAddress}
+                            {emailTriggerInfoEmailAddress = emailTriggerAddress, emailTriggerInfoVerified = emailTriggerVerified}
                   }
         }

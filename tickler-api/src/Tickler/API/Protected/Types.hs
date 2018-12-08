@@ -373,6 +373,7 @@ instance ToSample IntrayTriggerInfo
 
 data EmailTriggerInfo = EmailTriggerInfo
     { emailTriggerInfoEmailAddress :: !EmailAddress
+    , emailTriggerInfoVerified :: !Bool
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity EmailTriggerInfo
