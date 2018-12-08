@@ -12,7 +12,6 @@ module Tickler.Server.Handler.PostEmailTriggerResendVerificationEmail
 import Import
 
 import Data.Time
-import Data.UUID.Typed
 import Database.Persist
 
 import Servant hiding (BadPassword, NoSuchUser)

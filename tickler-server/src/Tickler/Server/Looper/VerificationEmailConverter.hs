@@ -10,7 +10,6 @@ module Tickler.Server.Looper.VerificationEmailConverter
 import Import
 
 import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as LT
 import qualified Data.Text.Lazy.Builder as LTB
 import Data.Time
