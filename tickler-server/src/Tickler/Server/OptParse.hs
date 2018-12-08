@@ -122,9 +122,10 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
             looperEnvTriggeredEmailConverterEnv $ \() () -> do
             pure
                 TriggeredEmailConverterSettings
-                    { triggeredEmailConverterSetFromAddress =
-                          unsafeEmailAddress "triggered" "tickler.cs-syd.eu"
+                    { triggeredEmailConverterSetFromAddress -- TODO make these configurable
+                       = unsafeEmailAddress "triggered" "tickler.cs-syd.eu"
                     , triggeredEmailConverterSetFromName = "Tickler"
+                    , triggeredEmailConverterSetWebHost = "tickler.cs-syd.eu"
                     }
     let serveSetLooperSettings = LooperSettings {..}
     pure $ Instructions (DispatchServe ServeSettings {..}) Settings

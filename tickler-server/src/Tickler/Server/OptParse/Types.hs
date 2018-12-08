@@ -145,6 +145,7 @@ data EmailerSettings = EmailerSettings
     } deriving (Show)
 
 data TriggeredEmailConverterSettings = TriggeredEmailConverterSettings
-    { triggeredEmailConverterSetFromAddress :: EmailAddress
-    , triggeredEmailConverterSetFromName :: Text
+    { triggeredEmailConverterSetFromAddress :: !EmailAddress
+    , triggeredEmailConverterSetFromName :: !Text
+    , triggeredEmailConverterSetWebHost :: !Text
     } deriving (Show)
