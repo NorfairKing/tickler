@@ -2,8 +2,15 @@
   forest:
   - entry: Server
     forest:
-    - Restart loopers when they fail
-    - A way to remove and maybe even auto-remove triggered tickles
+    - header: Restart loopers when they fail
+      state-history:
+      - new-state: DONE
+        timestamp: 2018-12-10 10:32:32.987301755000+0000
+    - header: A way to remove triggered tickles
+      state-history:
+      - new-state: DONE
+        timestamp: 2018-12-10 10:32:48.387671104000+0000
+    - A way to auto-remove triggered tickles
     - Weekly and yearly recurrence
     - Seperate item uuid from triggered item uuid
     - header: Make the first scheduled date optional?
@@ -16,9 +23,12 @@
     - A way to fast-forward tickles at the user's request
   - entry: Web server
     forest:
-    - Documentation to explain how ticlkler deals with time zones
+    - Documentation to explain how tickler deals with time zones
     - Make sure newlnines are preserved in the text
-    - Google analytics
+    - header: Google analytics
+      state-history:
+      - new-state: DONE
+        timestamp: 2018-12-10 10:34:35.163685904000+0000
     - Nicer form failure when adding tickles
     - Feedback form
     - Make items' recurrence editable?

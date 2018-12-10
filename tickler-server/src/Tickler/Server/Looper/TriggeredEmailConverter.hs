@@ -9,6 +9,8 @@ module Tickler.Server.Looper.TriggeredEmailConverter
 
 import Import
 
+import qualified Data.Text as T
+import Data.Char as Char
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as LT
 import qualified Data.Text.Lazy.Builder as LTB
@@ -66,7 +68,17 @@ makeTriggeredEmail tecs@TriggeredEmailConverterSettings {..} EmailTrigger {..} t
             { emailTo = emailTriggerAddress
             , emailFrom = triggeredEmailConverterSetFromAddress
             , emailFromName = triggeredEmailConverterSetFromName
-            , emailSubject = "Tickle triggered"
+            , emailSubject =
+                  "[Tickler]: " <>
+                  case triggeredItemType of
+                      TextItem ->
+                          let textContents = TE.decodeUtf8 triggeredItemContents
+                           in T.take 50 $
+                              T.filter
+                                  (\c ->
+                                       not (Char.isControl c) &&
+                                       c /= '\n' && c /= '\r')
+                                  textContents
             , emailTextContent = triggeredEmailTextContent tecs ti render
             , emailHtmlContent = triggeredEmailHtmlContent tecs ti render
             , emailStatus = EmailUnsent

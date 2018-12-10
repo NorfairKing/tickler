@@ -16,6 +16,7 @@ import Control.Monad.Logger
 import Control.Retry
 import Data.Pool
 import qualified Data.Text as T
+import Data.Time
 import Database.Persist.Sqlite
 
 import Tickler.Server.OptParse.Types
@@ -108,6 +109,14 @@ runLooperContinuously :: MonadIO m => Int -> m b -> m ()
 runLooperContinuously period func = go
   where
     go = do
+        start <- liftIO getCurrentTime
         void func
-        liftIO $ threadDelay $ period * 1000 * 1000
+        end <- liftIO getCurrentTime
+        let diff = diffUTCTime end start
+        liftIO $
+            threadDelay $
+            (period * 1000 * 1000) -
+            (fromInteger
+                 (diffTimeToPicoseconds (realToFrac diff :: DiffTime) `div`
+                  (1000 * 1000)))
         go

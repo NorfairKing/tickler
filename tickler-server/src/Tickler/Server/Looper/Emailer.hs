@@ -9,11 +9,13 @@ module Tickler.Server.Looper.Emailer
 import Import
 
 import Control.Lens
+import Control.Monad.Logger
 import Control.Monad.Trans.AWS
-import Control.Monad.Trans.AWS as AWS
 import Control.Monad.Trans.Resource (runResourceT)
+import qualified Data.Text as T
 import Data.Time
 import Database.Persist.Sqlite
+import Network.AWS as AWS
 import Network.AWS.SES
 import System.IO
 
@@ -25,7 +27,10 @@ import Tickler.Server.Looper.Types
 import Tickler.Server.Looper.Utils
 
 runEmailer :: EmailerSettings -> Looper ()
-runEmailer EmailerSettings {..} = go
+runEmailer EmailerSettings {..} = do
+    logInfoNS "Emailer" "Starting to send emails."
+    go
+    logInfoNS "Emailer" "Finished sending emails."
   where
     go = do
         list <-
@@ -57,7 +62,7 @@ sendSingleEmail :: AWS.Credentials -> Email -> IO (Either Text Text)
 sendSingleEmail creds Email {..} = do
     lgr <- newLogger Debug stderr
     env <- set envLogger lgr <$> newEnv creds
-    runResourceT . runAWST env . within Ireland $ do
+    runResourceT . runAWST env . AWS.within Ireland $ do
         let txt = content emailTextContent
         let html = content emailHtmlContent
         let bod = body & bText .~ Just txt & bHTML .~ Just html
@@ -65,8 +70,11 @@ sendSingleEmail creds Email {..} = do
         let mesg = message sub bod
         let dest = destination & dToAddresses .~ [emailAddressText emailTo]
         let req = sendEmail (emailAddressText emailFrom) dest mesg
-        resp <- send req
+        errOrResp <- trying _ServiceError (AWS.send req)
         pure $
-            case resp ^. sersResponseStatus of
-                200 -> Right $ resp ^. sersMessageId
-                _ -> Left "Error while sending email."
+            case errOrResp of
+                Left err -> Left $ T.pack $ show err
+                Right resp ->
+                    case resp ^. sersResponseStatus of
+                        200 -> Right $ resp ^. sersMessageId
+                        _ -> Left "Error while sending email."
