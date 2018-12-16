@@ -2,8 +2,9 @@ module Tickler.Cli.Client where
 
 import Import
 
-import Network.HTTP.Client
-import Network.HTTP.Client.TLS
+import qualified Network.HTTP.Client as Http
+import qualified Network.HTTP.Client.TLS as Http
+
 import Servant.Client
 
 import Tickler.Cli.OptParse
@@ -31,6 +32,6 @@ runSingleClient func = do
         Just burl ->
             fmap Just $
             liftIO $ do
-                man <- newManager tlsManagerSettings
+                man <- Http.newManager Http.tlsManagerSettings
                 let env = ClientEnv man burl Nothing
                 runClientM func env

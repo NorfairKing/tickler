@@ -33,10 +33,10 @@ serveGetAccountInfo (Authenticated AuthCookie {..}) = do
         Just (Entity _ User {..}) ->
             pure
                 AccountInfo
-                { accountInfoUUID = authCookieUserUUID
-                , accountInfoUsername = userUsername
-                , accountInfoCreatedTimestamp = userCreatedTimestamp
-                , accountInfoLastLogin = userLastLogin
-                , accountInfoAdmin = userUsername `elem` admins
-                }
+                    { accountInfoUUID = authCookieUserUUID
+                    , accountInfoUsername = userUsername
+                    , accountInfoCreated = userCreated
+                    , accountInfoLastLogin = userLastLogin
+                    , accountInfoAdmin = userUsername `elem` admins
+                    }
 serveGetAccountInfo _ = throwAll err401

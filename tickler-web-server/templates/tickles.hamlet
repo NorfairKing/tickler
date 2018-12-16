@@ -1,0 +1,7 @@
+$maybe itemsWidget <- mItemsWidget
+  <div .ui .segment>
+    <h1> #{nrItems} tickles scheduled
+    ^{itemsWidget}
+$nothing
+  <div .ui .segment>
+    <h1> No more tickles scheduled

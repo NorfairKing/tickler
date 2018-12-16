@@ -24,7 +24,6 @@ import qualified Data.Text as T
 
 import Control.Concurrent
 
-import Control.Monad.Except
 import Control.Monad.Trans.Maybe
 
 import qualified Network.HTTP.Client as Http
@@ -61,13 +60,18 @@ data App = App
     , appStatic :: EmbeddedStatic
     , appAPIBaseUrl :: BaseUrl
     , appPersistLogins :: Bool
+    , appTracking :: Maybe Text
+    , appVerification :: Maybe Text
     , appLoginTokens :: MVar (HashMap Username Token)
+    , appDefaultIntrayUrl :: Maybe BaseUrl
     }
 
 mkYesodData "App" $(parseRoutesFile "routes")
 
 instance Yesod App where
+    approot = ApprootRelative
     defaultLayout widget = do
+        app_ <- getYesod
         pc <- widgetToPageContent $(widgetFile "default-body")
         withUrlRenderer $(hamletFile "templates/default-page.hamlet")
     yesodMiddleware = defaultCsrfMiddleware . defaultYesodMiddleware
@@ -76,6 +80,10 @@ instance Yesod App where
 instance PathPiece Username where
     fromPathPiece = parseUsername
     toPathPiece = usernameText
+
+instance PathPiece EmailVerificationKey where
+    fromPathPiece = parseEmailVerificationKeyText
+    toPathPiece = emailVerificationKeyText
 
 instance YesodAuth App where
     type AuthId App = Username
@@ -138,9 +146,9 @@ postLoginR = do
                         liftHandler $
                             login
                                 LoginForm
-                                { loginFormUsername = un
-                                , loginFormPassword = pwd
-                                }
+                                    { loginFormUsername = un
+                                    , loginFormPassword = pwd
+                                    }
                         pure $ Right un
     case muser of
         Left err -> loginErrorMessageI LoginR err
@@ -196,9 +204,9 @@ postNewAccountR = do
                 if newAccountPassword1 d == newAccountPassword2 d
                     then Right
                              Registration
-                             { registrationUsername = newAccountUsername d
-                             , registrationPassword = newAccountPassword1 d
-                             }
+                                 { registrationUsername = newAccountUsername d
+                                 , registrationPassword = newAccountPassword1 d
+                                 }
                     else Left [mr Msg.PassMismatch]
     case mdata of
         Left errs -> do
@@ -212,21 +220,29 @@ postNewAccountR = do
                         FailureResponse resp ->
                             case Http.statusCode $ responseStatusCode resp of
                                 409 ->
-                                    setMessage
+                                    addMessage
+                                        "error"
                                         "An account with this username already exists"
-                                _ ->
-                                    setMessage
-                                        "Failed to register for unknown reasons."
-                        _ ->
-                            setMessage "Failed to register for unknown reasons."
+                                c ->
+                                    addMessage "error" $
+                                    "Failed to register for unknown reasons, got status code: " <>
+                                    toHtml c
+                        ConnectionError t ->
+                            addMessage "error" $
+                            "Failed to register for unknown reasons. with connection error:" <>
+                            toHtml t
+                        e ->
+                            addMessage "error" $
+                            "Failed to register for unknown reasons. with error:" <>
+                            toHtml (show e)
                     liftHandler $ redirect $ AuthR registerR
                 Right NoContent ->
                     liftHandler $ do
                         login
                             LoginForm
-                            { loginFormUsername = registrationUsername reg
-                            , loginFormPassword = registrationPassword reg
-                            }
+                                { loginFormUsername = registrationUsername reg
+                                , loginFormPassword = registrationPassword reg
+                                }
                         setCredsRedirect $
                             Creds
                                 ticklerAuthPluginName
@@ -241,9 +257,19 @@ instance PathPiece (UUID a) where
     toPathPiece = uuidText
 
 withNavBar :: WidgetFor App () -> HandlerFor App Html
-withNavBar widget = do
+withNavBar = withFormFailureNavBar []
+
+withFormResultNavBar :: FormResult a -> WidgetFor App () -> HandlerFor App Html
+withFormResultNavBar fr w =
+    case fr of
+        FormSuccess _ -> withNavBar w
+        FormFailure ts -> withFormFailureNavBar ts w
+        FormMissing -> withFormFailureNavBar ["Missing data"] w
+
+withFormFailureNavBar :: [Text] -> Widget -> Handler Html
+withFormFailureNavBar errs body = do
     mauth <- maybeAuthId
-    msgs <- getMessages
+    msgs <- fmap (map ((,) "error" . toHtml) errs ++) getMessages
     defaultLayout $(widgetFile "with-nav-bar")
 
 genToken :: MonadHandler m => m Html
@@ -276,7 +302,7 @@ handleStandardServantErrs ::
 handleStandardServantErrs err func =
     case err of
         FailureResponse resp -> func resp
-        ConnectionError e -> redirect $ ErrorAPIDownR $ T.pack $ show e
+        ConnectionError e -> redirect $ ErrorAPIDownR e
         e -> error $ unwords ["Error while calling API:", show e]
 
 login :: LoginForm -> Handler ()
@@ -296,7 +322,7 @@ login form = do
                     recordLoginToken (loginFormUsername form) session
                 _ -> undefined -- TODO deal with this error
 
-withLogin :: (Token -> Handler Html) -> Handler Html
+withLogin :: (Token -> Handler a) -> Handler a
 withLogin func = do
     un <- requireAuthId
     mLoginToken <- lookupToginToken un

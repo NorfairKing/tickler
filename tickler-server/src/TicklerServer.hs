@@ -4,10 +4,16 @@ import Import
 
 import Tickler.Server (runTicklerServer)
 import Tickler.Server.OptParse
-       (Dispatch(..), Settings(..), getInstructions)
+    ( Dispatch(..)
+    , Instructions(..)
+    , Settings(..)
+    , getInstructions
+    )
 
 ticklerServer :: IO ()
 ticklerServer = do
-    (DispatchServe serveSets, Settings) <- getInstructions
-    putStrLn $ ppShow serveSets
+    Instructions (DispatchServe serveSets) Settings <- getInstructions
+    putStrLn $
+        unlines
+            ["Running tickler-server with these settings:", ppShow serveSets]
     runTicklerServer serveSets

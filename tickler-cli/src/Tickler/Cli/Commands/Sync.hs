@@ -6,10 +6,11 @@ module Tickler.Cli.Commands.Sync
 
 import Import
 
+import qualified Data.Mergeless as Mergeless
+
 import Tickler.API
 
 import Tickler.Client
-import Tickler.Client.Store
 
 import Tickler.Cli.Client
 import Tickler.Cli.OptParse
@@ -30,17 +31,33 @@ sync = do
                         liftIO $ die $ unlines ["Sync failed:", show err]
                     Right resp -> do
                         liftIO $ putStr $ showMergeStats req resp
-                        pure $ mergeStore before resp
+                        pure $ mergeSyncResponse before resp
     writeStore after
 
 showMergeStats :: SyncRequest -> SyncResponse -> String
 showMergeStats SyncRequest {..} SyncResponse {..} =
     unlines
-        [ unwords [show $ length syncResponseAddedItems, "added   remotely"]
-        , unwords [show $ length syncRequestUndeletedItems, "deleted remotely"]
-        , unwords [show $ length syncResponseNewRemoteItems, "added   locally"]
+        [ unwords
+              [ show $
+                length $ Mergeless.syncResponseAddedItems syncResponseTickles
+              , "tickles added   remotely"
+              ]
         , unwords
-              [ show $ length syncResponseItemsToBeDeletedLocally
-              , "deleted locally"
+              [ show $
+                length $ Mergeless.syncRequestUndeletedItems syncRequestTickles
+              , "tickles deleted remotely"
+              ]
+        , unwords
+              [ show $
+                length $
+                Mergeless.syncResponseNewRemoteItems syncResponseTickles
+              , "tickles added   locally"
+              ]
+        , unwords
+              [ show $
+                length $
+                Mergeless.syncResponseItemsToBeDeletedLocally
+                    syncResponseTickles
+              , "tickles deleted locally"
               ]
         ]

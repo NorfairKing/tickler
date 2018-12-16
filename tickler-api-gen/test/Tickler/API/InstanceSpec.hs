@@ -13,11 +13,11 @@ import Tickler.API.Types
 
 spec :: Spec
 spec = do
-    eqSpec @Registration
-    ordSpec @Registration
+    eqSpecOnValid @Registration
+    ordSpecOnValid @Registration
     genValidSpec @Registration
     jsonSpecOnValid @Registration
-    eqSpec @LoginForm
-    ordSpec @LoginForm
+    eqSpecOnValid @LoginForm
+    ordSpecOnValid @LoginForm
     genValidSpec @LoginForm
     jsonSpecOnValid @LoginForm

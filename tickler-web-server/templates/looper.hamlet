@@ -1,0 +1,24 @@
+<div .ui .#{loopersColor $ looperInfoStatus ls} .segment>
+  <h4 .ui .header>
+    #{name}
+  $maybe period <- looperInfoPeriod ls
+    <p>
+      Period: #{period} seconds
+  $maybe delay <- looperInfoRetryDelay ls
+    <p>
+      Retry Delay: #{delay} microseconds
+  $maybe amount <- looperInfoRetryAmount ls
+    <p>
+      Retry Amount: #{amount} times
+  <p>
+    $case looperInfoStatus ls
+      $of LooperStatusDisabled
+        Disabled
+      $of LooperStatusRunning
+        Running
+      $of LooperStatusErrored t
+        Error:
+        <pre>
+          #{t}
+      $of LooperStatusStopped
+        Stopped

@@ -6,11 +6,13 @@ import Prelude as X hiding (fail, head, init, last, tail)
 
 import GHC.Generics as X (Generic)
 
+import Control.Arrow as X
 import Control.Monad as X hiding (fail)
 import Control.Monad.Fail as X
 import Control.Monad.IO.Class as X
 
 import Data.ByteString as X (ByteString)
+import Data.Data as X
 import Data.Monoid as X
 import Data.Proxy as X
 import Data.Text as X (Text)

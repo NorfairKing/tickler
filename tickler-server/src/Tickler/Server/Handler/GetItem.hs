@@ -26,10 +26,33 @@ import Tickler.Server.Types
 import Tickler.Server.Handler.Utils
 
 serveGetItem ::
-       AuthResult AuthCookie -> ItemUUID -> TicklerHandler (ItemInfo TypedItem)
+       AuthResult AuthCookie -> ItemUUID -> TicklerHandler TypedItemInfo
 serveGetItem (Authenticated AuthCookie {..}) id_ = do
-    mitem <- runDb $ getBy $ UniqueIdentifier id_ authCookieUserUUID
-    case mitem of
-        Nothing -> throwError err404 {errBody = "Item not found."}
-        Just item -> pure $ makeItemInfo $ entityVal item
+    mIItem <- runDb $ getBy $ UniqueItemIdentifier id_
+    case mIItem of
+        Just item -> pure $ makeTicklerItemInfo $ entityVal item
+        Nothing -> do
+            mTItem <- runDb $ getBy $ UniqueTriggeredItemIdentifier id_
+            case mTItem of
+                Just item -> do
+                    triggeredItemEns <-
+                        runDb $
+                        selectList
+                            [ TriggeredIntrayItemItem ==.
+                              triggeredItemIdentifier (entityVal item)
+                            ]
+                            []
+                    triggeredEmailEns <-
+                        runDb $
+                        selectList
+                            [ TriggeredEmailItem ==.
+                              triggeredItemIdentifier (entityVal item)
+                            ]
+                            []
+                    pure $
+                        makeTriggeredItemInfo
+                            (entityVal item)
+                            (map entityVal triggeredItemEns)
+                            (map entityVal triggeredEmailEns)
+                Nothing -> throwError err404 {errBody = "Item not found."}
 serveGetItem _ _ = throwAll err401

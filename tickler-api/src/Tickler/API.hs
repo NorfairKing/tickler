@@ -19,20 +19,69 @@ module Tickler.API
     , TicklerAdminAPI
     , TicklerAdminSite(..)
     , AuthCookie(..)
+    , ItemFilter(..)
     , ItemType(..)
     , TypedItem(..)
     , textTypedItem
     , TypedItemCase(..)
     , typedItemCase
+    , Recurrence(..)
+    , everyDaysAtTime
+    , everyMonthsOnDayAtTime
+    , Tickle(..)
+    , TypedTickle
     , ItemInfo(..)
+    , TypedItemInfo
+    , TriggeredInfo(..)
+    , TriggerAttempt(..)
+    , IntrayTriggerResult(..)
+    , EmailTriggerResult(..)
+    , AddItem
+    , Added(..)
+    , Synced(..)
     , SyncRequest(..)
-    , NewSyncItem(..)
     , SyncResponse(..)
+    , TriggerUUID
+    , TriggerType(..)
+    , TriggerInfo(..)
+    , decodeTriggerInfo
+    , TypedTriggerInfo(..)
+    , decodeTypedTriggerInfo
+    , IntrayTriggerInfo(..)
+    , EmailTriggerInfo(..)
+    , GetTriggers
+    , AddIntrayTrigger(..)
+    , PostAddIntrayTrigger
+    , EmailAddress
+    , normalizeEmail
+    , unsafeEmailAddress
+    , emailValidateFromText
+    , emailValidateFromString
+    , emailAddressFromText
+    , emailAddressFromString
+    , emailAddressText
+    , emailAddressByteString
+    , domainPart
+    , localPart
+    , AddEmailTrigger(..)
+    , PostAddEmailTrigger
+    , PostEmailTriggerVerify
+    , EmailVerificationKey(..)
+    , emailVerificationKeyText
+    , parseEmailVerificationKeyText
+    , PostEmailTriggerResendVerificationEmail
     , AccountInfo(..)
+    , AccountSettings(..)
+    , GetAccountSettings
+    , PutAccountSettings
     , Registration(..)
     , PostRegister
     , LoginForm(..)
     , PostLogin
+    , GetLoopersStatus
+    , LoopersInfo(..)
+    , LooperInfo(..)
+    , LooperStatus(..)
     , GetDocs
     , GetDocsResponse(..)
     , AdminStats(..)
@@ -67,6 +116,7 @@ import Tickler.Data
 
 import Tickler.API.Admin
 import Tickler.API.Protected
+import Tickler.API.Types
 
 ticklerAPI :: Proxy TicklerAPI
 ticklerAPI = Proxy
@@ -93,14 +143,16 @@ type TicklerPublicAPI = ToServant (TicklerPublicSite AsApi)
 data TicklerPublicSite route = TicklerPublicSite
     { postRegister :: route :- PostRegister
     , postLogin :: route :- PostLogin
+    , getLoopersStatus :: route :- GetLoopersStatus
     , getDocs :: route :- GetDocs
     } deriving (Generic)
 
--- | The order of the items is not guaranteed to be the same for every call.
 type PostRegister
-     = "item" :> ReqBody '[ JSON] Registration :> Post '[ JSON] NoContent
+     = "register" :> ReqBody '[ JSON] Registration :> Post '[ JSON] NoContent
 
 type PostLogin
      = "login" :> ReqBody '[ JSON] LoginForm :> PostNoContent '[ JSON] (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
+
+type GetLoopersStatus = "loopers" :> Get '[ JSON] LoopersInfo
 
 type GetDocs = Get '[ HTML] GetDocsResponse

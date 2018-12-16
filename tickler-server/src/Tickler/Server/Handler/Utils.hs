@@ -38,6 +38,7 @@ withAdminCreds adminCandidate func = do
                 then func
                 else throwAll err401
 
+-- TODO this is not done. Triggers need to be deleted too.
 deleteAccountFully :: AccountUUID -> TicklerHandler ()
 deleteAccountFully uuid = do
     mEnt <- runDb $ getBy $ UniqueUserIdentifier uuid

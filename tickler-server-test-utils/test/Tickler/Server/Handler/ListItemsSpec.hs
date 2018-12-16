@@ -11,8 +11,7 @@ import TestImport
 import Tickler.API
 import Tickler.Client
 
-import Tickler.Client.Gen ()
-import Tickler.Data.Gen ()
+import Tickler.API.Gen ()
 import Tickler.Server.TestUtils
 
 spec :: Spec
@@ -25,11 +24,11 @@ spec =
                     uuids <-
                         runClientOrError cenv $
                         mapM (clientPostAddItem token) items
-                    items' <- runClientOrError cenv $ clientGetItems token
+                    items' <- runClientOrError cenv $ clientGetAllItems token
                     map itemInfoIdentifier items' `shouldContain` uuids
         it "it always lists valid items" $ \cenv ->
             withValidNewUser cenv $ \token -> do
-                items <- runClientOrError cenv $ clientGetItems token
+                items <- runClientOrError cenv $ clientGetAllItems token
                 shouldBeValid items
         it "does not list others' items" $ \cenv ->
             forAllValid $ \items1 ->
@@ -43,7 +42,7 @@ spec =
                                 runClientOrError cenv $
                                 mapM (clientPostAddItem token2) items2
                             items' <-
-                                runClientOrError cenv $ clientGetItems token1
+                                runClientOrError cenv $ clientGetAllItems token1
                             map itemInfoIdentifier items' `shouldContain` uuids1
                             forM_ (uuids2 :: [ItemUUID]) $ \u ->
                                 u `shouldNotSatisfy`

@@ -23,8 +23,8 @@ import Servant.Generic
 
 import Tickler.Data
 
-import Tickler.API.Admin.Types
 import Tickler.API.Account.Types
+import Tickler.API.Admin.Types
 import Tickler.API.Types
 
 type TicklerAdminAPI = ToServant (TicklerAdminSite AsApi)

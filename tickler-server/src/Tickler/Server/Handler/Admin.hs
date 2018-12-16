@@ -16,7 +16,7 @@ import Tickler.Server.Handler.Admin.GetStats
 ticklerAdminServer :: TicklerAdminSite (AsServerT TicklerHandler)
 ticklerAdminServer =
     TicklerAdminSite
-    { adminGetStats = serveAdminGetStats
-    , adminDeleteAccount = serveAdminDeleteAccount
-    , adminGetAccounts = serveAdminGetAccounts
-    }
+        { adminGetStats = serveAdminGetStats
+        , adminDeleteAccount = serveAdminDeleteAccount
+        , adminGetAccounts = serveAdminGetAccounts
+        }

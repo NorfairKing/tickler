@@ -2,9 +2,9 @@ module Tickler.Web.Server.OptParse.Types where
 
 import Import
 
-import Database.Persist.Sqlite
+import Servant.Client.Core
 
-import Tickler.API
+import qualified Tickler.Server.OptParse.Types as API
 
 type Arguments = (Command, Flags)
 
@@ -17,10 +17,10 @@ newtype Command =
 data ServeFlags = ServeFlags
     { serveFlagPort :: Maybe Int
     , serveFlagPersistLogins :: Maybe Bool
-    , serveFlagAPIPort :: Maybe Int
-    , serveFlagAPIDB :: Maybe Text
-    , serveFlagAPIConnectionCount :: Maybe Int
-    , serveFlagAPIAdmins :: [String]
+    , serveFlagDefaultIntrayUrl :: Maybe BaseUrl
+    , serveFlagTracking :: Maybe Text
+    , serveFlagVerification :: Maybe Text
+    , serveFlagAPIServeFlags :: API.ServeFlags
     } deriving (Show, Eq)
 
 data Flags =
@@ -33,7 +33,10 @@ data Configuration =
 
 data Environment = Environment
     { envPort :: Maybe Int
-    , envAPIPort :: Maybe Int
+    , envDefaultIntrayUrl :: Maybe BaseUrl
+    , envTracking :: Maybe Text
+    , envVerification :: Maybe Text
+    , envAPIEnvironment :: API.Environment
     } deriving (Show, Eq)
 
 newtype Dispatch =
@@ -43,10 +46,10 @@ newtype Dispatch =
 data ServeSettings = ServeSettings
     { serveSetPort :: Int
     , serveSetPersistLogins :: Bool
-    , serveSetAPIPort :: Int
-    , serveSetAPIConnectionInfo :: SqliteConnectionInfo
-    , serveSetAPIConnectionCount :: Int
-    , serveSetAPIAdmins :: [Username]
+    , serveSetDefaultIntrayUrl :: Maybe BaseUrl
+    , serveSetTracking :: Maybe Text
+    , serveSetVerification :: Maybe Text
+    , serveSetAPISettings :: API.ServeSettings
     } deriving (Show)
 
 data Settings =

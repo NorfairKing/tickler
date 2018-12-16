@@ -1,0 +1,23 @@
+$maybe itemsWidget <- mItemWidget
+  <h1> #{nrItems} tickles triggered
+  ^{itemsWidget}
+$nothing
+  <div .ui .segment>
+    <h1> No tickles triggered
+
+<div .ui .buttons>
+  <form
+    method="post"
+    action=@{RetryTriggeredsR}
+    onclick="return confirm('Are you sure you want to retry all items that failed to be triggered? This cannot be undone.');">
+    ^{token}
+    <button .ui .button type="submit">
+      Retry Triggering
+
+  <form
+    method="post"
+    action=@{DeleteTriggeredsR}
+    onclick="return confirm('Are you sure you want to delete all triggered items? This cannot be undone.');">
+    ^{token}
+    <button .ui .button .negative type="submit">
+      Delete all triggered items

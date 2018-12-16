@@ -1,22 +1,36 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Cli.Commands.Add
-    ( addItem
+    ( add
     ) where
 
 import Import
 
+import Data.Mergeless
 import Data.Time
 
-import Tickler.API
+import Tickler.Client
 
 import Tickler.Cli.OptParse
-import Tickler.Cli.Store
 import Tickler.Cli.Sync
 
-addItem :: Text -> CliM ()
-addItem t = do
-    now <- liftIO getCurrentTime
-    modifyStoreAndSync $ addItemToStore (textTypedItem t) now
+add :: AddSettings -> CliM ()
+add AddSettings {..} =
+    withStoreAndSync $ \s -> do
+        now <- liftIO getCurrentTime
+        let a =
+                Added
+                    { addedCreated = now
+                    , addedValue =
+                          Tickle
+                              { tickleContent =
+                                    textTypedItem addSetTickleContent
+                              , tickleScheduledDay = addSetTickleDate
+                              , tickleScheduledTime = addSetTickleTime
+                              , tickleRecurrence = Nothing
+                              }
+                    }
+        pure $ addTickleToStore s a

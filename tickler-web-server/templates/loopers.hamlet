@@ -1,0 +1,7 @@
+^{mkLooperInfoWidget "Emailer" emailerLooperInfo}
+^{mkLooperInfoWidget "Triggerer" triggererLooperInfo}
+^{mkLooperInfoWidget "Verification Email Converter" verificationEmailConverterLooperInfo}
+^{mkLooperInfoWidget "Triggered Intray Item Scheduler" triggeredIntrayItemSchedulerLooperInfo}
+^{mkLooperInfoWidget "Triggered Intray Item Sender" triggeredIntrayItemSenderLooperInfo}
+^{mkLooperInfoWidget "Triggered Email Scheduler" triggeredEmailSchedulerLooperInfo}
+^{mkLooperInfoWidget "Triggered Email Converter" triggeredEmailConverterLooperInfo}

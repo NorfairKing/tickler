@@ -31,26 +31,28 @@ import Tickler.Data
 import Tickler.Server.OptParse.Types
 import Tickler.Server.Types
 
+import Tickler.Server.Handler (ticklerServer)
+import Tickler.Server.Looper
 import Tickler.Server.SigningKey
 
-import Tickler.Server.Handler (ticklerServer)
-
 runTicklerServer :: ServeSettings -> IO ()
-runTicklerServer ServeSettings {..} =
+runTicklerServer ServeSettings {..} = do
     runStderrLoggingT $
-    withSqlitePoolInfo serveSetConnectionInfo serveSetConnectionCount $ \pool -> do
-        runResourceT $ flip runSqlPool pool $ runMigration migrateAll
-        signingKey <- liftIO loadSigningKey
-        let jwtCfg = defaultJWTSettings signingKey
-        let cookieCfg = defaultCookieSettings
-        let ticklerEnv =
-                TicklerServerEnv
-                { envConnectionPool = pool
-                , envCookieSettings = cookieCfg
-                , envJWTSettings = jwtCfg
-                , envAdmins = serveSetAdmins
-                }
-        liftIO $ Warp.run serveSetPort $ ticklerApp ticklerEnv
+        withSqlitePoolInfo serveSetConnectionInfo serveSetConnectionCount $ \pool -> do
+            runResourceT $ flip runSqlPool pool $ runMigration migrateAll
+            signingKey <- liftIO loadSigningKey
+            let jwtCfg = defaultJWTSettings signingKey
+            let cookieCfg = defaultCookieSettings
+            loopersHandle <- liftIO $ startLoopers pool serveSetLooperSettings
+            let ticklerEnv =
+                    TicklerServerEnv
+                        { envConnectionPool = pool
+                        , envCookieSettings = cookieCfg
+                        , envJWTSettings = jwtCfg
+                        , envAdmins = serveSetAdmins
+                        , envLoopersHandle = loopersHandle
+                        }
+            liftIO $ Warp.run serveSetPort $ ticklerApp ticklerEnv
 
 ticklerApp :: TicklerServerEnv -> Wai.Application
 ticklerApp se =
@@ -60,9 +62,9 @@ ticklerApp se =
     addPolicy = cors (const $ Just policy)
     policy =
         simpleCorsResourcePolicy
-        { corsRequestHeaders = ["content-type"]
-        , corsMethods = ["GET", "POST", "HEAD", "DELETE"]
-        }
+            { corsRequestHeaders = ["content-type"]
+            , corsMethods = ["GET", "POST", "HEAD", "DELETE"]
+            }
 
 makeTicklerServer :: TicklerServerEnv -> Server TicklerAPI
 makeTicklerServer cfg =

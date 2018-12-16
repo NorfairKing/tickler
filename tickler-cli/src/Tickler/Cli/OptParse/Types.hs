@@ -8,6 +8,8 @@ module Tickler.Cli.OptParse.Types where
 import Import
 
 import Data.Text (Text)
+import Data.Time
+import Data.Word
 import Data.Yaml as Yaml
 
 import Servant.Client
@@ -25,11 +27,7 @@ data Instructions =
 data Command
     = CommandRegister RegisterArgs
     | CommandLogin LoginArgs
-    | CommandPostPostAddItem [String]
-    | CommandShowItem
-    | CommandDoneItem
-    | CommandSize
-    | CommandReview
+    | CommandAdd AddArgs
     | CommandLogout
     | CommandSync
     deriving (Show, Eq, Generic)
@@ -43,6 +41,24 @@ data LoginArgs = LoginArgs
     { loginArgUsername :: Maybe String
     , loginArgPassword :: Maybe String
     } deriving (Show, Eq, Generic)
+
+data AddArgs = AddArgs
+    { addArgContent :: String
+    , addArgTickleDate :: String
+    , addArgTickleTime :: Maybe String
+    , addArgRecurrence :: Maybe RecurrenceArgs
+    } deriving (Show, Eq, Generic)
+
+data RecurrenceArgs
+    = RecurrenceArgEveryDayAt (Maybe String)
+    | RecurrenceArgEveryDaysAt Word
+                               (Maybe String)
+    | RecurrenceArgEveryMonthOnAt (Maybe Word8)
+                                  (Maybe String)
+    | RecurrenceArgEveryMonthsOnAt Word
+                                   (Maybe Word8)
+                                   (Maybe String)
+    deriving (Show, Eq, Generic)
 
 data Flags = Flags
     { flagConfigFile :: Maybe FilePath
@@ -68,11 +84,11 @@ instance FromJSON Configuration where
 emptyConfiguration :: Configuration
 emptyConfiguration =
     Configuration
-    { configUrl = Nothing
-    , configUsername = Nothing
-    , configTicklerDir = Nothing
-    , configSyncStrategy = Nothing
-    }
+        { configUrl = Nothing
+        , configUsername = Nothing
+        , configTicklerDir = Nothing
+        , configSyncStrategy = Nothing
+        }
 
 data Settings = Settings
     { setBaseUrl :: Maybe BaseUrl
@@ -93,11 +109,7 @@ instance ToJSON SyncStrategy
 data Dispatch
     = DispatchRegister RegisterSettings
     | DispatchLogin LoginSettings
-    | DispatchPostPostAddItem Text
-    | DispatchShowItem
-    | DispatchDoneItem
-    | DispatchSize
-    | DispatchReview
+    | DispatchAdd AddSettings
     | DispatchLogout
     | DispatchSync
     deriving (Show, Eq, Generic)
@@ -110,6 +122,13 @@ data RegisterSettings = RegisterSettings
 data LoginSettings = LoginSettings
     { loginSetUsername :: Maybe Username
     , loginSetPassword :: Maybe Text
+    } deriving (Show, Eq, Generic)
+
+data AddSettings = AddSettings
+    { addSetTickleContent :: Text
+    , addSetTickleDate :: Day
+    , addSetTickleTime :: Maybe TimeOfDay
+    , addSetTickleRecurrence :: Maybe Recurrence
     } deriving (Show, Eq, Generic)
 
 type CliM = ReaderT Settings IO

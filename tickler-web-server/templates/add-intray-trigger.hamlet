@@ -1,0 +1,31 @@
+<div .ui .segment>
+  <h1> Add Intray Trigger
+
+  <form
+    .ui .form
+    method=post
+    action=@{AddIntrayTriggerR}>
+    <div .field>
+      <label>
+        Intray URL
+      <input 
+        type="url" 
+        name="url" 
+        value=#{maybe "" showBaseUrl defaultIntrayUrl}
+        autofocus>
+    <div .field>
+      <label>
+        Username
+      <input
+        type="text"
+        value=#{maybe "" usernameText mun}
+        name="username">
+    <div .field>
+      <label>
+        Access Key
+      <input
+        type="text"
+        name="access-key">
+    ^{token}
+    <button .ui .primary .button type="submit">
+      Create Intray Trigger

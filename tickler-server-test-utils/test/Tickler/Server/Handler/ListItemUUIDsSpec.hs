@@ -10,7 +10,7 @@ import TestImport
 
 import Tickler.Client
 
-import Tickler.Client.Gen ()
+import Tickler.API.Gen ()
 import Tickler.Server.TestUtils
 
 spec :: Spec

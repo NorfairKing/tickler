@@ -1,0 +1,54 @@
+<div .ui .segment>
+  <p>
+   Created: ^{createdWidget}
+  <p>
+    Scheduled: ^{scheduledWidget}
+  $maybe triggeredWidget <- mTriggeredWidget
+    <p>
+      Triggered: ^{triggeredWidget}
+  <p>
+    $case typedItemCase $ tickleContent itemInfoContents
+      $of Left err
+        Invalid item: #{err}
+      $of Right i
+        $case i 
+          $of CaseTextItem t
+            #{Textarea t}
+
+  $maybe recurrence <- tickleRecurrence itemInfoContents
+    <p>
+      $case recurrence
+        $of EveryDaysAtTime ds mtod
+          $case ds
+            $of 1
+              Every day&nbsp;
+            $of _
+              Every #{ds} days&nbsp;
+          $maybe tod <- mtod
+            at #{show tod}
+
+        $of EveryMonthsOnDay ms md mtod
+          $case ms
+            $of 1
+              Every month&nbsp;
+            $of _
+              Every #{ms} months&nbsp;
+          $maybe d <- md
+            on day #{show d} of the month
+          $maybe dt <- mtod
+            at #{show dt}
+
+  <div .ui .buttons>
+    <a .ui .button href=@{EditR itemInfoIdentifier}>
+      Edit
+    <form
+      method="post"
+      action=@{DeleteTickleR}
+      onclick="return confirm('Are you sure you want to delete this item? This cannot be undone.');">
+      <input
+        name="item"
+        type="hidden"
+        value=#{uuidText itemInfoIdentifier}>
+      ^{token}
+      <button .ui .negative .button type="submit">
+        Delete

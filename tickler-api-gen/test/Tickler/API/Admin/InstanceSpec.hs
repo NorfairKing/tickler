@@ -14,7 +14,7 @@ import Tickler.API.Admin.Gen ()
 
 spec :: Spec
 spec = do
-    eqSpec @AdminStats
-    ordSpec @AdminStats
+    eqSpecOnValid @AdminStats
+    ordSpecOnValid @AdminStats
     genValidSpec @AdminStats
     jsonSpecOnValid @AdminStats

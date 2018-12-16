@@ -6,6 +6,18 @@
   
 
 <div .ui .segment>
+  <h2> Settings
+  <form
+    .ui .form
+    method=post
+    action=@{AccountSettingsR}
+    enctype=#{formEnctype}>
+    ^{accountSettingsFormWidget}
+    <button .ui .primary .button type="submit">
+      Save
+
+
+<div .ui .segment>
   <h2> Danger zone
   <form
      method=post

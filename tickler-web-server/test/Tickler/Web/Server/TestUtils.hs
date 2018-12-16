@@ -16,19 +16,21 @@ module Tickler.Web.Server.TestUtils
 
 import TestImport
 
+import Control.Lens
+import Data.Text (Text)
+
 import Yesod.Auth
 import Yesod.Test
 
-import Data.Text (Text)
-
 import Network.HTTP.Types
 
-import Database.Persist.Sqlite (mkSqliteConnectionInfo)
+import Database.Persist.Sqlite (mkSqliteConnectionInfo, walEnabled)
 
 import Servant.Client (BaseUrl(..), ClientEnv(..))
 
 import Tickler.Data
 
+import qualified Tickler.Server.OptParse.Types as API
 import qualified Tickler.Server.TestUtils as API
 
 import Tickler.Web.Server
@@ -41,16 +43,41 @@ import Tickler.Data.Gen ()
 
 ticklerTestServeSettings :: IO ServeSettings
 ticklerTestServeSettings = do
-    let connInfo = mkSqliteConnectionInfo "test.db"
+    let connInfo =
+            mkSqliteConnectionInfo "tickler-test.db" & walEnabled .~ False
     pure
         ServeSettings
-        { serveSetPort = 8000
-        , serveSetPersistLogins = False
-        , serveSetAPIPort = 8001
-        , serveSetAPIConnectionInfo = connInfo
-        , serveSetAPIConnectionCount = 4
-        , serveSetAPIAdmins = [fromJust $ parseUsername "admin"]
-        }
+            { serveSetPort = 8000
+            , serveSetPersistLogins = False
+            , serveSetDefaultIntrayUrl = Nothing
+            , serveSetTracking = Nothing
+            , serveSetVerification = Nothing
+            , serveSetAPISettings =
+                  API.ServeSettings
+                      { API.serveSetPort = 8001
+                      , API.serveSetConnectionInfo = connInfo
+                      , API.serveSetConnectionCount = 1
+                      , API.serveSetAdmins = catMaybes [parseUsername "admin"]
+                      , API.serveSetLooperSettings =
+                            API.LooperSettings
+                                { API.looperSetConnectionInfo = connInfo
+                                , API.looperSetConnectionCount = 1
+                                , API.looperSetTriggererSets =
+                                      API.LooperDisabled
+                                , API.looperSetEmailerSets = API.LooperDisabled
+                                , API.looperSetTriggeredIntrayItemSchedulerSets =
+                                      API.LooperDisabled
+                                , API.looperSetTriggeredIntrayItemSenderSets =
+                                      API.LooperDisabled
+                                , API.looperSetVerificationEmailConverterSets =
+                                      API.LooperDisabled
+                                , API.looperSetTriggeredEmailSchedulerSets =
+                                      API.LooperDisabled
+                                , API.looperSetTriggeredEmailConverterSets =
+                                      API.LooperDisabled
+                                }
+                      }
+            }
 
 ticklerWebServerSpec :: YesodSpec App -> Spec
 ticklerWebServerSpec = b . a
@@ -59,8 +86,11 @@ ticklerWebServerSpec = b . a
     a =
         yesodSpecWithSiteGeneratorAndArgument
             (\(ClientEnv _ burl _) -> do
-                 sets <- ticklerTestServeSettings
-                 let sets' = sets {serveSetAPIPort = baseUrlPort burl}
+                 sets_ <- ticklerTestServeSettings
+                 let apiSets =
+                         (serveSetAPISettings sets_)
+                             {API.serveSetPort = baseUrlPort burl}
+                 let sets' = sets_ {serveSetAPISettings = apiSets}
                  makeTicklerApp sets')
     b :: SpecWith ClientEnv -> Spec
     b = API.withTicklerServer
@@ -107,9 +137,9 @@ withExampleAccount =
 withExampleAccountAndLogin ::
        (Username -> Text -> YesodExample App a) -> YesodExample App a
 withExampleAccountAndLogin func =
-    withExampleAccount $ \un p -> do
-        loginTo un p
-        func un p
+    withExampleAccount $ \un_ p -> do
+        loginTo un_ p
+        func un_ p
 
 withExampleAccount_ :: YesodExample App a -> YesodExample App a
 withExampleAccount_ = withExampleAccount . const . const
@@ -127,9 +157,9 @@ withAdminAccount_ = withAdminAccount . const . const
 withAdminAccountAndLogin ::
        (Username -> Text -> YesodExample App a) -> YesodExample App a
 withAdminAccountAndLogin func =
-    withAdminAccount $ \un p -> do
-        loginTo un p
-        func un p
+    withAdminAccount $ \un_ p -> do
+        loginTo un_ p
+        func un_ p
 
 withAdminAccountAndLogin_ :: YesodExample App a -> YesodExample App a
 withAdminAccountAndLogin_ = withAdminAccountAndLogin . const . const

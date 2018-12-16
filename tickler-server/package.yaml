@@ -19,40 +19,77 @@ library:
   - Tickler.Server
   - Tickler.Server.Handler.PostSync
   - Tickler.Server.Handler.Utils
-  - Tickler.Server.Types
+  - Tickler.Server.Looper
+  - Tickler.Server.Looper.Triggerer
   - Tickler.Server.OptParse
   - Tickler.Server.OptParse.Types
+  - Tickler.Server.Types
 
   dependencies:
   - aeson
   - aeson-pretty
+  - amazonka
+  - amazonka-ses
+  - async
   - base >=4.7 && <5
+  - blaze-html
   - bytestring
+  - containers
+  - cookie
+  - data-default
+  - email-validate
+  - exceptions
   - file-embed
-  - tickler-api
-  - tickler-data
+  - http-client
+  - http-client-tls
+  - http-types
+  - intray-client
   - jose
+  - lens
+  - markdown
+  - mergeless
   - monad-logger
   - mtl >=2.2
+  - nonce
   - optparse-applicative >=0.13
-  - pandoc
   - path
   - path-io
-  - persistent >=2.7
+  - persistent
   - persistent-sqlite
+  - persistent-template
   - pretty-show
+  - resource-pool
   - resourcet
+  - retry
+  - safe
   - servant
   - servant-auth-server
+  - servant-auth-client
+  - servant-client
+  - servant-client-core
   - servant-docs
   - servant-generic
   - servant-server
+  - shakespeare
+  - template-haskell
   - text
+  - tickler-api
+  - tickler-client
+  - tickler-data
   - time
   - typed-uuid
+  - validity
+  - validity-bytestring
+  - validity-containers
+  - validity-path
+  - validity-text
+  - validity-time
   - wai
+  - wai-app-static
   - wai-cors
+  - wai-extra
   - warp >=3.2
+  - yaml
 
 executables:
   tickler-server:

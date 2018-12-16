@@ -24,12 +24,16 @@ library:
   - cookie >=0.4 && <0.5
   - genvalidity-bytestring
   - genvalidity-hspec
+  - genvalidity-mergeless
   - genvalidity-text
   - genvalidity-time
   - hspec
   - http-client
   - http-types
+  - intray-server
+  - intray-server-test-utils
   - tickler-api
+  - tickler-api-gen
   - tickler-client
   - tickler-client-gen
   - tickler-data
@@ -66,23 +70,30 @@ tests:
     - QuickCheck
     - base >=4.9 && <5
     - bytestring
+    - containers
     - genvalidity-bytestring
     - genvalidity-hspec
     - genvalidity-text
     - genvalidity-time
     - hspec
     - http-types
-    - tickler-api
-    - tickler-client
-    - tickler-client-gen
-    - tickler-data
-    - tickler-data-gen
-    - tickler-server-test-utils
+    - intray-client
+    - intray-server-test-utils
+    - mergeless
     - path
     - path-io
     - servant
     - servant-client
     - text
+    - tickler-api
+    - tickler-api-gen
+    - tickler-client
+    - tickler-client-gen
+    - tickler-data
+    - tickler-data-gen
+    - tickler-server
+    - tickler-server-test-utils
+    - time
 
 benchmarks:
   tickler-server-bench:
@@ -100,8 +111,8 @@ benchmarks:
     - bytestring
     - cookie
     - criterion
-    - tickler-client
     - servant
     - servant-auth-client
     - servant-client
+    - tickler-client
     - tickler-server-test-utils

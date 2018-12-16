@@ -13,6 +13,9 @@ module Tickler.API.Types
     , AuthCookie(..)
     , Registration(..)
     , LoginForm(..)
+    , LoopersInfo(..)
+    , LooperInfo(..)
+    , LooperStatus(..)
     , GetDocsResponse(..)
     , HashedPassword
     , passwordHash
@@ -29,25 +32,22 @@ module Tickler.API.Types
 import Import
 
 import Data.Aeson as JSON
-import qualified Data.ByteString.Lazy as LB
-import qualified Data.Text.Encoding as TE
 import Data.Time
-import qualified Data.UUID as UUID
 import Data.UUID.Typed
 
 import Text.Blaze as HTML
 import Text.Blaze.Html as HTML
-import Text.Pandoc as Pandoc
-
-import Web.Cookie
 
 import Servant.API
 import Servant.Auth
 import Servant.Auth.Docs ()
 import Servant.Auth.Server
 import Servant.Auth.Server.SetCookieOrphan ()
+import Servant.Client.Core
 import Servant.Docs
 import Servant.HTML.Blaze
+
+import Intray.API ()
 
 import Tickler.Data
 
@@ -60,21 +60,6 @@ newtype AuthCookie = AuthCookie
 instance FromJWT AuthCookie
 
 instance ToJWT AuthCookie
-
-instance ToCapture (Capture "id" ItemUUID) where
-    toCapture _ = DocCapture "id" "The UUID of the item"
-
-instance ToSample UTCTime where
-    toSamples Proxy = singleSample $ UTCTime (fromGregorian 2018 2 10) 42
-
-instance ToSample Text where
-    toSamples Proxy = singleSample "Example Text"
-
-instance ToSample (UUID a) where
-    toSamples Proxy = singleSample (UUID $ UUID.fromWords 0 0 0 0)
-
-instance ToSample Int where
-    toSamples Proxy = singleSample 42
 
 data Registration = Registration
     { registrationUsername :: Username
@@ -116,8 +101,53 @@ instance ToSample LoginForm
 
 instance ToSample Username
 
-instance ToSample SetCookie where
-    toSamples Proxy = singleSample def
+data LoopersInfo = LoopersInfo
+    { emailerLooperInfo :: LooperInfo
+    , triggererLooperInfo :: LooperInfo
+    , verificationEmailConverterLooperInfo :: LooperInfo
+    , triggeredIntrayItemSchedulerLooperInfo :: LooperInfo
+    , triggeredIntrayItemSenderLooperInfo :: LooperInfo
+    , triggeredEmailSchedulerLooperInfo :: LooperInfo
+    , triggeredEmailConverterLooperInfo :: LooperInfo
+    } deriving (Show, Eq, Generic)
+
+instance Validity LoopersInfo
+
+instance FromJSON LoopersInfo
+
+instance ToJSON LoopersInfo
+
+instance ToSample LoopersInfo
+
+data LooperInfo = LooperInfo
+    { looperInfoStatus :: LooperStatus
+    , looperInfoPeriod :: Maybe Int
+    , looperInfoRetryDelay :: Maybe Int
+    , looperInfoRetryAmount :: Maybe Int
+    } deriving (Show, Eq, Generic)
+
+instance Validity LooperInfo
+
+instance FromJSON LooperInfo
+
+instance ToJSON LooperInfo
+
+instance ToSample LooperInfo
+
+data LooperStatus
+    = LooperStatusDisabled
+    | LooperStatusRunning
+    | LooperStatusErrored Text
+    | LooperStatusStopped
+    deriving (Show, Eq, Generic)
+
+instance Validity LooperStatus
+
+instance FromJSON LooperStatus
+
+instance ToJSON LooperStatus
+
+instance ToSample LooperStatus
 
 newtype GetDocsResponse = GetDocsResponse
     { unGetDocsResponse :: HTML.Html
@@ -125,14 +155,26 @@ newtype GetDocsResponse = GetDocsResponse
 
 instance MimeUnrender HTML GetDocsResponse where
     mimeUnrender Proxy bs =
-        left show $
-        runPure $ do
-            pandoc <- Pandoc.readHtml def $ TE.decodeUtf8 $ LB.toStrict bs
-            html <- Pandoc.writeHtml5 def pandoc
-            pure $ GetDocsResponse html
+        Right $ GetDocsResponse $ HTML.unsafeLazyByteString bs
 
 instance ToSample GetDocsResponse where
     toSamples Proxy = singleSample $ GetDocsResponse "Documentation (In HTML)."
 
 instance ToMarkup GetDocsResponse where
     toMarkup (GetDocsResponse html) = toMarkup html
+
+instance ToSample TimeZone where
+    toSamples Proxy = singleSample utc
+
+instance ToSample BaseUrl where
+    toSamples Proxy = singleSample $ BaseUrl Https "tickler.cs-syd.eu" 8000 ""
+
+instance ToSample EmailAddress where
+    toSamples Proxy = singleSample $ unsafeEmailAddress "user" "example.com"
+
+instance ToSample TriggerType
+
+instance ToSample JSON.Value where
+    toSamples Proxy =
+        singleSample $
+        object ["Here" .= ("Be" :: Text), "A" .= ("Value" :: Text)]

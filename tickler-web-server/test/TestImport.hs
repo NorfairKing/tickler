@@ -16,6 +16,7 @@ import Data.Monoid as X
 import Data.String as X
 import Data.Text as X (Text)
 import Data.UUID.Typed as X
+import Text.Show.Pretty as X
 
 import Control.Arrow as X
 import Control.Monad as X

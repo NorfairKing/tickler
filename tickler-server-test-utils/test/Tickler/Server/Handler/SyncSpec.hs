@@ -9,10 +9,8 @@ module Tickler.Server.Handler.SyncSpec
 import TestImport
 
 import Tickler.Client
-import Tickler.Client.Store
 
 import Tickler.Client.Gen ()
-import Tickler.Data.Gen ()
 import Tickler.Server.TestUtils
 
 spec :: Spec
@@ -31,9 +29,9 @@ spec =
                     sr1 <-
                         runClientOrError cenv $
                         clientPostSync token $ makeSyncRequest initStore
-                    let firstStore = mergeStore initStore sr1
+                    let firstStore = mergeSyncResponse initStore sr1
                     sr2 <-
                         runClientOrError cenv $
                         clientPostSync token $ makeSyncRequest firstStore
-                    let secondStore = mergeStore firstStore sr2
+                    let secondStore = mergeSyncResponse firstStore sr2
                     secondStore `shouldBe` firstStore

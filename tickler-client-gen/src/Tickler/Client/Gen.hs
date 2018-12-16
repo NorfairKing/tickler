@@ -9,11 +9,7 @@ import Tickler.Client.Store
 
 import Tickler.API.Gen ()
 
-instance GenUnchecked StoreItem
-
-instance GenValid StoreItem
-
 instance GenUnchecked Store
 
 instance GenValid Store where
-    genValid = Store <$> genValid
+    genValid = genValidStructurallyWithoutExtraChecking

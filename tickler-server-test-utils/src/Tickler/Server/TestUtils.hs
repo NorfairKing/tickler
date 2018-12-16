@@ -10,6 +10,7 @@ module Tickler.Server.TestUtils
     , setupTicklerTestApp
     , withTicklerApp
     , cleanupTicklerTestServer
+    , withBothTicklerAndIntrayServer
     , runClient
     , runClientOrError
     , randomRegistration
@@ -41,23 +42,42 @@ import Database.Persist.Sqlite
 import Network.Wai as Wai
 import Network.Wai.Handler.Warp (testWithApplication)
 
+import Intray.Server.TestUtils (cleanupIntrayTestServer, setupIntrayTestApp)
+
 import Tickler.API
 import Tickler.Client
 import Tickler.Data
 import Tickler.Server
+import Tickler.Server.Looper
 import Tickler.Server.Types
 
-import Tickler.Client.Gen ()
-import Tickler.Data.Gen ()
+import Tickler.API.Gen ()
 
 withTicklerServer :: SpecWith ClientEnv -> Spec
 withTicklerServer specFunc =
     afterAll_ cleanupTicklerTestServer $
-    beforeAll setupTicklerTestApp $
+    beforeAll ((,) <$> setupTestHttpManager <*> setupTicklerTestApp) $
     aroundWith withTicklerApp $ modifyMaxSuccess (`div` 20) specFunc
 
+withBothTicklerAndIntrayServer :: SpecWith (ClientEnv, ClientEnv) -> Spec
+withBothTicklerAndIntrayServer specFunc =
+    afterAll_ cleanupTicklerTestServer $
+    afterAll_ cleanupIntrayTestServer $
+    beforeAll ((,) <$> setupTicklerTestApp <*> setupIntrayTestApp) $
+    aroundWith withBoth $ modifyMaxSuccess (`div` 20) specFunc
+  where
+    withBoth ::
+           ActionWith (ClientEnv, ClientEnv)
+        -> ActionWith (Application, (HTTP.Manager, Application))
+    withBoth func (tapp, (man, iapp)) =
+        testWithApplication (pure tapp) $ \tport ->
+            testWithApplication (pure iapp) $ \iport ->
+                func
+                    ( ClientEnv man (BaseUrl Http "127.0.0.1" tport "") Nothing
+                    , ClientEnv man (BaseUrl Http "127.0.0.1" iport "") Nothing)
+
 testdbFile :: String
-testdbFile = "test.db"
+testdbFile = "tickler-test.db"
 
 setupTicklerTestConn :: IO ConnectionPool
 setupTicklerTestConn = do
@@ -71,26 +91,39 @@ setupTicklerTestConn = do
 setupTestHttpManager :: IO HTTP.Manager
 setupTestHttpManager = HTTP.newManager HTTP.defaultManagerSettings
 
-setupTicklerTestApp :: IO (HTTP.Manager, Wai.Application)
+setupTicklerTestApp :: IO Wai.Application
 setupTicklerTestApp = do
     pool <- setupTicklerTestConn
-    man <- setupTestHttpManager
     signingKey <- Auth.generateKey
     let jwtCfg = defaultJWTSettings signingKey
     let cookieCfg = defaultCookieSettings
     let ticklerEnv =
             TicklerServerEnv
-            { envConnectionPool = pool
-            , envCookieSettings = cookieCfg
-            , envJWTSettings = jwtCfg
-            , envAdmins = [fromJust $ parseUsername "admin"]
-            }
-    pure
-        ( man
-        , serveWithContext
-              ticklerAPI
-              (ticklerAppContext ticklerEnv)
-              (makeTicklerServer ticklerEnv))
+                { envConnectionPool = pool
+                , envCookieSettings = cookieCfg
+                , envJWTSettings = jwtCfg
+                , envAdmins = [fromJust $ parseUsername "admin"]
+                , envLoopersHandle =
+                      LoopersHandle
+                          { emailerLooperHandle = LooperHandleDisabled
+                          , triggererLooperHandle = LooperHandleDisabled
+                          , verificationEmailConverterLooperHandle =
+                                LooperHandleDisabled
+                          , triggeredIntrayItemSchedulerLooperHandle =
+                                LooperHandleDisabled
+                          , triggeredIntrayItemSenderLooperHandle =
+                                LooperHandleDisabled
+                          , triggeredEmailSchedulerLooperHandle =
+                                LooperHandleDisabled
+                          , triggeredEmailConverterLooperHandle =
+                                LooperHandleDisabled
+                          }
+                }
+    pure $
+        serveWithContext
+            ticklerAPI
+            (ticklerAppContext ticklerEnv)
+            (makeTicklerServer ticklerEnv)
 
 withTicklerApp ::
        (ClientEnv -> IO ()) -> (HTTP.Manager, Wai.Application) -> IO ()
@@ -128,9 +161,9 @@ randomRegistration = do
     u2 <- nextRandomUUID :: IO (UUID Text)
     pure
         Registration
-        { registrationUsername = fromJust $ parseUsername $ uuidText u1
-        , registrationPassword = uuidText u2
-        }
+            { registrationUsername = fromJust $ parseUsername $ uuidText u1
+            , registrationPassword = uuidText u2
+            }
 
 withValidNewUserAndData ::
        ClientEnv -> (Username -> Text -> Token -> IO ()) -> Expectation
@@ -142,15 +175,18 @@ withNewUser :: ClientEnv -> Registration -> (Token -> IO ()) -> Expectation
 withNewUser cenv r func = do
     errOrUUID <- runClient cenv $ clientPostRegister r
     case errOrUUID of
+        Left (ConnectionError t) ->
+            expectationFailure $
+            unlines ["Registration should not fail with error: ", T.unpack t]
         Left err ->
             expectationFailure $
-            "Registration should not fail with error: " <> show err
+            unlines ["Registration should not fail with error: ", show err]
         Right NoContent -> do
             let lf =
                     LoginForm
-                    { loginFormUsername = registrationUsername r
-                    , loginFormPassword = registrationPassword r
-                    }
+                        { loginFormUsername = registrationUsername r
+                        , loginFormPassword = registrationPassword r
+                        }
             Headers NoContent (HCons _ (HCons sessionHeader HNil)) <-
                 runClientOrError cenv $ clientPostLogin lf
             case sessionHeader of

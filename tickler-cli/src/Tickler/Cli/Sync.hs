@@ -8,7 +8,6 @@ module Tickler.Cli.Sync
 import Import
 
 import Tickler.Client
-import Tickler.Client.Store
 
 import Tickler.Cli.Client
 import Tickler.Cli.OptParse
@@ -39,7 +38,7 @@ withStoreAndSync func = do
                                 , show err
                                 ]
                         pure processed
-                    Right r -> pure $ mergeStore before r
+                    Right r -> pure $ mergeSyncResponse before r
     writeStore after
 
 modifyStoreAndSync :: (Store -> Store) -> CliM ()
@@ -68,7 +67,7 @@ syncAndGet func = do
                             ]
                     func before
                 Right r -> do
-                    let after = mergeStore before r
+                    let after = mergeSyncResponse before r
                     writeStore after
                     func after
 

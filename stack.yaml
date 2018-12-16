@@ -21,31 +21,59 @@ extra-deps:
 - servant-auth-server-0.3.2.0
 - servant-flatten-0.2
 - servant-options-0.1.0.0
+- amazonka-1.6.0
+- amazonka-core-1.6.0
+- amazonka-ses-1.6.0
+- git: git@github.com:NorfairKing/intray.git
+  commit: d6a5e1143ebf073742f1d2fc135b746b17f21d45
+  subdirs:
+    - intray-data
+    - intray-data-gen
+    - intray-api
+    - intray-api-gen
+    - intray-client
+    - intray-server
+    - intray-server-test-utils
+- git: https://github.com/NorfairKing/mergeless.git
+  commit: 0198f9393e2ef71f26de6427541387be44fd499b
+  subdirs:
+    - mergeless
+    - genvalidity-mergeless
 - git: git@github.com:NorfairKing/validity.git
-  commit: a86dd3e4830c14c056a0d5d8712864d395d25b2a
+  commit: d128cc30bc886e31ea7f8161fb7708c08b162937
   subdirs:
     - validity
+    - validity-aeson
     - validity-bytestring
     - validity-containers
     - validity-path
+    - validity-scientific
     - validity-text
     - validity-time
+    - validity-unordered-containers
     - validity-uuid
+    - validity-vector
     - genvalidity
+    - genvalidity-aeson
     - genvalidity-bytestring
     - genvalidity-containers
     - genvalidity-hspec
     - genvalidity-hspec-aeson
     - genvalidity-path
     - genvalidity-property
+    - genvalidity-scientific
     - genvalidity-text
     - genvalidity-time
+    - genvalidity-unordered-containers
     - genvalidity-uuid
+    - genvalidity-vector
 - git: https://github.com/NorfairKing/typed-uuid.git
   commit: 155c9ec880ca1c12f7dd8a8468b3626de8164823
   subdirs:
     - typed-uuid
     - genvalidity-typed-uuid
 - git: git@github.com:NorfairKing/pretty-relative-time.git
-  commit: 9a670db25ac68974045c75da364486c10970824f
+  commit: 85ee8a577fb576e2dd7643bf248ff8fbbe9598ec
 resolver: lts-11.9
+nix:
+  packages: [zlib]

@@ -9,6 +9,7 @@ library:
   dependencies:
   - aeson
   - aeson-pretty
+  - amazonka
   - async
   - base >=4.9 && <5
   - base16-bytestring
@@ -17,12 +18,11 @@ library:
   - cookie
   - data-default
   - http-client
+  - http-client-tls
   - http-media
   - http-types
-  - tickler-api
-  - tickler-client
-  - tickler-data
-  - tickler-server
+  - intray-data
+  - lens
   - mtl
   - optparse-applicative >=0.13 && <0.15
   - path
@@ -31,8 +31,13 @@ library:
   - pretty-relative-time
   - pretty-show
   - servant
+  - tickler-api
+  - tickler-client
+  - tickler-data
+  - tickler-server
   - servant-auth-client
   - servant-client
+  - servant-client-core
   - shakespeare
   - template-haskell
   - text
@@ -75,16 +80,19 @@ tests:
     - hspec
     - hspec-core
     - http-types
-    - tickler-data
-    - tickler-data-gen
-    - tickler-server-test-utils
-    - tickler-web-server
+    - lens
     - mtl
     - path
     - path-io
     - persistent-sqlite
+    - pretty-show
     - servant-client
     - text
+    - tickler-data
+    - tickler-data-gen
+    - tickler-server
+    - tickler-server-test-utils
+    - tickler-web-server
     - typed-uuid
     - yesod-auth
     - yesod-test

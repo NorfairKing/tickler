@@ -21,8 +21,9 @@ library:
   - aeson
   - bytestring >=0.10 && <0.11
   - containers
-  - tickler-api
-  - tickler-data
+  - http-client
+  - http-client-tls
+  - mergeless
   - servant
   - servant-auth-client
   - servant-auth-server
@@ -30,6 +31,8 @@ library:
   - servant-flatten
   - servant-generic
   - text
+  - tickler-api
+  - tickler-data
   - time
   - typed-uuid
   - validity >=0.4

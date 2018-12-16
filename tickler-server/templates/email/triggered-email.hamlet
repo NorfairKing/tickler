@@ -1,0 +1,8 @@
+<p>
+  The folowing tickle item got triggered:
+
+<p>
+  #{textContents}
+
+<p>
+  You received this email because you signed up to receive triggered tickles via email at #{triggeredEmailConverterSetWebHost}.

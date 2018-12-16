@@ -12,14 +12,15 @@ module Tickler.Web.Server.OptParse
 import Import
 
 import qualified Data.Text as T
+
+import Servant.Client.Core
 import System.Environment (getArgs, getEnvironment)
 import Text.Read
 
-import Database.Persist.Sqlite
-
 import Options.Applicative
 
-import Tickler.API
+import qualified Tickler.Server.OptParse as API
+
 import Tickler.Web.Server.OptParse.Types
 
 getInstructions :: IO Instructions
@@ -32,31 +33,32 @@ getInstructions = do
 combineToInstructions ::
        Command -> Flags -> Configuration -> Environment -> IO Instructions
 combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environment {..} = do
-    let port = fromMaybe 8000 $ serveFlagPort `mplus` envPort
-    let apiPort = fromMaybe 8001 $ serveFlagAPIPort `mplus` envAPIPort
-    let connInfo = mkSqliteConnectionInfo $ fromMaybe "tickler.db" serveFlagAPIDB
-    let connCount = fromMaybe 4 serveFlagAPIConnectionCount
-    when (apiPort == port) $
+    API.Instructions (API.DispatchServe apiServeSets) API.Settings <-
+        API.combineToInstructions
+            (API.CommandServe serveFlagAPIServeFlags)
+            API.Flags
+            API.Configuration
+            envAPIEnvironment
+    let webPort = fromMaybe 8000 $ serveFlagPort `mplus` envPort
+    when (API.serveSetPort apiServeSets == webPort) $
         die $
         unlines
             [ "Web server port and API port must not be the same."
-            , "They are both: " ++ show port
+            , "They are both: " ++ show webPort
             ]
-    admins <-
-        forM serveFlagAPIAdmins $ \s ->
-            case parseUsername $ T.pack s of
-                Nothing -> die $ unwords ["Invalid admin username:", s]
-                Just u -> pure u
     pure
         ( DispatchServe
               ServeSettings
-              { serveSetPort = port
-              , serveSetPersistLogins = fromMaybe False serveFlagPersistLogins
-              , serveSetAPIPort = apiPort
-              , serveSetAPIConnectionInfo = connInfo
-              , serveSetAPIConnectionCount = connCount
-              , serveSetAPIAdmins = admins
-              }
+                  { serveSetPort = webPort
+                  , serveSetPersistLogins =
+                        fromMaybe False serveFlagPersistLogins
+                  , serveSetDefaultIntrayUrl =
+                        serveFlagDefaultIntrayUrl `mplus` envDefaultIntrayUrl
+                  , serveSetTracking = serveFlagTracking `mplus` envTracking
+                  , serveSetVerification =
+                        serveFlagVerification `mplus` envVerification
+                  , serveSetAPISettings = apiServeSets
+                  }
         , Settings)
 
 getConfiguration :: Command -> Flags -> IO Configuration
@@ -65,12 +67,34 @@ getConfiguration _ _ = pure Configuration
 getEnv :: IO Environment
 getEnv = do
     env <- getEnvironment
-    let mv k = lookup k env
-    pure
-        Environment
-        { envPort = mv "PORT" >>= readMaybe
-        , envAPIPort = mv "API_PORT" >>= readMaybe
-        }
+    let ms k = fromString <$> lookup k env
+        mre k func =
+            forM (lookup k env) $ \s ->
+                case func s of
+                    Left e ->
+                        die $
+                        unwords
+                            [ "Unable to read ENV Var:"
+                            , k
+                            , "which has value:"
+                            , show s
+                            , "with error:"
+                            , e
+                            ]
+                    Right v -> pure v
+        mrf k func =
+            mre k $ \s ->
+                case func s of
+                    Nothing ->
+                        Left "Parsing failed without a good error message."
+                    Just v -> Right v
+        mr k = mrf k readMaybe
+    envPort <- mr "WEB_PORT"
+    envDefaultIntrayUrl <- mre "DEFAULT_INTRAY_URL" (left show . parseBaseUrl)
+    let envTracking = ms "TRACKING"
+    let envVerification = ms "SEARCH_CONSOLE_VERIFICATION"
+    envAPIEnvironment <- API.getEnv
+    pure Environment {..}
 
 getArguments :: IO Arguments
 getArguments = do
@@ -83,13 +107,13 @@ runArgumentsParser = execParserPure prefs_ argParser
   where
     prefs_ =
         ParserPrefs
-        { prefMultiSuffix = ""
-        , prefDisambiguate = True
-        , prefShowHelpOnError = True
-        , prefShowHelpOnEmpty = True
-        , prefBacktrack = True
-        , prefColumns = 80
-        }
+            { prefMultiSuffix = ""
+            , prefDisambiguate = True
+            , prefShowHelpOnError = True
+            , prefShowHelpOnEmpty = True
+            , prefBacktrack = True
+            , prefColumns = 80
+            }
 
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_
@@ -112,10 +136,10 @@ parseCommandServe = info parser modifier
          option
              (Just <$> auto)
              (mconcat
-                  [ long "port"
+                  [ long "web-port"
                   , metavar "PORT"
                   , value Nothing
-                  , help "the port to serve on"
+                  , help "the port to serve the web interface on"
                   ]) <*>
          flag
              Nothing
@@ -126,35 +150,31 @@ parseCommandServe = info parser modifier
                         "Whether to persist logins accross restarts. This should not be used in production."
                   ]) <*>
          option
-             (Just <$> auto)
+             (Just <$> eitherReader (left show . parseBaseUrl))
              (mconcat
-                  [ long "api-port"
+                  [ long "default-intray-url"
                   , value Nothing
-                  , help "the port to serve the API on"
+                  , help
+                        "The default intray url to suggest when adding an intray trigger."
                   ]) <*>
          option
              (Just . T.pack <$> str)
              (mconcat
-                  [ long "database"
+                  [ long "analytics-tracking-id"
                   , value Nothing
-                  , metavar "DATABASE_CONNECTION_STRING"
-                  , help "The sqlite connection string"
+                  , metavar "TRACKING_ID"
+                  , help "The google analytics tracking ID"
                   ]) <*>
          option
-             (Just <$> auto)
+             (Just . T.pack <$> str)
              (mconcat
-                  [ long "connection-count"
+                  [ long "search-console-verification"
                   , value Nothing
-                  , metavar "CONNECTION_COUNT"
-                  , help "the number of database connections to use"
+                  , metavar "VERIFICATION_TAG"
+                  , help
+                        "The contents of the google search console verification tag"
                   ]) <*>
-         many
-             (strOption
-                  (mconcat
-                       [ long "admin"
-                       , metavar "USERNAME"
-                       , help "An admin to use"
-                       ])))
+         API.parseServeFlags)
     modifier = fullDesc <> progDesc "Serve."
 
 parseFlags :: Parser Flags

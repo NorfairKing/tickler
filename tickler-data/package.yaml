@@ -25,11 +25,16 @@ library:
   dependencies:
   - aeson
   - base >=4.7 && <5
+  - base16-bytestring
   - bcrypt
   - bytestring
+  - email-validate
   - hashable
+  - intray-data
   - persistent
   - persistent-template
+  - random
+  - servant-client-core
   - text
   - time
   - typed-uuid

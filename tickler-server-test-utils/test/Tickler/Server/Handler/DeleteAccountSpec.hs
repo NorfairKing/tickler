@@ -12,8 +12,7 @@ import qualified Network.HTTP.Types as Http
 
 import Tickler.Client
 
-import Tickler.Client.Gen ()
-import Tickler.Data.Gen ()
+import Tickler.API.Gen ()
 import Tickler.Server.TestUtils
 
 spec :: Spec

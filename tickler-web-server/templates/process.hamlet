@@ -1,7 +1,0 @@
-$maybe itemWidget <- mItemWidget
-  <div .ui .segment>
-    <h1> Process Items: #{nrItems} items left.
-    ^{itemWidget}
-$nothing
-  <div .ui .segment>
-    <h1> Your tickler is empty, no more processing to do!
