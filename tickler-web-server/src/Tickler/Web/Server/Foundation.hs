@@ -274,6 +274,7 @@ withFormFailureNavBar errs body = do
 
 genToken :: MonadHandler m => m Html
 genToken = do
+    alreadyExpired
     req <- getRequest
     let tokenKey = defaultCsrfParamName
     pure $
