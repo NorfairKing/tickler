@@ -1,0 +1,18 @@
+<div .ui .segment>
+  <h1> Add Intray Trigger
+
+  <form
+    enctype=#{enctype}
+    .ui .form>
+    ^{widget}
+  
+  $case res
+    $of FormFailure _
+      <div .ui .error .message>
+        <p>
+          #{show res}
+    $of FormSuccess _
+      <div .ui .success .message>
+        <p>
+          New intray trigger added.
+    $of FormMissing
