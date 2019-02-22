@@ -1,0 +1,15 @@
+#{extra}
+<div .field>
+  <label>
+    Intray URL
+  ^{fvInput baseUrlView}
+<div .field>
+  <label>
+    Username
+  ^{fvInput usernameView}
+<div .field>
+  <label>
+    Access Key
+  ^{fvInput accessKeyView}
+<button .ui .primary .button type="submit">
+  Create Intray Trigger

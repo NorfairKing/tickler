@@ -7,3 +7,9 @@ result*
 /src/
 dist/
 *.db*
+
+client_session_key\.aes
+
+signing-key\.json
+
+tickler-web-server/tickler-web-server\.lkshf

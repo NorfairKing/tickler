@@ -2,6 +2,8 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TypeFamilies          #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module Tickler.Web.Server.Handler.Triggers
     ( getTriggersR
@@ -30,7 +32,9 @@ getTriggersR =
     withLogin $ \t -> do
         triggers <- runClientOrErr $ clientGetTriggers t
         triggerWidgets <- mapM makeTriggerInfoWidget triggers
-        addIntrayTriggerWidget <- makeAddIntrayTriggerWidget
+        -- ((result, addIntrayTriggerWidget), enctype) <- runFormGet makeAddIntrayTriggerWidget'
+        -- addIntrayTriggerWidget <- makeAddIntrayTriggerWidget
+        addIntrayTriggerWidget <- getHomeR
         addEmailTriggerWidget <- makeAddEmailTriggerWidget
         withNavBar $(widgetFile "triggers")
 
@@ -79,6 +83,61 @@ makeAddIntrayTriggerWidget =
                 token <- genToken
                 pure $(widgetFile "add-intray-trigger")
 
+getHomeR :: Handler Widget
+getHomeR =
+    withLogin $ \t -> do
+        LoopersInfo {..} <- runClientOrErr clientGetLoopersInfo
+        if any ((== LooperStatusDisabled) . looperInfoStatus)
+               [ triggeredIntrayItemSenderLooperInfo
+               , triggeredIntrayItemSchedulerLooperInfo
+               , triggererLooperInfo
+               ]
+            then pure mempty
+            else do
+                defaultIntrayUrl <- getsYesod appDefaultIntrayUrl
+                mun <-
+                    do errOrAi <- runClient $ clientGetAccountInfo t
+                       case errOrAi of
+                           Left _ -> pure Nothing
+                           Right AccountInfo {..} ->
+                               pure $ Just accountInfoUsername
+                ((res, widget), enctype) <- runFormGet $ makeAddIntrayTriggerWidget' defaultIntrayUrl mun
+                return $(widgetFile "add-intray-trigger-form")
+
+makeAddIntrayTriggerWidget' :: Maybe BaseUrl -> Maybe Username -> Html -> MForm Handler (FormResult AddIntrayTrigger, Widget)
+makeAddIntrayTriggerWidget' baseUrl username extra =
+    -- withLogin $ \t -> do
+    --     LoopersInfo {..} <- runClientOrErr clientGetLoopersInfo
+    --     if any ((== LooperStatusDisabled) . looperInfoStatus)
+    --            [ triggeredIntrayItemSenderLooperInfo
+    --            , triggeredIntrayItemSchedulerLooperInfo
+    --            , triggererLooperInfo
+    --            ]
+    --         then pure mempty
+    --         else do
+    --             defaultIntrayUrl <- pure $ getsYesod appDefaultIntrayUrl
+    --             mun <-
+    --                 do errOrAi <- runClient $ clientGetAccountInfo t
+    --                    case errOrAi of
+    --                        Left _ -> pure Nothing
+    --                        Right AccountInfo {..} ->
+    --                            pure $ Just accountInfoUsername
+            do
+                -- token <- genToken
+                -- mun <-
+                --     do errOrAi <- runClient $ clientGetAccountInfo t
+                --        case errOrAi of
+                --            Left _ -> pure Nothing
+                --            Right AccountInfo {..} ->
+                --                pure $ Just accountInfoUsername
+                -- defaultIntrayUrl <- getsYesod appDefaultIntrayUrl
+                (baseUrl, username, accessKeySecret) <- pure addIntrayTriggerFields
+                (usernameRes, usernameView) <- mreq username "this is not used" username
+                (baseUrlRes, baseUrlView) <- mreq baseUrl "this is not used" Nothing
+                (accessKeyRes, accessKeyView) <- mreq accessKeySecret "this is not used" Nothing
+                let addIntrayTriggerRes = AddIntrayTrigger <$> baseUrlRes <*> usernameRes <*> accessKeyRes
+                return (addIntrayTriggerRes ,$(widgetFile "add-intray-trigger'"))
+
 makeAddEmailTriggerWidget :: Handler Widget
 makeAddEmailTriggerWidget = do
     LoopersInfo {..} <- runClientOrErr clientGetLoopersInfo
@@ -93,6 +152,35 @@ makeAddEmailTriggerWidget = do
             token <- genToken
             pure $(widgetFile "add-email-trigger")
 
+addIntrayTriggerFields :: (Field Handler BaseUrl, Field Handler Intray.Username, Field Handler Intray.AccessKeySecret)
+addIntrayTriggerFields =
+    ( checkMMap
+        -- (\mu -> Left ("Invalid URL"))
+        (pure .
+        (\mu ->
+            case mu of
+                Nothing -> Left ("Invalid URL" :: Text)
+                Just u -> pure u) .
+        parseBaseUrl . T.unpack)
+        (T.pack . showBaseUrl)
+        textField
+    , checkMMap
+        (pure .
+            (\t ->
+                case Intray.parseUsername t of
+                    Nothing -> Left ("Invalid Intray Username" :: Text)
+                    Just un -> pure un))
+        Intray.usernameText
+        textField
+    , checkMMap
+        (pure .
+            (\t ->
+                case Intray.parseAccessKeySecretText t of
+                    Nothing -> Left ("Invalid access key" :: Text)
+                    Just aks -> pure aks))
+        Intray.accessKeySecretText
+        textField)
+ 
 addIntrayTriggerForm :: FormInput Handler AddIntrayTrigger
 addIntrayTriggerForm =
     AddIntrayTrigger <$>
