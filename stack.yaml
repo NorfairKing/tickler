@@ -73,7 +73,7 @@ extra-deps:
     - typed-uuid
     - genvalidity-typed-uuid
 - git: git@github.com:NorfairKing/pretty-relative-time.git
-  commit: 85ee8a577fb576e2dd7643bf248ff8fbbe9598ec
+  commit: 21b29c9d729ed91a56819f569de6fdc8582d7e3d
 resolver: lts-11.9
 nix:
   packages: [zlib]
