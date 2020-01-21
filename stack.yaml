@@ -16,7 +16,6 @@ extra-deps:
 - amazonka-ses-1.6.1
 - servant-auth-client-0.4.0.0@sha256:68879b7f44d87f73ef68c7bb21006167f5623c4cd6a2a3fce4d5ea3959a8c730,3426
 - servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
-  # - http-client-0.5.14@sha256:4880b27d6741e331454a1d4c887d96ce3d7d625322c8433983a4b1cd08538577,5348
 
 - github: NorfairKing/looper
   commit: 929a8ad6a99a84624767bd9d619cc5318c6bda56
