@@ -10,11 +10,11 @@ $doctype 5
     $maybe searchConsoleId <- appVerification app_
       <meta name="google-site-verification" content="#{searchConsoleId}" />
 
-    <link rel="stylesheet" href=@{StaticR static_semantic_dist_semantic_min_css}>
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js" 
+    <link rel="stylesheet" href=@{StaticR static_semantic_semantic_min_css}>
+    <script src=@{StaticR static_jquery_min_js} 
       integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
       crossorigin="anonymous">
-    <script src=@{StaticR static_semantic_dist_semantic_min_js}>
+    <script src=@{StaticR static_semantic_semantic_min_js}>
 
     ^{pageHead pc}
 

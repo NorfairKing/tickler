@@ -51,6 +51,7 @@ library:
   - yesod-core
   - yesod-form
   - yesod-static
+  - yesod-static-remote
 
 executables:
   tickler-web-server:
