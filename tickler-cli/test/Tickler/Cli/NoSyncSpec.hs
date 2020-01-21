@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Cli.NoSyncSpec
-    ( spec
-    ) where
+  ( spec
+  ) where
 
 import TestImport
 
@@ -26,18 +26,15 @@ spec -- do
     --     -- tickler DispatchSize
     --     pure () :: IO ()
  =
-    around (withSystemTempDir "tickler-cli-test") $
-    specify "login fails immediately if no server is configured" $ \tdir -> do
-        let sets =
-                Settings
-                    { setBaseUrl = Nothing
-                    , setUsername = Nothing
-                    , setTicklerDir = tdir
-                    , setSyncStrategy = NeverSync
-                    }
-        let tickler d = runReaderT (dispatch d) sets
-        tickler
-            (DispatchLogin
-                 LoginSettings
-                     {loginSetUsername = Nothing, loginSetPassword = Nothing}) `shouldThrow`
-            (== ExitFailure 1)
+  around (withSystemTempDir "tickler-cli-test") $
+  specify "login fails immediately if no server is configured" $ \tdir -> do
+    let sets =
+          Settings
+            { setBaseUrl = Nothing
+            , setUsername = Nothing
+            , setTicklerDir = tdir
+            , setSyncStrategy = NeverSync
+            }
+    let tickler d = runReaderT (dispatch d) sets
+    tickler (DispatchLogin LoginSettings {loginSetUsername = Nothing, loginSetPassword = Nothing}) `shouldThrow`
+      (== ExitFailure 1)

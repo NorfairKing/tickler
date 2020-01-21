@@ -8,27 +8,28 @@ import Database.Persist.Sqlite
 import Tickler.API
 
 data Arguments =
-    Arguments Command
-              Flags
+  Arguments Command Flags
 
 data Instructions =
-    Instructions Dispatch
-                 Settings
+  Instructions Dispatch Settings
 
 newtype Command =
-    CommandServe ServeFlags
-    deriving (Show, Eq)
+  CommandServe ServeFlags
+  deriving (Show, Eq)
 
-data ServeFlags = ServeFlags
+data ServeFlags =
+  ServeFlags
     { serveFlagPort :: Maybe Int
     , serveFlagWebHost :: Maybe String
     , serveFlagDb :: Maybe FilePath
     , serveFlagConnectionCount :: Maybe Int
     , serveFlagAdmins :: [String]
     , serveFlagsLooperFlags :: LooperFlags
-    } deriving (Show, Eq)
+    }
+  deriving (Show, Eq)
 
-data LooperFlags = LooperFlags
+data LooperFlags =
+  LooperFlags
     { looperFlagDefaultEnabled :: Maybe Bool
     , looperFlagDefaultPeriod :: Maybe Int
     , looperFlagDefaultRetryDelay :: Maybe Int
@@ -40,36 +41,44 @@ data LooperFlags = LooperFlags
     , looperFlagVerificationEmailConverterFlags :: LooperFlagsWith ()
     , looperFlagTriggeredEmailSchedulerFlags :: LooperFlagsWith ()
     , looperFlagTriggeredEmailConverterFlags :: LooperFlagsWith ()
-    } deriving (Show, Eq)
+    }
+  deriving (Show, Eq)
 
-data LooperFlagsWith a = LooperFlagsWith
+data LooperFlagsWith a =
+  LooperFlagsWith
     { looperFlagEnable :: Maybe Bool
     , looperFlagsPeriod :: Maybe Int
     , looperFlagsRetryPolicy :: LooperFlagsRetryPolicy
     , looperFlags :: a
-    } deriving (Show, Eq)
+    }
+  deriving (Show, Eq)
 
-data LooperFlagsRetryPolicy = LooperFlagsRetryPolicy
+data LooperFlagsRetryPolicy =
+  LooperFlagsRetryPolicy
     { looperFlagsRetryDelay :: Maybe Int
     , looperFlagsRetryAmount :: Maybe Int
-    } deriving (Show, Eq)
+    }
+  deriving (Show, Eq)
 
 data Flags =
-    Flags
-    deriving (Show, Eq)
+  Flags
+  deriving (Show, Eq)
 
 data Configuration =
-    Configuration
-    deriving (Show, Eq)
+  Configuration
+  deriving (Show, Eq)
 
-data Environment = Environment
+data Environment =
+  Environment
     { envDb :: Maybe FilePath
     , envWebHost :: Maybe String
     , envPort :: Maybe Int
     , envLoopersEnvironment :: LoopersEnvironment
-    } deriving (Show, Eq)
+    }
+  deriving (Show, Eq)
 
-data LoopersEnvironment = LoopersEnvironment
+data LoopersEnvironment =
+  LoopersEnvironment
     { looperEnvDefaultEnabled :: Maybe Bool
     , looperEnvDefaultPeriod :: Maybe Int
     , looperEnvDefaultRetryDelay :: Maybe Int
@@ -81,37 +90,45 @@ data LoopersEnvironment = LoopersEnvironment
     , looperEnvVerificationEmailConverterEnv :: LooperEnvWith ()
     , looperEnvTriggeredEmailSchedulerEnv :: LooperEnvWith ()
     , looperEnvTriggeredEmailConverterEnv :: LooperEnvWith ()
-    } deriving (Show, Eq)
+    }
+  deriving (Show, Eq)
 
-data LooperEnvWith a = LooperEnvWith
+data LooperEnvWith a =
+  LooperEnvWith
     { looperEnvEnable :: Maybe Bool
     , looperEnvPeriod :: Maybe Int
     , looperEnvRetryPolicy :: LooperEnvRetryPolicy
     , looperEnv :: a
-    } deriving (Show, Eq)
+    }
+  deriving (Show, Eq)
 
-data LooperEnvRetryPolicy = LooperEnvRetryPolicy
+data LooperEnvRetryPolicy =
+  LooperEnvRetryPolicy
     { looperEnvRetryDelay :: Maybe Int
     , looperEnvRetryAmount :: Maybe Int
-    } deriving (Show, Eq)
+    }
+  deriving (Show, Eq)
 
 newtype Dispatch =
-    DispatchServe ServeSettings
-    deriving (Show)
+  DispatchServe ServeSettings
+  deriving (Show)
 
 data Settings =
-    Settings
-    deriving (Show, Eq)
+  Settings
+  deriving (Show, Eq)
 
-data ServeSettings = ServeSettings
+data ServeSettings =
+  ServeSettings
     { serveSetPort :: Int
     , serveSetConnectionInfo :: SqliteConnectionInfo
     , serveSetConnectionCount :: Int
     , serveSetAdmins :: [Username]
     , serveSetLooperSettings :: LooperSettings
-    } deriving (Show)
+    }
+  deriving (Show)
 
-data LooperSettings = LooperSettings
+data LooperSettings =
+  LooperSettings
     { looperSetConnectionInfo :: SqliteConnectionInfo
     , looperSetConnectionCount :: Int
     , looperSetTriggererSets :: LooperSetsWith TriggererSettings
@@ -121,40 +138,50 @@ data LooperSettings = LooperSettings
     , looperSetVerificationEmailConverterSets :: LooperSetsWith VerificationEmailConverterSettings
     , looperSetTriggeredEmailSchedulerSets :: LooperSetsWith ()
     , looperSetTriggeredEmailConverterSets :: LooperSetsWith TriggeredEmailConverterSettings
-    } deriving (Show)
+    }
+  deriving (Show)
 
 data LooperSetsWith a
-    = LooperEnabled LooperStaticConfig
-                    a -- Int number of seconds
-    | LooperDisabled
-    deriving (Show, Eq)
+  = LooperEnabled LooperStaticConfig a -- Int number of seconds
+  | LooperDisabled
+  deriving (Show, Eq)
 
-data LooperStaticConfig = LooperStaticConfig
+data LooperStaticConfig =
+  LooperStaticConfig
     { looperStaticConfigPeriod :: Int
     , looperStaticConfigRetryPolicy :: LooperRetryPolicy
-    } deriving (Show, Eq)
+    }
+  deriving (Show, Eq)
 
-data LooperRetryPolicy = LooperRetryPolicy
+data LooperRetryPolicy =
+  LooperRetryPolicy
     { looperRetryPolicyDelay :: Int -- Microseconds
     , looperRetryPolicyAmount :: Int
-    } deriving (Show, Eq)
+    }
+  deriving (Show, Eq)
 
 data TriggererSettings =
-    TriggererSettings
-    deriving (Show)
+  TriggererSettings
+  deriving (Show)
 
-data EmailerSettings = EmailerSettings
+data EmailerSettings =
+  EmailerSettings
     { emailerSetAWSCredentials :: AWS.Credentials
-    } deriving (Show)
+    }
+  deriving (Show)
 
-data VerificationEmailConverterSettings = VerificationEmailConverterSettings
+data VerificationEmailConverterSettings =
+  VerificationEmailConverterSettings
     { verificationEmailConverterSetFromAddress :: !EmailAddress
     , verificationEmailConverterSetFromName :: !Text
     , verificationEmailConverterSetWebHost :: !Text
-    } deriving (Show)
+    }
+  deriving (Show)
 
-data TriggeredEmailConverterSettings = TriggeredEmailConverterSettings
+data TriggeredEmailConverterSettings =
+  TriggeredEmailConverterSettings
     { triggeredEmailConverterSetFromAddress :: !EmailAddress
     , triggeredEmailConverterSetFromName :: !Text
     , triggeredEmailConverterSetWebHost :: !Text
-    } deriving (Show)
+    }
+  deriving (Show)

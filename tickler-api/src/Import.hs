@@ -1,6 +1,6 @@
 module Import
-    ( module X
-    ) where
+  ( module X
+  ) where
 
 import Prelude as X hiding (fail, head, init, last, tail)
 

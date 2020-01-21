@@ -11,4 +11,4 @@ import Tickler.Data.Gen ()
 instance GenUnchecked AdminStats
 
 instance GenValid AdminStats where
-    genValid = (AdminStats <$> genValid <*> genValid) `suchThat` isValid
+  genValid = (AdminStats <$> genValid <*> genValid) `suchThat` isValid

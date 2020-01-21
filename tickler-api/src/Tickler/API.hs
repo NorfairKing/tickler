@@ -6,99 +6,99 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tickler.API
-    ( TicklerAPI
-    , ticklerAPI
-    , TicklerSite(..)
-    , TicklerOpenAPI
-    , ticklerOpenAPI
-    , TicklerOpenSite(..)
-    , TicklerProtectedAPI
-    , TicklerProtectedSite(..)
-    , TicklerPublicAPI
-    , TicklerPublicSite(..)
-    , TicklerAdminAPI
-    , TicklerAdminSite(..)
-    , AuthCookie(..)
-    , ItemFilter(..)
-    , ItemType(..)
-    , TypedItem(..)
-    , textTypedItem
-    , TypedItemCase(..)
-    , typedItemCase
-    , Recurrence(..)
-    , everyDaysAtTime
-    , everyMonthsOnDayAtTime
-    , Tickle(..)
-    , TypedTickle
-    , ItemInfo(..)
-    , TypedItemInfo
-    , TriggeredInfo(..)
-    , TriggerAttempt(..)
-    , IntrayTriggerResult(..)
-    , EmailTriggerResult(..)
-    , AddItem
-    , Added(..)
-    , Synced(..)
-    , SyncRequest(..)
-    , SyncResponse(..)
-    , TriggerUUID
-    , TriggerType(..)
-    , TriggerInfo(..)
-    , decodeTriggerInfo
-    , TypedTriggerInfo(..)
-    , decodeTypedTriggerInfo
-    , IntrayTriggerInfo(..)
-    , EmailTriggerInfo(..)
-    , GetTriggers
-    , AddIntrayTrigger(..)
-    , PostAddIntrayTrigger
-    , EmailAddress
-    , normalizeEmail
-    , unsafeEmailAddress
-    , emailValidateFromText
-    , emailValidateFromString
-    , emailAddressFromText
-    , emailAddressFromString
-    , emailAddressText
-    , emailAddressByteString
-    , domainPart
-    , localPart
-    , AddEmailTrigger(..)
-    , PostAddEmailTrigger
-    , PostEmailTriggerVerify
-    , EmailVerificationKey(..)
-    , emailVerificationKeyText
-    , parseEmailVerificationKeyText
-    , PostEmailTriggerResendVerificationEmail
-    , AccountInfo(..)
-    , AccountSettings(..)
-    , GetAccountSettings
-    , PutAccountSettings
-    , Registration(..)
-    , PostRegister
-    , LoginForm(..)
-    , PostLogin
-    , GetLoopersStatus
-    , LoopersInfo(..)
-    , LooperInfo(..)
-    , LooperStatus(..)
-    , GetDocs
-    , GetDocsResponse(..)
-    , AdminStats(..)
-    , AdminGetStats
-    , AdminDeleteAccount
-    , AdminGetAccounts
-    , HashedPassword
-    , passwordHash
-    , validatePassword
-    , ItemUUID
-    , AccountUUID
-    , Username
-    , parseUsername
-    , parseUsernameWithError
-    , usernameText
-    , module Data.UUID.Typed
-    ) where
+  ( TicklerAPI
+  , ticklerAPI
+  , TicklerSite(..)
+  , TicklerOpenAPI
+  , ticklerOpenAPI
+  , TicklerOpenSite(..)
+  , TicklerProtectedAPI
+  , TicklerProtectedSite(..)
+  , TicklerPublicAPI
+  , TicklerPublicSite(..)
+  , TicklerAdminAPI
+  , TicklerAdminSite(..)
+  , AuthCookie(..)
+  , ItemFilter(..)
+  , ItemType(..)
+  , TypedItem(..)
+  , textTypedItem
+  , TypedItemCase(..)
+  , typedItemCase
+  , Recurrence(..)
+  , everyDaysAtTime
+  , everyMonthsOnDayAtTime
+  , Tickle(..)
+  , TypedTickle
+  , ItemInfo(..)
+  , TypedItemInfo
+  , TriggeredInfo(..)
+  , TriggerAttempt(..)
+  , IntrayTriggerResult(..)
+  , EmailTriggerResult(..)
+  , AddItem
+  , Added(..)
+  , Synced(..)
+  , SyncRequest(..)
+  , SyncResponse(..)
+  , TriggerUUID
+  , TriggerType(..)
+  , TriggerInfo(..)
+  , decodeTriggerInfo
+  , TypedTriggerInfo(..)
+  , decodeTypedTriggerInfo
+  , IntrayTriggerInfo(..)
+  , EmailTriggerInfo(..)
+  , GetTriggers
+  , AddIntrayTrigger(..)
+  , PostAddIntrayTrigger
+  , EmailAddress
+  , normalizeEmail
+  , unsafeEmailAddress
+  , emailValidateFromText
+  , emailValidateFromString
+  , emailAddressFromText
+  , emailAddressFromString
+  , emailAddressText
+  , emailAddressByteString
+  , domainPart
+  , localPart
+  , AddEmailTrigger(..)
+  , PostAddEmailTrigger
+  , PostEmailTriggerVerify
+  , EmailVerificationKey(..)
+  , emailVerificationKeyText
+  , parseEmailVerificationKeyText
+  , PostEmailTriggerResendVerificationEmail
+  , AccountInfo(..)
+  , AccountSettings(..)
+  , GetAccountSettings
+  , PutAccountSettings
+  , Registration(..)
+  , PostRegister
+  , LoginForm(..)
+  , PostLogin
+  , GetLoopersStatus
+  , LoopersInfo(..)
+  , LooperInfo(..)
+  , LooperStatus(..)
+  , GetDocs
+  , GetDocsResponse(..)
+  , AdminStats(..)
+  , AdminGetStats
+  , AdminDeleteAccount
+  , AdminGetAccounts
+  , HashedPassword
+  , passwordHash
+  , validatePassword
+  , ItemUUID
+  , AccountUUID
+  , Username
+  , parseUsername
+  , parseUsernameWithError
+  , usernameText
+  , module Data.UUID.Typed
+  ) where
 
 import Import
 
@@ -107,9 +107,8 @@ import Data.UUID.Typed
 import Web.Cookie
 
 import Servant.API
+import Servant.API.Generic
 import Servant.Auth.Docs ()
-import Servant.Auth.Server.SetCookieOrphan ()
-import Servant.Generic
 import Servant.HTML.Blaze
 
 import Tickler.Data
@@ -121,37 +120,42 @@ import Tickler.API.Types
 ticklerAPI :: Proxy TicklerAPI
 ticklerAPI = Proxy
 
-type TicklerAPI = ToServant (TicklerSite AsApi)
+type TicklerAPI = ToServantApi TicklerSite
 
-data TicklerSite route = TicklerSite
-    { openSite :: route :- ToServant (TicklerOpenSite AsApi)
-    , adminSite :: route :- "admin" :> ToServant (TicklerAdminSite AsApi)
-    } deriving (Generic)
+data TicklerSite route =
+  TicklerSite
+    { openSite :: route :- ToServantApi TicklerOpenSite
+    , adminSite :: route :- "admin" :> ToServantApi TicklerAdminSite
+    }
+  deriving (Generic)
 
 ticklerOpenAPI :: Proxy TicklerOpenAPI
 ticklerOpenAPI = Proxy
 
-type TicklerOpenAPI = ToServant (TicklerOpenSite AsApi)
+type TicklerOpenAPI = ToServantApi TicklerOpenSite
 
-data TicklerOpenSite route = TicklerOpenSite
-    { protectedSite :: route :- ToServant (TicklerProtectedSite AsApi)
-    , publicSite :: route :- ToServant (TicklerPublicSite AsApi)
-    } deriving (Generic)
+data TicklerOpenSite route =
+  TicklerOpenSite
+    { protectedSite :: route :- ToServantApi TicklerProtectedSite
+    , publicSite :: route :- ToServantApi TicklerPublicSite
+    }
+  deriving (Generic)
 
-type TicklerPublicAPI = ToServant (TicklerPublicSite AsApi)
+type TicklerPublicAPI = ToServantApi TicklerPublicSite
 
-data TicklerPublicSite route = TicklerPublicSite
+data TicklerPublicSite route =
+  TicklerPublicSite
     { postRegister :: route :- PostRegister
     , postLogin :: route :- PostLogin
     , getLoopersStatus :: route :- GetLoopersStatus
     , getDocs :: route :- GetDocs
-    } deriving (Generic)
+    }
+  deriving (Generic)
 
-type PostRegister
-     = "register" :> ReqBody '[ JSON] Registration :> Post '[ JSON] NoContent
+type PostRegister = "register" :> ReqBody '[ JSON] Registration :> Post '[ JSON] NoContent
 
 type PostLogin
-     = "login" :> ReqBody '[ JSON] LoginForm :> PostNoContent '[ JSON] (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
+   = "login" :> ReqBody '[ JSON] LoginForm :> PostNoContent '[ JSON] (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
 
 type GetLoopersStatus = "loopers" :> Get '[ JSON] LoopersInfo
 

@@ -2,8 +2,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Server.Handler.Public.GetDocs
-    ( serveGetDocs
-    ) where
+  ( serveGetDocs
+  ) where
 
 import Import
 
@@ -13,7 +13,6 @@ import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as LT
 import qualified Text.Markdown as Markdown
 
-import Servant.Auth.Server.SetCookieOrphan ()
 import Servant.Docs as Docs
 
 import Tickler.API
@@ -25,27 +24,24 @@ serveGetDocs = pure ticklerHtmlResponse
 
 ticklerHtmlResponse :: GetDocsResponse
 ticklerHtmlResponse =
-    GetDocsResponse $
-    Markdown.markdown
-        Markdown.defaultMarkdownSettings {Markdown.msXssProtect = False} $
-    LT.fromStrict ticklerDocs
+  GetDocsResponse $
+  Markdown.markdown Markdown.defaultMarkdownSettings {Markdown.msXssProtect = False} $
+  LT.fromStrict ticklerDocs
 
 ticklerDocs :: Text
 ticklerDocs =
-    T.unlines .
-    map (\t ->
-             if T.isPrefixOf "```" (T.stripStart t)
-                 then T.stripStart t
-                 else t) .
-    T.lines . T.pack $
-    Docs.markdown $ Docs.docsWithIntros [intr] $ Docs.pretty ticklerOpenAPI
+  T.unlines .
+  map
+    (\t ->
+       if T.isPrefixOf "```" (T.stripStart t)
+         then T.stripStart t
+         else t) .
+  T.lines . T.pack $
+  Docs.markdown $ Docs.docsWithIntros [intr] $ Docs.pretty ticklerOpenAPI
   where
     intr =
-        Docs.DocIntro
-            "Tickler API"
-            [ unlines
-                  [ "<style>"
-                  , T.unpack $ TE.decodeUtf8 $(embedFile "res/style/docs.css")
-                  , "</style>"
-                  ]
-            ]
+      Docs.DocIntro
+        "Tickler API"
+        [ unlines
+            ["<style>", T.unpack $ TE.decodeUtf8 $(embedFile "res/style/docs.css"), "</style>"]
+        ]

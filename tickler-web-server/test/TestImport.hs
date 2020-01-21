@@ -1,6 +1,6 @@
 module TestImport
-    ( module X
-    ) where
+  ( module X
+  ) where
 
 import Debug.Trace as X
 import Prelude as X hiding (head, init, last, tail)

@@ -3,18 +3,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Data.EmailAddress
-    ( EmailAddress
-    , normalizeEmail
-    , unsafeEmailAddress
-    , emailValidateFromText
-    , emailValidateFromString
-    , emailAddressFromText
-    , emailAddressFromString
-    , emailAddressText
-    , emailAddressByteString
-    , domainPart
-    , localPart
-    ) where
+  ( EmailAddress
+  , normalizeEmail
+  , unsafeEmailAddress
+  , emailValidateFromText
+  , emailValidateFromString
+  , emailAddressFromText
+  , emailAddressFromString
+  , emailAddressText
+  , emailAddressByteString
+  , domainPart
+  , localPart
+  ) where
 
 import Import
 
@@ -29,41 +29,43 @@ import qualified Text.Email.Validate as Email
 import Database.Persist
 import Database.Persist.Sql
 
-newtype EmailAddress = EmailAddress
+newtype EmailAddress =
+  EmailAddress
     { unEmailAddress :: Email.EmailAddress
-    } deriving (Show, Eq, Ord, Generic)
+    }
+  deriving (Show, Eq, Ord, Generic)
 
 instance Validity EmailAddress where
-    validate eaa =
-        mconcat
-            [ annotate (emailAddressText eaa) "emailAddressText"
-            , check
-                  (normalizeEmail (emailAddressText eaa) == emailAddressText eaa)
-                  "The contained email address is normalised."
-            , check
-                  (emailValidateFromText (emailAddressText eaa) == Right eaa)
-                  "The contained email address validates to the same email address."
-            ]
+  validate eaa =
+    mconcat
+      [ annotate (emailAddressText eaa) "emailAddressText"
+      , check
+          (normalizeEmail (emailAddressText eaa) == emailAddressText eaa)
+          "The contained email address is normalised."
+      , check
+          (emailValidateFromText (emailAddressText eaa) == Right eaa)
+          "The contained email address validates to the same email address."
+      ]
 
 instance PersistField EmailAddress where
-    toPersistValue :: EmailAddress -> PersistValue
-    toPersistValue = toPersistValue . emailAddressText
-    fromPersistValue :: PersistValue -> Either Text EmailAddress
-    fromPersistValue = left T.pack . emailValidateFromText <=< fromPersistValue
+  toPersistValue :: EmailAddress -> PersistValue
+  toPersistValue = toPersistValue . emailAddressText
+  fromPersistValue :: PersistValue -> Either Text EmailAddress
+  fromPersistValue = left T.pack . emailValidateFromText <=< fromPersistValue
 
 instance PersistFieldSql EmailAddress where
-    sqlType :: Proxy EmailAddress -> SqlType
-    sqlType Proxy = sqlType (Proxy :: Proxy Text)
+  sqlType :: Proxy EmailAddress -> SqlType
+  sqlType Proxy = sqlType (Proxy :: Proxy Text)
 
 instance FromJSON EmailAddress where
-    parseJSON =
-        withText "EmailAddress" $ \t ->
-            case emailValidateFromText t of
-                Left err -> fail $ show err
-                Right ea -> pure ea
+  parseJSON =
+    withText "EmailAddress" $ \t ->
+      case emailValidateFromText t of
+        Left err -> fail $ show err
+        Right ea -> pure ea
 
 instance ToJSON EmailAddress where
-    toJSON = JSON.String . emailAddressText
+  toJSON = JSON.String . emailAddressText
 
 normalizeEmail :: Text -> Text
 normalizeEmail = T.map Char.toLower
@@ -118,9 +120,9 @@ emailAddressFromString = emailAddressFromText . T.pack
 -- >>> unsafeEmailAddress "foo" "gmail.com"
 -- "foo@gmail.com"
 unsafeEmailAddress ::
-       ByteString -- ^ Local part
-    -> ByteString -- ^ Domain part
-    -> EmailAddress
+     ByteString -- ^ Local part
+  -> ByteString -- ^ Domain part
+  -> EmailAddress
 unsafeEmailAddress = (EmailAddress .) . Email.unsafeEmailAddress
 
 -- | Wrapper around 'EmailValidate.localPart'.

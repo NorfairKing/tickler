@@ -1,8 +1,8 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Tickler.API.InstanceSpec
-    ( spec
-    ) where
+  ( spec
+  ) where
 
 import TestImport
 
@@ -13,11 +13,11 @@ import Tickler.API.Types
 
 spec :: Spec
 spec = do
-    eqSpecOnValid @Registration
-    ordSpecOnValid @Registration
-    genValidSpec @Registration
-    jsonSpecOnValid @Registration
-    eqSpecOnValid @LoginForm
-    ordSpecOnValid @LoginForm
-    genValidSpec @LoginForm
-    jsonSpecOnValid @LoginForm
+  eqSpecOnValid @Registration
+  ordSpecOnValid @Registration
+  genValidSpec @Registration
+  jsonSpecOnValid @Registration
+  eqSpecOnValid @LoginForm
+  ordSpecOnValid @LoginForm
+  genValidSpec @LoginForm
+  jsonSpecOnValid @LoginForm

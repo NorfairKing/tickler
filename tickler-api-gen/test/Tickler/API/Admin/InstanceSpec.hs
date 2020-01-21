@@ -1,8 +1,8 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Tickler.API.Admin.InstanceSpec
-    ( spec
-    ) where
+  ( spec
+  ) where
 
 import TestImport
 
@@ -14,7 +14,7 @@ import Tickler.API.Admin.Gen ()
 
 spec :: Spec
 spec = do
-    eqSpecOnValid @AdminStats
-    ordSpecOnValid @AdminStats
-    genValidSpec @AdminStats
-    jsonSpecOnValid @AdminStats
+  eqSpecOnValid @AdminStats
+  ordSpecOnValid @AdminStats
+  genValidSpec @AdminStats
+  jsonSpecOnValid @AdminStats

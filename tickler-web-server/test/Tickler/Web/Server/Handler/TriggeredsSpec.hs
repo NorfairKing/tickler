@@ -9,9 +9,9 @@ import Tickler.Web.Server.TestUtils
 
 spec :: Spec
 spec =
-    ticklerWebServerSpec $
-    ydescribe "Triggereds" $
-    yit "gets a 200 for a logged-in user" $ do
-        withExampleAccountAndLogin_ $ do
-            get TriggeredsR
-            statusIs 200
+  ticklerWebServerSpec $
+  ydescribe "Triggereds" $
+  yit "gets a 200 for a logged-in user" $
+  withExampleAccountAndLogin_ $ do
+    get TriggeredsR
+    statusIs 200

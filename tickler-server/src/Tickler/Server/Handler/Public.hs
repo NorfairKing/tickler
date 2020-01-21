@@ -1,9 +1,9 @@
 module Tickler.Server.Handler.Public
-    ( TicklerPublicSite
-    , ticklerPublicServer
-    ) where
+  ( TicklerPublicSite
+  , ticklerPublicServer
+  ) where
 
-import Servant.Generic
+import Servant.Server.Generic
 
 import Tickler.API
 
@@ -16,9 +16,9 @@ import Tickler.Server.Handler.Public.PostRegister
 
 ticklerPublicServer :: TicklerPublicSite (AsServerT TicklerHandler)
 ticklerPublicServer =
-    TicklerPublicSite
-        { postRegister = servePostRegister
-        , postLogin = servePostLogin
-        , getLoopersStatus = serveGetLoopersStatus
-        , getDocs = serveGetDocs
-        }
+  TicklerPublicSite
+    { postRegister = servePostRegister
+    , postLogin = servePostLogin
+    , getLoopersStatus = serveGetLoopersStatus
+    , getDocs = serveGetDocs
+    }

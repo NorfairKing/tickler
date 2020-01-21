@@ -13,14 +13,6 @@ default-extensions:
 library:
   source-dirs: src
   ghc-options: -Wall
-  exposed-modules:
-  - Tickler.API
-  - Tickler.API.Account.Types
-  - Tickler.API.Admin
-  - Tickler.API.Admin.Types
-  - Tickler.API.Protected
-  - Tickler.API.Protected.Types
-  - Tickler.API.Types
   dependencies:
   - aeson
   - base >=4.7 && <5
@@ -41,7 +33,6 @@ library:
   - servant-blaze
   - servant-client-core
   - servant-docs
-  - servant-generic
   - text
   - tickler-data
   - time

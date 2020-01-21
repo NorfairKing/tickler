@@ -2,6 +2,7 @@
 *.cabal
 result*
 .stack-work/
+stack.yaml.lock
 /out/
 /tmp/
 /src/

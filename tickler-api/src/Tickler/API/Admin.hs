@@ -6,20 +6,19 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tickler.API.Admin
-    ( TicklerAdminAPI
-    , TicklerAdminSite(..)
-    , AdminStats(..)
-    , AdminGetStats
-    , AdminDeleteAccount
-    , AdminGetAccounts
-    ) where
+  ( TicklerAdminAPI
+  , TicklerAdminSite(..)
+  , AdminStats(..)
+  , AdminGetStats
+  , AdminDeleteAccount
+  , AdminGetAccounts
+  ) where
 
 import Import
 
 import Servant.API
+import Servant.API.Generic
 import Servant.Auth.Docs ()
-import Servant.Auth.Server.SetCookieOrphan ()
-import Servant.Generic
 
 import Tickler.Data
 
@@ -27,17 +26,19 @@ import Tickler.API.Account.Types
 import Tickler.API.Admin.Types
 import Tickler.API.Types
 
-type TicklerAdminAPI = ToServant (TicklerAdminSite AsApi)
+type TicklerAdminAPI = ToServantApi TicklerAdminSite
 
-data TicklerAdminSite route = TicklerAdminSite
+data TicklerAdminSite route =
+  TicklerAdminSite
     { adminGetStats :: route :- AdminGetStats
     , adminDeleteAccount :: route :- AdminDeleteAccount
     , adminGetAccounts :: route :- AdminGetAccounts
-    } deriving (Generic)
+    }
+  deriving (Generic)
 
 type AdminGetStats = ProtectAPI :> "stats" :> Get '[ JSON] AdminStats
 
 type AdminDeleteAccount
-     = ProtectAPI :> "account" :> Capture "id" AccountUUID :> Delete '[ JSON] NoContent
+   = ProtectAPI :> "account" :> Capture "id" AccountUUID :> Delete '[ JSON] NoContent
 
 type AdminGetAccounts = ProtectAPI :> "accounts" :> Get '[ JSON] [AccountInfo]

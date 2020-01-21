@@ -34,8 +34,9 @@ import Tickler.Data.TriggerUUID
 import Tickler.Data.Url
 import Tickler.Data.Username
 
-share [mkPersist sqlSettings, mkMigrate "migrateAll"]
-    [persistLowerCase|
+share
+  [mkPersist sqlSettings, mkMigrate "migrateAll"]
+  [persistLowerCase|
 
 User
     identifier AccountUUID
@@ -244,4 +245,4 @@ instance Validity TriggeredEmail
 instance Validity Email
 
 instance Validity (Key a) where
-    validate = trivialValidation
+  validate = trivialValidation

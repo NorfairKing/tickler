@@ -11,12 +11,10 @@ import Tickler.Data.Gen ()
 
 import Tickler.API.Admin.Gen ()
 
-instance GenUnchecked AccountInfo
-
 instance GenValid AccountInfo where
-    genValid = genValidStructurally
-
-instance GenUnchecked AccountSettings
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid AccountSettings where
-    genValid = genValidStructurally
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally

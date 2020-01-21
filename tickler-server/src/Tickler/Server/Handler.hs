@@ -1,8 +1,8 @@
 module Tickler.Server.Handler
-    ( ticklerServer
-    ) where
+  ( ticklerServer
+  ) where
 
-import Servant.Generic
+import Servant.Server.Generic
 
 import Tickler.API
 
@@ -24,11 +24,9 @@ import Tickler.Server.Handler.PostAddEmailTrigger (servePostAddEmailTrigger)
 import Tickler.Server.Handler.PostAddIntrayTrigger (servePostAddIntrayTrigger)
 import Tickler.Server.Handler.PostAddItem (servePostAddItem)
 import Tickler.Server.Handler.PostEmailTriggerResendVerificationEmail
-    ( servePostEmailTriggerResendVerificationEmail
-    )
-import Tickler.Server.Handler.PostEmailTriggerVerify
-    ( servePostEmailTriggerVerify
-    )
+  ( servePostEmailTriggerResendVerificationEmail
+  )
+import Tickler.Server.Handler.PostEmailTriggerVerify (servePostEmailTriggerVerify)
 import Tickler.Server.Handler.PostSync (servePostSync)
 import Tickler.Server.Handler.Public (ticklerPublicServer)
 import Tickler.Server.Handler.PutAccountSettings (servePutAccountSettings)
@@ -36,39 +34,36 @@ import Tickler.Server.Handler.RetryTriggered (serveRetryTriggered)
 
 ticklerServer :: TicklerSite (AsServerT TicklerHandler)
 ticklerServer =
-    TicklerSite
-        { openSite = toServant ticklerOpenServer
-        , adminSite = toServant ticklerAdminServer
-        }
+  TicklerSite
+    {openSite = genericServerT ticklerOpenServer, adminSite = genericServerT ticklerAdminServer}
 
 ticklerOpenServer :: TicklerOpenSite (AsServerT TicklerHandler)
 ticklerOpenServer =
-    TicklerOpenSite
-        { protectedSite = toServant ticklerProtectedServer
-        , publicSite = toServant ticklerPublicServer
-        }
+  TicklerOpenSite
+    { protectedSite = genericServerT ticklerProtectedServer
+    , publicSite = genericServerT ticklerPublicServer
+    }
 
 ticklerProtectedServer :: TicklerProtectedSite (AsServerT TicklerHandler)
 ticklerProtectedServer =
-    TicklerProtectedSite
-        { getItemUUIDs = serveGetItemUUIDs
-        , getItems = serveGetItems
-        , postAddItem = servePostAddItem
-        , getItem = serveGetItem
-        , deleteItem = serveDeleteItem
-        , retryTriggered = serveRetryTriggered
-        , deleteTriggereds = serveDeleteTriggereds
-        , postSync = servePostSync
-        , getTriggers = serveGetTriggers
-        , getTrigger = serveGetTrigger
-        , postAddIntrayTrigger = servePostAddIntrayTrigger
-        , postAddEmailTrigger = servePostAddEmailTrigger
-        , postEmailTriggerVerify = servePostEmailTriggerVerify
-        , postEmailTriggerResendVerificationEmail =
-              servePostEmailTriggerResendVerificationEmail
-        , deleteTrigger = serveDeleteTrigger
-        , getAccountInfo = serveGetAccountInfo
-        , getAccountSettings = serveGetAccountSettings
-        , putAccountSettings = servePutAccountSettings
-        , deleteAccount = serveDeleteAccount
-        }
+  TicklerProtectedSite
+    { getItemUUIDs = serveGetItemUUIDs
+    , getItems = serveGetItems
+    , postAddItem = servePostAddItem
+    , getItem = serveGetItem
+    , deleteItem = serveDeleteItem
+    , retryTriggered = serveRetryTriggered
+    , deleteTriggereds = serveDeleteTriggereds
+    , postSync = servePostSync
+    , getTriggers = serveGetTriggers
+    , getTrigger = serveGetTrigger
+    , postAddIntrayTrigger = servePostAddIntrayTrigger
+    , postAddEmailTrigger = servePostAddEmailTrigger
+    , postEmailTriggerVerify = servePostEmailTriggerVerify
+    , postEmailTriggerResendVerificationEmail = servePostEmailTriggerResendVerificationEmail
+    , deleteTrigger = serveDeleteTrigger
+    , getAccountInfo = serveGetAccountInfo
+    , getAccountSettings = serveGetAccountSettings
+    , putAccountSettings = servePutAccountSettings
+    , deleteAccount = serveDeleteAccount
+    }

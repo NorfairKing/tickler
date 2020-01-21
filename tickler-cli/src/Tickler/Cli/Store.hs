@@ -1,11 +1,9 @@
-{-# LANGUAGE RecordWildCards #-}
-
 module Tickler.Cli.Store
-    ( Store(..)
-    , readStore
-    , readStoreOrEmpty
-    , writeStore
-    ) where
+  ( Store(..)
+  , readStore
+  , readStoreOrEmpty
+  , writeStore
+  ) where
 
 import Import
 
@@ -24,5 +22,4 @@ readStoreOrEmpty :: CliM Store
 readStoreOrEmpty = fromMaybe emptyStore <$> readStore
 
 writeStore :: Store -> CliM ()
-writeStore s = do
-    storePath >>= (`writeJSON` s)
+writeStore s = storePath >>= (`writeJSON` s)
