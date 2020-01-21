@@ -38,18 +38,18 @@ showMergeStats SyncRequest {..} SyncResponse {..} =
   unlines
     [ unwords
         [ show $ length $ Mergeless.syncResponseServerAdded syncResponseTickles
-        , "tickles added   remotely"
-        ]
-    , unwords
-        [ show $ length $ Mergeless.syncResponseServerDeleted syncResponseTickles
-        , "tickles deleted remotely"
-        ]
-    , unwords
-        [ show $ length $ Mergeless.syncResponseClientAdded syncResponseTickles
         , "tickles added   locally"
         ]
     , unwords
-        [ show $ length $ Mergeless.syncResponseClientDeleted syncResponseTickles
+        [ show $ length $ Mergeless.syncResponseServerDeleted syncResponseTickles
         , "tickles deleted locally"
+        ]
+    , unwords
+        [ show $ length $ Mergeless.syncResponseClientAdded syncResponseTickles
+        , "tickles added   remotely"
+        ]
+    , unwords
+        [ show $ length $ Mergeless.syncResponseClientDeleted syncResponseTickles
+        , "tickles deleted remotely"
         ]
     ]
