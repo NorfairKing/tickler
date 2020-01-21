@@ -11,7 +11,6 @@ module Tickler.Cli.Commands.Login
 import Import
 
 import Servant
-import Servant.Auth.Server.SetCookieOrphan ()
 
 import Tickler.API
 

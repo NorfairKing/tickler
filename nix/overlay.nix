@@ -78,11 +78,12 @@ with final.haskell.lib;
           with final.haskellPackages;
 
           {
-              amazonka = callHackage "amazonka" "1.6.0" {};
-              amazonka-test = callHackage "amazonka-test" "1.6.0" {};
-              amazonka-core = callHackage "amazonka-core" "1.6.0" {};
-              amazonka-ses = callHackage "amazonka-ses" "1.6.0" {};
-              http-client = callHackage "http-client" "0.5.14" {};
+              amazonka = callHackage "amazonka" "1.6.1" {};
+              amazonka-test = callHackage "amazonka-test" "1.6.1" {};
+              amazonka-core = callHackage "amazonka-core" "1.6.1" {};
+              amazonka-ses = callHackage "amazonka-ses" "1.6.1" {};
+              # http-client = callHackage "http-client" "0.5.14" {};
+              # servant-auth-server = doJailbreak (super.servant-auth-server);
               looper = self.callCabal2nix "looper" looperRepo {};
 
             } // final.lib.genAttrs [

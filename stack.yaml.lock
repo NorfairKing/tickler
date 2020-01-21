@@ -5,26 +5,26 @@
 
 packages:
 - completed:
-    hackage: amazonka-1.6.0@sha256:e04f26108f99712b4fa532ba12bf5fecafda3783a8250aa74b7881c74a737cd6,3383
+    hackage: amazonka-1.6.1@sha256:d863557379350ed6bbb91187abeb8c349a654f60b140d138710486f58ae7c476,3536
     pantry-tree:
       size: 992
-      sha256: 844372afd49409dd7c200b5d57982ddbdcfad556f6a3f619b39098aeb84020dd
+      sha256: 55747f9b56063ea1be73a962e1ce44528b9856e119e2d9f1238397b3112b6e70
   original:
-    hackage: amazonka-1.6.0
+    hackage: amazonka-1.6.1
 - completed:
-    hackage: amazonka-core-1.6.0@sha256:d267a069c74791b73db7d3379e68107c0930ab30252b7f6a994a70899a0c2652,4957
+    hackage: amazonka-core-1.6.1@sha256:9bc59ce403c6eeba3b3eaf3f10e5f0b6a33b6edbbf8f6de0dd6f4c67b86fa698,5135
     pantry-tree:
       size: 3438
-      sha256: d54bf15a46e9c28f60cc8d52db1d6af8ed783802171abfe35eb7f327672e3d61
+      sha256: c13e643176308771491ec0e06390e269047bb1b28be4535992842f7426a95eb4
   original:
-    hackage: amazonka-core-1.6.0
+    hackage: amazonka-core-1.6.1
 - completed:
-    hackage: amazonka-ses-1.6.0@sha256:f06ef615c93a37730d4831193f18dd9f79392fcf306c6abee4bbf62a58a33a47,6425
+    hackage: amazonka-ses-1.6.1@sha256:335796c855121ca34affd35097676587d5ebe0b2e576da42faaedd9d163881b0,6425
     pantry-tree:
       size: 18151
-      sha256: 4998f812e8eeb7a6cdc9379d1c78008154f0188757c42b55ff709d3a3027bc7a
+      sha256: 1b4746acac660d5418731b3972c4ff2285ee3435c709dfda67df49665f781d0a
   original:
-    hackage: amazonka-ses-1.6.0
+    hackage: amazonka-ses-1.6.1
 - completed:
     hackage: servant-auth-client-0.4.0.0@sha256:68879b7f44d87f73ef68c7bb21006167f5623c4cd6a2a3fce4d5ea3959a8c730,3426
     pantry-tree:
@@ -39,13 +39,6 @@ packages:
       sha256: 04f12c7bef2c3f9a25d94eb9489752ed498db8e243069fe95838dbb51df1dcb3
   original:
     hackage: servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
-- completed:
-    hackage: http-client-0.5.14@sha256:4880b27d6741e331454a1d4c887d96ce3d7d625322c8433983a4b1cd08538577,5348
-    pantry-tree:
-      size: 2457
-      sha256: 02bcffba9cad572fefb4640f5fc9be68e770b32ab73efcac649db20290994c6d
-  original:
-    hackage: http-client-0.5.14@sha256:4880b27d6741e331454a1d4c887d96ce3d7d625322c8433983a4b1cd08538577,5348
 - completed:
     size: 5899
     url: https://github.com/NorfairKing/looper/archive/929a8ad6a99a84624767bd9d619cc5318c6bda56.tar.gz

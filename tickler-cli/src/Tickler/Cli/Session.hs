@@ -14,7 +14,6 @@ import qualified Data.ByteString.Lazy as LB
 import Web.Cookie
 
 import Servant.Auth.Client
-import Servant.Auth.Server.SetCookieOrphan ()
 
 import Tickler.Cli.OptParse
 import Tickler.Cli.Path

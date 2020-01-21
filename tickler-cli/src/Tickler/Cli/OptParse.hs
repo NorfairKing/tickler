@@ -20,7 +20,7 @@ import Import
 import qualified Data.ByteString as SB
 import qualified Data.Text as T
 import Data.Time
-import Data.Yaml as Yaml (decodeEither)
+import Data.Yaml as Yaml (decodeEither')
 
 import Options.Applicative
 import System.Environment
@@ -123,9 +123,9 @@ getConfig Flags {..} = do
   case mContents of
     Nothing -> pure emptyConfiguration
     Just contents ->
-      case Yaml.decodeEither contents of
+      case Yaml.decodeEither' contents of
         Left err ->
-          die $ unlines ["Failed to parse config file", fromAbsFile path, "with error:", err]
+          die $ unlines ["Failed to parse config file", fromAbsFile path, "with error:", show err]
         Right conf -> pure conf
 
 defaultConfigFile :: Maybe FilePath -> IO (Path Abs File)

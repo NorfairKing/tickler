@@ -20,7 +20,7 @@ runSingleClientOrErr func = do
         Left err -> liftIO $ die $ unlines ["Error while contacting the tickler server:", show err]
         Right r -> pure r
 
-runSingleClient :: ClientM a -> CliM (Maybe (Either ServantError a))
+runSingleClient :: ClientM a -> CliM (Maybe (Either ClientError a))
 runSingleClient func = do
   mburl <- asks setBaseUrl
   case mburl of

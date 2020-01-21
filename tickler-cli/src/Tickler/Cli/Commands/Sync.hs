@@ -37,19 +37,19 @@ showMergeStats :: SyncRequest -> SyncResponse -> String
 showMergeStats SyncRequest {..} SyncResponse {..} =
   unlines
     [ unwords
-        [ show $ length $ Mergeless.syncResponseAddedItems syncResponseTickles
+        [ show $ length $ Mergeless.syncResponseServerAdded syncResponseTickles
         , "tickles added   remotely"
         ]
     , unwords
-        [ show $ length $ Mergeless.syncRequestUndeletedItems syncRequestTickles
+        [ show $ length $ Mergeless.syncResponseServerDeleted syncResponseTickles
         , "tickles deleted remotely"
         ]
     , unwords
-        [ show $ length $ Mergeless.syncResponseNewRemoteItems syncResponseTickles
+        [ show $ length $ Mergeless.syncResponseClientAdded syncResponseTickles
         , "tickles added   locally"
         ]
     , unwords
-        [ show $ length $ Mergeless.syncResponseItemsToBeDeletedLocally syncResponseTickles
+        [ show $ length $ Mergeless.syncResponseClientDeleted syncResponseTickles
         , "tickles deleted locally"
         ]
     ]

@@ -9,8 +9,6 @@ module Tickler.Cli.Commands.Register
 
 import Import
 
-import Servant.Auth.Server.SetCookieOrphan ()
-
 import Tickler.API
 
 import Tickler.Client
