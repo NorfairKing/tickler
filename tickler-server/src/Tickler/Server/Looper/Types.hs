@@ -3,11 +3,12 @@
 module Tickler.Server.Looper.Types
   ( LooperEnv(..)
   , Looper(..)
-  , runLooper
   , LooperHandle(..)
   ) where
 
 import Import
+
+import Looper
 
 import Control.Concurrent.Async
 import Control.Monad.Catch
@@ -21,24 +22,8 @@ newtype LooperEnv =
     { looperEnvPool :: Pool SqlBackend
     }
 
-newtype Looper a =
-  Looper
-    { unLooper :: ReaderT LooperEnv (LoggingT IO) a
-    }
-  deriving ( Functor
-           , Applicative
-           , Monad
-           , MonadIO
-           , MonadReader LooperEnv
-           , MonadLogger
-           , MonadThrow
-           , MonadCatch
-           , MonadMask
-           )
-
-runLooper :: Looper a -> LooperEnv -> IO a
-runLooper (Looper func) = runStderrLoggingT . runReaderT func
+type Looper = ReaderT LooperEnv (LoggingT IO)
 
 data LooperHandle
   = LooperHandleDisabled
-  | LooperHandleEnabled (Async ()) LooperStaticConfig
+  | LooperHandleEnabled (Async ()) LooperSettings

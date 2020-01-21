@@ -11,9 +11,11 @@ import Import
 import qualified Data.Text as T
 import Text.Read
 
+import Looper
+
 import System.Environment (getArgs, getEnvironment, lookupEnv)
 
-import Control.Monad.Trans.AWS as AWS
+import qualified Control.Monad.Trans.AWS as AWS
 import Database.Persist.Sqlite
 
 import Options.Applicative
@@ -43,81 +45,63 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
       case parseUsername $ T.pack s of
         Nothing -> die $ unwords ["Invalid admin username:", s]
         Just u -> pure u
-  let LooperFlags {..} = serveFlagsLooperFlags
+  let LoopersFlags {..} = serveFlagsLooperFlags
   let LoopersEnvironment {..} = envLoopersEnvironment
   let defaultLoopersEnabled =
         fromMaybe True $ looperFlagDefaultEnabled `mplus` looperEnvDefaultEnabled
-  let defaultLoopersPeriod = fromMaybe 60 $ looperFlagDefaultPeriod `mplus` looperEnvDefaultPeriod
+  let defaultLoopersPeriod =
+        fromIntegral $ fromMaybe 60 $ looperFlagDefaultPeriod `mplus` looperEnvDefaultPeriod
   let defaultLooperRetryDelay =
         fromMaybe 1000000 $ looperFlagDefaultRetryDelay `mplus` looperEnvDefaultRetryDelay
   let defaultLooperRetryAmount =
         fromMaybe 7 $ looperFlagDefaultRetryTimes `mplus` looperEnvDefaultRetryTimes
   let looperSetConnectionInfo = serveSetConnectionInfo
   let looperSetConnectionCount = serveSetConnectionCount
-  let combineToLooperSets ::
-           LooperFlagsWith a -> LooperEnvWith b -> (a -> b -> IO c) -> IO (LooperSetsWith c)
-      combineToLooperSets LooperFlagsWith {..} LooperEnvWith {..} func = do
-        let enabled = fromMaybe defaultLoopersEnabled $ looperFlagEnable `mplus` looperEnvEnable
-        if enabled
-          then do
-            let LooperFlagsRetryPolicy {..} = looperFlagsRetryPolicy
-            let LooperEnvRetryPolicy {..} = looperEnvRetryPolicy
-            let static =
-                  LooperStaticConfig
-                    { looperStaticConfigPeriod =
-                        fromMaybe defaultLoopersPeriod $ looperFlagsPeriod `mplus` looperEnvPeriod
-                    , looperStaticConfigRetryPolicy =
-                        LooperRetryPolicy
-                          { looperRetryPolicyDelay =
-                              fromMaybe defaultLooperRetryDelay $
-                              looperFlagsRetryDelay `mplus` looperEnvRetryDelay
-                          , looperRetryPolicyAmount =
-                              fromMaybe defaultLooperRetryAmount $
-                              looperFlagsRetryAmount `mplus` looperEnvRetryAmount
-                          }
-                    }
-            LooperEnabled static <$> func looperFlags looperEnv
+  let combineToLooperSets :: LooperFlags -> LooperEnvironment -> IO c -> IO (LooperSetsWith c)
+      combineToLooperSets lflags lenv func = do
+        let sets = deriveLooperSettings (seconds 0) defaultLoopersPeriod lflags lenv Nothing
+        if looperSetEnabled sets
+          then LooperEnabled sets <$> func
           else pure LooperDisabled
   looperSetTriggererSets <-
-    combineToLooperSets looperFlagTriggererFlags looperEnvTriggererEnv $
-    const $ const $ pure TriggererSettings
+    combineToLooperSets looperFlagTriggererFlags looperEnvTriggererEnv $ pure TriggererSettings
   looperSetEmailerSets <-
     combineToLooperSets looperFlagEmailerFlags looperEnvEmailerEnv $
-    const $ const $ pure $ EmailerSettings Discover
+    pure $ EmailerSettings AWS.Discover
   looperSetTriggeredIntrayItemSchedulerSets <-
     combineToLooperSets
       looperFlagTriggeredIntrayItemSchedulerFlags
       looperEnvTriggeredIntrayItemSchedulerEnv $
-    const $ const $ pure ()
+    pure ()
   looperSetTriggeredIntrayItemSenderSets <-
     combineToLooperSets
       looperFlagTriggeredIntrayItemSenderFlags
       looperEnvTriggeredIntrayItemSenderEnv $
-    const $ const $ pure ()
+    pure ()
   looperSetVerificationEmailConverterSets <-
     combineToLooperSets
       looperFlagVerificationEmailConverterFlags
-      looperEnvVerificationEmailConverterEnv $ \() () ->
-      pure
-        VerificationEmailConverterSettings
-          { verificationEmailConverterSetFromAddress -- TODO make these configurable
-             = unsafeEmailAddress "verification" "tickler.cs-syd.eu"
-          , verificationEmailConverterSetFromName = "Tickler"
-          , verificationEmailConverterSetWebHost = webHost
-          }
+      looperEnvVerificationEmailConverterEnv $
+    pure
+      VerificationEmailConverterSettings
+        { verificationEmailConverterSetFromAddress -- TODO make these configurable
+           = unsafeEmailAddress "verification" "tickler.cs-syd.eu"
+        , verificationEmailConverterSetFromName = "Tickler"
+        , verificationEmailConverterSetWebHost = webHost
+        }
   looperSetTriggeredEmailSchedulerSets <-
     combineToLooperSets looperFlagTriggeredEmailSchedulerFlags looperEnvTriggeredEmailSchedulerEnv $
-    const $ const $ pure ()
+    pure ()
   looperSetTriggeredEmailConverterSets <-
-    combineToLooperSets looperFlagTriggeredEmailConverterFlags looperEnvTriggeredEmailConverterEnv $ \() () ->
-      pure
-        TriggeredEmailConverterSettings
-          { triggeredEmailConverterSetFromAddress -- TODO make these configurable
-             = unsafeEmailAddress "triggered" "tickler.cs-syd.eu"
-          , triggeredEmailConverterSetFromName = "Tickler"
-          , triggeredEmailConverterSetWebHost = webHost
-          }
-  let serveSetLooperSettings = LooperSettings {..}
+    combineToLooperSets looperFlagTriggeredEmailConverterFlags looperEnvTriggeredEmailConverterEnv $
+    pure
+      TriggeredEmailConverterSettings
+        { triggeredEmailConverterSetFromAddress -- TODO make these configurable
+           = unsafeEmailAddress "triggered" "tickler.cs-syd.eu"
+        , triggeredEmailConverterSetFromName = "Tickler"
+        , triggeredEmailConverterSetWebHost = webHost
+        }
+  let serveSetLooperSettings = LoopersSettings {..}
   pure $ Instructions (DispatchServe ServeSettings {..}) Settings
 
 getConfiguration :: Command -> Flags -> IO Configuration
@@ -135,36 +119,19 @@ getEnv = do
 getLoopersEnv :: IO LoopersEnvironment
 getLoopersEnv = do
   env <- getEnvironment
+  let le n = readLooperEnvironment "LOOPER_" n env
   looperEnvDefaultEnabled <- maybeReadEnv "LOOPERS_DEFAULT_ENABLED" env
   looperEnvDefaultPeriod <- maybeReadEnv "LOOPERS_DEFAULT_PERIOD" env
   looperEnvDefaultRetryDelay <- maybeReadEnv "LOOPERS_DEFAULT_RETRY_DELAY" env
   looperEnvDefaultRetryTimes <- maybeReadEnv "LOOPERS_DEFAULT_RETRY_AMOUNT" env
-  looperEnvTriggererEnv <- getLooperEnvWith "TRIGGERER" $ pure ()
-  looperEnvEmailerEnv <- getLooperEnvWith "EMAILER" $ pure ()
-  looperEnvTriggeredIntrayItemSchedulerEnv <-
-    getLooperEnvWith "TRIGGERED_INTRAY_ITEM_SCHEDULER" $ pure ()
-  looperEnvTriggeredIntrayItemSenderEnv <- getLooperEnvWith "TRIGGERED_INTRAY_ITEM_SENDER" $ pure ()
-  looperEnvVerificationEmailConverterEnv <-
-    getLooperEnvWith "VERIFICATION_EMAIL_CONVERTER" $ pure ()
-  looperEnvTriggeredEmailSchedulerEnv <- getLooperEnvWith "TRIGGERED_EMAIL_SCHEDULER" $ pure ()
-  looperEnvTriggeredEmailConverterEnv <- getLooperEnvWith "TRIGGERED_EMAIL_CONVERTER" $ pure ()
+  let looperEnvTriggererEnv = le "TRIGGERER"
+      looperEnvEmailerEnv = le "EMAILER"
+      looperEnvTriggeredIntrayItemSchedulerEnv = le "TRIGGERED_INTRAY_ITEM_SCHEDULER"
+      looperEnvTriggeredIntrayItemSenderEnv = le "TRIGGERED_INTRAY_ITEM_SENDER"
+      looperEnvVerificationEmailConverterEnv = le "VERIFICATION_EMAIL_CONVERTER"
+      looperEnvTriggeredEmailSchedulerEnv = le "TRIGGERED_EMAIL_SCHEDULER"
+      looperEnvTriggeredEmailConverterEnv = le "TRIGGERED_EMAIL_CONVERTER"
   pure LoopersEnvironment {..}
-
-getLooperEnvWith :: String -> IO a -> IO (LooperEnvWith a)
-getLooperEnvWith name func = do
-  env <- getEnvironment
-  looperEnvEnable <- maybeReadEnv (intercalate "_" ["LOOPER", name, "ENABLED"]) env
-  looperEnvPeriod <- maybeReadEnv (intercalate "_" ["LOOPER", name, "PERIOD"]) env
-  looperEnvRetryPolicy <- getLooperRetryPolicyEnv name
-  looperEnv <- func
-  pure LooperEnvWith {..}
-
-getLooperRetryPolicyEnv :: String -> IO LooperEnvRetryPolicy
-getLooperRetryPolicyEnv name = do
-  env <- getEnvironment
-  looperEnvRetryDelay <- maybeReadEnv (intercalate "_" ["LOOPER", name, "RETRY", "DELAY"]) env
-  looperEnvRetryAmount <- maybeReadEnv (intercalate "_" ["LOOPER", name, "RETRY", "AMOUNT"]) env
-  pure LooperEnvRetryPolicy {..}
 
 eitherParseEnv :: Show a => String -> (a -> Either String b) -> [(String, a)] -> IO (Maybe b)
 eitherParseEnv k func env =
@@ -250,9 +217,9 @@ parseServeFlags =
   many (strOption (mconcat [long "admin", metavar "USERNAME", help "An admin to use"])) <*>
   parseLooperFlags
 
-parseLooperFlags :: Parser LooperFlags
+parseLooperFlags :: Parser LoopersFlags
 parseLooperFlags =
-  LooperFlags <$>
+  LoopersFlags <$>
   onOffFlag "loopers" (help $ unwords ["enable or disable all the loopers by default"]) <*>
   option
     (Just <$> auto)
@@ -278,50 +245,13 @@ parseLooperFlags =
        , metavar "AMOUNT"
        , help "The default amount of times to retry a looper before failing"
        ]) <*>
-  parseLooperFlagsWith "triggerer" (pure ()) <*>
-  parseLooperFlagsWith "emailer" (pure ()) <*>
-  parseLooperFlagsWith "intray-item-scheduler" (pure ()) <*>
-  parseLooperFlagsWith "intray-item-sender" (pure ()) <*>
-  parseLooperFlagsWith "verification-email-converter" (pure ()) <*>
-  parseLooperFlagsWith "triggered-email-scheduler" (pure ()) <*>
-  parseLooperFlagsWith "triggered-email-converter" (pure ())
-
-parseLooperFlagsWith :: String -> Parser a -> Parser (LooperFlagsWith a)
-parseLooperFlagsWith name func =
-  LooperFlagsWith <$>
-  onOffFlag
-    (intercalate "-" [name, "looper"])
-    (mconcat [help $ unwords ["enable or disable the", name, "looper"]]) <*>
-  option
-    (Just <$> auto)
-    (mconcat
-       [ long $ intercalate "-" [name, "period"]
-       , value Nothing
-       , metavar "SECONDS"
-       , help $ unwords ["The period for", name]
-       ]) <*>
-  parseLooperRetryPolicyFlags name <*>
-  func
-
-parseLooperRetryPolicyFlags :: String -> Parser LooperFlagsRetryPolicy
-parseLooperRetryPolicyFlags name =
-  LooperFlagsRetryPolicy <$>
-  option
-    (Just <$> auto)
-    (mconcat
-       [ long $ intercalate "-" [name, "retry-delay"]
-       , value Nothing
-       , metavar "MICROSECONDS"
-       , help $ unwords ["The retry delay for", name]
-       ]) <*>
-  option
-    (Just <$> auto)
-    (mconcat
-       [ long $ intercalate "-" [name, "retry-amount"]
-       , value Nothing
-       , metavar "AMOUNT"
-       , help $ unwords ["The amount of times to retry for", name]
-       ])
+  getLooperFlags "triggerer" <*>
+  getLooperFlags "emailer" <*>
+  getLooperFlags "intray-item-scheduler" <*>
+  getLooperFlags "intray-item-sender" <*>
+  getLooperFlags "verification-email-converter" <*>
+  getLooperFlags "triggered-email-scheduler" <*>
+  getLooperFlags "triggered-email-converter"
 
 onOffFlag :: String -> Mod FlagFields (Maybe Bool) -> Parser (Maybe Bool)
 onOffFlag suffix mods =

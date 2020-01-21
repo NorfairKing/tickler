@@ -5,6 +5,8 @@ import Import
 import Control.Monad.Trans.AWS as AWS
 import Database.Persist.Sqlite
 
+import Looper
+
 import Tickler.API
 
 data Arguments =
@@ -24,39 +26,23 @@ data ServeFlags =
     , serveFlagDb :: Maybe FilePath
     , serveFlagConnectionCount :: Maybe Int
     , serveFlagAdmins :: [String]
-    , serveFlagsLooperFlags :: LooperFlags
+    , serveFlagsLooperFlags :: LoopersFlags
     }
   deriving (Show, Eq)
 
-data LooperFlags =
-  LooperFlags
+data LoopersFlags =
+  LoopersFlags
     { looperFlagDefaultEnabled :: Maybe Bool
     , looperFlagDefaultPeriod :: Maybe Int
     , looperFlagDefaultRetryDelay :: Maybe Int
     , looperFlagDefaultRetryTimes :: Maybe Int
-    , looperFlagTriggererFlags :: LooperFlagsWith ()
-    , looperFlagEmailerFlags :: LooperFlagsWith ()
-    , looperFlagTriggeredIntrayItemSchedulerFlags :: LooperFlagsWith ()
-    , looperFlagTriggeredIntrayItemSenderFlags :: LooperFlagsWith ()
-    , looperFlagVerificationEmailConverterFlags :: LooperFlagsWith ()
-    , looperFlagTriggeredEmailSchedulerFlags :: LooperFlagsWith ()
-    , looperFlagTriggeredEmailConverterFlags :: LooperFlagsWith ()
-    }
-  deriving (Show, Eq)
-
-data LooperFlagsWith a =
-  LooperFlagsWith
-    { looperFlagEnable :: Maybe Bool
-    , looperFlagsPeriod :: Maybe Int
-    , looperFlagsRetryPolicy :: LooperFlagsRetryPolicy
-    , looperFlags :: a
-    }
-  deriving (Show, Eq)
-
-data LooperFlagsRetryPolicy =
-  LooperFlagsRetryPolicy
-    { looperFlagsRetryDelay :: Maybe Int
-    , looperFlagsRetryAmount :: Maybe Int
+    , looperFlagTriggererFlags :: LooperFlags
+    , looperFlagEmailerFlags :: LooperFlags
+    , looperFlagTriggeredIntrayItemSchedulerFlags :: LooperFlags
+    , looperFlagTriggeredIntrayItemSenderFlags :: LooperFlags
+    , looperFlagVerificationEmailConverterFlags :: LooperFlags
+    , looperFlagTriggeredEmailSchedulerFlags :: LooperFlags
+    , looperFlagTriggeredEmailConverterFlags :: LooperFlags
     }
   deriving (Show, Eq)
 
@@ -83,29 +69,13 @@ data LoopersEnvironment =
     , looperEnvDefaultPeriod :: Maybe Int
     , looperEnvDefaultRetryDelay :: Maybe Int
     , looperEnvDefaultRetryTimes :: Maybe Int
-    , looperEnvTriggererEnv :: LooperEnvWith ()
-    , looperEnvEmailerEnv :: LooperEnvWith ()
-    , looperEnvTriggeredIntrayItemSchedulerEnv :: LooperEnvWith ()
-    , looperEnvTriggeredIntrayItemSenderEnv :: LooperEnvWith ()
-    , looperEnvVerificationEmailConverterEnv :: LooperEnvWith ()
-    , looperEnvTriggeredEmailSchedulerEnv :: LooperEnvWith ()
-    , looperEnvTriggeredEmailConverterEnv :: LooperEnvWith ()
-    }
-  deriving (Show, Eq)
-
-data LooperEnvWith a =
-  LooperEnvWith
-    { looperEnvEnable :: Maybe Bool
-    , looperEnvPeriod :: Maybe Int
-    , looperEnvRetryPolicy :: LooperEnvRetryPolicy
-    , looperEnv :: a
-    }
-  deriving (Show, Eq)
-
-data LooperEnvRetryPolicy =
-  LooperEnvRetryPolicy
-    { looperEnvRetryDelay :: Maybe Int
-    , looperEnvRetryAmount :: Maybe Int
+    , looperEnvTriggererEnv :: LooperEnvironment
+    , looperEnvEmailerEnv :: LooperEnvironment
+    , looperEnvTriggeredIntrayItemSchedulerEnv :: LooperEnvironment
+    , looperEnvTriggeredIntrayItemSenderEnv :: LooperEnvironment
+    , looperEnvVerificationEmailConverterEnv :: LooperEnvironment
+    , looperEnvTriggeredEmailSchedulerEnv :: LooperEnvironment
+    , looperEnvTriggeredEmailConverterEnv :: LooperEnvironment
     }
   deriving (Show, Eq)
 
@@ -123,16 +93,16 @@ data ServeSettings =
     , serveSetConnectionInfo :: SqliteConnectionInfo
     , serveSetConnectionCount :: Int
     , serveSetAdmins :: [Username]
-    , serveSetLooperSettings :: LooperSettings
+    , serveSetLooperSettings :: LoopersSettings
     }
   deriving (Show)
 
-data LooperSettings =
-  LooperSettings
+data LoopersSettings =
+  LoopersSettings
     { looperSetConnectionInfo :: SqliteConnectionInfo
     , looperSetConnectionCount :: Int
-    , looperSetTriggererSets :: LooperSetsWith TriggererSettings
     , looperSetEmailerSets :: LooperSetsWith EmailerSettings
+    , looperSetTriggererSets :: LooperSetsWith TriggererSettings
     , looperSetTriggeredIntrayItemSchedulerSets :: LooperSetsWith ()
     , looperSetTriggeredIntrayItemSenderSets :: LooperSetsWith ()
     , looperSetVerificationEmailConverterSets :: LooperSetsWith VerificationEmailConverterSettings
@@ -142,23 +112,9 @@ data LooperSettings =
   deriving (Show)
 
 data LooperSetsWith a
-  = LooperEnabled LooperStaticConfig a -- Int number of seconds
+  = LooperEnabled LooperSettings a -- Int number of seconds
   | LooperDisabled
-  deriving (Show, Eq)
-
-data LooperStaticConfig =
-  LooperStaticConfig
-    { looperStaticConfigPeriod :: Int
-    , looperStaticConfigRetryPolicy :: LooperRetryPolicy
-    }
-  deriving (Show, Eq)
-
-data LooperRetryPolicy =
-  LooperRetryPolicy
-    { looperRetryPolicyDelay :: Int -- Microseconds
-    , looperRetryPolicyAmount :: Int
-    }
-  deriving (Show, Eq)
+  deriving (Show)
 
 data TriggererSettings =
   TriggererSettings

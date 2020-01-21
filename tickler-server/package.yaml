@@ -36,6 +36,7 @@ library:
   - intray-client
   - jose
   - lens
+  - looper
   - markdown
   - mergeless
   - monad-logger
