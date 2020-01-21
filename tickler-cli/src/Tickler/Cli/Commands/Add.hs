@@ -4,8 +4,8 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Cli.Commands.Add
-    ( add
-    ) where
+  ( add
+  ) where
 
 import Import
 
@@ -19,18 +19,17 @@ import Tickler.Cli.Sync
 
 add :: AddSettings -> CliM ()
 add AddSettings {..} =
-    withStoreAndSync $ \s -> do
-        now <- liftIO getCurrentTime
-        let a =
-                Added
-                    { addedCreated = now
-                    , addedValue =
-                          Tickle
-                              { tickleContent =
-                                    textTypedItem addSetTickleContent
-                              , tickleScheduledDay = addSetTickleDate
-                              , tickleScheduledTime = addSetTickleTime
-                              , tickleRecurrence = Nothing
-                              }
-                    }
-        pure $ addTickleToStore s a
+  withStoreAndSync $ \s -> do
+    now <- liftIO getCurrentTime
+    let a =
+          Added
+            { addedCreated = now
+            , addedValue =
+                Tickle
+                  { tickleContent = textTypedItem addSetTickleContent
+                  , tickleScheduledDay = addSetTickleDate
+                  , tickleScheduledTime = addSetTickleTime
+                  , tickleRecurrence = Nothing
+                  }
+            }
+    pure $ addTickleToStore s a

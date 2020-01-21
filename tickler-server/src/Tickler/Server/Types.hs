@@ -10,7 +10,8 @@ import Servant.Auth.Server
 import Tickler.API
 import Tickler.Server.Looper
 
-data TicklerServerEnv = TicklerServerEnv
+data TicklerServerEnv =
+  TicklerServerEnv
     { envConnectionPool :: ConnectionPool
     , envCookieSettings :: CookieSettings
     , envJWTSettings :: JWTSettings

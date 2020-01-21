@@ -1,6 +1,6 @@
 module Tickler.Data
-    ( module X
-    ) where
+  ( module X
+  ) where
 
 import Tickler.Data.AccountUUID as X
 import Tickler.Data.DB as X

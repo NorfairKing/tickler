@@ -19,30 +19,28 @@ import Database.Persist
 import Database.Persist.Sql
 
 newtype EmailVerificationKey =
-    EmailVerificationKey ByteString
-    deriving (Eq, Ord, Generic, PersistField, PersistFieldSql)
+  EmailVerificationKey ByteString
+  deriving (Eq, Ord, Generic, PersistField, PersistFieldSql)
 
 instance Validity EmailVerificationKey
 
 instance Show EmailVerificationKey where
-    show = T.unpack . emailVerificationKeyText
+  show = T.unpack . emailVerificationKeyText
 
 instance Read EmailVerificationKey where
-    readsPrec _ s =
-        case parseEmailVerificationKeyText $ T.pack s of
-            Nothing -> []
-            Just evk -> [(evk, "")]
+  readsPrec _ s =
+    case parseEmailVerificationKeyText $ T.pack s of
+      Nothing -> []
+      Just evk -> [(evk, "")]
 
 emailVerificationKeyText :: EmailVerificationKey -> Text
-emailVerificationKeyText (EmailVerificationKey bs) =
-    TE.decodeUtf8 $ SB16.encode bs
+emailVerificationKeyText (EmailVerificationKey bs) = TE.decodeUtf8 $ SB16.encode bs
 
 parseEmailVerificationKeyText :: Text -> Maybe EmailVerificationKey
 parseEmailVerificationKeyText t =
-    case SB16.decode $ TE.encodeUtf8 t of
-        (d, "") -> Just $ EmailVerificationKey d
-        _ -> Nothing
+  case SB16.decode $ TE.encodeUtf8 t of
+    (d, "") -> Just $ EmailVerificationKey d
+    _ -> Nothing
 
 generateRandomVerificationKey :: IO EmailVerificationKey
-generateRandomVerificationKey =
-    (EmailVerificationKey . SB.pack) <$> replicateM 16 randomIO
+generateRandomVerificationKey = EmailVerificationKey . SB.pack <$> replicateM 16 randomIO

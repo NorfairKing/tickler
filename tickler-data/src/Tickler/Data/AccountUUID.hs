@@ -1,7 +1,7 @@
 module Tickler.Data.AccountUUID
-    ( AccountUUID
-    , module Data.UUID.Typed
-    ) where
+  ( AccountUUID
+  , module Data.UUID.Typed
+  ) where
 
 import Data.UUID.Typed
 

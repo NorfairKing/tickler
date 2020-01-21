@@ -12,9 +12,6 @@ default-extensions:
 library:
   source-dirs: src
   ghc-options: -Wall
-  exposed-modules:
-  - Tickler.Client
-  - Tickler.Client.Store
 
   dependencies:
   - base >=4.7 && <5
@@ -29,7 +26,6 @@ library:
   - servant-auth-server
   - servant-client
   - servant-flatten
-  - servant-generic
   - text
   - tickler-api
   - tickler-data

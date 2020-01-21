@@ -1,8 +1,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Web.Server.Handler.Home
-    ( getHomeR
-    ) where
+  ( getHomeR
+  ) where
 
 import Yesod
 

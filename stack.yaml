@@ -1,4 +1,4 @@
-extra-package-dbs: []
+resolver: lts-14.20
 packages:
 - tickler-api
 - tickler-api-gen
@@ -11,21 +11,29 @@ packages:
 - tickler-server-test-utils
 - tickler-web-server
 extra-deps:
-- hlint-2.0.15
-- extra-1.6.5
-- jose-0.6.0.3
-- cookie-0.4.3
-- servant-auth-0.3.1.0
-- servant-auth-client-0.3.2.0
-- servant-auth-docs-0.2.9.0
-- servant-auth-server-0.3.2.0
-- servant-flatten-0.2
-- servant-options-0.1.0.0
 - amazonka-1.6.0
 - amazonka-core-1.6.0
 - amazonka-ses-1.6.0
-- git: git@github.com:NorfairKing/intray.git
-  commit: d6a5e1143ebf073742f1d2fc135b746b17f21d45
+- servant-auth-client-0.4.0.0@sha256:68879b7f44d87f73ef68c7bb21006167f5623c4cd6a2a3fce4d5ea3959a8c730,3426
+- servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
+- http-client-0.5.14@sha256:4880b27d6741e331454a1d4c887d96ce3d7d625322c8433983a4b1cd08538577,5348
+
+- github: NorfairKing/looper
+  commit: 929a8ad6a99a84624767bd9d619cc5318c6bda56
+
+- github: NorfairKing/yesod-static-remote
+  commit: 22c0a92c1d62f1b8d432003844ef0636a9131b08
+
+- github: NorfairKing/stripe
+  commit: 7ced8cef1e932d3fb222dfb3c79c25595cdc82ab
+  subdirs:
+    - stripe-core
+    - stripe-haskell
+    - stripe-http-client
+    - stripe-http-streams
+
+- github: NorfairKing/intray
+  commit: fbe9968eec15fdab271b12ea11e140084ea75f13
   subdirs:
     - intray-data
     - intray-data-gen
@@ -34,13 +42,15 @@ extra-deps:
     - intray-client
     - intray-server
     - intray-server-test-utils
-- git: https://github.com/NorfairKing/mergeless.git
-  commit: 0198f9393e2ef71f26de6427541387be44fd499b
+
+- github: NorfairKing/mergeless
+  commit: 3d5f4b54cc2c4c8c6f33a716bc6b67f376b8d1d5
   subdirs:
     - mergeless
     - genvalidity-mergeless
-- git: git@github.com:NorfairKing/validity.git
-  commit: d128cc30bc886e31ea7f8161fb7708c08b162937
+
+- github: NorfairKing/validity
+  commit: 165c75d350460c0f936600b17795ba40b298786b
   subdirs:
     - validity
     - validity-aeson
@@ -67,13 +77,15 @@ extra-deps:
     - genvalidity-unordered-containers
     - genvalidity-uuid
     - genvalidity-vector
-- git: https://github.com/NorfairKing/typed-uuid.git
-  commit: 155c9ec880ca1c12f7dd8a8468b3626de8164823
+
+- github: NorfairKing/typed-uuid
+  commit: 4c5739c5e231b1cee6bd568ec55734116691ac8f
   subdirs:
     - typed-uuid
     - genvalidity-typed-uuid
-- git: git@github.com:NorfairKing/pretty-relative-time.git
-  commit: 21b29c9d729ed91a56819f569de6fdc8582d7e3d
-resolver: lts-11.9
+
+- github: NorfairKing/pretty-relative-time
+  commit: 2abdb2ba83ad47b8369e2ef618c7c21b82d80b23
+
 nix:
   packages: [zlib]

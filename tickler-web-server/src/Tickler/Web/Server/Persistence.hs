@@ -2,9 +2,9 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tickler.Web.Server.Persistence
-    ( readLogins
-    , writeLogins
-    ) where
+  ( readLogins
+  , writeLogins
+  ) where
 
 import Import
 
@@ -24,39 +24,29 @@ loginsFile = resolveFile' "tickler-logins.json"
 
 readLogins :: IO (Maybe (HashMap Username Token))
 readLogins = do
-    lf <- loginsFile
-    mErrOrLogins <-
-        forgivingAbsence $ JSON.eitherDecode <$> LB.readFile (toFilePath lf)
-    case mErrOrLogins of
-        Nothing -> pure Nothing
-        Just (Left err) -> do
-            putStrLn $
-                unwords
-                    [ "Failed to load logins from"
-                    , fromAbsFile lf
-                    , "with error:"
-                    , err
-                    ]
-            pure Nothing
-        Just (Right r) -> pure $ Just r
+  lf <- loginsFile
+  mErrOrLogins <- forgivingAbsence $ JSON.eitherDecode <$> LB.readFile (toFilePath lf)
+  case mErrOrLogins of
+    Nothing -> pure Nothing
+    Just (Left err) -> do
+      putStrLn $ unwords ["Failed to load logins from", fromAbsFile lf, "with error:", err]
+      pure Nothing
+    Just (Right r) -> pure $ Just r
 
 writeLogins :: HashMap Username Token -> IO ()
 writeLogins m = do
-    lf <- loginsFile
-    LB.writeFile (toFilePath lf) (JSON.encodePretty m)
+  lf <- loginsFile
+  LB.writeFile (toFilePath lf) (JSON.encodePretty m)
 
 instance FromJSON Token where
-    parseJSON =
-        withText "Token" $ \t ->
-            case Base16.decode $ TE.encodeUtf8 t of
-                (h, "") -> pure $ Token h
-                _ ->
-                    fail
-                        "Invalid token in JSON: could not decode from hex string"
+  parseJSON =
+    withText "Token" $ \t ->
+      case Base16.decode $ TE.encodeUtf8 t of
+        (h, "") -> pure $ Token h
+        _ -> fail "Invalid token in JSON: could not decode from hex string"
 
 instance ToJSON Token where
-    toJSON (Token bs) =
-        case TE.decodeUtf8' $ Base16.encode bs of
-            Left _ ->
-                error "Failed to decode hex string to text, should not happen."
-            Right t -> JSON.String t
+  toJSON (Token bs) =
+    case TE.decodeUtf8' $ Base16.encode bs of
+      Left _ -> error "Failed to decode hex string to text, should not happen."
+      Right t -> JSON.String t

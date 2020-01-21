@@ -5,8 +5,8 @@
 {-# LANGUAGE DataKinds #-}
 
 module Tickler.Server.Handler.PutAccountSettings
-    ( servePutAccountSettings
-    ) where
+  ( servePutAccountSettings
+  ) where
 
 import Import
 
@@ -22,18 +22,13 @@ import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-servePutAccountSettings ::
-       AuthResult AuthCookie -> AccountSettings -> TicklerHandler NoContent
+servePutAccountSettings :: AuthResult AuthCookie -> AccountSettings -> TicklerHandler NoContent
 servePutAccountSettings (Authenticated AuthCookie {..}) AccountSettings {..} = do
-    void $
-        runDb $
-        upsert
-            UserSettings
-                { userSettingsUserId = authCookieUserUUID
-                , userSettingsTimeZone = accountSettingsTimeZone
-                }
-            [ UserSettingsUserId =. authCookieUserUUID
-            , UserSettingsTimeZone =. accountSettingsTimeZone
-            ]
-    pure NoContent
+  void $
+    runDb $
+    upsert
+      UserSettings
+        {userSettingsUserId = authCookieUserUUID, userSettingsTimeZone = accountSettingsTimeZone}
+      [UserSettingsUserId =. authCookieUserUUID, UserSettingsTimeZone =. accountSettingsTimeZone]
+  pure NoContent
 servePutAccountSettings _ _ = throwAll err401

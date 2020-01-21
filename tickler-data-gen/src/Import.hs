@@ -1,6 +1,6 @@
 module Import
-    ( module X
-    ) where
+  ( module X
+  ) where
 
 import Debug.Trace as X
 import Prelude as X

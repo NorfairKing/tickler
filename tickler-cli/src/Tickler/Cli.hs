@@ -1,7 +1,7 @@
 module Tickler.Cli
-    ( ticklerCli
-    , dispatch
-    ) where
+  ( ticklerCli
+  , dispatch
+  ) where
 
 import Import
 
@@ -14,14 +14,14 @@ import Tickler.Cli.OptParse
 
 ticklerCli :: IO ()
 ticklerCli = do
-    Instructions disp sett <- getInstructions
-    runReaderT (dispatch disp) sett
+  Instructions disp sett <- getInstructions
+  runReaderT (dispatch disp) sett
 
 dispatch :: Dispatch -> CliM ()
 dispatch d =
-    case d of
-        DispatchRegister rs -> register rs
-        DispatchLogin ls -> login ls
-        DispatchAdd as -> add as
-        DispatchLogout -> logout
-        DispatchSync -> sync
+  case d of
+    DispatchRegister rs -> register rs
+    DispatchLogin ls -> login ls
+    DispatchAdd as -> add as
+    DispatchLogout -> logout
+    DispatchSync -> sync

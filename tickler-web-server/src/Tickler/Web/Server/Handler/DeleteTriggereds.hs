@@ -1,11 +1,6 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE QuasiQuotes #-}
-
 module Tickler.Web.Server.Handler.DeleteTriggereds
-    ( postDeleteTriggeredsR
-    ) where
+  ( postDeleteTriggeredsR
+  ) where
 
 import Import
 
@@ -17,6 +12,6 @@ import Tickler.Web.Server.Foundation
 
 postDeleteTriggeredsR :: Handler Html
 postDeleteTriggeredsR =
-    withLogin $ \t -> do
-        NoContent <- runClientOrErr $ clientDeleteTriggereds t
-        redirect TriggeredsR
+  withLogin $ \t -> do
+    NoContent <- runClientOrErr $ clientDeleteTriggereds t
+    redirect TriggeredsR

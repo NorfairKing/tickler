@@ -5,8 +5,8 @@
 {-# LANGUAGE DataKinds #-}
 
 module Tickler.Server.Handler.GetAccountSettings
-    ( serveGetAccountSettings
-    ) where
+  ( serveGetAccountSettings
+  ) where
 
 import Import
 
@@ -23,15 +23,14 @@ import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-serveGetAccountSettings ::
-       AuthResult AuthCookie -> TicklerHandler AccountSettings
+serveGetAccountSettings :: AuthResult AuthCookie -> TicklerHandler AccountSettings
 serveGetAccountSettings (Authenticated AuthCookie {..}) = do
-    mSets <- runDb $ getBy $ UniqueUserSettings authCookieUserUUID
-    pure $
-        case mSets of
-            Nothing -> defaultAccountSettings
-            Just (Entity _ UserSettings {..}) ->
-                AccountSettings {accountSettingsTimeZone = userSettingsTimeZone}
+  mSets <- runDb $ getBy $ UniqueUserSettings authCookieUserUUID
+  pure $
+    case mSets of
+      Nothing -> defaultAccountSettings
+      Just (Entity _ UserSettings {..}) ->
+        AccountSettings {accountSettingsTimeZone = userSettingsTimeZone}
 serveGetAccountSettings _ = throwAll err401
 
 defaultAccountSettings :: AccountSettings

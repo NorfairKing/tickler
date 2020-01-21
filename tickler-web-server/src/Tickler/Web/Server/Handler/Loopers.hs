@@ -3,8 +3,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Web.Server.Handler.Loopers
-    ( getLoopersR
-    ) where
+  ( getLoopersR
+  ) where
 
 import Import
 
@@ -17,8 +17,8 @@ import Tickler.Web.Server.Foundation
 
 getLoopersR :: Handler Html
 getLoopersR = do
-    LoopersInfo {..} <- runClientOrErr clientGetLoopersInfo
-    withNavBar $(widgetFile "loopers")
+  LoopersInfo {..} <- runClientOrErr clientGetLoopersInfo
+  withNavBar $(widgetFile "loopers")
 
 mkLooperInfoWidget :: Text -> LooperInfo -> Widget
 mkLooperInfoWidget name ls = $(widgetFile "looper")

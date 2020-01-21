@@ -4,8 +4,8 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Cli.Commands.Register
-    ( register
-    ) where
+  ( register
+  ) where
 
 import Import
 
@@ -21,7 +21,6 @@ import Tickler.Cli.Prompt
 
 register :: RegisterSettings -> CliM ()
 register RegisterSettings {..} = do
-    registration <-
-        Registration <$> promptUsername registerSetUsername <*>
-        promptPassword registerSetPassword
-    void $ runSingleClientOrErr $ clientPostRegister registration
+  registration <-
+    Registration <$> promptUsername registerSetUsername <*> promptPassword registerSetPassword
+  void $ runSingleClientOrErr $ clientPostRegister registration

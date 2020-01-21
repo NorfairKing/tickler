@@ -1,11 +1,6 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE QuasiQuotes #-}
-
 module Tickler.Web.Server.Handler.EmailTriggerResend
-    ( postEmailTriggerResendR
-    ) where
+  ( postEmailTriggerResendR
+  ) where
 
 import Import
 
@@ -18,7 +13,6 @@ import Tickler.Web.Server.Foundation
 
 postEmailTriggerResendR :: TriggerUUID -> Handler Html
 postEmailTriggerResendR tuuid =
-    withLogin $ \t -> do
-        NoContent <-
-            runClientOrErr $ clientPostEmailTriggerResendVerificationEmail t tuuid
-        redirect TriggersR
+  withLogin $ \t -> do
+    NoContent <- runClientOrErr $ clientPostEmailTriggerResendVerificationEmail t tuuid
+    redirect TriggersR

@@ -1,8 +1,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Web.Server.Handler.Error
-    ( getErrorAPIDownR
-    ) where
+  ( getErrorAPIDownR
+  ) where
 
 import Import
 

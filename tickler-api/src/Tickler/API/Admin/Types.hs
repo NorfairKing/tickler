@@ -7,8 +7,8 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Tickler.API.Admin.Types
-    ( AdminStats(..)
-    ) where
+  ( AdminStats(..)
+  ) where
 
 import Import
 
@@ -18,20 +18,19 @@ import Servant.Docs
 
 import Tickler.API.Types ()
 
-data AdminStats = AdminStats
+data AdminStats =
+  AdminStats
     { adminStatsNbUsers :: Int
     , adminStatsNbItems :: Int
-    } deriving (Show, Eq, Ord, Generic)
+    }
+  deriving (Show, Eq, Ord, Generic)
 
 instance Validity AdminStats
 
 instance FromJSON AdminStats where
-    parseJSON =
-        withObject "AdminStats" $ \o ->
-            AdminStats <$> o .: "users" <*> o .: "items"
+  parseJSON = withObject "AdminStats" $ \o -> AdminStats <$> o .: "users" <*> o .: "items"
 
 instance ToJSON AdminStats where
-    toJSON AdminStats {..} =
-        object ["users" .= adminStatsNbUsers, "items" .= adminStatsNbItems]
+  toJSON AdminStats {..} = object ["users" .= adminStatsNbUsers, "items" .= adminStatsNbItems]
 
 instance ToSample AdminStats

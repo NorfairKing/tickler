@@ -14,16 +14,6 @@ library:
   ghc-options: -Wall
   default-extensions:
   - NoImplicitPrelude
-  exposed-modules:
-  - TicklerServer
-  - Tickler.Server
-  - Tickler.Server.Handler.PostSync
-  - Tickler.Server.Handler.Utils
-  - Tickler.Server.Looper
-  - Tickler.Server.Looper.Triggerer
-  - Tickler.Server.OptParse
-  - Tickler.Server.OptParse.Types
-  - Tickler.Server.Types
 
   dependencies:
   - aeson
@@ -68,7 +58,6 @@ library:
   - servant-client
   - servant-client-core
   - servant-docs
-  - servant-generic
   - servant-server
   - shakespeare
   - template-haskell

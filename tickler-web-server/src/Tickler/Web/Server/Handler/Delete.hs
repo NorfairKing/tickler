@@ -1,12 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE QuasiQuotes #-}
 
 module Tickler.Web.Server.Handler.Delete
-    ( postDeleteTickleR
-    , postDeleteTriggeredR
-    ) where
+  ( postDeleteTickleR
+  , postDeleteTriggeredR
+  ) where
 
 import Import
 
@@ -17,7 +15,8 @@ import Tickler.Client
 
 import Tickler.Web.Server.Foundation
 
-newtype DeleteItem = DeleteItem
+newtype DeleteItem =
+  DeleteItem
     { deleteItemUUID :: ItemUUID
     }
 
@@ -26,14 +25,14 @@ deleteItemForm = DeleteItem <$> ireq hiddenField "item"
 
 postDeleteTriggeredR :: Handler Html
 postDeleteTriggeredR =
-    withLogin $ \t -> do
-        DeleteItem {..} <- runInputPost deleteItemForm
-        void $ runClientOrErr $ clientDeleteItem t deleteItemUUID
-        redirect TriggeredsR
+  withLogin $ \t -> do
+    DeleteItem {..} <- runInputPost deleteItemForm
+    void $ runClientOrErr $ clientDeleteItem t deleteItemUUID
+    redirect TriggeredsR
 
 postDeleteTickleR :: Handler Html
 postDeleteTickleR =
-    withLogin $ \t -> do
-        DeleteItem {..} <- runInputPost deleteItemForm
-        void $ runClientOrErr $ clientDeleteItem t deleteItemUUID
-        redirect TicklesR
+  withLogin $ \t -> do
+    DeleteItem {..} <- runInputPost deleteItemForm
+    void $ runClientOrErr $ clientDeleteItem t deleteItemUUID
+    redirect TicklesR

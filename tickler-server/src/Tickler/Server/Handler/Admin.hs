@@ -1,9 +1,9 @@
 module Tickler.Server.Handler.Admin
-    ( TicklerAdminSite
-    , ticklerAdminServer
-    ) where
+  ( TicklerAdminSite
+  , ticklerAdminServer
+  ) where
 
-import Servant.Generic
+import Servant.Server.Generic
 
 import Tickler.API
 
@@ -15,8 +15,8 @@ import Tickler.Server.Handler.Admin.GetStats
 
 ticklerAdminServer :: TicklerAdminSite (AsServerT TicklerHandler)
 ticklerAdminServer =
-    TicklerAdminSite
-        { adminGetStats = serveAdminGetStats
-        , adminDeleteAccount = serveAdminDeleteAccount
-        , adminGetAccounts = serveAdminGetAccounts
-        }
+  TicklerAdminSite
+    { adminGetStats = serveAdminGetStats
+    , adminDeleteAccount = serveAdminDeleteAccount
+    , adminGetAccounts = serveAdminGetAccounts
+    }

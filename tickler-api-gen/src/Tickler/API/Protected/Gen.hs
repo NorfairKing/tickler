@@ -13,86 +13,71 @@ import Tickler.Data.Gen ()
 
 import Tickler.API.Protected.Types
 
-instance GenUnchecked ItemFilter
-
-instance GenValid ItemFilter
-
-instance GenUnchecked TypedItem
+instance GenValid ItemFilter where
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid TypedItem where
-    genValid = do
-        ti <- genValid
-        case ti of
-            TextItem -> do
-                t <- genValid
-                pure TypedItem { itemType = TextItem ,itemData= TE.encodeUtf8 t}
-
-instance GenUnchecked a => GenUnchecked (Tickle a)
+  genValid = do
+    ti <- genValid
+    case ti of
+      TextItem -> do
+        t <- genValid
+        pure TypedItem {itemType = TextItem, itemData = TE.encodeUtf8 t}
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid a => GenValid (Tickle a) where
-    genValid = genValidStructurally
-
-instance GenUnchecked TriggerAttempt
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid TriggerAttempt where
-    genValid = genValidStructurally
-
-instance GenUnchecked EmailTriggerResult
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid EmailTriggerResult where
-    genValid = genValidStructurally
-
-instance GenUnchecked IntrayTriggerResult
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid IntrayTriggerResult where
-    genValid = genValidStructurally
-
-instance GenUnchecked TriggeredInfo
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid TriggeredInfo where
-    genValid = genValidStructurally
-
-instance GenUnchecked a => GenUnchecked (ItemInfo a)
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid a => GenValid (ItemInfo a) where
-    genValid = genValidStructurally
-
-instance GenUnchecked a => GenUnchecked (TriggerInfo a)
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid a => GenValid (TriggerInfo a) where
-    genValid = genValidStructurally
-
-instance GenUnchecked TypedTriggerInfo
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid TypedTriggerInfo where
-    genValid = genValidStructurally
-
-instance GenUnchecked IntrayTriggerInfo
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid IntrayTriggerInfo where
-    genValid = genValidStructurally
-
-instance GenUnchecked EmailTriggerInfo
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid EmailTriggerInfo where
-    genValid = genValidStructurally
-
-instance GenUnchecked AddIntrayTrigger
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid AddIntrayTrigger where
-    genValid = genValidStructurally
-
-instance GenUnchecked AddEmailTrigger
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid AddEmailTrigger where
-    genValid = genValidStructurally
-
-instance GenUnchecked SyncRequest
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid SyncRequest where
-    genValid = genValidStructurally
-
-instance GenUnchecked SyncResponse
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
 
 instance GenValid SyncResponse where
-    genValid = genValidStructurally
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
