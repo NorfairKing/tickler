@@ -16,11 +16,7 @@ import Tickler.API.Account.Types
 spec :: Spec
 spec = do
   runIO $ hSetBuffering stdout NoBuffering
-  eqSpecOnValid @AccountInfo
-  ordSpecOnValid @AccountInfo
   genValidSpec @AccountInfo
   jsonSpecOnValid @AccountInfo
-  eqSpecOnValid @AccountSettings
-  ordSpecOnValid @AccountSettings
   genValidSpec @AccountSettings
   jsonSpecOnValid @AccountSettings

@@ -9,7 +9,6 @@ module Tickler.Cli.Commands.Add
 
 import Import
 
-import Data.Mergeless
 import Data.Time
 
 import Tickler.Client
@@ -22,9 +21,9 @@ add AddSettings {..} =
   withStoreAndSync $ \s -> do
     now <- liftIO getCurrentTime
     let a =
-          Added
-            { addedCreated = now
-            , addedValue =
+          AddedItem
+            { addedItemCreated = now
+            , addedItemContents =
                 Tickle
                   { tickleContent = textTypedItem addSetTickleContent
                   , tickleScheduledDay = addSetTickleDate

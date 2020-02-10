@@ -25,7 +25,6 @@ import Servant.Client
 import qualified Intray.Client as Intray
 
 import Tickler.API
-import Tickler.Data
 
 import Tickler.Server.Types
 

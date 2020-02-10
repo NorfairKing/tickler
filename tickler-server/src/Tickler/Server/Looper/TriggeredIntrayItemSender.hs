@@ -23,7 +23,6 @@ import Servant.Client
 import qualified Intray.Client as Intray
 
 import Tickler.Client
-import Tickler.Data
 
 import Tickler.Server.Looper.Types
 import Tickler.Server.Looper.Utils

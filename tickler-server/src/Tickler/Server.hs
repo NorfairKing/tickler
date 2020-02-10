@@ -25,7 +25,6 @@ import Servant.Auth.Server as Auth
 import Servant.Server.Generic
 
 import Tickler.API
-import Tickler.Data
 
 import Tickler.Server.OptParse.Types
 import Tickler.Server.Types

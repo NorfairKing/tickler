@@ -32,7 +32,7 @@ extra-deps:
     - stripe-http-streams
 
 - github: NorfairKing/intray
-  commit: fbe9968eec15fdab271b12ea11e140084ea75f13
+  commit: c9299fc11309594f0874f7bd1168b2b88da3c98b
   subdirs:
     - intray-data
     - intray-data-gen
@@ -43,13 +43,13 @@ extra-deps:
     - intray-server-test-utils
 
 - github: NorfairKing/mergeless
-  commit: 3d5f4b54cc2c4c8c6f33a716bc6b67f376b8d1d5
+  commit: bf61e179d1935282fd32a85121613d2b98a927d9
   subdirs:
     - mergeless
     - genvalidity-mergeless
 
 - github: NorfairKing/validity
-  commit: 165c75d350460c0f936600b17795ba40b298786b
+  commit: be40c0a0b0bf6a1d58f4a6a5c6770c4a544c4450
   subdirs:
     - validity
     - validity-aeson
@@ -84,7 +84,15 @@ extra-deps:
     - genvalidity-typed-uuid
 
 - github: NorfairKing/pretty-relative-time
-  commit: 2abdb2ba83ad47b8369e2ef618c7c21b82d80b23
+  commit: fc62907b36f6f7348d6ae0e97aceb4d41039d57b
 
 nix:
-  packages: [zlib]
+  path: [ "nixpkgs=https://github.com/NixOS/nixpkgs/archive/323fe92057bb38475a446ff5e18d3b388c2e4403.tar.gz" ]
+  add-gc-roots: true
+  pure: true
+  packages:
+  - zlib
+  - unzip
+  - haskellPackages.autoexporter
+  - procps
+

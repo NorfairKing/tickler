@@ -21,7 +21,6 @@ import Database.Persist
 import Servant hiding (BadPassword, NoSuchUser)
 
 import Tickler.API
-import Tickler.Data
 
 import Tickler.Server.Types
 

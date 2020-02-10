@@ -45,7 +45,6 @@ import Intray.Server.TestUtils (cleanupIntrayTestServer, setupIntrayTestApp)
 
 import Tickler.API
 import Tickler.Client
-import Tickler.Data
 import Tickler.Server
 import Tickler.Server.Looper
 import Tickler.Server.Types
@@ -62,7 +61,7 @@ withBothTicklerAndIntrayServer :: SpecWith (ClientEnv, ClientEnv) -> Spec
 withBothTicklerAndIntrayServer specFunc =
   afterAll_ cleanupTicklerTestServer $
   afterAll_ cleanupIntrayTestServer $
-  beforeAll ((,) <$> setupTicklerTestApp <*> setupIntrayTestApp) $
+  beforeAll ((,) <$> setupTicklerTestApp <*> setupIntrayTestApp Nothing) $
   aroundWith withBoth $ modifyMaxSuccess (`div` 20) specFunc
   where
     withBoth ::

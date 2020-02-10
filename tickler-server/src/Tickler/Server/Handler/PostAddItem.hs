@@ -28,6 +28,6 @@ servePostAddItem :: AuthResult AuthCookie -> AddItem -> TicklerHandler ItemUUID
 servePostAddItem (Authenticated AuthCookie {..}) ti = do
   now <- liftIO getCurrentTime
   uuid <- liftIO nextRandomUUID
-  runDb $ insert_ $ makeTicklerItem authCookieUserUUID uuid now now ti
+  runDb $ insert_ $ makeTicklerItem authCookieUserUUID uuid now ti
   pure uuid
 servePostAddItem _ _ = throwAll err401

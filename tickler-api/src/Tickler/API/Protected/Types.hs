@@ -9,47 +9,9 @@
 {-# OPTIONS_GHC -fno-warn-overlapping-patterns #-}
 
 module Tickler.API.Protected.Types
-  ( ItemFilter(..)
-  , ItemType(..)
-  , TypedItem(..)
-  , textTypedItem
-  , TypedItemCase(..)
-  , typedItemCase
-  , Recurrence(..)
-  , everyDaysAtTime
-  , everyMonthsOnDayAtTime
-  , Tickle(..)
-  , TypedTickle
-  , ItemInfo(..)
-  , TypedItemInfo
-  , TriggeredInfo(..)
-  , TriggerAttempt(..)
-  , IntrayTriggerResult(..)
-  , EmailTriggerResult(..)
-  , AddItem
-  , Mergeless.Added(..)
-  , Mergeless.Synced(..)
-  , SyncRequest(..)
-  , SyncResponse(..)
-  , TriggerType(..)
-  , TriggerInfo(..)
-  , decodeTriggerInfo
-  , TypedTriggerInfo(..)
-  , decodeTypedTriggerInfo
-  , IntrayTriggerInfo(..)
-  , EmailTriggerInfo(..)
-  , AddIntrayTrigger(..)
-  , AddEmailTrigger(..)
-  , EmailVerificationKey(..)
-  , emailVerificationKeyText
-  , parseEmailVerificationKeyText
-  , Registration(..)
-  , LoginForm(..)
-  , GetDocsResponse(..)
-  , HashedPassword
-  , passwordHash
-  , validatePassword
-  , ItemUUID
+  ( module Tickler.API.Protected.Types
+  , module Tickler.API.Types
+  , module Tickler.Data
   , module Data.UUID.Typed
   ) where
 
@@ -177,12 +139,28 @@ instance ToSample Recurrence where
 
 type TypedTickle = Tickle TypedItem
 
+data AddedItem a =
+  AddedItem
+    { addedItemContents :: a
+    , addedItemCreated :: UTCTime
+    }
+  deriving (Show, Read, Eq, Ord, Generic)
+
+instance Validity a => Validity (AddedItem a)
+
+instance ToJSON a => ToJSON (AddedItem a) where
+  toJSON AddedItem {..} = object ["contents" .= addedItemContents, "created" .= addedItemCreated]
+
+instance FromJSON a => FromJSON (AddedItem a) where
+  parseJSON = withObject "AddedItem" $ \o -> AddedItem <$> o .: "contents" <*> o .: "created"
+
+instance (ToSample a) => ToSample (AddedItem a)
+
 data ItemInfo a =
   ItemInfo
     { itemInfoIdentifier :: !ItemUUID
     , itemInfoContents :: !(Tickle a)
     , itemInfoCreated :: !UTCTime
-    , itemInfoSynced :: !UTCTime
     , itemInfoTriggered :: !(Maybe TriggeredInfo)
     }
   deriving (Show, Eq, Ord, Generic)
@@ -195,15 +173,13 @@ instance ToJSON a => ToJSON (ItemInfo a) where
       [ "id" .= itemInfoIdentifier
       , "contents" .= itemInfoContents
       , "created" .= itemInfoCreated
-      , "synced" .= itemInfoSynced
       , "triggered" .= itemInfoTriggered
       ]
 
 instance FromJSON a => FromJSON (ItemInfo a) where
   parseJSON =
     withObject "ItemInfo TypedItem" $ \o ->
-      ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created" <*> o .: "synced" <*>
-      o .: "triggered"
+      ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created" <*> o .: "triggered"
 
 instance ToSample a => ToSample (ItemInfo a)
 
@@ -296,7 +272,7 @@ instance Functor TriggerInfo where
 
 data SyncRequest =
   SyncRequest
-    { syncRequestTickles :: !(Mergeless.SyncRequest ItemUUID TypedTickle)
+    { syncRequestTickles :: !(Mergeless.SyncRequest ItemUUID (AddedItem TypedTickle))
     }
   deriving (Show, Eq, Ord, Generic)
 
@@ -310,7 +286,7 @@ instance ToSample SyncRequest
 
 data SyncResponse =
   SyncResponse
-    { syncResponseTickles :: !(Mergeless.SyncResponse ItemUUID TypedTickle)
+    { syncResponseTickles :: !(Mergeless.SyncResponse ItemUUID (AddedItem TypedTickle))
     }
   deriving (Show, Eq, Ord, Generic)
 

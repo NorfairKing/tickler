@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Web.Server.Handler.Delete
   ( postDeleteTickleR
@@ -15,24 +14,19 @@ import Tickler.Client
 
 import Tickler.Web.Server.Foundation
 
-newtype DeleteItem =
-  DeleteItem
-    { deleteItemUUID :: ItemUUID
-    }
-
-deleteItemForm :: FormInput Handler DeleteItem
-deleteItemForm = DeleteItem <$> ireq hiddenField "item"
+deleteItemForm :: FormInput Handler ItemUUID
+deleteItemForm = ireq hiddenField "item"
 
 postDeleteTriggeredR :: Handler Html
 postDeleteTriggeredR =
   withLogin $ \t -> do
-    DeleteItem {..} <- runInputPost deleteItemForm
-    void $ runClientOrErr $ clientDeleteItem t deleteItemUUID
+    uuid <- runInputPost deleteItemForm
+    void $ runClientOrErr $ clientDeleteItem t uuid
     redirect TriggeredsR
 
 postDeleteTickleR :: Handler Html
 postDeleteTickleR =
   withLogin $ \t -> do
-    DeleteItem {..} <- runInputPost deleteItemForm
-    void $ runClientOrErr $ clientDeleteItem t deleteItemUUID
+    uuid <- runInputPost deleteItemForm
+    void $ runClientOrErr $ clientDeleteItem t uuid
     redirect TicklesR

@@ -18,7 +18,6 @@ import Servant
 import Servant.Auth.Server as Auth
 
 import Tickler.API
-import Tickler.Data
 
 import Tickler.Server.Types
 
