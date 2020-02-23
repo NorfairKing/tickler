@@ -9,7 +9,7 @@ import Import
 
 import qualified Data.Map as M
 import Data.Map (Map)
-import qualified Data.Mergeless as Mergeless
+import qualified Data.Mergeful as Mergeful
 import qualified Data.Set as S
 import Data.Time
 import Data.UUID.Typed
@@ -49,17 +49,17 @@ servePostSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
              [TicklerItemUserId ==. authCookieUserUUID, TicklerItemIdentifier /<-. S.toList s]
              [])
       serverSyncProcessorInsertMany ::
-           Map Mergeless.ClientId (Added TypedTickle)
-        -> TicklerHandler (Map Mergeless.ClientId (Mergeless.ClientAddition ItemUUID))
+           Map Mergeful.ClientId (Added TypedTickle)
+        -> TicklerHandler (Map Mergeful.ClientId (Mergeful.ClientAddition ItemUUID))
       serverSyncProcessorInsertMany m =
         fmap M.fromList $
         forM (M.toList m) $ \(cid, Added {..}) -> do
           uuid <- nextRandomUUID
           let ii = makeTicklerItem authCookieUserUUID uuid addedCreated now addedValue
           runDb $ insert_ ii
-          let ca = Mergeless.ClientAddition {clientAdditionId = uuid, clientAdditionTime = now}
+          let ca = Mergeful.ClientAddition {clientAdditionId = uuid, clientAdditionTime = now}
           pure (cid, ca)
-      proc = Mergeless.ServerSyncProcessor {..}
-  syncResponseTickles <- Mergeless.processServerSyncCustom proc syncRequestTickles
+      proc = Mergeful.ServerSyncProcessor {..}
+  syncResponseTickles <- Mergeful.processServerSyncCustom proc syncRequestTickles
   pure SyncResponse {..}
 servePostSync _ _ = throwAll err401

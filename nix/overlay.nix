@@ -96,24 +96,11 @@ with final.haskell.lib;
               sha256 =
                 "07wc2as7p2pz08a9qfx2jm3kz1cvfg73d872il3zhyplbd6yhzbx";
             };
-          mergelessRepo =
-            final.fetchFromGitHub {
-              owner = "NorfairKing";
-              repo = "mergeless";
-              rev = "3d5f4b54cc2c4c8c6f33a716bc6b67f376b8d1d5";
-              sha256 =
-                "sha256:0far86wdprvyk8i50y4i5wzc0vcqj5ksdf90jnyyalrbklgxxgkv";
-            };
           stripeHaskellPkg =
             name:
               dontCheck (
                 self.callCabal2nix name ( stripeHaskellRepo + "/${name}" ) {}
               );
-
-          mergelessPkg =
-            name:
-              self.callCabal2nix name ( mergelessRepo + "/${name}" ) {};
-
         in
           with final.haskellPackages;
 
@@ -123,15 +110,11 @@ with final.haskell.lib;
               amazonka-core = callHackage "amazonka-core" "1.6.1" {};
               amazonka-ses = callHackage "amazonka-ses" "1.6.1" {};
               looper = self.callCabal2nix "looper" looperRepo {};
-
             } // final.lib.genAttrs [
               "stripe-core"
               "stripe-haskell"
               "stripe-http-client"
               "stripe-http-streams"
-            ] stripeHaskellPkg // final.lib.genAttrs [
-              "mergeless"
-              "genvalidity-mergeless"
-            ] mergelessPkg // final.ticklerPackages
+            ] stripeHaskellPkg // final.ticklerPackages
     );
 }

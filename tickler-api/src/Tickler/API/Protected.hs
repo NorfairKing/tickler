@@ -34,8 +34,6 @@ module Tickler.API.Protected
   , IntrayTriggerResult(..)
   , EmailTriggerResult(..)
   , AddItem
-  , Added(..)
-  , Synced(..)
   , SyncRequest(..)
   , SyncResponse(..)
   , PostSync

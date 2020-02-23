@@ -74,7 +74,6 @@ TicklerItem
     type ItemType
     contents ByteString
     created UTCTime
-    synced UTCTime
 
     scheduledDay Day
     scheduledTime TimeOfDay Maybe
@@ -96,7 +95,6 @@ TriggeredItem
     type ItemType
     contents ByteString
     created UTCTime
-    synced UTCTime
 
     scheduledDay Day
     scheduledTime TimeOfDay Maybe

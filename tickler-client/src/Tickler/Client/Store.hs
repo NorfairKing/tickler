@@ -13,13 +13,13 @@ module Tickler.Client.Store
 import Import
 
 import Data.Aeson
-import qualified Data.Mergeless as Mergeless
+import qualified Data.Mergeful as Mergeful
 
 import Tickler.API
 
 data Store =
   Store
-    { storeTickles :: Mergeless.ClientStore ItemUUID TypedTickle
+    { storeTickles :: Mergeful.ClientStore ItemUUID TypedTickle
     }
   deriving (Show, Eq, Generic)
 
@@ -33,14 +33,14 @@ instance ToJSON Store where
 
 makeSyncRequest :: Store -> SyncRequest
 makeSyncRequest Store {..} =
-  SyncRequest {syncRequestTickles = Mergeless.makeSyncRequest storeTickles}
+  SyncRequest {syncRequestTickles = Mergeful.makeSyncRequest storeTickles}
 
 mergeSyncResponse :: Store -> SyncResponse -> Store
 mergeSyncResponse Store {..} SyncResponse {..} =
-  Store {storeTickles = Mergeless.mergeSyncResponse storeTickles syncResponseTickles}
+  Store {storeTickles = Mergeful.mergeSyncResponseFromServer storeTickles syncResponseTickles}
 
 emptyStore :: Store
-emptyStore = Store {storeTickles = Mergeless.emptyClientStore}
+emptyStore = Store {storeTickles = Mergeful.initialClientStore}
 
-addTickleToStore :: Store -> Added TypedTickle -> Store
-addTickleToStore Store {..} a = Store {storeTickles = Mergeless.addItemToClientStore a storeTickles}
+addTickleToStore :: Store -> TypedTickle -> Store
+addTickleToStore Store {..} a = Store {storeTickles = Mergeful.addItemToClientStore a storeTickles}

@@ -37,8 +37,6 @@ module Tickler.API
   , IntrayTriggerResult(..)
   , EmailTriggerResult(..)
   , AddItem
-  , Added(..)
-  , Synced(..)
   , SyncRequest(..)
   , SyncResponse(..)
   , TriggerUUID

@@ -44,8 +44,6 @@ module Tickler.Client
   , TypedItemInfo
   , TriggeredInfo(..)
   , AddItem
-  , Added(..)
-  , Synced(..)
   , SyncRequest(..)
   , SyncResponse(..)
   , TriggerInfo(..)
