@@ -21,10 +21,12 @@ import Data.Aeson as JSON
 import qualified Data.Aeson as JSON (Result(Error))
 import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Char8 as SB8
-import qualified Data.Mergeless as Mergeless
+import qualified Data.Mergeful as Mergeful
+import qualified Data.Mergeful.Timed as Mergeful
 import qualified Data.Text.Encoding as TE
 import Data.Time
 import Data.UUID.Typed
+import Data.Word
 
 import Servant.Docs
 import Web.HttpApiData
@@ -297,6 +299,21 @@ instance FromJSON SyncResponse
 instance ToJSON SyncResponse
 
 instance ToSample SyncResponse
+
+instance (Ord i, ToSample i, ToSample a) => ToSample (Mergeful.SyncRequest i a)
+
+instance (Ord i, ToSample i, ToSample a) => ToSample (Mergeful.SyncResponse i a)
+
+instance (Ord i, ToSample i) => ToSample (Mergeful.ClientAddition i)
+
+instance ToSample Mergeful.ServerTime
+
+instance ToSample Mergeful.ClientId
+
+instance ToSample a => ToSample (Mergeful.Timed a)
+
+instance ToSample Word64 where
+  toSamples Proxy = singleSample 0
 
 decodeTriggerInfo ::
      FromJSON a => TriggerType -> TriggerInfo TypedTriggerInfo -> Maybe (TriggerInfo a)

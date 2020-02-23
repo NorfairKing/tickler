@@ -48,8 +48,14 @@ extra-deps:
     - mergeless
     - genvalidity-mergeless
 
+- github: NorfairKing/mergeful
+  commit: 70e6971e9a7c2e099136c6447b7b315a935b9690
+  subdirs:
+    - mergeful
+    - genvalidity-mergeful
+
 - github: NorfairKing/validity
-  commit: be40c0a0b0bf6a1d58f4a6a5c6770c4a544c4450
+  commit: 3a1e12ceb64611ead94faee969200c22142b59d4
   subdirs:
     - validity
     - validity-aeson
@@ -84,7 +90,7 @@ extra-deps:
     - genvalidity-typed-uuid
 
 - github: NorfairKing/pretty-relative-time
-  commit: fc62907b36f6f7348d6ae0e97aceb4d41039d57b
+  commit: 4eb01d55ef8f0f37fa63093be3ec67e99df4962f
 
 nix:
   path: [ "nixpkgs=https://github.com/NixOS/nixpkgs/archive/323fe92057bb38475a446ff5e18d3b388c2e4403.tar.gz" ]

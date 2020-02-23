@@ -101,7 +101,6 @@ with final.haskell.lib;
               dontCheck (
                 self.callCabal2nix name ( stripeHaskellRepo + "/${name}" ) {}
               );
-
         in
           with final.haskellPackages;
 
@@ -111,7 +110,6 @@ with final.haskell.lib;
               amazonka-core = callHackage "amazonka-core" "1.6.1" {};
               amazonka-ses = callHackage "amazonka-ses" "1.6.1" {};
               looper = self.callCabal2nix "looper" looperRepo {};
-
             } // final.lib.genAttrs [
               "stripe-core"
               "stripe-haskell"

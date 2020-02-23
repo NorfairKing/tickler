@@ -6,7 +6,7 @@ module Tickler.Cli.Commands.Sync
 
 import Import
 
-import qualified Data.Mergeless as Mergeless
+import qualified Data.Mergeful as Mergeful
 
 import Tickler.API
 
@@ -37,19 +37,19 @@ showMergeStats :: SyncRequest -> SyncResponse -> String
 showMergeStats SyncRequest {..} SyncResponse {..} =
   unlines
     [ unwords
-        [ show $ length $ Mergeless.syncResponseServerAdded syncResponseTickles
+        [ show $ length $ Mergeful.syncResponseServerAdded syncResponseTickles
         , "tickles added   locally"
         ]
     , unwords
-        [ show $ length $ Mergeless.syncResponseServerDeleted syncResponseTickles
+        [ show $ length $ Mergeful.syncResponseServerDeleted syncResponseTickles
         , "tickles deleted locally"
         ]
     , unwords
-        [ show $ length $ Mergeless.syncResponseClientAdded syncResponseTickles
+        [ show $ length $ Mergeful.syncResponseClientAdded syncResponseTickles
         , "tickles added   remotely"
         ]
     , unwords
-        [ show $ length $ Mergeless.syncResponseClientDeleted syncResponseTickles
+        [ show $ length $ Mergeful.syncResponseClientDeleted syncResponseTickles
         , "tickles deleted remotely"
         ]
     ]

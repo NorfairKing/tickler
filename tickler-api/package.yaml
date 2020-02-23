@@ -20,12 +20,13 @@ library:
   - blaze-html
   - blaze-markup
   - bytestring >=0.10 && <0.11
+  - containers
   - cookie
   - http-api-data
   - intray-api
   - intray-data
   - markdown
-  - mergeless
+  - mergeful
   - servant
   - servant-auth
   - servant-auth-docs

@@ -20,7 +20,7 @@ library:
   - containers
   - http-client
   - http-client-tls
-  - mergeless
+  - mergeful
   - servant
   - servant-auth-client
   - servant-auth-server
