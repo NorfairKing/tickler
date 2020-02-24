@@ -6,6 +6,10 @@ module Tickler.Client
   , module Tickler.API
   , module Data.UUID.Typed
   , NoContent(..)
+  , Token
+  , module Servant.Client
+  , module Data.UUID.Typed
+  , NoContent(..)
   , module Servant.Auth.Client
   , module Servant.Client
   ) where
@@ -17,7 +21,7 @@ import qualified Data.UUID.Typed
 import Servant.API
 import Servant.API.Flatten
 import Servant.Auth.Client
-import Servant.Auth.Server
+import Servant.Auth.Server hiding (BasicAuth)
 import Servant.Client
 
 import Tickler.API

@@ -14,7 +14,6 @@ import Data.Mergeful.Timed as Mergeful
 import Data.Time
 
 import Tickler.API
-import Tickler.Data
 
 makeTicklerItem ::
      AccountUUID -> ItemUUID -> UTCTime -> Mergeful.ServerTime -> TypedTickle -> TicklerItem

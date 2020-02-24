@@ -20,13 +20,13 @@ deleteItemForm = ireq hiddenField "item"
 postDeleteTriggeredR :: Handler Html
 postDeleteTriggeredR =
   withLogin $ \t -> do
-    uuid <- runInputPost deleteItemForm
-    void $ runClientOrErr $ clientDeleteItem t uuid
+    deleteItemUUID <- runInputPost deleteItemForm
+    void $ runClientOrErr $ clientDeleteItem t deleteItemUUID
     redirect TriggeredsR
 
 postDeleteTickleR :: Handler Html
 postDeleteTickleR =
   withLogin $ \t -> do
-    uuid <- runInputPost deleteItemForm
-    void $ runClientOrErr $ clientDeleteItem t uuid
+    deleteItemUUID <- runInputPost deleteItemForm
+    void $ runClientOrErr $ clientDeleteItem t deleteItemUUID
     redirect TicklesR

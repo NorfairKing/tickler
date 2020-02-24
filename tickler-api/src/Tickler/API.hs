@@ -7,6 +7,7 @@
 
 module Tickler.API
   ( module Tickler.API
+  , module Tickler.API.Account.Types
   , module Tickler.API.Admin
   , module Tickler.API.Protected
   , module Tickler.API.Types
@@ -27,6 +28,7 @@ import Servant.HTML.Blaze
 
 import Tickler.Data
 
+import Tickler.API.Account.Types
 import Tickler.API.Admin
 import Tickler.API.Protected
 import Tickler.API.Types

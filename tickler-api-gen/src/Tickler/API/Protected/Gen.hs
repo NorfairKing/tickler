@@ -9,6 +9,8 @@ import Import
 import qualified Data.Text.Encoding as TE
 
 import Intray.Data.Gen ()
+
+import Tickler.Data
 import Tickler.Data.Gen ()
 
 import Tickler.API.Protected.Types

@@ -2,13 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Tickler.Client.Store
-  ( Store(..)
-  , makeSyncRequest
-  , mergeSyncResponse
-  , emptyStore
-  , addTickleToStore
-  ) where
+module Tickler.Client.Store where
 
 import Import
 
