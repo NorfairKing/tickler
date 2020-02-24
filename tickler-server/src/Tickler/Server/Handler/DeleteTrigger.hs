@@ -10,7 +10,7 @@ import Import
 import Database.Persist
 
 import Servant
-import Servant.Auth.Server as Auth
+import Servant.Auth.Server
 
 import Tickler.API
 
@@ -18,8 +18,8 @@ import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-serveDeleteTrigger :: AuthResult AuthCookie -> TriggerUUID -> TicklerHandler NoContent
-serveDeleteTrigger (Authenticated AuthCookie {..}) uuid = do
+serveDeleteTrigger :: AuthCookie -> TriggerUUID -> TicklerHandler NoContent
+serveDeleteTrigger AuthCookie {..} uuid = do
   ment1 <- runDb $ getBy $ UniqueIntrayTrigger uuid
   case ment1 of
     Nothing -> do
@@ -29,4 +29,3 @@ serveDeleteTrigger (Authenticated AuthCookie {..}) uuid = do
         Just (Entity i _) -> runDb $ delete i
     Just (Entity i _) -> runDb $ delete i
   pure NoContent
-serveDeleteTrigger _ _ = throwAll err401

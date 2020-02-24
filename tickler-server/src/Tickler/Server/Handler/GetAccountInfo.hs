@@ -13,8 +13,7 @@ import Import
 
 import Database.Persist
 
-import Servant hiding (BadPassword, NoSuchUser)
-import Servant.Auth.Server as Auth
+import Servant
 
 import Tickler.API
 
@@ -22,8 +21,8 @@ import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-serveGetAccountInfo :: AuthResult AuthCookie -> TicklerHandler AccountInfo
-serveGetAccountInfo (Authenticated AuthCookie {..}) = do
+serveGetAccountInfo :: AuthCookie -> TicklerHandler AccountInfo
+serveGetAccountInfo AuthCookie {..} = do
   admins <- asks envAdmins
   mUser <- runDb $ getBy $ UniqueUserIdentifier authCookieUserUUID
   case mUser of
@@ -37,4 +36,3 @@ serveGetAccountInfo (Authenticated AuthCookie {..}) = do
           , accountInfoLastLogin = userLastLogin
           , accountInfoAdmin = userUsername `elem` admins
           }
-serveGetAccountInfo _ = throwAll err401

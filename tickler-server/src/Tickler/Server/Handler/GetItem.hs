@@ -13,8 +13,7 @@ import Import
 
 import Database.Persist
 
-import Servant hiding (BadPassword, NoSuchUser)
-import Servant.Auth.Server as Auth
+import Servant
 
 import Tickler.API
 
@@ -23,8 +22,8 @@ import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-serveGetItem :: AuthResult AuthCookie -> ItemUUID -> TicklerHandler TypedItemInfo
-serveGetItem (Authenticated AuthCookie {..}) id_ = do
+serveGetItem :: AuthCookie -> ItemUUID -> TicklerHandler TypedItemInfo
+serveGetItem AuthCookie {..} id_ = do
   mIItem <- runDb $ getBy $ UniqueItemIdentifier id_
   case mIItem of
     Just item -> pure $ makeTicklerItemInfo $ entityVal item
@@ -43,4 +42,3 @@ serveGetItem (Authenticated AuthCookie {..}) id_ = do
               (map entityVal triggeredItemEns)
               (map entityVal triggeredEmailEns)
         Nothing -> throwError err404 {errBody = "Item not found."}
-serveGetItem _ _ = throwAll err401

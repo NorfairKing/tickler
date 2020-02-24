@@ -12,8 +12,7 @@ import Import
 
 import Database.Persist
 
-import Servant hiding (BadPassword, NoSuchUser)
-import Servant.Auth.Server as Auth
+import Servant
 
 import Tickler.API
 
@@ -21,9 +20,8 @@ import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-serveRetryTriggered :: AuthResult AuthCookie -> [ItemUUID] -> TicklerHandler NoContent
-serveRetryTriggered (Authenticated AuthCookie {..}) ids = do
+serveRetryTriggered :: AuthCookie -> [ItemUUID] -> TicklerHandler NoContent
+serveRetryTriggered AuthCookie {..} ids = do
   runDb $ updateWhere [TriggeredIntrayItemItem <-. ids] [TriggeredIntrayItemError =. Nothing]
   runDb $ updateWhere [TriggeredEmailItem <-. ids] [TriggeredEmailError =. Nothing]
   pure NoContent
-serveRetryTriggered _ _ = throwAll err401

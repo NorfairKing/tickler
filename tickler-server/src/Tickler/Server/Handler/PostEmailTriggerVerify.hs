@@ -23,8 +23,8 @@ import Tickler.Server.Types
 import Tickler.Server.Handler.Utils
 
 servePostEmailTriggerVerify ::
-     AuthResult AuthCookie -> TriggerUUID -> EmailVerificationKey -> TicklerHandler NoContent
-servePostEmailTriggerVerify (Authenticated AuthCookie {..}) tuuid evk = do
+     AuthCookie -> TriggerUUID -> EmailVerificationKey -> TicklerHandler NoContent
+servePostEmailTriggerVerify AuthCookie {..} tuuid evk = do
   mt <-
     runDb $
     selectFirst
@@ -44,4 +44,3 @@ servePostEmailTriggerVerify (Authenticated AuthCookie {..}) tuuid evk = do
             then runDb $ update etid [EmailTriggerVerified =. True]
             else throwAll err400 {errBody = "Incorrect verification key."}
   pure NoContent
-servePostEmailTriggerVerify _ _ _ = throwAll err401

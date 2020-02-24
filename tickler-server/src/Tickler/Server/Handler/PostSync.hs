@@ -15,24 +15,20 @@ import Data.UUID.Typed
 import Database.Persist
 import Database.Persist.Sqlite
 
-import Servant hiding (BadPassword, NoSuchUser)
-import Servant.Auth.Server as Auth
-
 import Tickler.API
 
 import Tickler.Server.Handler.Utils
 import Tickler.Server.Item
 import Tickler.Server.Types
 
-servePostSync :: AuthResult AuthCookie -> SyncRequest -> TicklerHandler SyncResponse
-servePostSync (Authenticated AuthCookie {..}) req =
+servePostSync :: AuthCookie -> SyncRequest -> TicklerHandler SyncResponse
+servePostSync AuthCookie {..} req =
   runDb $ do
     serverStore <- readServerStore authCookieUserUUID
     (resp, serverStore') <-
       Mergeful.processServerSync nextRandomUUID serverStore (syncRequestTickles req)
     writeServerStore authCookieUserUUID serverStore'
     pure (SyncResponse {syncResponseTickles = resp})
-servePostSync _ _ = throwAll err401
 
 type ServerStore = Mergeful.ServerStore ItemUUID (AddedItem TypedTickle)
 
