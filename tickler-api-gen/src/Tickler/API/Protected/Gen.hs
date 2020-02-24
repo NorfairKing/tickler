@@ -17,6 +17,10 @@ instance GenValid ItemFilter where
   genValid = genValidStructurally
   shrinkValid = shrinkValidStructurally
 
+instance GenValid a => GenValid (AddedItem a) where
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
+
 instance GenValid TypedItem where
   genValid = do
     ti <- genValid

@@ -19,7 +19,7 @@ import Tickler.API
 
 data Store =
   Store
-    { storeTickles :: Mergeful.ClientStore ItemUUID TypedTickle
+    { storeTickles :: Mergeful.ClientStore ItemUUID (AddedItem TypedTickle)
     }
   deriving (Show, Eq, Generic)
 
@@ -42,5 +42,5 @@ mergeSyncResponse Store {..} SyncResponse {..} =
 emptyStore :: Store
 emptyStore = Store {storeTickles = Mergeful.initialClientStore}
 
-addTickleToStore :: Store -> TypedTickle -> Store
+addTickleToStore :: Store -> AddedItem TypedTickle -> Store
 addTickleToStore Store {..} a = Store {storeTickles = Mergeful.addItemToClientStore a storeTickles}

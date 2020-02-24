@@ -62,7 +62,7 @@ withBothTicklerAndIntrayServer :: SpecWith (ClientEnv, ClientEnv) -> Spec
 withBothTicklerAndIntrayServer specFunc =
   afterAll_ cleanupTicklerTestServer $
   afterAll_ cleanupIntrayTestServer $
-  beforeAll ((,) <$> setupTicklerTestApp <*> setupIntrayTestApp) $
+  beforeAll ((,) <$> setupTicklerTestApp <*> setupIntrayTestApp Nothing) $
   aroundWith withBoth $ modifyMaxSuccess (`div` 20) specFunc
   where
     withBoth ::

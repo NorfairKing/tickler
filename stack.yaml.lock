@@ -479,6 +479,19 @@ packages:
     url: https://github.com/NorfairKing/validity/archive/3a1e12ceb64611ead94faee969200c22142b59d4.tar.gz
 - completed:
     size: 94805
+    subdir: genvalidity-hspec-persistent
+    url: https://github.com/NorfairKing/validity/archive/3a1e12ceb64611ead94faee969200c22142b59d4.tar.gz
+    name: genvalidity-hspec-persistent
+    version: 0.0.0.1
+    sha256: 9bdf8e6cdf68d0bae9f0a71d3662bbdf9ff19b7a3f1c508e8478755d306967e4
+    pantry-tree:
+      size: 443
+      sha256: 6fddef615e0a93a2279ec61dad4b65b64d37f7547551b60cad613c32dbc52ff3
+  original:
+    subdir: genvalidity-hspec-persistent
+    url: https://github.com/NorfairKing/validity/archive/3a1e12ceb64611ead94faee969200c22142b59d4.tar.gz
+- completed:
+    size: 94805
     subdir: genvalidity-path
     url: https://github.com/NorfairKing/validity/archive/3a1e12ceb64611ead94faee969200c22142b59d4.tar.gz
     name: genvalidity-path

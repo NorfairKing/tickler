@@ -59,7 +59,6 @@ makeTriggeredItem now TicklerItem {..} =
     , triggeredItemType = ticklerItemType
     , triggeredItemContents = ticklerItemContents
     , triggeredItemCreated = ticklerItemCreated
-    , triggeredItemSynced = ticklerItemSynced
     , triggeredItemScheduledDay = ticklerItemScheduledDay
     , triggeredItemScheduledTime = ticklerItemScheduledTime
     , triggeredItemRecurrence = ticklerItemRecurrence

@@ -3,20 +3,22 @@
 module Tickler.Server.Item
   ( makeTicklerItem
   , makeTriggeredItem
-  , makeTicklerSynced
+  , makeTicklerAdded
   , makeTicklerItemInfo
   , makeTriggeredItemInfo
   ) where
 
 import Import
 
+import Data.Mergeful.Timed as Mergeful
 import Data.Time
 
 import Tickler.API
 import Tickler.Data
 
-makeTicklerItem :: AccountUUID -> ItemUUID -> UTCTime -> UTCTime -> TypedTickle -> TicklerItem
-makeTicklerItem u i cr sy Tickle {..} =
+makeTicklerItem ::
+     AccountUUID -> ItemUUID -> UTCTime -> Mergeful.ServerTime -> TypedTickle -> TicklerItem
+makeTicklerItem u i cr st Tickle {..} =
   let TypedItem {..} = tickleContent
    in TicklerItem
         { ticklerItemIdentifier = i
@@ -24,14 +26,15 @@ makeTicklerItem u i cr sy Tickle {..} =
         , ticklerItemType = itemType
         , ticklerItemContents = itemData
         , ticklerItemCreated = cr
-        , ticklerItemSynced = sy
+        , ticklerItemServerTime = st
         , ticklerItemScheduledDay = tickleScheduledDay
         , ticklerItemScheduledTime = tickleScheduledTime
         , ticklerItemRecurrence = tickleRecurrence
         }
 
-makeTriggeredItem :: AccountUUID -> ItemUUID -> UTCTime -> UTCTime -> TypedTickle -> TicklerItem
-makeTriggeredItem u i cr sy Tickle {..} =
+makeTriggeredItem ::
+     AccountUUID -> ItemUUID -> UTCTime -> Mergeful.ServerTime -> TypedTickle -> TicklerItem
+makeTriggeredItem u i cr st Tickle {..} =
   let TypedItem {..} = tickleContent
    in TicklerItem
         { ticklerItemIdentifier = i
@@ -39,25 +42,29 @@ makeTriggeredItem u i cr sy Tickle {..} =
         , ticklerItemType = itemType
         , ticklerItemContents = itemData
         , ticklerItemCreated = cr
-        , ticklerItemSynced = sy
+        , ticklerItemServerTime = st
         , ticklerItemScheduledDay = tickleScheduledDay
         , ticklerItemScheduledTime = tickleScheduledTime
         , ticklerItemRecurrence = tickleRecurrence
         }
 
-makeTicklerSynced :: TicklerItem -> (ItemUUID, Synced TypedTickle)
-makeTicklerSynced TicklerItem {..} =
+makeTicklerAdded :: TicklerItem -> (ItemUUID, Mergeful.Timed (AddedItem TypedTickle))
+makeTicklerAdded TicklerItem {..} =
   ( ticklerItemIdentifier
-  , Synced
-      { syncedValue =
-          Tickle
-            { tickleContent = TypedItem {itemType = ticklerItemType, itemData = ticklerItemContents}
-            , tickleScheduledDay = ticklerItemScheduledDay
-            , tickleScheduledTime = ticklerItemScheduledTime
-            , tickleRecurrence = ticklerItemRecurrence
+  , Timed
+      { timedValue =
+          AddedItem
+            { addedItemContents =
+                Tickle
+                  { tickleContent =
+                      TypedItem {itemType = ticklerItemType, itemData = ticklerItemContents}
+                  , tickleScheduledDay = ticklerItemScheduledDay
+                  , tickleScheduledTime = ticklerItemScheduledTime
+                  , tickleRecurrence = ticklerItemRecurrence
+                  }
+            , addedItemCreated = ticklerItemCreated
             }
-      , syncedCreated = ticklerItemCreated
-      , syncedSynced = ticklerItemSynced
+      , timedTime = ticklerItemServerTime
       })
 
 makeTicklerItemInfo :: TicklerItem -> TypedItemInfo
@@ -72,7 +79,6 @@ makeTicklerItemInfo TicklerItem {..} =
           , tickleRecurrence = ticklerItemRecurrence
           }
     , itemInfoCreated = ticklerItemCreated
-    , itemInfoSynced = ticklerItemSynced
     , itemInfoTriggered = Nothing
     }
 
@@ -89,7 +95,6 @@ makeTriggeredItemInfo TriggeredItem {..} tiis tes =
           , tickleScheduledTime = triggeredItemScheduledTime
           }
     , itemInfoCreated = triggeredItemCreated
-    , itemInfoSynced = triggeredItemSynced
     , itemInfoTriggered =
         Just
           TriggeredInfo

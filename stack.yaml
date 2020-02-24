@@ -74,6 +74,7 @@ extra-deps:
     - genvalidity-containers
     - genvalidity-hspec
     - genvalidity-hspec-aeson
+    - genvalidity-hspec-persistent
     - genvalidity-path
     - genvalidity-property
     - genvalidity-scientific
