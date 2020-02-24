@@ -13,14 +13,6 @@ default-extensions:
 library:
   source-dirs: src
   ghc-options: -Wall
-  exposed-modules:
-  - Tickler.Data
-  - Tickler.Data.AccountUUID
-  - Tickler.Data.HashedPassword
-  - Tickler.Data.ItemType
-  - Tickler.Data.ItemUUID
-  - Tickler.Data.UUID
-  - Tickler.Data.Username
 
   dependencies:
   - aeson
@@ -31,6 +23,7 @@ library:
   - email-validate
   - hashable
   - intray-data
+  - mergeful
   - persistent
   - persistent-template
   - random

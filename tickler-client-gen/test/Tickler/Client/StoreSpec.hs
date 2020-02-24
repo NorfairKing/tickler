@@ -12,7 +12,6 @@ import Tickler.Client.Store
 
 spec :: Spec
 spec = do
-  eqSpecOnValid @Store
   genValidSpec @Store
   jsonSpecOnValid @Store
   describe "makeSyncRequest" $

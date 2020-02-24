@@ -10,6 +10,7 @@ module Tickler.Server.Handler.PostAddItem
 
 import Import
 
+import qualified Data.Mergeful.Timed as Mergeful
 import Data.Time
 import Data.UUID.Typed
 import Database.Persist
@@ -28,6 +29,6 @@ servePostAddItem :: AuthResult AuthCookie -> AddItem -> TicklerHandler ItemUUID
 servePostAddItem (Authenticated AuthCookie {..}) ti = do
   now <- liftIO getCurrentTime
   uuid <- liftIO nextRandomUUID
-  runDb $ insert_ $ makeTicklerItem authCookieUserUUID uuid now ti
+  runDb $ insert_ $ makeTicklerItem authCookieUserUUID uuid now Mergeful.initialServerTime ti
   pure uuid
 servePostAddItem _ _ = throwAll err401

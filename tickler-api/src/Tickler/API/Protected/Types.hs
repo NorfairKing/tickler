@@ -141,28 +141,12 @@ instance ToSample Recurrence where
 
 type TypedTickle = Tickle TypedItem
 
-data AddedItem a =
-  AddedItem
-    { addedItemContents :: a
-    , addedItemCreated :: UTCTime
-    }
-  deriving (Show, Read, Eq, Ord, Generic)
-
-instance Validity a => Validity (AddedItem a)
-
-instance ToJSON a => ToJSON (AddedItem a) where
-  toJSON AddedItem {..} = object ["contents" .= addedItemContents, "created" .= addedItemCreated]
-
-instance FromJSON a => FromJSON (AddedItem a) where
-  parseJSON = withObject "AddedItem" $ \o -> AddedItem <$> o .: "contents" <*> o .: "created"
-
-instance (ToSample a) => ToSample (AddedItem a)
-
 data ItemInfo a =
   ItemInfo
     { itemInfoIdentifier :: !ItemUUID
     , itemInfoContents :: !(Tickle a)
     , itemInfoCreated :: !UTCTime
+    , itemInfoSynced :: !UTCTime
     , itemInfoTriggered :: !(Maybe TriggeredInfo)
     }
   deriving (Show, Eq, Ord, Generic)
@@ -175,13 +159,15 @@ instance ToJSON a => ToJSON (ItemInfo a) where
       [ "id" .= itemInfoIdentifier
       , "contents" .= itemInfoContents
       , "created" .= itemInfoCreated
+      , "synced" .= itemInfoSynced
       , "triggered" .= itemInfoTriggered
       ]
 
 instance FromJSON a => FromJSON (ItemInfo a) where
   parseJSON =
     withObject "ItemInfo TypedItem" $ \o ->
-      ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created" <*> o .: "triggered"
+      ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created" <*> o .: "synced" <*>
+      o .: "triggered"
 
 instance ToSample a => ToSample (ItemInfo a)
 
@@ -274,9 +260,9 @@ instance Functor TriggerInfo where
 
 data SyncRequest =
   SyncRequest
-    { syncRequestTickles :: !(Mergeless.SyncRequest ItemUUID (AddedItem TypedTickle))
+    { syncRequestTickles :: !(Mergeful.SyncRequest ItemUUID TypedTickle)
     }
-  deriving (Show, Eq, Ord, Generic)
+  deriving (Show, Eq, Generic)
 
 instance Validity SyncRequest
 
@@ -288,9 +274,9 @@ instance ToSample SyncRequest
 
 data SyncResponse =
   SyncResponse
-    { syncResponseTickles :: !(Mergeless.SyncResponse ItemUUID (AddedItem TypedTickle))
+    { syncResponseTickles :: !(Mergeful.SyncResponse ItemUUID TypedTickle)
     }
-  deriving (Show, Eq, Ord, Generic)
+  deriving (Show, Eq, Generic)
 
 instance Validity SyncResponse
 

@@ -9,7 +9,6 @@ module Tickler.Cli.Commands.Add
 
 import Import
 
-import Data.Mergeful
 import Data.Time
 
 import Tickler.Client
