@@ -8,10 +8,6 @@ module Tickler.Client
   , NoContent(..)
   , Token
   , module Servant.Client
-  , module Data.UUID.Typed
-  , NoContent(..)
-  , module Servant.Auth.Client
-  , module Servant.Client
   ) where
 
 import Import

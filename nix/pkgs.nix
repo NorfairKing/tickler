@@ -18,10 +18,6 @@ let
     import (
       pkgs.fetchFromGitHub (import ./pretty-relative-time-version.nix) + "/nix/overlay.nix"
     );
-  mergeless-overlay =
-    import (
-      pkgs.fetchFromGitHub (import ./mergeless-version.nix) + "/nix/overlay.nix"
-    );
 
 in
   pkgsv {
