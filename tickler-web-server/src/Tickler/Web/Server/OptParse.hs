@@ -14,7 +14,7 @@ import Import
 import qualified Data.Text as T
 
 import Servant.Client.Core
-import System.Environment (getArgs, getEnvironment)
+import qualified System.Environment as System (getArgs, getEnvironment)
 import Text.Read
 
 import Options.Applicative
@@ -27,7 +27,7 @@ getInstructions :: IO Instructions
 getInstructions = do
   (cmd, flags) <- getArguments
   config <- getConfiguration cmd flags
-  env <- getEnv
+  env <- getEnvironment
   combineToInstructions cmd flags config env
 
 combineToInstructions :: Command -> Flags -> Configuration -> Environment -> IO Instructions
@@ -58,12 +58,12 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
 getConfiguration :: Command -> Flags -> IO Configuration
 getConfiguration _ _ = pure Configuration
 
-getEnv :: IO Environment
-getEnv = do
-  env <- getEnvironment
+getEnvironment :: IO Environment
+getEnvironment = do
+  env <- System.getEnvironment
   let ms k = fromString <$> lookup k env
       mre k func =
-        forM (lookup k env) $ \s ->
+        forM (lookup ("TICKLER_WEB_SERVER_" <> k) env) $ \s ->
           case func s of
             Left e ->
               die $
@@ -75,16 +75,16 @@ getEnv = do
             Nothing -> Left "Parsing failed without a good error message."
             Just v -> Right v
       mr k = mrf k readMaybe
-  envPort <- mr "WEB_PORT"
+  envPort <- mr "PORT"
   envDefaultIntrayUrl <- mre "DEFAULT_INTRAY_URL" (left show . parseBaseUrl)
   let envTracking = ms "TRACKING"
   let envVerification = ms "SEARCH_CONSOLE_VERIFICATION"
-  envAPIEnvironment <- API.getEnv
+  envAPIEnvironment <- API.getEnvironment
   pure Environment {..}
 
 getArguments :: IO Arguments
 getArguments = do
-  args <- getArgs
+  args <- System.getArgs
   let result = runArgumentsParser args
   handleParseResult result
 

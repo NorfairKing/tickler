@@ -128,7 +128,7 @@ getEnvironment = do
   env <- System.getEnvironment
   let envDb = getEnv env "DATABASE"
   let envWebHost = getEnv env "WEB_HOST"
-  envPort <- readEnv env "API_PORT"
+  envPort <- readEnv env "PORT"
   envLoopersEnvironment <- getLoopersEnv env
   pure Environment {..}
 
