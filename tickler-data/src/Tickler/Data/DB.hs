@@ -76,7 +76,7 @@ TicklerItem
     type ItemType
     contents ByteString
     created UTCTime
-    serverTime Mergeful.ServerTime
+    serverTime Mergeful.ServerTime default=initialServerTime
 
     scheduledDay Day
     scheduledTime TimeOfDay Maybe
