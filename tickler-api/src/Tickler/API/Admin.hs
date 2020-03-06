@@ -6,12 +6,8 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tickler.API.Admin
-  ( TicklerAdminAPI
-  , TicklerAdminSite(..)
-  , AdminStats(..)
-  , AdminGetStats
-  , AdminDeleteAccount
-  , AdminGetAccounts
+  ( module Tickler.API.Admin
+  , module Tickler.API.Admin.Types
   ) where
 
 import Import

@@ -7,13 +7,7 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Tickler.API.Account.Types
-  ( AccountInfo(..)
-  , AccountUUID
-  , Username
-  , parseUsername
-  , parseUsernameWithError
-  , usernameText
-  , AccountSettings(..)
+  ( module Tickler.API.Account.Types
   , module Data.UUID.Typed
   ) where
 

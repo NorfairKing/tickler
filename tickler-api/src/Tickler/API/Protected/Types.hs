@@ -9,47 +9,9 @@
 {-# OPTIONS_GHC -fno-warn-overlapping-patterns #-}
 
 module Tickler.API.Protected.Types
-  ( ItemFilter(..)
-  , ItemType(..)
-  , TypedItem(..)
-  , textTypedItem
-  , TypedItemCase(..)
-  , typedItemCase
-  , Recurrence(..)
-  , everyDaysAtTime
-  , everyMonthsOnDayAtTime
-  , Tickle(..)
-  , TypedTickle
-  , ItemInfo(..)
-  , TypedItemInfo
-  , TriggeredInfo(..)
-  , TriggerAttempt(..)
-  , IntrayTriggerResult(..)
-  , EmailTriggerResult(..)
-  , AddItem
-  , Mergeless.Added(..)
-  , Mergeless.Synced(..)
-  , SyncRequest(..)
-  , SyncResponse(..)
-  , TriggerType(..)
-  , TriggerInfo(..)
-  , decodeTriggerInfo
-  , TypedTriggerInfo(..)
-  , decodeTypedTriggerInfo
-  , IntrayTriggerInfo(..)
-  , EmailTriggerInfo(..)
-  , AddIntrayTrigger(..)
-  , AddEmailTrigger(..)
-  , EmailVerificationKey(..)
-  , emailVerificationKeyText
-  , parseEmailVerificationKeyText
-  , Registration(..)
-  , LoginForm(..)
-  , GetDocsResponse(..)
-  , HashedPassword
-  , passwordHash
-  , validatePassword
-  , ItemUUID
+  ( module Tickler.API.Protected.Types
+  , module Tickler.API.Types
+  , module Tickler.Data
   , module Data.UUID.Typed
   ) where
 
@@ -59,10 +21,12 @@ import Data.Aeson as JSON
 import qualified Data.Aeson as JSON (Result(Error))
 import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Char8 as SB8
-import qualified Data.Mergeless as Mergeless
+import qualified Data.Mergeful as Mergeful
+import qualified Data.Mergeful.Timed as Mergeful
 import qualified Data.Text.Encoding as TE
 import Data.Time
 import Data.UUID.Typed
+import Data.Word
 
 import Servant.Docs
 import Web.HttpApiData
@@ -133,6 +97,23 @@ newtype TypedItemCase =
   CaseTextItem Text
   deriving (Show, Read, Eq, Ord, Generic)
 
+data AddedItem a =
+  AddedItem
+    { addedItemContents :: a
+    , addedItemCreated :: UTCTime
+    }
+  deriving (Show, Read, Eq, Ord, Generic)
+
+instance Validity a => Validity (AddedItem a)
+
+instance ToJSON a => ToJSON (AddedItem a) where
+  toJSON AddedItem {..} = object ["contents" .= addedItemContents, "created" .= addedItemCreated]
+
+instance FromJSON a => FromJSON (AddedItem a) where
+  parseJSON = withObject "AddedItem" $ \o -> AddedItem <$> o .: "contents" <*> o .: "created"
+
+instance (ToSample a) => ToSample (AddedItem a)
+
 data Tickle a =
   Tickle
     { tickleContent :: !a
@@ -182,7 +163,6 @@ data ItemInfo a =
     { itemInfoIdentifier :: !ItemUUID
     , itemInfoContents :: !(Tickle a)
     , itemInfoCreated :: !UTCTime
-    , itemInfoSynced :: !UTCTime
     , itemInfoTriggered :: !(Maybe TriggeredInfo)
     }
   deriving (Show, Eq, Ord, Generic)
@@ -195,15 +175,13 @@ instance ToJSON a => ToJSON (ItemInfo a) where
       [ "id" .= itemInfoIdentifier
       , "contents" .= itemInfoContents
       , "created" .= itemInfoCreated
-      , "synced" .= itemInfoSynced
       , "triggered" .= itemInfoTriggered
       ]
 
 instance FromJSON a => FromJSON (ItemInfo a) where
   parseJSON =
     withObject "ItemInfo TypedItem" $ \o ->
-      ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created" <*> o .: "synced" <*>
-      o .: "triggered"
+      ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created" <*> o .: "triggered"
 
 instance ToSample a => ToSample (ItemInfo a)
 
@@ -296,9 +274,9 @@ instance Functor TriggerInfo where
 
 data SyncRequest =
   SyncRequest
-    { syncRequestTickles :: !(Mergeless.SyncRequest ItemUUID TypedTickle)
+    { syncRequestTickles :: !(Mergeful.SyncRequest ItemUUID (AddedItem TypedTickle))
     }
-  deriving (Show, Eq, Ord, Generic)
+  deriving (Show, Eq, Generic)
 
 instance Validity SyncRequest
 
@@ -310,9 +288,9 @@ instance ToSample SyncRequest
 
 data SyncResponse =
   SyncResponse
-    { syncResponseTickles :: !(Mergeless.SyncResponse ItemUUID TypedTickle)
+    { syncResponseTickles :: !(Mergeful.SyncResponse ItemUUID (AddedItem TypedTickle))
     }
-  deriving (Show, Eq, Ord, Generic)
+  deriving (Show, Eq, Generic)
 
 instance Validity SyncResponse
 
@@ -321,6 +299,21 @@ instance FromJSON SyncResponse
 instance ToJSON SyncResponse
 
 instance ToSample SyncResponse
+
+instance (Ord i, ToSample i, ToSample a) => ToSample (Mergeful.SyncRequest i a)
+
+instance (Ord i, ToSample i, ToSample a) => ToSample (Mergeful.SyncResponse i a)
+
+instance (Ord i, ToSample i) => ToSample (Mergeful.ClientAddition i)
+
+instance ToSample Mergeful.ServerTime
+
+instance ToSample Mergeful.ClientId
+
+instance ToSample a => ToSample (Mergeful.Timed a)
+
+instance ToSample Word64 where
+  toSamples Proxy = singleSample 0
 
 decodeTriggerInfo ::
      FromJSON a => TriggerType -> TriggerInfo TypedTriggerInfo -> Maybe (TriggerInfo a)

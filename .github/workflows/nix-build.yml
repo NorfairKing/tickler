@@ -14,7 +14,7 @@ jobs:
         skipNixBuild: true
     - uses: cachix/cachix-action@releases/v3
       with:
-        name: mergeless
+        name: mergeful
         skipNixBuild: true
     - uses: cachix/cachix-action@releases/v3
       with:

@@ -18,7 +18,6 @@ import Yesod
 import Yesod.Auth
 
 import Tickler.Client
-import Tickler.Data
 
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.Time

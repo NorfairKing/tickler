@@ -1,89 +1,13 @@
 {-# LANGUAGE DataKinds #-}
 
 module Tickler.Client
-  ( clientGetAllItems
-  , clientGetItemUUIDs
-  , clientGetItems
-  , clientPostAddItem
-  , clientGetItem
-  , clientDeleteItem
-  , clientRetryTriggered
-  , clientDeleteTriggereds
-  , clientPostSync
-  , clientGetTriggers
-  , clientGetTrigger
-  , clientPostAddIntrayTrigger
-  , clientPostAddEmailTrigger
-  , clientPostEmailTriggerVerify
-  , clientPostEmailTriggerResendVerificationEmail
-  , clientDeleteTrigger
-  , clientPostRegister
-  , clientPostLogin
-  , clientGetLoopersInfo
-  , clientGetDocs
-  , clientGetAccountInfo
-  , clientGetAccountSettings
-  , clientPutAccountSettings
-  , clientDeleteAccount
-  , clientAdminGetStats
-  , clientAdminDeleteAccount
-  , clientAdminGetAccounts
+  ( module Tickler.Client
   , module Tickler.Client.Store
-  , ItemFilter(..)
-  , ItemType(..)
-  , TypedItem(..)
-  , textTypedItem
-  , TypedItemCase(..)
-  , typedItemCase
-  , Recurrence(..)
-  , everyDaysAtTime
-  , everyMonthsOnDayAtTime
-  , Tickle(..)
-  , TypedTickle
-  , ItemInfo(..)
-  , TypedItemInfo
-  , TriggeredInfo(..)
-  , AddItem
-  , Added(..)
-  , Synced(..)
-  , SyncRequest(..)
-  , SyncResponse(..)
-  , TriggerInfo(..)
-  , TriggerUUID
-  , GetTriggers
-  , AddIntrayTrigger(..)
-  , PostAddIntrayTrigger
-  , EmailAddress
-  , normalizeEmail
-  , unsafeEmailAddress
-  , emailValidateFromText
-  , emailValidateFromString
-  , emailAddressFromText
-  , emailAddressFromString
-  , emailAddressText
-  , emailAddressByteString
-  , domainPart
-  , localPart
-  , AddEmailTrigger(..)
-  , PostAddEmailTrigger
-  , EmailVerificationKey
-  , emailVerificationKeyText
-  , parseEmailVerificationKeyText
-  , AccountInfo(..)
-  , AccountSettings(..)
-  , Registration(..)
-  , LoginForm(..)
-  , GetDocsResponse(..)
-  , AdminStats(..)
-  , ItemUUID
-  , AccountUUID
-  , Username
-  , parseUsername
-  , parseUsernameWithError
-  , usernameText
+  , module Tickler.API
+  , module Data.UUID.Typed
   , NoContent(..)
   , Token
-  , module Data.UUID.Typed
+  , module Servant.Client
   ) where
 
 import Import
@@ -93,7 +17,7 @@ import qualified Data.UUID.Typed
 import Servant.API
 import Servant.API.Flatten
 import Servant.Auth.Client
-import Servant.Auth.Server
+import Servant.Auth.Server hiding (BasicAuth)
 import Servant.Client
 
 import Tickler.API

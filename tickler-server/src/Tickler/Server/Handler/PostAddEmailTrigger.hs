@@ -14,18 +14,14 @@ import Data.Time
 import Data.UUID.Typed
 import Database.Persist
 
-import Servant hiding (BadPassword, NoSuchUser)
-import Servant.Auth.Server as Auth
-
 import Tickler.API
-import Tickler.Data
 
 import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-servePostAddEmailTrigger :: AuthResult AuthCookie -> AddEmailTrigger -> TicklerHandler TriggerUUID
-servePostAddEmailTrigger (Authenticated AuthCookie {..}) AddEmailTrigger {..} = do
+servePostAddEmailTrigger :: AuthCookie -> AddEmailTrigger -> TicklerHandler TriggerUUID
+servePostAddEmailTrigger AuthCookie {..} AddEmailTrigger {..} = do
   now <- liftIO getCurrentTime
   uuid <- liftIO nextRandomUUID
   verificationKey <- liftIO generateRandomVerificationKey
@@ -53,4 +49,3 @@ servePostAddEmailTrigger (Authenticated AuthCookie {..}) AddEmailTrigger {..} = 
         , verificationEmailEmail = Nothing
         }
   pure uuid
-servePostAddEmailTrigger _ _ = throwAll err401

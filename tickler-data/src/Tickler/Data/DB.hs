@@ -13,6 +13,7 @@ module Tickler.Data.DB where
 
 import Import
 
+import Data.Mergeful.Timed as Mergeful
 import Data.Time
 
 import Database.Persist.Sql
@@ -28,6 +29,7 @@ import Tickler.Data.HashedPassword
 import Tickler.Data.ItemType
 import Tickler.Data.ItemUUID
 import Tickler.Data.Recurrence
+import Tickler.Data.ServerTime ()
 import Tickler.Data.Time ()
 import Tickler.Data.TriggerType
 import Tickler.Data.TriggerUUID
@@ -74,7 +76,7 @@ TicklerItem
     type ItemType
     contents ByteString
     created UTCTime
-    synced UTCTime
+    serverTime Mergeful.ServerTime default=0
 
     scheduledDay Day
     scheduledTime TimeOfDay Maybe
@@ -96,7 +98,6 @@ TriggeredItem
     type ItemType
     contents ByteString
     created UTCTime
-    synced UTCTime
 
     scheduledDay Day
     scheduledTime TimeOfDay Maybe

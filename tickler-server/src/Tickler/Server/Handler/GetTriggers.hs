@@ -11,18 +11,14 @@ import Import
 import Data.Aeson as JSON
 import Database.Persist
 
-import Servant hiding (BadPassword, NoSuchUser)
-import Servant.Auth.Server as Auth
-
 import Tickler.API
-import Tickler.Data
 
 import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-serveGetTriggers :: AuthResult AuthCookie -> TicklerHandler [TriggerInfo TypedTriggerInfo]
-serveGetTriggers (Authenticated AuthCookie {..}) = do
+serveGetTriggers :: AuthCookie -> TicklerHandler [TriggerInfo TypedTriggerInfo]
+serveGetTriggers AuthCookie {..} = do
   uts <- runDb $ selectList [UserTriggerUserId ==. authCookieUserUUID] []
   runDb $
     fmap catMaybes $
@@ -33,7 +29,6 @@ serveGetTriggers (Authenticated AuthCookie {..}) = do
          selectFirst [IntrayTriggerIdentifier ==. userTriggerTriggerId] [])
         (fmap (makeEmailTriggerInfo . entityVal) <$>
          selectFirst [EmailTriggerIdentifier ==. userTriggerTriggerId] [])
-serveGetTriggers _ = throwAll err401
 
 makeIntrayTriggerInfo :: IntrayTrigger -> TriggerInfo TypedTriggerInfo
 makeIntrayTriggerInfo IntrayTrigger {..} =

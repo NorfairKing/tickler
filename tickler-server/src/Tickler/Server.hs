@@ -25,7 +25,6 @@ import Servant.Auth.Server as Auth
 import Servant.Server.Generic
 
 import Tickler.API
-import Tickler.Data
 
 import Tickler.Server.OptParse.Types
 import Tickler.Server.Types
@@ -37,7 +36,7 @@ import Tickler.Server.SigningKey
 runTicklerServer :: ServeSettings -> IO ()
 runTicklerServer ServeSettings {..} =
   runStderrLoggingT $
-  withSqlitePoolInfo serveSetConnectionInfo serveSetConnectionCount $ \pool -> do
+  withSqlitePoolInfo serveSetConnectionInfo 1 $ \pool -> do
     runResourceT $ flip runSqlPool pool $ runMigration migrateAll
     signingKey <- liftIO loadSigningKey
     let jwtCfg = defaultJWTSettings signingKey

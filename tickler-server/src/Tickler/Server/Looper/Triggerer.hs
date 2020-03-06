@@ -15,7 +15,6 @@ import Data.Time
 import Database.Persist.Sqlite
 
 import Tickler.API
-import Tickler.Data
 
 import Tickler.Server.OptParse.Types
 
@@ -59,7 +58,6 @@ makeTriggeredItem now TicklerItem {..} =
     , triggeredItemType = ticklerItemType
     , triggeredItemContents = ticklerItemContents
     , triggeredItemCreated = ticklerItemCreated
-    , triggeredItemSynced = ticklerItemSynced
     , triggeredItemScheduledDay = ticklerItemScheduledDay
     , triggeredItemScheduledTime = ticklerItemScheduledTime
     , triggeredItemRecurrence = ticklerItemRecurrence

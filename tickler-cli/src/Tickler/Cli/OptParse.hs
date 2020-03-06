@@ -1,6 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Cli.OptParse
@@ -20,10 +22,11 @@ import Import
 import qualified Data.ByteString as SB
 import qualified Data.Text as T
 import Data.Time
-import Data.Yaml as Yaml (decodeEither')
+import Data.Yaml as Yaml (decodeEither', prettyPrintParseException)
+import Text.Read (readMaybe)
 
 import Options.Applicative
-import System.Environment
+import qualified System.Environment as System (getArgs, getEnvironment)
 
 import Servant.Client
 
@@ -32,77 +35,92 @@ import Tickler.Data
 
 getInstructions :: IO Instructions
 getInstructions = do
-  Arguments cmd flg <- getArguments
-  cfg <- getConfig flg
-  dispatch <- getDispatch cmd
-  settings <- getSettings cfg flg
-  pure $ Instructions dispatch settings
+  args@(Arguments _ flags) <- getArguments
+  environment <- getEnvironment
+  configuration <- getConfiguration flags environment
+  combineToInstructions args environment configuration
 
-getSettings :: Configuration -> Flags -> IO Settings
-getSettings Configuration {..} Flags {..} = do
-  setBaseUrl <-
-    case flagUrl `mplus` configUrl of
-      Nothing -> pure Nothing
-      Just url -> Just <$> parseBaseUrl url
-  setTicklerDir <-
-    case flagTicklerDir `mplus` configTicklerDir of
-      Nothing -> do
-        home <- getHomeDir
-        resolveDir home ".tickler"
-      Just d -> resolveDir' d
-  let setSyncStrategy =
-        fromMaybe
-          (case setBaseUrl of
-             Nothing -> NeverSync
-             Just _ -> AlwaysSync) $
-        flagSyncStrategy `mplus` configSyncStrategy
-  let setUsername = configUsername
-  pure Settings {..}
-
-getDispatch :: Command -> IO Dispatch
-getDispatch cmd =
-  case cmd of
-    CommandRegister RegisterArgs {..} ->
-      pure $
-      DispatchRegister
-        RegisterSettings
-          { registerSetUsername = (T.pack <$> registerArgUsername) >>= parseUsername
-          , registerSetPassword = T.pack <$> registerArgPassword
-          }
-    CommandLogin LoginArgs {..} ->
-      pure $
-      DispatchLogin
-        LoginSettings
-          { loginSetUsername = (T.pack <$> loginArgUsername) >>= parseUsername
-          , loginSetPassword = T.pack <$> loginArgPassword
-          }
-    CommandAdd AddArgs {..} -> do
-      date <- parseTimeM True defaultTimeLocale "%Y-%-m-%-d" addArgTickleDate
-      mTime <- mkTimeOfDay addArgTickleTime
-      r <-
-        case addArgRecurrence of
+combineToInstructions :: Arguments -> Environment -> Maybe Configuration -> IO Instructions
+combineToInstructions (Arguments cmd Flags {..}) Environment {..} mConf =
+  Instructions <$> getDispatch <*> getSettings
+  where
+    mc :: (Configuration -> Maybe a) -> Maybe a
+    mc func = mConf >>= func
+    getSettings = do
+      setBaseUrl <-
+        case flagUrl <|> envUrl <|> mc configUrl of
           Nothing -> pure Nothing
-          Just ras -> Just <$> mkRecurrence ras
-      pure $
-        DispatchAdd
-          AddSettings
-            { addSetTickleContent = T.pack addArgContent
-            , addSetTickleDate = date
-            , addSetTickleTime = mTime
-            , addSetTickleRecurrence = r
-            }
-    CommandLogout -> pure DispatchLogout
-    CommandSync -> pure DispatchSync
+          Just url -> Just <$> parseBaseUrl url
+      setCacheDir <-
+        case flagCacheDir <|> envCacheDir <|> mc configCacheDir of
+          Nothing -> getXdgDir XdgCache (Just [reldir|tickler|])
+          Just d -> resolveDir' d
+      setDataDir <-
+        case flagDataDir <|> envDataDir <|> mc configDataDir of
+          Nothing -> getXdgDir XdgData (Just [reldir|tickler|])
+          Just d -> resolveDir' d
+      let setSyncStrategy =
+            fromMaybe
+              (case setBaseUrl of
+                 Nothing -> NeverSync
+                 Just _ -> AlwaysSync) $
+            flagSyncStrategy <|> envSyncStrategy <|> mc configSyncStrategy
+      setUsername <-
+        case envUsername <|> mc configUsername of
+          Nothing -> pure Nothing
+          Just us ->
+            case parseUsername (T.pack us) of
+              Nothing -> die $ "Invalid username: " <> us
+              Just un -> pure $ Just un
+      pure Settings {..}
+    getDispatch =
+      case cmd of
+        CommandRegister RegisterArgs {..} ->
+          pure $
+          DispatchRegister
+            RegisterSettings
+              { registerSetUsername =
+                  (T.pack <$> (registerArgUsername <|> envUsername <|> mc configUsername)) >>=
+                  parseUsername
+              , registerSetPassword =
+                  T.pack <$> (registerArgPassword <|> envPassword <|> mc configPassword)
+              }
+        CommandLogin LoginArgs {..} ->
+          pure $
+          DispatchLogin
+            LoginSettings
+              { loginSetUsername =
+                  (T.pack <$> (loginArgUsername <|> envUsername <|> mc configUsername)) >>=
+                  parseUsername
+              , loginSetPassword =
+                  T.pack <$> (loginArgPassword <|> envPassword <|> mc configPassword)
+              }
+        CommandAdd AddArgs {..} -> do
+          date <- parseTimeM True defaultTimeLocale "%Y-%-m-%-d" addArgTickleDate
+          mTime <- mkTimeOfDay addArgTickleTime
+          r <-
+            case addArgRecurrence of
+              Nothing -> pure Nothing
+              Just ras -> Just <$> mkRecurrence ras
+          pure $
+            DispatchAdd
+              AddSettings
+                { addSetTickleContent = T.pack addArgContent
+                , addSetTickleDate = date
+                , addSetTickleTime = mTime
+                , addSetTickleRecurrence = r
+                }
+        CommandLogout -> pure DispatchLogout
+        CommandSync -> pure DispatchSync
 
 mkRecurrence :: RecurrenceArgs -> IO Recurrence
-mkRecurrence (RecurrenceArgEveryDayAt mtod) =
-  everyDaysAtTime 1 <$> mkTimeOfDay mtod >>= mkValidRecurrence
-mkRecurrence (RecurrenceArgEveryDaysAt ds mtod) =
-  everyDaysAtTime ds <$> mkTimeOfDay mtod >>= mkValidRecurrence
-mkRecurrence (RecurrenceArgEveryMonthOnAt md mtod) =
-  everyMonthsOnDayAtTime 1 md <$> mkTimeOfDay mtod >>= mkValidRecurrence
-mkRecurrence (RecurrenceArgEveryMonthsOnAt ms md mtod) =
-  everyMonthsOnDayAtTime ms md <$> mkTimeOfDay mtod >>= mkValidRecurrence
+mkRecurrence ra =
+  (mkValidRecurrence =<<) $
+  case ra of
+    RecurrenceArgEveryDayAt mtod -> everyDaysAtTime 1 <$> mkTimeOfDay mtod
+    RecurrenceArgEveryDaysAt ds mtod -> everyDaysAtTime ds <$> mkTimeOfDay mtod
+    RecurrenceArgEveryMonthOnAt md mtod -> everyMonthsOnDayAtTime 1 md <$> mkTimeOfDay mtod
+    RecurrenceArgEveryMonthsOnAt ms md mtod -> everyMonthsOnDayAtTime ms md <$> mkTimeOfDay mtod
 
 mkTimeOfDay :: Maybe String -> IO (Maybe TimeOfDay)
 mkTimeOfDay Nothing = pure Nothing
@@ -116,31 +134,81 @@ mkValidRecurrence :: Maybe Recurrence -> IO Recurrence
 mkValidRecurrence Nothing = die "Recurrence invalid:"
 mkValidRecurrence (Just r) = pure r
 
-getConfig :: Flags -> IO Configuration
-getConfig Flags {..} = do
-  path <- maybe (defaultConfigFile flagTicklerDir) resolveFile' flagConfigFile
-  mContents <- forgivingAbsence $ SB.readFile $ fromAbsFile path
-  case mContents of
-    Nothing -> pure emptyConfiguration
-    Just contents ->
-      case Yaml.decodeEither' contents of
-        Left err ->
-          die $ unlines ["Failed to parse config file", fromAbsFile path, "with error:", show err]
-        Right conf -> pure conf
+getEnvironment :: IO Environment
+getEnvironment = do
+  env <- System.getEnvironment
+  let ms key = lookup ("TICKLER_" <> key) env
+      mr :: Read a => String -> IO (Maybe a)
+      mr key =
+        case ms key of
+          Nothing -> pure Nothing
+          Just s ->
+            case readMaybe s of
+              Nothing -> die $ "Un-read-able value: " <> s
+              Just r -> pure $ Just r
+  let envConfigFile = ms "CONFIG_FILE"
+      envUrl = ms "URL"
+      envCacheDir = ms "CACHE_DIR"
+      envDataDir = ms "DATA_DIR"
+  envSyncStrategy <- mr "SYNC_STRATEGY"
+  let envUsername = ms "USERNAME"
+  let envPassword = ms "PASSWORD"
+  pure Environment {..}
 
-defaultConfigFile :: Maybe FilePath -> IO (Path Abs File)
-defaultConfigFile mid = do
-  i <-
-    case mid of
-      Nothing -> do
-        homeDir <- getHomeDir
-        resolveDir homeDir ".tickler"
-      Just i -> resolveDir' i
-  resolveFile i "config.yaml"
+getConfiguration :: Flags -> Environment -> IO (Maybe Configuration)
+getConfiguration Flags {..} Environment {..} =
+  case flagConfigFile <|> envConfigFile of
+    Nothing -> defaultConfigFiles >>= getFirstConfigFile
+    Just cf -> do
+      p <- resolveFile' cf
+      mc <- forgivingAbsence $ SB.readFile $ fromAbsFile p
+      case mc of
+        Nothing -> die $ "Config file not found: " <> fromAbsFile p
+        Just contents ->
+          case Yaml.decodeEither' contents of
+            Left err ->
+              die $
+              unlines
+                [ "Failed to parse given config file"
+                , fromAbsFile p
+                , "with error:"
+                , Yaml.prettyPrintParseException err
+                ]
+            Right conf -> pure $ Just conf
+
+getFirstConfigFile :: [Path Abs File] -> IO (Maybe Configuration)
+getFirstConfigFile =
+  \case
+    [] -> pure Nothing
+    (p:ps) -> do
+      mc <- forgivingAbsence $ SB.readFile $ fromAbsFile p
+      case mc of
+        Nothing -> getFirstConfigFile ps
+        Just contents ->
+          case Yaml.decodeEither' contents of
+            Left err ->
+              die $
+              unlines
+                [ "Failed to parse default config file"
+                , fromAbsFile p
+                , "with error:"
+                , Yaml.prettyPrintParseException err
+                ]
+            Right conf -> pure $ Just conf
+
+defaultConfigFiles :: IO [Path Abs File]
+defaultConfigFiles =
+  sequence
+    [ do xdgConfigDir <- getXdgDir XdgConfig (Just [reldir|tickler|])
+         resolveFile xdgConfigDir "config.yaml"
+    , do homeDir <- getHomeDir
+         ticklerDir <- resolveDir homeDir ".tickler"
+         resolveFile ticklerDir "config.yaml"
+    ]
 
 getArguments :: IO Arguments
 getArguments = do
-  args <- getArgs
+  args <- System.getArgs
   let result = runArgumentsParser args
   handleParseResult result
 
@@ -296,11 +364,10 @@ parseFlags =
   option
     (Just <$> str)
     (mconcat
-       [ long "tickler-dir"
-       , help "The directory to use for caching and state"
-       , value Nothing
-       , metavar "URL"
-       ]) <*>
+       [long "cache-dir", help "The directory to use for caching", value Nothing, metavar "DIR"]) <*>
+  option
+    (Just <$> str)
+    (mconcat [long "data-dir", help "The directory to use for state", value Nothing, metavar "DIR"]) <*>
   syncStrategyOpt
 
 syncStrategyOpt :: Parser (Maybe SyncStrategy)

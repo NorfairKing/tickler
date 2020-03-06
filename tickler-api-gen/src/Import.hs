@@ -15,7 +15,7 @@ import Data.Text as X (Text)
 import Data.GenValidity as X
 import Data.GenValidity.Aeson ()
 import Data.GenValidity.ByteString as X ()
-import Data.GenValidity.Mergeless ()
+import Data.GenValidity.Mergeful ()
 import Data.GenValidity.Text as X ()
 import Data.GenValidity.Time as X ()
 import Data.GenValidity.UUID as X ()

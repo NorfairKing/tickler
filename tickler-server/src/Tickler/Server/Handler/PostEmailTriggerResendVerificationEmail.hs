@@ -18,15 +18,14 @@ import Servant hiding (BadPassword, NoSuchUser)
 import Servant.Auth.Server as Auth
 
 import Tickler.API
-import Tickler.Data
 
 import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
 servePostEmailTriggerResendVerificationEmail ::
-     AuthResult AuthCookie -> TriggerUUID -> TicklerHandler NoContent
-servePostEmailTriggerResendVerificationEmail (Authenticated AuthCookie {..}) tuuid = do
+     AuthCookie -> TriggerUUID -> TicklerHandler NoContent
+servePostEmailTriggerResendVerificationEmail AuthCookie {..} tuuid = do
   mt <-
     runDb $
     selectFirst
@@ -56,4 +55,3 @@ servePostEmailTriggerResendVerificationEmail (Authenticated AuthCookie {..}) tuu
                     , verificationEmailEmail = Nothing
                     }
               pure NoContent
-servePostEmailTriggerResendVerificationEmail _ _ = throwAll err401

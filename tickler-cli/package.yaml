@@ -29,7 +29,7 @@ library:
   - cookie >=0.4
   - http-client >=0.5
   - http-client-tls >=0.3
-  - mergeless
+  - mergeful
   - mtl >=2.2
   - optparse-applicative >=0.13
   - path >=0.4
@@ -76,13 +76,15 @@ tests:
     - genvalidity-hspec
     - genvalidity-hspec-aeson >=0.1
     - hspec
-    - tickler-cli
-    - tickler-client
-    - tickler-data
-    - tickler-server-test-utils
+    - mergeful
     - mtl
     - path
     - path-io
     - servant
     - servant-client
     - text >=1.2
+    - tickler-cli
+    - tickler-client
+    - tickler-data
+    - tickler-server-test-utils
+    - time

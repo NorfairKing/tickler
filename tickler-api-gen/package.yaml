@@ -26,7 +26,7 @@ library:
   - genvalidity
   - genvalidity-aeson
   - genvalidity-bytestring
-  - genvalidity-mergeless
+  - genvalidity-mergeful
   - genvalidity-text
   - genvalidity-time
   - genvalidity-typed-uuid

@@ -11,7 +11,7 @@ import Import
 import qualified Data.Text as T
 import Text.Read
 
-import System.Environment (getArgs, getEnvironment, lookupEnv)
+import qualified System.Environment as System
 
 import Control.Monad.Trans.AWS as AWS
 import Database.Persist.Sqlite
@@ -25,7 +25,7 @@ getInstructions :: IO Instructions
 getInstructions = do
   Arguments cmd flags <- getArguments
   config <- getConfiguration cmd flags
-  env <- getEnv
+  env <- getEnvironment
   combineToInstructions cmd flags config env
 
 combineToInstructions :: Command -> Flags -> Configuration -> Environment -> IO Instructions
@@ -37,7 +37,6 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
       Just wh -> pure $ T.pack wh
   dbPath <- resolveFile' $ fromMaybe "tickler.db" $ serveFlagDb <> envDb
   let serveSetConnectionInfo = mkSqliteConnectionInfo $ T.pack $ fromAbsFile dbPath
-  let serveSetConnectionCount = fromMaybe 4 serveFlagConnectionCount
   serveSetAdmins <-
     forM serveFlagAdmins $ \s ->
       case parseUsername $ T.pack s of
@@ -52,8 +51,6 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
         fromMaybe 1000000 $ looperFlagDefaultRetryDelay `mplus` looperEnvDefaultRetryDelay
   let defaultLooperRetryAmount =
         fromMaybe 7 $ looperFlagDefaultRetryTimes `mplus` looperEnvDefaultRetryTimes
-  let looperSetConnectionInfo = serveSetConnectionInfo
-  let looperSetConnectionCount = serveSetConnectionCount
   let combineToLooperSets ::
            LooperFlagsWith a -> LooperEnvWith b -> (a -> b -> IO c) -> IO (LooperSetsWith c)
       combineToLooperSets LooperFlagsWith {..} LooperEnvWith {..} func = do
@@ -123,70 +120,60 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
 getConfiguration :: Command -> Flags -> IO Configuration
 getConfiguration _ _ = pure Configuration
 
-getEnv :: IO Environment
-getEnv = do
-  env <- getEnvironment
-  envDb <- lookupEnv "DATABASE"
-  envWebHost <- lookupEnv "WEB_HOST"
-  envPort <- maybeReadEnv "API_PORT" env
-  envLoopersEnvironment <- getLoopersEnv
+getEnvironment :: IO Environment
+getEnvironment = do
+  env <- System.getEnvironment
+  let envDb = getEnv env "DATABASE"
+  let envWebHost = getEnv env "WEB_HOST"
+  envPort <- readEnv env "PORT"
+  envLoopersEnvironment <- getLoopersEnv env
   pure Environment {..}
 
-getLoopersEnv :: IO LoopersEnvironment
-getLoopersEnv = do
-  env <- getEnvironment
-  looperEnvDefaultEnabled <- maybeReadEnv "LOOPERS_DEFAULT_ENABLED" env
-  looperEnvDefaultPeriod <- maybeReadEnv "LOOPERS_DEFAULT_PERIOD" env
-  looperEnvDefaultRetryDelay <- maybeReadEnv "LOOPERS_DEFAULT_RETRY_DELAY" env
-  looperEnvDefaultRetryTimes <- maybeReadEnv "LOOPERS_DEFAULT_RETRY_AMOUNT" env
-  looperEnvTriggererEnv <- getLooperEnvWith "TRIGGERER" $ pure ()
-  looperEnvEmailerEnv <- getLooperEnvWith "EMAILER" $ pure ()
+getLoopersEnv :: [(String, String)] -> IO LoopersEnvironment
+getLoopersEnv env = do
+  looperEnvDefaultEnabled <- readEnv env "LOOPERS_DEFAULT_ENABLED"
+  looperEnvDefaultPeriod <- readEnv env "LOOPERS_DEFAULT_PERIOD"
+  looperEnvDefaultRetryDelay <- readEnv env "LOOPERS_DEFAULT_RETRY_DELAY"
+  looperEnvDefaultRetryTimes <- readEnv env "LOOPERS_DEFAULT_RETRY_AMOUNT"
+  looperEnvTriggererEnv <- getLooperEnvWith env "TRIGGERER" $ pure ()
+  looperEnvEmailerEnv <- getLooperEnvWith env "EMAILER" $ pure ()
   looperEnvTriggeredIntrayItemSchedulerEnv <-
-    getLooperEnvWith "TRIGGERED_INTRAY_ITEM_SCHEDULER" $ pure ()
-  looperEnvTriggeredIntrayItemSenderEnv <- getLooperEnvWith "TRIGGERED_INTRAY_ITEM_SENDER" $ pure ()
+    getLooperEnvWith env "TRIGGERED_INTRAY_ITEM_SCHEDULER" $ pure ()
+  looperEnvTriggeredIntrayItemSenderEnv <-
+    getLooperEnvWith env "TRIGGERED_INTRAY_ITEM_SENDER" $ pure ()
   looperEnvVerificationEmailConverterEnv <-
-    getLooperEnvWith "VERIFICATION_EMAIL_CONVERTER" $ pure ()
-  looperEnvTriggeredEmailSchedulerEnv <- getLooperEnvWith "TRIGGERED_EMAIL_SCHEDULER" $ pure ()
-  looperEnvTriggeredEmailConverterEnv <- getLooperEnvWith "TRIGGERED_EMAIL_CONVERTER" $ pure ()
+    getLooperEnvWith env "VERIFICATION_EMAIL_CONVERTER" $ pure ()
+  looperEnvTriggeredEmailSchedulerEnv <- getLooperEnvWith env "TRIGGERED_EMAIL_SCHEDULER" $ pure ()
+  looperEnvTriggeredEmailConverterEnv <- getLooperEnvWith env "TRIGGERED_EMAIL_CONVERTER" $ pure ()
   pure LoopersEnvironment {..}
 
-getLooperEnvWith :: String -> IO a -> IO (LooperEnvWith a)
-getLooperEnvWith name func = do
-  env <- getEnvironment
-  looperEnvEnable <- maybeReadEnv (intercalate "_" ["LOOPER", name, "ENABLED"]) env
-  looperEnvPeriod <- maybeReadEnv (intercalate "_" ["LOOPER", name, "PERIOD"]) env
-  looperEnvRetryPolicy <- getLooperRetryPolicyEnv name
+getLooperEnvWith :: [(String, String)] -> String -> IO a -> IO (LooperEnvWith a)
+getLooperEnvWith env name func = do
+  looperEnvEnable <- readEnv env $ intercalate "_" ["LOOPER", name, "ENABLED"]
+  looperEnvPeriod <- readEnv env $ intercalate "_" ["LOOPER", name, "PERIOD"]
+  looperEnvRetryPolicy <- getLooperRetryPolicyEnv env name
   looperEnv <- func
   pure LooperEnvWith {..}
 
-getLooperRetryPolicyEnv :: String -> IO LooperEnvRetryPolicy
-getLooperRetryPolicyEnv name = do
-  env <- getEnvironment
-  looperEnvRetryDelay <- maybeReadEnv (intercalate "_" ["LOOPER", name, "RETRY", "DELAY"]) env
-  looperEnvRetryAmount <- maybeReadEnv (intercalate "_" ["LOOPER", name, "RETRY", "AMOUNT"]) env
+getLooperRetryPolicyEnv :: [(String, String)] -> String -> IO LooperEnvRetryPolicy
+getLooperRetryPolicyEnv env name = do
+  looperEnvRetryDelay <- readEnv env $ intercalate "_" ["LOOPER", name, "RETRY", "DELAY"]
+  looperEnvRetryAmount <- readEnv env $ intercalate "_" ["LOOPER", name, "RETRY", "AMOUNT"]
   pure LooperEnvRetryPolicy {..}
 
-eitherParseEnv :: Show a => String -> (a -> Either String b) -> [(String, a)] -> IO (Maybe b)
-eitherParseEnv k func env =
-  forM (lookup k env) $ \s ->
-    case func s of
-      Left e ->
-        die $ unwords ["Unable to read ENV Var:", k, "which has value:", show s, "with error:", e]
-      Right v -> pure v
+getEnv :: [(String, String)] -> String -> Maybe String
+getEnv env key = lookup ("TICKLER_SERVER_" <> key) env
 
-maybeParseEnv :: Show a => String -> (a -> Maybe b) -> [(String, a)] -> IO (Maybe b)
-maybeParseEnv k func =
-  eitherParseEnv k $ \s ->
-    case func s of
-      Nothing -> Left "Parsing failed without a good error message."
-      Just v -> Right v
-
-maybeReadEnv :: Read b => String -> [(String, String)] -> IO (Maybe b)
-maybeReadEnv k = maybeParseEnv k readMaybe
+readEnv :: Read a => [(String, String)] -> String -> IO (Maybe a)
+readEnv env key =
+  forM (getEnv env key) $ \s ->
+    case readMaybe s of
+      Nothing -> die $ "Un-Read-able value: " <> s
+      Just val -> pure val
 
 getArguments :: IO Arguments
 getArguments = do
-  args <- getArgs
+  args <- System.getArgs
   let result = runArgumentsParser args
   handleParseResult result
 
@@ -238,14 +225,6 @@ parseServeFlags =
        , value Nothing
        , metavar "DATABASE_CONNECTION_STRING"
        , help "The sqlite connection string"
-       ]) <*>
-  option
-    (Just <$> auto)
-    (mconcat
-       [ long "connection-count"
-       , value Nothing
-       , metavar "CONNECTION_COUNT"
-       , help "the number of database connections to use"
        ]) <*>
   many (strOption (mconcat [long "admin", metavar "USERNAME", help "An admin to use"])) <*>
   parseLooperFlags

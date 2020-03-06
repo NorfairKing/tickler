@@ -19,21 +19,19 @@ import qualified Network.HTTP.Client as Http
 import qualified Network.HTTP.Client.TLS as Http
 
 import Servant hiding (BadPassword, NoSuchUser)
-import Servant.Auth.Server as Auth
 import Servant.Client
 
 import qualified Intray.Client as Intray
 
 import Tickler.API
-import Tickler.Data
 
 import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
 servePostAddIntrayTrigger ::
-     AuthResult AuthCookie -> AddIntrayTrigger -> TicklerHandler (Either Text TriggerUUID)
-servePostAddIntrayTrigger (Authenticated AuthCookie {..}) AddIntrayTrigger {..} = do
+     AuthCookie -> AddIntrayTrigger -> TicklerHandler (Either Text TriggerUUID)
+servePostAddIntrayTrigger AuthCookie {..} AddIntrayTrigger {..} = do
   now <- liftIO getCurrentTime
   uuid <- liftIO nextRandomUUID
   man <- liftIO $ Http.newManager Http.tlsManagerSettings
@@ -71,4 +69,3 @@ servePostAddIntrayTrigger (Authenticated AuthCookie {..}) AddIntrayTrigger {..} 
             , userTriggerTriggerId = uuid
             }
       pure $ Right uuid
-servePostAddIntrayTrigger _ _ = throwAll err401

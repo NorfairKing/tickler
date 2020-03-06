@@ -6,9 +6,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Tickler.API.Admin.Types
-  ( AdminStats(..)
-  ) where
+module Tickler.API.Admin.Types where
 
 import Import
 

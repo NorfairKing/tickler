@@ -7,9 +7,9 @@ pkill -f 'tickler-web-server serve'
 
 set -e
 
-export WEB_PORT=8002
-export WEB_HOST=localhost:${WEB_PORT}
-export API_PORT=8003
-export DEFAULT_INTRAY_URL="https://api.intray.cs-syd.eu"
+export TICKLER_WEB_SERVER_PORT=8002
+export TICKLER_WEB_SERVER_DEFAULT_INTRAY_URL="https://api.intray.cs-syd.eu"
+export TICKLER_SERVER_PORT=8003
+export TICKLER_SERVER_WEB_HOST=localhost:${TICKLER_WEB_SERVER_PORT}
 
 tickler-web-server serve --persist-logins --admin admin $@ &

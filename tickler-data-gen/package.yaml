@@ -22,6 +22,7 @@ library:
   - bytestring
   - genvalidity
   - genvalidity-bytestring
+  - genvalidity-mergeful
   - genvalidity-text
   - genvalidity-time
   - genvalidity-typed-uuid
@@ -51,9 +52,11 @@ tests:
     - bytestring
     - genvalidity-hspec
     - genvalidity-hspec-aeson
+    - genvalidity-hspec-persistent
     - genvalidity-text
     - hspec
     - intray-data
+    - mergeful
     - text
     - tickler-data
     - tickler-data-gen

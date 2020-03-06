@@ -1,3 +1,0 @@
-[submodule "tickler-web-server/static/semantic"]
-	path = tickler-web-server/static/semantic
-	url = https://github.com/Semantic-Org/Semantic-UI.git

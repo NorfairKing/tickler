@@ -9,6 +9,8 @@ import Import
 import qualified Data.Text.Encoding as TE
 
 import Intray.Data.Gen ()
+
+import Tickler.Data
 import Tickler.Data.Gen ()
 
 import Tickler.API.Protected.Types
@@ -45,6 +47,10 @@ instance GenValid IntrayTriggerResult where
 instance GenValid TriggeredInfo where
   genValid = genValidStructurally
   shrinkValid = shrinkValidStructurally
+
+instance GenValid a => GenValid (AddedItem a) where
+  genValid = genValidStructurallyWithoutExtraChecking
+  shrinkValid = shrinkValidStructurallyWithoutExtraFiltering
 
 instance GenValid a => GenValid (ItemInfo a) where
   genValid = genValidStructurally

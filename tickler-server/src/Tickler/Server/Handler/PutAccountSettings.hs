@@ -13,17 +13,15 @@ import Import
 import Database.Persist
 
 import Servant
-import Servant.Auth.Server as Auth
 
 import Tickler.API
-import Tickler.Data
 
 import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-servePutAccountSettings :: AuthResult AuthCookie -> AccountSettings -> TicklerHandler NoContent
-servePutAccountSettings (Authenticated AuthCookie {..}) AccountSettings {..} = do
+servePutAccountSettings :: AuthCookie -> AccountSettings -> TicklerHandler NoContent
+servePutAccountSettings AuthCookie {..} AccountSettings {..} = do
   void $
     runDb $
     upsert
@@ -31,4 +29,3 @@ servePutAccountSettings (Authenticated AuthCookie {..}) AccountSettings {..} = d
         {userSettingsUserId = authCookieUserUUID, userSettingsTimeZone = accountSettingsTimeZone}
       [UserSettingsUserId =. authCookieUserUUID, UserSettingsTimeZone =. accountSettingsTimeZone]
   pure NoContent
-servePutAccountSettings _ _ = throwAll err401

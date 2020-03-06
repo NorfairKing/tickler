@@ -10,19 +10,15 @@ import Import
 
 import Database.Persist
 
-import Servant hiding (BadPassword, NoSuchUser)
-import Servant.Auth.Server as Auth
-
 import Tickler.API
-import Tickler.Data
 
 import Tickler.Server.Item
 import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-serveGetItems :: AuthResult AuthCookie -> Maybe ItemFilter -> TicklerHandler [TypedItemInfo]
-serveGetItems (Authenticated AuthCookie {..}) mif = do
+serveGetItems :: AuthCookie -> Maybe ItemFilter -> TicklerHandler [TypedItemInfo]
+serveGetItems AuthCookie {..} mif = do
   let getTicklerItems = do
         itemsEnts <-
           runDb $ selectList [TicklerItemUserId ==. authCookieUserUUID] [Asc TicklerItemCreated]
@@ -50,4 +46,3 @@ serveGetItems (Authenticated AuthCookie {..}) mif = do
     Just OnlyUntriggered -> getTicklerItems
     Just OnlyTriggered -> getTriggeredItems
     Nothing -> liftA2 (++) getTicklerItems getTriggeredItems
-serveGetItems _ _ = throwAll err401

@@ -64,16 +64,31 @@ data Flags =
   Flags
     { flagConfigFile :: Maybe FilePath
     , flagUrl :: Maybe String
-    , flagTicklerDir :: Maybe FilePath
+    , flagCacheDir :: Maybe FilePath
+    , flagDataDir :: Maybe FilePath
     , flagSyncStrategy :: Maybe SyncStrategy
+    }
+  deriving (Show, Eq, Generic)
+
+data Environment =
+  Environment
+    { envConfigFile :: Maybe FilePath
+    , envUrl :: Maybe String
+    , envUsername :: Maybe String
+    , envPassword :: Maybe String
+    , envCacheDir :: Maybe FilePath
+    , envDataDir :: Maybe FilePath
+    , envSyncStrategy :: Maybe SyncStrategy
     }
   deriving (Show, Eq, Generic)
 
 data Configuration =
   Configuration
     { configUrl :: Maybe String
-    , configUsername :: Maybe Username
-    , configTicklerDir :: Maybe FilePath
+    , configUsername :: Maybe String
+    , configPassword :: Maybe String
+    , configCacheDir :: Maybe FilePath
+    , configDataDir :: Maybe FilePath
     , configSyncStrategy :: Maybe SyncStrategy
     }
   deriving (Show, Eq, Generic)
@@ -81,22 +96,16 @@ data Configuration =
 instance FromJSON Configuration where
   parseJSON =
     withObject "Configuration" $ \o ->
-      Configuration <$> o .:? "url" <*> o .:? "username" <*> o .:? "tickler-dir" <*> o .:? "sync"
-
-emptyConfiguration :: Configuration
-emptyConfiguration =
-  Configuration
-    { configUrl = Nothing
-    , configUsername = Nothing
-    , configTicklerDir = Nothing
-    , configSyncStrategy = Nothing
-    }
+      Configuration <$> o .:? "url" <*> o .:? "username" <*> o .:? "password" <*> o .:? "cache-dir" <*>
+      o .:? "data-dir" <*>
+      o .:? "sync"
 
 data Settings =
   Settings
     { setBaseUrl :: Maybe BaseUrl
     , setUsername :: Maybe Username
-    , setTicklerDir :: Path Abs Dir
+    , setCacheDir :: Path Abs Dir
+    , setDataDir :: Path Abs Dir
     , setSyncStrategy :: SyncStrategy
     }
   deriving (Show, Eq, Generic)
@@ -104,7 +113,7 @@ data Settings =
 data SyncStrategy
   = NeverSync
   | AlwaysSync
-  deriving (Show, Eq, Generic)
+  deriving (Show, Read, Eq, Generic)
 
 instance FromJSON SyncStrategy
 

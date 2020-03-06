@@ -22,7 +22,6 @@ data ServeFlags =
     { serveFlagPort :: Maybe Int
     , serveFlagWebHost :: Maybe String
     , serveFlagDb :: Maybe FilePath
-    , serveFlagConnectionCount :: Maybe Int
     , serveFlagAdmins :: [String]
     , serveFlagsLooperFlags :: LooperFlags
     }
@@ -121,7 +120,6 @@ data ServeSettings =
   ServeSettings
     { serveSetPort :: Int
     , serveSetConnectionInfo :: SqliteConnectionInfo
-    , serveSetConnectionCount :: Int
     , serveSetAdmins :: [Username]
     , serveSetLooperSettings :: LooperSettings
     }
@@ -129,9 +127,7 @@ data ServeSettings =
 
 data LooperSettings =
   LooperSettings
-    { looperSetConnectionInfo :: SqliteConnectionInfo
-    , looperSetConnectionCount :: Int
-    , looperSetTriggererSets :: LooperSetsWith TriggererSettings
+    { looperSetTriggererSets :: LooperSetsWith TriggererSettings
     , looperSetEmailerSets :: LooperSetsWith EmailerSettings
     , looperSetTriggeredIntrayItemSchedulerSets :: LooperSetsWith ()
     , looperSetTriggeredIntrayItemSenderSets :: LooperSetsWith ()

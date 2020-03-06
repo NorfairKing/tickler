@@ -15,16 +15,14 @@ import Servant hiding (BadPassword, NoSuchUser)
 import Servant.Auth.Server as Auth
 
 import Tickler.API
-import Tickler.Data
 
 import Tickler.Server.Types
 
 import Tickler.Server.Handler.GetTriggers
 import Tickler.Server.Handler.Utils
 
-serveGetTrigger ::
-     AuthResult AuthCookie -> TriggerUUID -> TicklerHandler (TriggerInfo TypedTriggerInfo)
-serveGetTrigger (Authenticated AuthCookie {..}) uuid = do
+serveGetTrigger :: AuthCookie -> TriggerUUID -> TicklerHandler (TriggerInfo TypedTriggerInfo)
+serveGetTrigger AuthCookie {..} uuid = do
   mit <- fmap (makeIntrayTriggerInfo . entityVal) <$> runDb (getBy $ UniqueIntrayTrigger uuid)
   case mit of
     Nothing -> do
@@ -33,4 +31,3 @@ serveGetTrigger (Authenticated AuthCookie {..}) uuid = do
         Nothing -> throwAll $ err404 {errBody = "Trigger not found."}
         Just ti' -> pure ti'
     Just ti' -> pure ti'
-serveGetTrigger _ _ = throwAll err401
