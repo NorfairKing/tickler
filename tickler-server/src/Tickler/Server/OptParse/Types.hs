@@ -127,8 +127,7 @@ data ServeSettings =
 
 data LooperSettings =
   LooperSettings
-    { looperSetConnectionInfo :: SqliteConnectionInfo
-    , looperSetTriggererSets :: LooperSetsWith TriggererSettings
+    { looperSetTriggererSets :: LooperSetsWith TriggererSettings
     , looperSetEmailerSets :: LooperSetsWith EmailerSettings
     , looperSetTriggeredIntrayItemSchedulerSets :: LooperSetsWith ()
     , looperSetTriggeredIntrayItemSenderSets :: LooperSetsWith ()

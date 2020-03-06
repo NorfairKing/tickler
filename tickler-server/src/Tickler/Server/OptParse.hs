@@ -51,7 +51,6 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
         fromMaybe 1000000 $ looperFlagDefaultRetryDelay `mplus` looperEnvDefaultRetryDelay
   let defaultLooperRetryAmount =
         fromMaybe 7 $ looperFlagDefaultRetryTimes `mplus` looperEnvDefaultRetryTimes
-  let looperSetConnectionInfo = serveSetConnectionInfo
   let combineToLooperSets ::
            LooperFlagsWith a -> LooperEnvWith b -> (a -> b -> IO c) -> IO (LooperSetsWith c)
       combineToLooperSets LooperFlagsWith {..} LooperEnvWith {..} func = do
