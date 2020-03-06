@@ -37,7 +37,6 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
       Just wh -> pure $ T.pack wh
   dbPath <- resolveFile' $ fromMaybe "tickler.db" $ serveFlagDb <> envDb
   let serveSetConnectionInfo = mkSqliteConnectionInfo $ T.pack $ fromAbsFile dbPath
-  let serveSetConnectionCount = fromMaybe 4 serveFlagConnectionCount
   serveSetAdmins <-
     forM serveFlagAdmins $ \s ->
       case parseUsername $ T.pack s of
@@ -53,7 +52,6 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
   let defaultLooperRetryAmount =
         fromMaybe 7 $ looperFlagDefaultRetryTimes `mplus` looperEnvDefaultRetryTimes
   let looperSetConnectionInfo = serveSetConnectionInfo
-  let looperSetConnectionCount = serveSetConnectionCount
   let combineToLooperSets ::
            LooperFlagsWith a -> LooperEnvWith b -> (a -> b -> IO c) -> IO (LooperSetsWith c)
       combineToLooperSets LooperFlagsWith {..} LooperEnvWith {..} func = do
@@ -228,14 +226,6 @@ parseServeFlags =
        , value Nothing
        , metavar "DATABASE_CONNECTION_STRING"
        , help "The sqlite connection string"
-       ]) <*>
-  option
-    (Just <$> auto)
-    (mconcat
-       [ long "connection-count"
-       , value Nothing
-       , metavar "CONNECTION_COUNT"
-       , help "the number of database connections to use"
        ]) <*>
   many (strOption (mconcat [long "admin", metavar "USERNAME", help "An admin to use"])) <*>
   parseLooperFlags

@@ -36,7 +36,7 @@ import Tickler.Server.SigningKey
 runTicklerServer :: ServeSettings -> IO ()
 runTicklerServer ServeSettings {..} =
   runStderrLoggingT $
-  withSqlitePoolInfo serveSetConnectionInfo serveSetConnectionCount $ \pool -> do
+  withSqlitePoolInfo serveSetConnectionInfo 1 $ \pool -> do
     runResourceT $ flip runSqlPool pool $ runMigration migrateAll
     signingKey <- liftIO loadSigningKey
     let jwtCfg = defaultJWTSettings signingKey
