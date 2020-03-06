@@ -181,4 +181,35 @@ sync: NeverSync
 ```
 
 
+### Setting up tickler in Nix Home Manager
+
+Within your `home.nix`, add the tickler module from this repository:
+
+``` nix
+{ pkgs, lib, ... }:
+with lib;
+let
+  ticklerModule = (builtins.fetchGit {
+    url = "https://github.com/NorfairKing/tickler";
+    ref = "master";
+    rev = "0000000000000000000000000000000000000000"; # Add a recent version here.
+  } + "/nix/program.nix");
+in
+{
+  imports = [
+    ticklerModule
+    # [...]
+  ];
+  tickler = {
+    enable = true;
+    sync = {
+      enable = true;
+      username = "YOUR_USERNAME_HERE";
+      password = "YOUR_PASSWORD_HERE;
+    };
+  };
+}
+```
+
+Note that we have to use `builtins.fetchGit` and cannot use `fetchFromGitHub` because this needs to be fetched at evaluation time.
 
