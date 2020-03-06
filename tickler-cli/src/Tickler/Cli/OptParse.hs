@@ -23,7 +23,7 @@ import Data.Time
 import Data.Yaml as Yaml (decodeEither')
 
 import Options.Applicative
-import System.Environment
+import qualified System.Environment as System (getArgs)
 
 import Servant.Client
 
@@ -95,14 +95,13 @@ getDispatch cmd =
     CommandSync -> pure DispatchSync
 
 mkRecurrence :: RecurrenceArgs -> IO Recurrence
-mkRecurrence (RecurrenceArgEveryDayAt mtod) =
-  everyDaysAtTime 1 <$> mkTimeOfDay mtod >>= mkValidRecurrence
-mkRecurrence (RecurrenceArgEveryDaysAt ds mtod) =
-  everyDaysAtTime ds <$> mkTimeOfDay mtod >>= mkValidRecurrence
-mkRecurrence (RecurrenceArgEveryMonthOnAt md mtod) =
-  everyMonthsOnDayAtTime 1 md <$> mkTimeOfDay mtod >>= mkValidRecurrence
-mkRecurrence (RecurrenceArgEveryMonthsOnAt ms md mtod) =
-  everyMonthsOnDayAtTime ms md <$> mkTimeOfDay mtod >>= mkValidRecurrence
+mkRecurrence ra =
+  (mkValidRecurrence =<<) $
+  case ra of
+    RecurrenceArgEveryDayAt mtod -> everyDaysAtTime 1 <$> mkTimeOfDay mtod
+    RecurrenceArgEveryDaysAt ds mtod -> everyDaysAtTime ds <$> mkTimeOfDay mtod
+    RecurrenceArgEveryMonthOnAt md mtod -> everyMonthsOnDayAtTime 1 md <$> mkTimeOfDay mtod
+    RecurrenceArgEveryMonthsOnAt ms md mtod -> everyMonthsOnDayAtTime ms md <$> mkTimeOfDay mtod
 
 mkTimeOfDay :: Maybe String -> IO (Maybe TimeOfDay)
 mkTimeOfDay Nothing = pure Nothing
@@ -140,7 +139,7 @@ defaultConfigFile mid = do
 
 getArguments :: IO Arguments
 getArguments = do
-  args <- getArgs
+  args <- System.getArgs
   let result = runArgumentsParser args
   handleParseResult result
 
