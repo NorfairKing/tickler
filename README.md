@@ -1,7 +1,7 @@
 # Tickler
 
 
-## Installation 
+## Installation
 
 ### Cloning
 
@@ -11,9 +11,7 @@ Clone the repository
 git clone https://github.com/NorfairKing/tickler.git --recursive
 ```
 
-
 ### Building
-
 
 #### With Nix
 
@@ -110,18 +108,19 @@ See `tickler --help` or `tickler <command> --help` for more information about th
 --url:            The sync server api url
 --username:       The sync username
 --password:       The sync password
+--config-file     Use this custom config file
 ```
 
 Every option can also be specified via environment variables.
 
 ```
-INTRAY_CONFIG_FILE:    Config file
-INTRAY_CACHE_DIR:      The cache dir
-INTRAY_DATA_DIR:       The data dir
-INTRAY_SYNC_STRATEGY:  The sync strategy
-INTRAY_URL:            The sync server api url
-INTRAY_USERNAME:       The sync username
-INTRAY_PASSWORD:       The sync password
+TICKLER_CONFIG_FILE:    Config file
+TICKLER_CACHE_DIR:      The cache dir
+TICKLER_DATA_DIR:       The data dir
+TICKLER_SYNC_STRATEGY:  The sync strategy, 'NeverSync' or 'AlwaysSync'
+TICKLER_URL:            The sync server api url
+TICKLER_USERNAME:       The sync username
+TICKLER_PASSWORD:       The sync password
 ```
 
 Every option can also be specified in the config file.
@@ -135,6 +134,7 @@ username:       The sync username
 password:       The sync password
 ```
 
+
 ### Config file location
 
 The `tickler` cli application looks for config files in these locations by default, in order:
@@ -145,12 +145,13 @@ The `tickler` cli application looks for config files in these locations by defau
 - $HOME/.tickler/config.yaml
 ```
 
-## Setting up synchronisation with `tickler.eu`
+
+## Setting up synchronisation with `tickler.cs-syd.eu`
 
 Put this in your config file:
 
 ```
-url: 'https://api.tickler.eu'
+url: 'https://api.tickler.cs-syd.eu'
 username: 'YOUR USERNAME HERE'
 ```
 
@@ -180,34 +181,4 @@ sync: NeverSync
 ```
 
 
-### Setting up tickler in Nix Home Manager
 
-Within your `home.nix`, add the tickler module from this repository:
-
-``` nix
-{ pkgs, lib, ... }:
-with lib;
-let
-  ticklerModule = (builtins.fetchGit {
-    url = "https://github.com/NorfairKing/tickler";
-    ref = "master";
-    rev = "0000000000000000000000000000000000000000"; # Add a recent version here.
-  } + "/nix/program.nix");
-in
-{
-  imports = [
-    ticklerModule
-    # [...]
-  ];
-  tickler = {
-    enable = true;
-    sync = {
-      enable = true;
-      username = "YOUR_USERNAME_HERE";
-      password = "YOUR_PASSWORD_HERE;
-    };
-  };
-}
-```
-
-Note that we have to use `builtins.fetchGit` and cannot use `fetchFromGitHub` because this needs to be fetched at evaluation time.
