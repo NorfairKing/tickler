@@ -32,19 +32,12 @@ spec =
             let (ClientEnv _ burl _) = cenv
             let u = T.unpack $ usernameText un
             let p = T.unpack pw
-            tickler
-              [ "login"
-              , "--username"
-              , u
-              , "--password"
-              , p
-              , "--url"
-              , showBaseUrl burl
-              , "--cache-dir"
-              , fromAbsDir cacheDir
-              , "--data-dir"
-              , fromAbsDir dataDir
-              ]
+            setEnv "TICKLER_USERNAME" u
+            setEnv "TICKLER_PASSWORD" p
+            setEnv "TICKLER_URL" $ showBaseUrl burl
+            setEnv "TICKLER_CACHE_DIR" $ fromAbsDir cacheDir
+            setEnv "TICKLER_DATA_DIR" $ fromAbsDir dataDir
+            tickler ["login"]
             let sets =
                   Settings
                     { setBaseUrl = Just burl
@@ -61,25 +54,9 @@ spec =
                   undefined
                 Just t -> pure t
             uuid <- runClientOrError cenv $ clientPostAddItem token ti
-            tickler
-              [ "sync"
-              , "--url"
-              , showBaseUrl burl
-              , "--cache-dir"
-              , fromAbsDir cacheDir
-              , "--data-dir"
-              , fromAbsDir dataDir
-              ]
+            tickler ["sync"]
             s1 <- runReaderT readStoreOrEmpty sets
             NoContent <- runClientOrError cenv $ clientDeleteItem token uuid
-            tickler
-              [ "sync"
-              , "--url"
-              , showBaseUrl burl
-              , "--cache-dir"
-              , fromAbsDir cacheDir
-              , "--data-dir"
-              , fromAbsDir dataDir
-              ]
+            tickler ["sync"]
             s2 <- runReaderT readStoreOrEmpty sets
             clientStoreSize (storeTickles s1) `shouldBe` clientStoreSize (storeTickles s2) + 1
