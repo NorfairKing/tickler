@@ -76,13 +76,15 @@ tests:
     - genvalidity-hspec
     - genvalidity-hspec-aeson >=0.1
     - hspec
-    - tickler-cli
-    - tickler-client
-    - tickler-data
-    - tickler-server-test-utils
+    - mergeful
     - mtl
     - path
     - path-io
     - servant
     - servant-client
     - text >=1.2
+    - tickler-cli
+    - tickler-client
+    - tickler-data
+    - tickler-server-test-utils
+    - time

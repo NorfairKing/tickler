@@ -1,6 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Cli.OptParse
@@ -20,7 +22,7 @@ import Import
 import qualified Data.ByteString as SB
 import qualified Data.Text as T
 import Data.Time
-import Data.Yaml as Yaml (decodeEither')
+import Data.Yaml as Yaml (decodeEither', prettyPrintParseException)
 import Text.Read (readMaybe)
 
 import Options.Applicative
@@ -35,7 +37,7 @@ getInstructions :: IO Instructions
 getInstructions = do
   args@(Arguments _ flags) <- getArguments
   environment <- getEnvironment
-  configuration <- getConfig flags environment
+  configuration <- getConfiguration flags environment
   combineToInstructions args environment configuration
 
 combineToInstructions :: Arguments -> Environment -> Maybe Configuration -> IO Instructions
@@ -49,11 +51,13 @@ combineToInstructions (Arguments cmd Flags {..}) Environment {..} mConf =
         case flagUrl <|> envUrl <|> mc configUrl of
           Nothing -> pure Nothing
           Just url -> Just <$> parseBaseUrl url
-      setTicklerDir <-
-        case flagTicklerDir <|> envTicklerDir <|> mc configTicklerDir of
-          Nothing -> do
-            home <- getHomeDir
-            resolveDir home ".tickler"
+      setCacheDir <-
+        case flagCacheDir <|> envCacheDir <|> mc configCacheDir of
+          Nothing -> getXdgDir XdgCache (Just [reldir|tickler|])
+          Just d -> resolveDir' d
+      setDataDir <-
+        case flagDataDir <|> envDataDir <|> mc configDataDir of
+          Nothing -> getXdgDir XdgData (Just [reldir|tickler|])
           Just d -> resolveDir' d
       let setSyncStrategy =
             fromMaybe
@@ -144,35 +148,63 @@ getEnvironment = do
               Just r -> pure $ Just r
   let envConfigFile = ms "CONFIG_FILE"
       envUrl = ms "URL"
-      -- envCacheDir = ms "CACHE_DIR"
-      -- envDataDir = ms "DATA_DIR"
-      envTicklerDir = ms "DIR"
+      envCacheDir = ms "CACHE_DIR"
+      envDataDir = ms "DATA_DIR"
   envSyncStrategy <- mr "SYNC_STRATEGY"
   let envUsername = ms "USERNAME"
   let envPassword = ms "PASSWORD"
   pure Environment {..}
 
-getConfig :: Flags -> Environment -> IO (Maybe Configuration)
-getConfig Flags {..} Environment {..} = do
-  path <- maybe (defaultConfigFile flagTicklerDir) resolveFile' flagConfigFile
-  mContents <- forgivingAbsence $ SB.readFile $ fromAbsFile path
-  case mContents of
-    Nothing -> pure Nothing
-    Just contents ->
-      case Yaml.decodeEither' contents of
-        Left err ->
-          die $ unlines ["Failed to parse config file", fromAbsFile path, "with error:", show err]
-        Right conf -> pure $ Just conf
+getConfiguration :: Flags -> Environment -> IO (Maybe Configuration)
+getConfiguration Flags {..} Environment {..} =
+  case flagConfigFile <|> envConfigFile of
+    Nothing -> defaultConfigFiles >>= getFirstConfigFile
+    Just cf -> do
+      p <- resolveFile' cf
+      mc <- forgivingAbsence $ SB.readFile $ fromAbsFile p
+      case mc of
+        Nothing -> die $ "Config file not found: " <> fromAbsFile p
+        Just contents ->
+          case Yaml.decodeEither' contents of
+            Left err ->
+              die $
+              unlines
+                [ "Failed to parse given config file"
+                , fromAbsFile p
+                , "with error:"
+                , Yaml.prettyPrintParseException err
+                ]
+            Right conf -> pure $ Just conf
 
-defaultConfigFile :: Maybe FilePath -> IO (Path Abs File)
-defaultConfigFile mid = do
-  i <-
-    case mid of
-      Nothing -> do
-        homeDir <- getHomeDir
-        resolveDir homeDir ".tickler"
-      Just i -> resolveDir' i
-  resolveFile i "config.yaml"
+getFirstConfigFile :: [Path Abs File] -> IO (Maybe Configuration)
+getFirstConfigFile =
+  \case
+    [] -> pure Nothing
+    (p:ps) -> do
+      mc <- forgivingAbsence $ SB.readFile $ fromAbsFile p
+      case mc of
+        Nothing -> getFirstConfigFile ps
+        Just contents ->
+          case Yaml.decodeEither' contents of
+            Left err ->
+              die $
+              unlines
+                [ "Failed to parse default config file"
+                , fromAbsFile p
+                , "with error:"
+                , Yaml.prettyPrintParseException err
+                ]
+            Right conf -> pure $ Just conf
+
+defaultConfigFiles :: IO [Path Abs File]
+defaultConfigFiles =
+  sequence
+    [ do xdgConfigDir <- getXdgDir XdgConfig (Just [reldir|tickler|])
+         resolveFile xdgConfigDir "config.yaml"
+    , do homeDir <- getHomeDir
+         ticklerDir <- resolveDir homeDir ".tickler"
+         resolveFile ticklerDir "config.yaml"
+    ]
 
 getArguments :: IO Arguments
 getArguments = do
@@ -332,11 +364,10 @@ parseFlags =
   option
     (Just <$> str)
     (mconcat
-       [ long "tickler-dir"
-       , help "The directory to use for caching and state"
-       , value Nothing
-       , metavar "URL"
-       ]) <*>
+       [long "cache-dir", help "The directory to use for caching", value Nothing, metavar "DIR"]) <*>
+  option
+    (Just <$> str)
+    (mconcat [long "data-dir", help "The directory to use for state", value Nothing, metavar "DIR"]) <*>
   syncStrategyOpt
 
 syncStrategyOpt :: Parser (Maybe SyncStrategy)
