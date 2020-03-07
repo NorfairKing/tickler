@@ -29,7 +29,7 @@ import Tickler.API
 import Tickler.Server.OptParse.Types
 import Tickler.Server.Types
 
-import Tickler.Server.Handler (ticklerServer)
+import Tickler.Server.Handler
 import Tickler.Server.Looper
 import Tickler.Server.SigningKey
 
@@ -73,3 +73,46 @@ ticklerAppContext :: TicklerServerEnv -> Context TicklerContext
 ticklerAppContext TicklerServerEnv {..} = envCookieSettings :. envJWTSettings :. EmptyContext
 
 type TicklerContext = '[ CookieSettings, JWTSettings]
+
+ticklerServer :: TicklerSite (AsServerT TicklerHandler)
+ticklerServer =
+  TicklerSite
+    {openSite = genericServerT ticklerOpenServer, adminSite = genericServerT ticklerAdminServer}
+
+ticklerOpenServer :: TicklerOpenSite (AsServerT TicklerHandler)
+ticklerOpenServer =
+  TicklerOpenSite
+    { protectedSite = genericServerT ticklerProtectedServer
+    , publicSite = genericServerT ticklerPublicServer
+    }
+
+ticklerProtectedServer :: TicklerProtectedSite (AsServerT TicklerHandler)
+ticklerProtectedServer =
+  TicklerProtectedSite
+    { getItemUUIDs = withAuthResult serveGetItemUUIDs
+    , getItems = withAuthResult serveGetItems
+    , postAddItem = withAuthResult servePostAddItem
+    , getItem = withAuthResult serveGetItem
+    , deleteItem = withAuthResult serveDeleteItem
+    , retryTriggered = withAuthResult serveRetryTriggered
+    , deleteTriggereds = withAuthResult serveDeleteTriggereds
+    , postSync = withAuthResult servePostSync
+    , getTriggers = withAuthResult serveGetTriggers
+    , getTrigger = withAuthResult serveGetTrigger
+    , postAddIntrayTrigger = withAuthResult servePostAddIntrayTrigger
+    , postAddEmailTrigger = withAuthResult servePostAddEmailTrigger
+    , postEmailTriggerVerify = withAuthResult servePostEmailTriggerVerify
+    , postEmailTriggerResendVerificationEmail =
+        withAuthResult servePostEmailTriggerResendVerificationEmail
+    , deleteTrigger = withAuthResult serveDeleteTrigger
+    , getAccountInfo = withAuthResult serveGetAccountInfo
+    , getAccountSettings = withAuthResult serveGetAccountSettings
+    , putAccountSettings = withAuthResult servePutAccountSettings
+    , deleteAccount = withAuthResult serveDeleteAccount
+    }
+
+withAuthResult :: ThrowAll a => (AuthCookie -> a) -> (AuthResult AuthCookie -> a)
+withAuthResult func ar =
+  case ar of
+    Authenticated ac -> func ac
+    _ -> throwAll err401
