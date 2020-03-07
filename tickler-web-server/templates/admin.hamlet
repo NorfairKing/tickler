@@ -46,9 +46,9 @@
           <td>
             <form
               method=post
-              action=@{AdminAccountDeleteR $ accountInfoUUID u}
-              onclick="return confirm('Are you sure you want to delete this account? This cannot be undone.');">
+              action=@{AdminAccountDeleteR $ accountInfoUUID u}>
              ^{token}
              <button
-               .negative .ui .button>
+               .negative .ui .button
+               onclick="return confirm('Are you sure you want to delete this account? This cannot be undone.');">
                Delete

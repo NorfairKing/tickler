@@ -3,7 +3,7 @@
 
   <p> Username: #{usernameText accountInfoUsername}
   <p> Created: ^{timestampWidget}
-  
+
 
 <div .ui .segment>
   <h2> Settings
@@ -21,11 +21,11 @@
   <h2> Danger zone
   <form
      method=post
-     action=@{AccountDeleteR}
-     onclick="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+     action=@{AccountDeleteR}>
     ^{token}
     <button 
-      .negative .ui .button>
+      .negative .ui .button
+     onclick="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
       Delete account
 
 
@@ -36,4 +36,4 @@ $if accountInfoAdmin
       The Admin Panel
     for more details.
 
-  
+
