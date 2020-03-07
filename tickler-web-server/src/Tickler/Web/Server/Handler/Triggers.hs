@@ -139,10 +139,10 @@ postAddIntrayTriggerR =
         addMessage
           "error"
           [shamlet|
-                        <div .ui .segment>
-                            Failed to login to the intray instance:
-                            <pre>
-                                #{err}
+            <div .ui .segment>
+                Failed to login to the intray instance:
+                <pre style="overflow:auto;">
+                    #{err}
                     |]
         redirect TriggersR
       Right _ -> do
