@@ -26,14 +26,15 @@ serveGetItems AuthCookie {..} mif = do
   let getTriggeredItems = do
         itemsEnts <-
           runDb $ selectList [TriggeredItemUserId ==. authCookieUserUUID] [Asc TriggeredItemCreated]
+        -- TODO this really needs a join.
         triggeredItemEns <-
           runDb $
           selectList
-            [TriggeredIntrayItemItem <-. map (triggeredItemIdentifier . entityVal) itemsEnts]
+            [] -- TriggeredIntrayItemItem <-. map (triggeredItemIdentifier . entityVal) itemsEnts]
             []
         triggeredEmailEns <-
           runDb $
-          selectList [TriggeredEmailItem <-. map (triggeredItemIdentifier . entityVal) itemsEnts] []
+          selectList [] [] -- TriggeredEmailItem <-. map (triggeredItemIdentifier . entityVal) itemsEnts] []
         pure $
           map
             (\ie ->
