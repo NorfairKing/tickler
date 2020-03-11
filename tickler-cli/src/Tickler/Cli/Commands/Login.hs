@@ -36,6 +36,8 @@ login LoginSettings {..} = do
     Nothing -> liftIO $ die "No server configured."
     Just (Headers NoContent (HCons _ (HCons sessionHeader HNil))) ->
       case sessionHeader of
-        MissingHeader -> liftIO $ die "Missing header" -- TODO handle nicely
-        UndecodableHeader _ -> liftIO $ die "Undecodable header" -- TODO handle nicely
+        MissingHeader ->
+          liftIO $ die "The server responded but the response was missing the right session header."
+        UndecodableHeader _ ->
+          liftIO $ die "The server responded but the response had an undecodable session header."
         Header setCookie -> saveSession setCookie
