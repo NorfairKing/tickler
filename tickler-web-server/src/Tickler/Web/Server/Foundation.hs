@@ -272,7 +272,8 @@ runClientOrErr :: ClientM a -> Handler a
 runClientOrErr func = do
   errOrRes <- runClient func
   case errOrRes of
-    Left err -> handleStandardServantErrs err $ \resp -> error $ show resp -- TODO deal with error
+    Left err ->
+      handleStandardServantErrs err $ \resp -> sendResponseStatus Http.status500 $ show resp
     Right r -> pure r
 
 handleStandardServantErrs :: ClientError -> (Response -> Handler a) -> Handler a
@@ -280,7 +281,7 @@ handleStandardServantErrs err func =
   case err of
     FailureResponse _ resp -> func resp
     ConnectionError e -> redirect $ ErrorAPIDownR $ T.pack $ show e
-    e -> error $ unwords ["Error while calling API:", show e]
+    e -> sendResponseStatus Http.status500 $ unwords ["Error while calling API:", show e]
 
 login :: LoginForm -> Handler ()
 login form = do
@@ -292,11 +293,13 @@ login form = do
           then do
             addMessage "error" "Unable to login"
             redirect $ AuthR LoginR
-          else error $ show resp
+          else sendResponseStatus Http.status500 $ show resp
     Right (Headers NoContent (HCons _ (HCons sessionHeader HNil))) ->
       case sessionHeader of
         Header session -> recordLoginToken (loginFormUsername form) session
-        _ -> undefined -- TODO deal with this error
+        _ ->
+          sendResponseStatus Http.status500 $
+          unwords ["The server responded but with an invalid header for login", show sessionHeader]
 
 withLogin :: (Token -> Handler a) -> Handler a
 withLogin func = do
