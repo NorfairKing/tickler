@@ -1,11 +1,34 @@
 <div .ui .very .padded .segment>
   <div .hidden .divider>
-  <h1 class="ui center aligned icon header">
-    <i class="bell outline icon"></i>
+  <h1 .ui .center .aligned .icon .header>
+    <i .bell .icon>
+  <h1 .ui .center .aligned .header>
     <div class="content">
       Tickler
       <div .sub .header>
-        Delayed intray items
+        Trust your future self
+
+<div .ui .huge .padded .segment>
+  <h2 .ui .header> Make decisions with the right context
+  <p>
+    Sometimes you do not have all the answers right this moment.
+    Tickler lets you postpone making the decision and re-evaluate at a later date.
+
+  <p>
+    <div .ui .ordered .list>
+      <div .item>
+        <div .header>
+          Schedule a Tickle
+      <div .item>
+        <div .header>
+          Select a trigger: 
+          <a href="https://intray.cs-syd.eu">
+            Intray
+          or email
+      <div .item>
+        <div .header>
+          Trust your future self to deal with it
+
 
 <div .ui .huge .padded .segment>
   <h2 .ui .header> Open-source
@@ -27,7 +50,7 @@
 
   <h2 .ui .header> CLI-Second
   <p>
-    Tickler is available via 
+    Tickler is available via
     <a href="https://github.com/NorfairKing/tickler/tree/master/tickler-cli">the official Tickler command-line client
     .
     In addition to the features on the web interface, the command-line client works offline with easy synchronisation.
@@ -35,6 +58,43 @@
 <div .ui .huge .padded .segment>
   <h2 .ui .header> FAQ
   <div .ui .list>
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          <p>
+            How is this better than getting notifications for events on my calendar?
+        <div .description>
+          <p>
+            Tickles are fundamentally different from events.
+            Events must happen on a certain date at a certain time.
+            On the other hand, when a tickle is triggered, there is no reason why you should deal with it immediately.
+            Instead, the items get sent to an inbox for processing at the appropriate moment.
+            Tickler also does not clutter your calendar, such that you can trust your calendar to only have events.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          <p>
+            How is this better than my phone's reminders?
+        <div .description>
+          <p>
+            There is no reason to be immediately notified of triggered tickles.
+            Tickler sends your items to an inbox so that you can deal with them when it is most convenient to you.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          <p>
+            What happens to my data?
+        <div .description>
+          <p>
+            All data submitted via Tickler is secured while it is being submitted and while it is being stored.
+            Users will never be tracked and their data will never be exposed to third parties.
+
+
     <div .item>
       <i .question .icon>
       <div .content>
@@ -69,7 +129,7 @@
         <div .description>
           <p>
             Yes, tickler is free software, so anyone can host an Tickler server themselves.
-            The code and instructions are available 
+            The code and instructions are available
             <a href="https://github.com/NorfairKing/tickler">
               on Github.
 

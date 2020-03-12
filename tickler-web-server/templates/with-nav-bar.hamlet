@@ -9,7 +9,7 @@
       <a .item href=@{TicklesR}>
         Tickles
       <a .item href=@{TriggeredsR}>
-        Triggereds
+        Triggered Tickles
       <a .item href=@{TriggersR}>
         Triggers
       <a .item href=@{AccountR}>
