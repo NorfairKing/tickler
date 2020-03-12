@@ -133,9 +133,7 @@ in {
         };
     in
       mkIf cfg.enable {
-        # xdg.configFile."tickler/config.yaml".text = configFileContents;
-        # TODO let tickler accept a config file according to XDG
-        home.file.".tickler/config.yaml".text = configFileContents;
+        xdg.configFile."tickler/config.yaml".text = configFileContents;
         systemd.user =
           {
             startServices = true;
