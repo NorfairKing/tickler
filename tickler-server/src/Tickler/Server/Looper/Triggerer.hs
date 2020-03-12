@@ -35,13 +35,10 @@ runTriggerer TriggererSettings = do
         [TicklerItemScheduledDay <=. later]
         [Asc TicklerItemScheduledDay, Asc TicklerItemScheduledTime]
     items <-
-      flip filterM itemsToConsider $ \(Entity _ TicklerItem {..}) -> do
+      flip filterM itemsToConsider $ \(Entity _ ti@TicklerItem {..}) -> do
         mSets <- getBy $ UniqueUserSettings ticklerItemUserId
         let tz = maybe utc (userSettingsTimeZone . entityVal) mSets
-        let utcTimeInUserTimezone =
-              localTimeToUTC tz $
-              LocalTime ticklerItemScheduledDay $ fromMaybe midnight ticklerItemScheduledTime
-        pure $ utcTimeInUserTimezone <= now
+        pure $ shouldBeTriggered now tz ti -- utcTimeInUserTimezone <= now
     forM_ items $ \(Entity tii ti) -> do
       insert_ $ makeTriggeredItem now ti -- Make the triggered item
       delete tii -- Delete the tickler item
@@ -49,6 +46,13 @@ runTriggerer TriggererSettings = do
       forM nti insert_ -- Insert the next tickler item if necessary
         -- TODO if something goes wrong here, we should rollback the transaction
   logInfoNS "Triggerer" "Finished triggering tickles."
+
+shouldBeTriggered :: UTCTime -> TimeZone -> TicklerItem -> Bool
+shouldBeTriggered now tz TicklerItem {..} =
+  let utcTimeInUserTimezone =
+        localTimeToUTC tz $
+        LocalTime ticklerItemScheduledDay $ fromMaybe midnight ticklerItemScheduledTime
+   in utcTimeInUserTimezone <= now
 
 makeTriggeredItem :: UTCTime -> TicklerItem -> TriggeredItem
 makeTriggeredItem now TicklerItem {..} =
