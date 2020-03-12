@@ -35,21 +35,21 @@ runEmailer EmailerSettings {..} = do
       list <- runDb $ selectFirst [EmailStatus ==. EmailUnsent] [Asc EmailScheduled]
       case list of
         Nothing -> pure ()
-        Just (Entity emailId email) -> do
-          runDb $ update emailId [EmailStatus =. EmailSending]
-          newStatus <- liftIO $ sendSingleEmail emailerSetAWSCredentials email
-          now <- liftIO getCurrentTime
-          runDb $
-            update emailId $
-            case newStatus of
-              Right hid ->
-                [EmailStatus =. EmailSent, EmailSesId =. Just hid, EmailSendAttempt =. Just now]
-              Left err ->
-                [ EmailStatus =. EmailError
-                , EmailSendError =. Just err
-                , EmailSendAttempt =. Just now
-                ]
+        Just e -> do
+          handleSingleEmail emailerSetAWSCredentials e
           go -- Go on until there are no more emails to be sent.
+
+handleSingleEmail :: AWS.Credentials -> Entity Email -> Looper ()
+handleSingleEmail awsCreds (Entity emailId email) =
+  runDb $ do
+    newStatus <- liftIO $ sendSingleEmail awsCreds email
+    now <- liftIO getCurrentTime
+    update emailId $
+      case newStatus of
+        Right hid ->
+          [EmailStatus =. EmailSent, EmailSesId =. Just hid, EmailSendAttempt =. Just now]
+        Left err ->
+          [EmailStatus =. EmailError, EmailSendError =. Just err, EmailSendAttempt =. Just now]
 
 sendSingleEmail :: AWS.Credentials -> Email -> IO (Either Text Text)
 sendSingleEmail creds Email {..} = do
