@@ -37,9 +37,9 @@ data LooperFlags =
     , looperFlagEmailerFlags :: LooperFlagsWith ()
     , looperFlagTriggeredIntrayItemSchedulerFlags :: LooperFlagsWith ()
     , looperFlagTriggeredIntrayItemSenderFlags :: LooperFlagsWith ()
-    , looperFlagVerificationEmailConverterFlags :: LooperFlagsWith ()
+    , looperFlagVerificationEmailConverterFlags :: LooperFlagsWith (Maybe EmailAddress)
     , looperFlagTriggeredEmailSchedulerFlags :: LooperFlagsWith ()
-    , looperFlagTriggeredEmailConverterFlags :: LooperFlagsWith ()
+    , looperFlagTriggeredEmailConverterFlags :: LooperFlagsWith (Maybe EmailAddress)
     }
   deriving (Show, Eq)
 
@@ -86,9 +86,9 @@ data LoopersEnvironment =
     , looperEnvEmailerEnv :: LooperEnvWith ()
     , looperEnvTriggeredIntrayItemSchedulerEnv :: LooperEnvWith ()
     , looperEnvTriggeredIntrayItemSenderEnv :: LooperEnvWith ()
-    , looperEnvVerificationEmailConverterEnv :: LooperEnvWith ()
+    , looperEnvVerificationEmailConverterEnv :: LooperEnvWith (Maybe EmailAddress)
     , looperEnvTriggeredEmailSchedulerEnv :: LooperEnvWith ()
-    , looperEnvTriggeredEmailConverterEnv :: LooperEnvWith ()
+    , looperEnvTriggeredEmailConverterEnv :: LooperEnvWith (Maybe EmailAddress)
     }
   deriving (Show, Eq)
 

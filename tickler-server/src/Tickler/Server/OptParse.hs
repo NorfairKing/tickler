@@ -94,24 +94,30 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
   looperSetVerificationEmailConverterSets <-
     combineToLooperSets
       looperFlagVerificationEmailConverterFlags
-      looperEnvVerificationEmailConverterEnv $ \() () ->
+      looperEnvVerificationEmailConverterEnv $ \f e -> do
+      ea <-
+        case f <|> e of
+          Nothing -> die "No email configured for the email triggerer"
+          Just ea -> pure ea
       pure
         VerificationEmailConverterSettings
-          { verificationEmailConverterSetFromAddress -- TODO make these configurable
-             = unsafeEmailAddress "verification" "tickler.cs-syd.eu"
-          , verificationEmailConverterSetFromName = "Tickler"
+          { verificationEmailConverterSetFromAddress = ea
+          , verificationEmailConverterSetFromName = "Tickler Verification"
           , verificationEmailConverterSetWebHost = webHost
           }
   looperSetTriggeredEmailSchedulerSets <-
     combineToLooperSets looperFlagTriggeredEmailSchedulerFlags looperEnvTriggeredEmailSchedulerEnv $
     const $ const $ pure ()
   looperSetTriggeredEmailConverterSets <-
-    combineToLooperSets looperFlagTriggeredEmailConverterFlags looperEnvTriggeredEmailConverterEnv $ \() () ->
+    combineToLooperSets looperFlagTriggeredEmailConverterFlags looperEnvTriggeredEmailConverterEnv $ \f e -> do
+      ea <-
+        case f <|> e of
+          Nothing -> die "No email configured for the email triggerer"
+          Just ea -> pure ea
       pure
         TriggeredEmailConverterSettings
-          { triggeredEmailConverterSetFromAddress -- TODO make these configurable
-             = unsafeEmailAddress "triggered" "tickler.cs-syd.eu"
-          , triggeredEmailConverterSetFromName = "Tickler"
+          { triggeredEmailConverterSetFromAddress = ea
+          , triggeredEmailConverterSetFromName = "Tickler Triggerer"
           , triggeredEmailConverterSetWebHost = webHost
           }
   let serveSetLooperSettings = LooperSettings {..}
@@ -142,9 +148,12 @@ getLoopersEnv env = do
   looperEnvTriggeredIntrayItemSenderEnv <-
     getLooperEnvWith env "TRIGGERED_INTRAY_ITEM_SENDER" $ pure ()
   looperEnvVerificationEmailConverterEnv <-
-    getLooperEnvWith env "VERIFICATION_EMAIL_CONVERTER" $ pure ()
+    getLooperEnvWith env "VERIFICATION_EMAIL_CONVERTER" $
+    getEitherEnv env emailValidateFromString "VERIFICATION_EMAIL_ADDRESS"
   looperEnvTriggeredEmailSchedulerEnv <- getLooperEnvWith env "TRIGGERED_EMAIL_SCHEDULER" $ pure ()
-  looperEnvTriggeredEmailConverterEnv <- getLooperEnvWith env "TRIGGERED_EMAIL_CONVERTER" $ pure ()
+  looperEnvTriggeredEmailConverterEnv <-
+    getLooperEnvWith env "TRIGGERED_EMAIL_CONVERTER" $
+    getEitherEnv env emailValidateFromString "TRIGGERED_EMAIL_ADDRESS"
   pure LoopersEnvironment {..}
 
 getLooperEnvWith :: [(String, String)] -> String -> IO a -> IO (LooperEnvWith a)
@@ -168,8 +177,16 @@ readEnv :: Read a => [(String, String)] -> String -> IO (Maybe a)
 readEnv env key =
   forM (getEnv env key) $ \s ->
     case readMaybe s of
-      Nothing -> die $ "Un-Read-able value: " <> s
+      Nothing -> die $ unwords ["Un-Read-able value for environment value", key <> ":", s]
       Just val -> pure val
+
+getEitherEnv :: [(String, String)] -> (String -> Either String a) -> String -> IO (Maybe a)
+getEitherEnv env func key =
+  forM (getEnv env key) $ \s ->
+    case func s of
+      Left err ->
+        die $ unlines [unwords ["Failed to parse environment variable", key <> ":", s], err]
+      Right res -> pure res
 
 getArguments :: IO Arguments
 getArguments = do
@@ -261,9 +278,27 @@ parseLooperFlags =
   parseLooperFlagsWith "emailer" (pure ()) <*>
   parseLooperFlagsWith "intray-item-scheduler" (pure ()) <*>
   parseLooperFlagsWith "intray-item-sender" (pure ()) <*>
-  parseLooperFlagsWith "verification-email-converter" (pure ()) <*>
+  parseLooperFlagsWith
+    "verification-email-converter"
+    (option
+       (Just <$> eitherReader emailValidateFromString)
+       (mconcat
+          [ long "verification-email-address"
+          , value Nothing
+          , metavar "EMAIL_ADDRESS"
+          , help "The email address to use to send verification emails from"
+          ])) <*>
   parseLooperFlagsWith "triggered-email-scheduler" (pure ()) <*>
-  parseLooperFlagsWith "triggered-email-converter" (pure ())
+  parseLooperFlagsWith
+    "triggered-email-converter"
+    (option
+       (Just <$> eitherReader emailValidateFromString)
+       (mconcat
+          [ long "triggered-email-address"
+          , value Nothing
+          , metavar "EMAIL_ADDRESS"
+          , help "The email address to use to send triggered item emails from"
+          ]))
 
 parseLooperFlagsWith :: String -> Parser a -> Parser (LooperFlagsWith a)
 parseLooperFlagsWith name func =
