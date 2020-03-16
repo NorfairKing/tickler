@@ -8,6 +8,8 @@ module Tickler.Server.Handler.GetItems where
 
 import Import
 
+import qualified Database.Esqueleto as E
+import Database.Esqueleto ((^.))
 import Database.Persist
 
 import Tickler.API

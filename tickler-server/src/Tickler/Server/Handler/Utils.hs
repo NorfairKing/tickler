@@ -37,7 +37,6 @@ withAdminCreds adminCandidate func = do
         then func
         else throwAll err401
 
--- TODO this is not done. Triggers need to be deleted too.
 deleteAccountFully :: AccountUUID -> TicklerHandler ()
 deleteAccountFully uuid = do
   mEnt <- runDb $ getBy $ UniqueUserIdentifier uuid
@@ -46,4 +45,13 @@ deleteAccountFully uuid = do
     Just (Entity uid _) ->
       runDb $ do
         deleteWhere [TicklerItemUserId ==. uuid]
+        deleteWhere [TriggeredItemUserId ==. uuid]
+        ets <-
+          map (userTriggerTriggerId . entityVal) <$> selectList [UserTriggerUserId ==. uuid] [] -- TODO this needs a join
+        deleteWhere [UserTriggerUserId ==. uuid]
+        deleteWhere [IntrayTriggerIdentifier <-. ets]
+        deleteWhere [EmailTriggerIdentifier <-. ets]
+        deleteWhere [VerificationEmailTrigger <-. ets]
+        deleteWhere [TriggeredIntrayItemTrigger <-. ets]
+        deleteWhere [TriggeredEmailTrigger <-. ets]
         delete uid

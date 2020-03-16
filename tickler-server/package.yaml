@@ -28,6 +28,7 @@ library:
   - cookie
   - data-default
   - email-validate
+  - esqueleto
   - exceptions
   - file-embed
   - http-client
@@ -53,8 +54,8 @@ library:
   - retry
   - safe
   - servant
-  - servant-auth-server
   - servant-auth-client
+  - servant-auth-server
   - servant-client
   - servant-client-core
   - servant-docs
