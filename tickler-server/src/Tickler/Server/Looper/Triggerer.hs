@@ -1,12 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Tickler.Server.Looper.Triggerer
-  ( runTriggerer
-  , makeTriggeredItem
-  , nextScheduledTime
-  , makeNextTickleItem
-  ) where
+module Tickler.Server.Looper.Triggerer where
 
 import Import
 
@@ -48,11 +43,11 @@ runTriggerer TriggererSettings = do
   logInfoNS "Triggerer" "Finished triggering tickles."
 
 shouldBeTriggered :: UTCTime -> TimeZone -> TicklerItem -> Bool
-shouldBeTriggered now tz TicklerItem {..} =
-  let utcTimeInUserTimezone =
-        localTimeToUTC tz $
-        LocalTime ticklerItemScheduledDay $ fromMaybe midnight ticklerItemScheduledTime
-   in utcTimeInUserTimezone <= now
+shouldBeTriggered now tz ti = localTimeToUTC tz (ticklerItemLocalScheduledTime ti) <= now
+
+ticklerItemLocalScheduledTime :: TicklerItem -> LocalTime
+ticklerItemLocalScheduledTime TicklerItem {..} =
+  LocalTime ticklerItemScheduledDay $ fromMaybe midnight ticklerItemScheduledTime
 
 makeTriggeredItem :: UTCTime -> TicklerItem -> TriggeredItem
 makeTriggeredItem now TicklerItem {..} =

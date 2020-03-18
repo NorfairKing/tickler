@@ -11,6 +11,9 @@ import Tickler.Data.Gen ()
 
 spec :: Spec
 spec = do
+  describe "shouldBeTriggered" $ it "doesn't crash" $ producesValidsOnValids3 shouldBeTriggered
+  describe "ticklerItemLocalScheduledTime" $
+    it "makes valid local times" $ producesValidsOnValids ticklerItemLocalScheduledTime
   describe "makeTriggeredItem" $
     it "produces valid ticklerItems when it succeeds" $ producesValidsOnValids2 makeTriggeredItem
   describe "nextScheduledTime" $ do
