@@ -3,10 +3,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE QuasiQuotes #-}
 
-module Tickler.Web.Server.Handler.Add
-  ( getAddR
-  , postAddR
-  ) where
+module Tickler.Web.Server.Handler.Add where
 
 import Import
 
@@ -72,35 +69,38 @@ data RecurrenceOption
   | Months
   deriving (Show, Read, Eq, Enum, Bounded)
 
-mkRecurrence :: RecurrenceData -> Handler (Maybe Recurrence)
+-- The first maybe is for failure, the second is for whether or not there is recurrence.
+mkRecurrence :: RecurrenceData -> Maybe (Maybe Recurrence)
 mkRecurrence RecurrenceData {..} =
   case recurrenceDataOption of
     NoRecurrence -> pure Nothing
     Days ->
       case everyDaysAtTime (fromMaybe 1 recurrenceDataDays) recurrenceDataDayTimeOfDay of
-        Nothing -> invalidArgs ["Invalid recurrence"]
-        Just r -> pure $ Just r
+        Nothing -> Nothing
+        Just r -> Just $ Just r
     Months ->
       case everyMonthsOnDayAtTime
-             (fromMaybe 1 recurrenceDataDays)
+             (fromMaybe 1 recurrenceDataMonths)
              recurrenceDataMonthDay
              recurrenceDataMonthTimeOfDay of
-        Nothing -> invalidArgs ["Invalid recurrence"]
-        Just r -> pure $ Just r
+        Nothing -> Nothing
+        Just r -> Just $ Just r
 
 postAddR :: Handler Html
 postAddR =
   withLogin $ \t -> do
     AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
     NewItem {..} <- runInputPost newItemForm
-    recurrence <- mkRecurrence newItemRecurrenceData
-    void $
-      runClientOrErr $
-      clientPostAddItem t $
-      Tickle
-        { tickleContent = textTypedItem $ unTextarea newItemText
-        , tickleScheduledDay = newItemScheduledDay
-        , tickleScheduledTime = newItemScheduledTime
-        , tickleRecurrence = recurrence
-        }
+    case mkRecurrence newItemRecurrenceData of
+      Nothing -> invalidArgs ["Invalid recurrence"]
+      Just recurrence ->
+        void $
+        runClientOrErr $
+        clientPostAddItem t $
+        Tickle
+          { tickleContent = textTypedItem $ unTextarea newItemText
+          , tickleScheduledDay = newItemScheduledDay
+          , tickleScheduledTime = newItemScheduledTime
+          , tickleRecurrence = recurrence
+          }
     redirect AddR
