@@ -39,7 +39,6 @@ runTriggerer TriggererSettings = do
       delete tii -- Delete the tickler item
       nti <- liftIO $ makeNextTickleItem ti
       forM nti insert_ -- Insert the next tickler item if necessary
-        -- TODO if something goes wrong here, we should rollback the transaction
   logInfoNS "Triggerer" "Finished triggering tickles."
 
 shouldBeTriggered :: UTCTime -> TimeZone -> TicklerItem -> Bool
