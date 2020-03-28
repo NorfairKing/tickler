@@ -46,44 +46,41 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
       case parseUsername $ T.pack s of
         Nothing -> die $ unwords ["Invalid admin username:", s]
         Just u -> pure u
+  let LooperFlags {..} = serveFlagsLooperFlags
+  let LoopersEnvironment {..} = envLoopersEnvironment
+  let defaultLoopersEnabled =
+        fromMaybe True $ looperFlagDefaultEnabled `mplus` looperEnvDefaultEnabled
+  let defaultLoopersPeriod = fromMaybe 60 $ looperFlagDefaultPeriod `mplus` looperEnvDefaultPeriod
+  let defaultLooperRetryDelay =
+        fromMaybe 1000000 $ looperFlagDefaultRetryDelay `mplus` looperEnvDefaultRetryDelay
+  let defaultLooperRetryAmount =
+        fromMaybe 7 $ looperFlagDefaultRetryTimes `mplus` looperEnvDefaultRetryTimes
+  let combineToLooperSets ::
+           LooperFlagsWith a -> LooperEnvWith b -> (a -> b -> IO c) -> IO (LooperSetsWith c)
+      combineToLooperSets LooperFlagsWith {..} LooperEnvWith {..} func = do
+        let enabled = fromMaybe defaultLoopersEnabled $ looperFlagEnable `mplus` looperEnvEnable
+        if enabled
+          then do
+            let LooperFlagsRetryPolicy {..} = looperFlagsRetryPolicy
+            let LooperEnvRetryPolicy {..} = looperEnvRetryPolicy
+            let static =
+                  LooperStaticConfig
+                    { looperStaticConfigPeriod =
+                        fromMaybe defaultLoopersPeriod $ looperFlagsPeriod `mplus` looperEnvPeriod
+                    , looperStaticConfigRetryPolicy =
+                        LooperRetryPolicy
+                          { looperRetryPolicyDelay =
+                              fromMaybe defaultLooperRetryDelay $
+                              looperFlagsRetryDelay `mplus` looperEnvRetryDelay
+                          , looperRetryPolicyAmount =
+                              fromMaybe defaultLooperRetryAmount $
+                              looperFlagsRetryAmount `mplus` looperEnvRetryAmount
+                          }
+                    }
+            LooperEnabled static <$> func looperFlags looperEnv
+          else pure LooperDisabled
   serveSetLooperSettings <-
-    do let LooperFlags {..} = serveFlagsLooperFlags
-       let LoopersEnvironment {..} = envLoopersEnvironment
-       let defaultLoopersEnabled =
-             fromMaybe True $ looperFlagDefaultEnabled `mplus` looperEnvDefaultEnabled
-       let defaultLoopersPeriod =
-             fromMaybe 60 $ looperFlagDefaultPeriod `mplus` looperEnvDefaultPeriod
-       let defaultLooperRetryDelay =
-             fromMaybe 1000000 $ looperFlagDefaultRetryDelay `mplus` looperEnvDefaultRetryDelay
-       let defaultLooperRetryAmount =
-             fromMaybe 7 $ looperFlagDefaultRetryTimes `mplus` looperEnvDefaultRetryTimes
-       let combineToLooperSets ::
-                LooperFlagsWith a -> LooperEnvWith b -> (a -> b -> IO c) -> IO (LooperSetsWith c)
-           combineToLooperSets LooperFlagsWith {..} LooperEnvWith {..} func = do
-             let enabled =
-                   fromMaybe defaultLoopersEnabled $ looperFlagEnable `mplus` looperEnvEnable
-             if enabled
-               then do
-                 let LooperFlagsRetryPolicy {..} = looperFlagsRetryPolicy
-                 let LooperEnvRetryPolicy {..} = looperEnvRetryPolicy
-                 let static =
-                       LooperStaticConfig
-                         { looperStaticConfigPeriod =
-                             fromMaybe defaultLoopersPeriod $
-                             looperFlagsPeriod `mplus` looperEnvPeriod
-                         , looperStaticConfigRetryPolicy =
-                             LooperRetryPolicy
-                               { looperRetryPolicyDelay =
-                                   fromMaybe defaultLooperRetryDelay $
-                                   looperFlagsRetryDelay `mplus` looperEnvRetryDelay
-                               , looperRetryPolicyAmount =
-                                   fromMaybe defaultLooperRetryAmount $
-                                   looperFlagsRetryAmount `mplus` looperEnvRetryAmount
-                               }
-                         }
-                 LooperEnabled static <$> func looperFlags looperEnv
-               else pure LooperDisabled
-       looperSetTriggererSets <-
+    do looperSetTriggererSets <-
          combineToLooperSets looperFlagTriggererFlags looperEnvTriggererEnv $
          const $ const $ pure TriggererSettings
        looperSetEmailerSets <-
@@ -148,9 +145,18 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
        let publicKey =
              T.pack <$>
              (monetisationFlagStripePublishableKey <|> monetisationEnvStripePulishableKey)
-       let monetisationSetStripeEventsFetcher = undefined
-           monetisationSetStripeEventsRetrier = undefined
-           monetisationSetMaxItemsFree = undefined
+       monetisationSetStripeEventsFetcher <-
+         combineToLooperSets
+           monetisationFlagLooperStripeEventsFetcher
+           monetisationEnvLooperStripeEventsFetcher $
+         const $ const $ pure ()
+       monetisationSetStripeEventsRetrier <-
+         combineToLooperSets
+           monetisationFlagLooperStripeEventsRetrier
+           monetisationEnvLooperStripeEventsRetrier $
+         const $ const $ pure ()
+       let monetisationSetMaxItemsFree =
+             fromMaybe 5 $ monetisationFlagMaxItemsFree <|> monetisationEnvMaxItemsFree
        pure $
          MonetisationSettings <$> (StripeSettings <$> plan <*> config <*> publicKey) <*>
          pure monetisationSetStripeEventsFetcher <*>
