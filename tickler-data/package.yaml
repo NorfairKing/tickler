@@ -15,8 +15,8 @@ library:
   ghc-options: -Wall
 
   dependencies:
-  - aeson
   - base >=4.7 && <5
+  - aeson
   - base16-bytestring
   - bcrypt
   - bytestring
@@ -28,6 +28,7 @@ library:
   - persistent-template
   - random
   - servant-client-core
+  - stripe-core
   - text
   - time
   - typed-uuid
