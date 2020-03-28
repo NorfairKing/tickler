@@ -9,6 +9,7 @@ module Tickler.Server.OptParse
 import Import
 
 import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
 import Text.Read
 
 import qualified System.Environment as System
@@ -17,6 +18,9 @@ import Control.Monad.Trans.AWS as AWS
 import Database.Persist.Sqlite
 
 import Options.Applicative
+
+import Web.Stripe.Client as Stripe
+import Web.Stripe.Types as Stripe
 
 import Tickler.API
 import Tickler.Server.OptParse.Types
@@ -42,85 +46,116 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
       case parseUsername $ T.pack s of
         Nothing -> die $ unwords ["Invalid admin username:", s]
         Just u -> pure u
-  let LooperFlags {..} = serveFlagsLooperFlags
-  let LoopersEnvironment {..} = envLoopersEnvironment
-  let defaultLoopersEnabled =
-        fromMaybe True $ looperFlagDefaultEnabled `mplus` looperEnvDefaultEnabled
-  let defaultLoopersPeriod = fromMaybe 60 $ looperFlagDefaultPeriod `mplus` looperEnvDefaultPeriod
-  let defaultLooperRetryDelay =
-        fromMaybe 1000000 $ looperFlagDefaultRetryDelay `mplus` looperEnvDefaultRetryDelay
-  let defaultLooperRetryAmount =
-        fromMaybe 7 $ looperFlagDefaultRetryTimes `mplus` looperEnvDefaultRetryTimes
-  let combineToLooperSets ::
-           LooperFlagsWith a -> LooperEnvWith b -> (a -> b -> IO c) -> IO (LooperSetsWith c)
-      combineToLooperSets LooperFlagsWith {..} LooperEnvWith {..} func = do
-        let enabled = fromMaybe defaultLoopersEnabled $ looperFlagEnable `mplus` looperEnvEnable
-        if enabled
-          then do
-            let LooperFlagsRetryPolicy {..} = looperFlagsRetryPolicy
-            let LooperEnvRetryPolicy {..} = looperEnvRetryPolicy
-            let static =
-                  LooperStaticConfig
-                    { looperStaticConfigPeriod =
-                        fromMaybe defaultLoopersPeriod $ looperFlagsPeriod `mplus` looperEnvPeriod
-                    , looperStaticConfigRetryPolicy =
-                        LooperRetryPolicy
-                          { looperRetryPolicyDelay =
-                              fromMaybe defaultLooperRetryDelay $
-                              looperFlagsRetryDelay `mplus` looperEnvRetryDelay
-                          , looperRetryPolicyAmount =
-                              fromMaybe defaultLooperRetryAmount $
-                              looperFlagsRetryAmount `mplus` looperEnvRetryAmount
-                          }
-                    }
-            LooperEnabled static <$> func looperFlags looperEnv
-          else pure LooperDisabled
-  looperSetTriggererSets <-
-    combineToLooperSets looperFlagTriggererFlags looperEnvTriggererEnv $
-    const $ const $ pure TriggererSettings
-  looperSetEmailerSets <-
-    combineToLooperSets looperFlagEmailerFlags looperEnvEmailerEnv $
-    const $ const $ pure $ EmailerSettings Discover
-  looperSetTriggeredIntrayItemSchedulerSets <-
-    combineToLooperSets
-      looperFlagTriggeredIntrayItemSchedulerFlags
-      looperEnvTriggeredIntrayItemSchedulerEnv $
-    const $ const $ pure ()
-  looperSetTriggeredIntrayItemSenderSets <-
-    combineToLooperSets
-      looperFlagTriggeredIntrayItemSenderFlags
-      looperEnvTriggeredIntrayItemSenderEnv $
-    const $ const $ pure ()
-  looperSetVerificationEmailConverterSets <-
-    combineToLooperSets
-      looperFlagVerificationEmailConverterFlags
-      looperEnvVerificationEmailConverterEnv $ \f e -> do
-      ea <-
-        case f <|> e of
-          Nothing -> die "No email configured for the email triggerer"
-          Just ea -> pure ea
-      pure
-        VerificationEmailConverterSettings
-          { verificationEmailConverterSetFromAddress = ea
-          , verificationEmailConverterSetFromName = "Tickler Verification"
-          , verificationEmailConverterSetWebHost = webHost
-          }
-  looperSetTriggeredEmailSchedulerSets <-
-    combineToLooperSets looperFlagTriggeredEmailSchedulerFlags looperEnvTriggeredEmailSchedulerEnv $
-    const $ const $ pure ()
-  looperSetTriggeredEmailConverterSets <-
-    combineToLooperSets looperFlagTriggeredEmailConverterFlags looperEnvTriggeredEmailConverterEnv $ \f e -> do
-      ea <-
-        case f <|> e of
-          Nothing -> die "No email configured for the email triggerer"
-          Just ea -> pure ea
-      pure
-        TriggeredEmailConverterSettings
-          { triggeredEmailConverterSetFromAddress = ea
-          , triggeredEmailConverterSetFromName = "Tickler Triggerer"
-          , triggeredEmailConverterSetWebHost = webHost
-          }
-  let serveSetLooperSettings = LooperSettings {..}
+  serveSetLooperSettings <-
+    do let LooperFlags {..} = serveFlagsLooperFlags
+       let LoopersEnvironment {..} = envLoopersEnvironment
+       let defaultLoopersEnabled =
+             fromMaybe True $ looperFlagDefaultEnabled `mplus` looperEnvDefaultEnabled
+       let defaultLoopersPeriod =
+             fromMaybe 60 $ looperFlagDefaultPeriod `mplus` looperEnvDefaultPeriod
+       let defaultLooperRetryDelay =
+             fromMaybe 1000000 $ looperFlagDefaultRetryDelay `mplus` looperEnvDefaultRetryDelay
+       let defaultLooperRetryAmount =
+             fromMaybe 7 $ looperFlagDefaultRetryTimes `mplus` looperEnvDefaultRetryTimes
+       let combineToLooperSets ::
+                LooperFlagsWith a -> LooperEnvWith b -> (a -> b -> IO c) -> IO (LooperSetsWith c)
+           combineToLooperSets LooperFlagsWith {..} LooperEnvWith {..} func = do
+             let enabled =
+                   fromMaybe defaultLoopersEnabled $ looperFlagEnable `mplus` looperEnvEnable
+             if enabled
+               then do
+                 let LooperFlagsRetryPolicy {..} = looperFlagsRetryPolicy
+                 let LooperEnvRetryPolicy {..} = looperEnvRetryPolicy
+                 let static =
+                       LooperStaticConfig
+                         { looperStaticConfigPeriod =
+                             fromMaybe defaultLoopersPeriod $
+                             looperFlagsPeriod `mplus` looperEnvPeriod
+                         , looperStaticConfigRetryPolicy =
+                             LooperRetryPolicy
+                               { looperRetryPolicyDelay =
+                                   fromMaybe defaultLooperRetryDelay $
+                                   looperFlagsRetryDelay `mplus` looperEnvRetryDelay
+                               , looperRetryPolicyAmount =
+                                   fromMaybe defaultLooperRetryAmount $
+                                   looperFlagsRetryAmount `mplus` looperEnvRetryAmount
+                               }
+                         }
+                 LooperEnabled static <$> func looperFlags looperEnv
+               else pure LooperDisabled
+       looperSetTriggererSets <-
+         combineToLooperSets looperFlagTriggererFlags looperEnvTriggererEnv $
+         const $ const $ pure TriggererSettings
+       looperSetEmailerSets <-
+         combineToLooperSets looperFlagEmailerFlags looperEnvEmailerEnv $
+         const $ const $ pure $ EmailerSettings AWS.Discover
+       looperSetTriggeredIntrayItemSchedulerSets <-
+         combineToLooperSets
+           looperFlagTriggeredIntrayItemSchedulerFlags
+           looperEnvTriggeredIntrayItemSchedulerEnv $
+         const $ const $ pure ()
+       looperSetTriggeredIntrayItemSenderSets <-
+         combineToLooperSets
+           looperFlagTriggeredIntrayItemSenderFlags
+           looperEnvTriggeredIntrayItemSenderEnv $
+         const $ const $ pure ()
+       looperSetVerificationEmailConverterSets <-
+         combineToLooperSets
+           looperFlagVerificationEmailConverterFlags
+           looperEnvVerificationEmailConverterEnv $ \f e -> do
+           ea <-
+             case f <|> e of
+               Nothing -> die "No email configured for the email triggerer"
+               Just ea -> pure ea
+           pure
+             VerificationEmailConverterSettings
+               { verificationEmailConverterSetFromAddress = ea
+               , verificationEmailConverterSetFromName = "Tickler Verification"
+               , verificationEmailConverterSetWebHost = webHost
+               }
+       looperSetTriggeredEmailSchedulerSets <-
+         combineToLooperSets
+           looperFlagTriggeredEmailSchedulerFlags
+           looperEnvTriggeredEmailSchedulerEnv $
+         const $ const $ pure ()
+       looperSetTriggeredEmailConverterSets <-
+         combineToLooperSets
+           looperFlagTriggeredEmailConverterFlags
+           looperEnvTriggeredEmailConverterEnv $ \f e -> do
+           ea <-
+             case f <|> e of
+               Nothing -> die "No email configured for the email triggerer"
+               Just ea -> pure ea
+           pure
+             TriggeredEmailConverterSettings
+               { triggeredEmailConverterSetFromAddress = ea
+               , triggeredEmailConverterSetFromName = "Tickler Triggerer"
+               , triggeredEmailConverterSetWebHost = webHost
+               }
+       pure LooperSettings {..}
+  serveSetMonetisationSettings <-
+    do let MonetisationFlags {..} = serveFlagsMonetisationFlags
+       let MonetisationEnvironment {..} = envMonetisationEnvironment
+       let plan =
+             Stripe.PlanId . T.pack <$> (monetisationFlagStripePlan <|> monetisationEnvStripePlan)
+       let config =
+             (\sk ->
+                StripeConfig
+                  { Stripe.secretKey = StripeKey $ TE.encodeUtf8 $ T.pack sk
+                  , stripeEndpoint = Nothing
+                  }) <$>
+             (monetisationFlagStripeSecretKey <|> monetisationEnvStripeSecretKey)
+       let publicKey =
+             T.pack <$>
+             (monetisationFlagStripePublishableKey <|> monetisationEnvStripePulishableKey)
+       let monetisationSetStripeEventsFetcher = undefined
+           monetisationSetStripeEventsRetrier = undefined
+           monetisationSetMaxItemsFree = undefined
+       pure $
+         MonetisationSettings <$> (StripeSettings <$> plan <*> config <*> publicKey) <*>
+         pure monetisationSetStripeEventsFetcher <*>
+         pure monetisationSetStripeEventsRetrier <*>
+         pure monetisationSetMaxItemsFree
   pure $ Instructions (DispatchServe ServeSettings {..}) Settings
 
 getConfiguration :: Command -> Flags -> IO Configuration
@@ -132,8 +167,19 @@ getEnvironment = do
   let envDb = getEnv env "DATABASE"
   let envWebHost = getEnv env "WEB_HOST"
   envPort <- readEnv env "PORT"
+  envMonetisationEnvironment <- getMonetisationEnv env
   envLoopersEnvironment <- getLoopersEnv env
   pure Environment {..}
+
+getMonetisationEnv :: [(String, String)] -> IO MonetisationEnvironment
+getMonetisationEnv env = do
+  let monetisationEnvStripePlan = getEnv env "STRIPE_PLAN"
+  let monetisationEnvStripeSecretKey = getEnv env "STRIPE_SECRET_KEY"
+  let monetisationEnvStripePulishableKey = getEnv env "STRIPE_PUBLISHABLE_KEY"
+  monetisationEnvLooperStripeEventsFetcher <- getLooperEnvWith env "STRIPE_EVENTS_FETCHER" $ pure ()
+  monetisationEnvLooperStripeEventsRetrier <- getLooperEnvWith env "STRIPE_EVENTS_RETRIER" $ pure ()
+  monetisationEnvMaxItemsFree <- readEnv env "MAX_ITEMS_FREE"
+  pure MonetisationEnvironment {..}
 
 getLoopersEnv :: [(String, String)] -> IO LoopersEnvironment
 getLoopersEnv env = do
@@ -244,7 +290,46 @@ parseServeFlags =
        , help "The sqlite connection string"
        ]) <*>
   many (strOption (mconcat [long "admin", metavar "USERNAME", help "An admin to use"])) <*>
+  parseMonetisationFlags <*>
   parseLooperFlags
+
+parseMonetisationFlags :: Parser MonetisationFlags
+parseMonetisationFlags =
+  MonetisationFlags <$>
+  option
+    (Just <$> str)
+    (mconcat
+       [ long "stripe-plan"
+       , value Nothing
+       , metavar "PLAN_ID"
+       , help "The product pricing plan for stripe"
+       ]) <*>
+  option
+    (Just <$> str)
+    (mconcat
+       [ long "stripe-secret-key"
+       , value Nothing
+       , metavar "SECRET_KEY"
+       , help "The secret key for stripe"
+       ]) <*>
+  option
+    (Just <$> str)
+    (mconcat
+       [ long "stripe-publishable-key"
+       , value Nothing
+       , metavar "PUBLISHABLE_KEY"
+       , help "The publishable key for stripe"
+       ]) <*>
+  parseLooperFlagsWith "stripe-events-fetcher" (pure ()) <*>
+  parseLooperFlagsWith "stripe-events-retrier" (pure ()) <*>
+  option
+    (Just <$> auto)
+    (mconcat
+       [ long "max-items-free"
+       , value Nothing
+       , metavar "INT"
+       , help "How many items a user can sync in the free plan"
+       ])
 
 parseLooperFlags :: Parser LooperFlags
 parseLooperFlags =
