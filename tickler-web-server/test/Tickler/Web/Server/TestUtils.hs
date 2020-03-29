@@ -56,6 +56,7 @@ ticklerTestServeSettings = do
             { API.serveSetPort = 8001
             , API.serveSetConnectionInfo = connInfo
             , API.serveSetAdmins = catMaybes [parseUsername "admin"]
+            , API.serveSetMonetisationSettings = Nothing
             , API.serveSetLooperSettings =
                 API.LooperSettings
                   { API.looperSetTriggererSets = API.LooperDisabled
