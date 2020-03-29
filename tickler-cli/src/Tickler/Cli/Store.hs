@@ -2,10 +2,15 @@ module Tickler.Cli.Store
   ( Store(..)
   , readStore
   , readStoreOrEmpty
+  , readStoreSize
+  , anyUnsynced
   , writeStore
   ) where
 
 import Import
+
+import qualified Data.Map as M
+import Data.Mergeful (clientStoreAddedItems, clientStoreSize)
 
 import Tickler.Client
 
@@ -20,6 +25,12 @@ readStore = storePath >>= readJSON
 
 readStoreOrEmpty :: CliM Store
 readStoreOrEmpty = fromMaybe emptyStore <$> readStore
+
+readStoreSize :: CliM Word
+readStoreSize = clientStoreSize . storeTickles <$> readStoreOrEmpty
+
+anyUnsynced :: Store -> Bool
+anyUnsynced = not . M.null . clientStoreAddedItems . storeTickles
 
 writeStore :: Store -> CliM ()
 writeStore s = storePath >>= (`writeJSON` s)

@@ -33,7 +33,10 @@ withStoreAndSync func = do
             liftIO $
               putStrLn $ unlines ["Sync failed, but store still modified succesfully:", show err]
             pure processed
-          Right r -> pure $ mergeSyncResponse processed r
+          Right r -> do
+            let after = mergeSyncResponse processed r
+            anyUnsyncedWarning after
+            pure after
   writeStore after
 
 modifyStoreAndSync :: (Store -> Store) -> CliM ()
@@ -57,8 +60,20 @@ syncAndGet func = do
           func before
         Right r -> do
           let after = mergeSyncResponse before r
+          anyUnsyncedWarning after
           writeStore after
           func after
+
+anyUnsyncedWarning :: Store -> CliM ()
+anyUnsyncedWarning after =
+  when (anyUnsynced after) $
+  liftIO $
+  putStrLn $
+  unlines
+    [ "Not all added items were synchronized in the most recent synchronisation."
+    , "This may have occurred if you have not subscribed with your sync server."
+    , "If that is the case, please navigate to your sync server's web interface to subscribe."
+    ]
 
 syncAndReturn :: (Store -> a) -> CliM a
 syncAndReturn func = syncAndGet $ pure . func
