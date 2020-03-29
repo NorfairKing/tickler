@@ -17,20 +17,38 @@ import Database.Persist.Sqlite
 
 import Tickler.API
 
+import Tickler.Server.Handler.Stripe
 import Tickler.Server.Handler.Utils
 import Tickler.Server.Item
 import Tickler.Server.Types
 
 servePostSync :: AuthCookie -> SyncRequest -> TicklerHandler SyncResponse
-servePostSync AuthCookie {..} req =
+servePostSync AuthCookie {..} req = do
+  ups <- getUserPaidStatus authCookieUserUUID
   runDb $ do
     serverStore <- readServerStore authCookieUserUUID
     (resp, serverStore') <-
-      Mergeful.processServerSync nextRandomUUID serverStore (syncRequestTickles req)
+      Mergeful.processServerSync
+        nextRandomUUID
+        serverStore
+        (syncRequestTickles $ insertModFunc ups req)
     writeServerStore authCookieUserUUID serverStore'
     pure (SyncResponse {syncResponseTickles = resp})
 
 type ServerStore = Mergeful.ServerStore ItemUUID (AddedItem TypedTickle)
+
+insertModFunc :: PaidStatus -> SyncRequest -> SyncRequest
+insertModFunc ps sr =
+  case ps of
+    HasNotPaid i ->
+      let f cs =
+            cs
+              { Mergeful.syncRequestNewItems =
+                  M.fromList $ take i $ M.toList $ Mergeful.syncRequestNewItems cs
+              }
+       in sr {syncRequestTickles = f $ syncRequestTickles sr}
+    HasPaid _ -> sr
+    NoPaymentNecessary -> sr
 
 readServerStore :: AccountUUID -> SqlPersistT IO ServerStore
 readServerStore u =

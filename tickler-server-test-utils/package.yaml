@@ -70,8 +70,8 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - QuickCheck
     - base >=4.9 && <5
+    - QuickCheck
     - bytestring
     - containers
     - genvalidity-bytestring
@@ -82,6 +82,7 @@ tests:
     - http-types
     - intray-client
     - intray-server-test-utils
+    - mergeful
     - mergeless
     - path
     - path-io
@@ -109,8 +110,8 @@ benchmarks:
     - -Wall
     - -fno-warn-name-shadowing
     dependencies:
-    - QuickCheck
     - base
+    - QuickCheck
     - bytestring
     - cookie
     - criterion
