@@ -69,7 +69,7 @@ withTicklerServerFree :: SpecWith ClientEnv -> Spec
 withTicklerServerFree specFunc =
   afterAll_ cleanupTicklerTestServer $
   beforeAll ((,) <$> setupTestHttpManager <*> setupFreeTicklerTestApp) $
-  aroundWith withTicklerApp $ modifyMaxSuccess (`div` 20) specFunc
+  aroundWith withTicklerApp $ modifyMaxSuccess (`div` 20) $ modifyMaxShrinks (const 0) specFunc
 
 withTicklerServerPaid_ :: SpecWith ClientEnv -> Spec
 withTicklerServerPaid_ = withTicklerServerPaid 5
@@ -78,7 +78,7 @@ withTicklerServerPaid :: Int -> SpecWith ClientEnv -> Spec
 withTicklerServerPaid maxFree specFunc =
   afterAll_ cleanupTicklerTestServer $
   beforeAll ((,) <$> setupTestHttpManager <*> setupPaidTicklerTestApp maxFree) $
-  aroundWith withTicklerApp $ modifyMaxSuccess (`div` 20) specFunc
+  aroundWith withTicklerApp $ modifyMaxSuccess (`div` 20) $ modifyMaxShrinks (const 0) specFunc
 
 withBothTicklerAndIntrayServer :: SpecWith (ClientEnv, ClientEnv) -> Spec
 withBothTicklerAndIntrayServer specFunc =
