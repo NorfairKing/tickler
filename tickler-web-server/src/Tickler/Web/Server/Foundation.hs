@@ -355,3 +355,12 @@ storeLogins = do
   liftIO $ do
     m <- readMVar tokenMapVar
     writeLogins m
+
+addInfoMessage :: Html -> Handler ()
+addInfoMessage = addMessage ""
+
+addNegativeMessage :: Html -> Handler ()
+addNegativeMessage = addMessage "negative"
+
+addPositiveMessage :: Html -> Handler ()
+addPositiveMessage = addMessage "positive"
