@@ -10,6 +10,7 @@ module Tickler.Server.Handler.Admin.GetStats
 
 import Import
 
+import Data.Time
 import Database.Persist
 
 import Servant hiding (BadPassword, NoSuchUser)
@@ -38,5 +39,15 @@ serveAdminGetStats (Authenticated AuthCookie {..}) =
                  HasNotPaid _ -> Nothing
                  HasPaid t -> Just t
                  NoPaymentNecessary -> Nothing
+    now <- liftIO getCurrentTime
+    let day :: NominalDiffTime
+        day = 86400
+    let activeUsers time =
+          fmap fromIntegral $ runDb $ count [UserLastLogin >=. Just (addUTCTime (-time) now)]
+    activeUsersDaily <- activeUsers day
+    activeUsersWeekly <- activeUsers $ 7 * day
+    activeUsersMonthly <- activeUsers $ 30 * day
+    activeUsersYearly <- activeUsers $ 365 * day
+    let adminStatsActiveUsers = ActiveUsers {..}
     pure AdminStats {..}
 serveAdminGetStats _ = throwAll err401

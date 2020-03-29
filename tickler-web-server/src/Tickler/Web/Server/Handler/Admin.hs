@@ -27,6 +27,7 @@ getAdminR =
     users <- runClientOrErr $ clientAdminGetAccounts t
     now <- liftIO getCurrentTime
     token <- genToken
+    let ActiveUsers {..} = adminStatsActiveUsers
     withNavBar $(widgetFile "admin")
 
 postAdminAccountDeleteR :: AccountUUID -> Handler Html

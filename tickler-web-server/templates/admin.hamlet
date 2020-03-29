@@ -46,6 +46,34 @@
           Tickler Items
 
 <div .ui .segment>
+  <h3>
+    Active users:
+  <div class="ui four big statistics">
+    <div class="statistic">
+      <div class="value">
+        #{activeUsersDaily}
+      <div class="label">
+        Daily
+
+    <div class="statistic">
+      <div class="value">
+        #{activeUsersWeekly}
+      <div class="label">
+        Weekly
+
+    <div class="statistic">
+      <div class="value">
+        #{activeUsersMonthly}
+      <div class="label">
+        Monthly
+
+    <div class="statistic">
+      <div class="value">
+        #{activeUsersYearly}
+      <div class="label">
+        Yearly
+
+<div .ui .segment>
   <table .ui .celled .table>
     <thead>
       <tr>
