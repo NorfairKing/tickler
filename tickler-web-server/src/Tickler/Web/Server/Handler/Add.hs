@@ -13,13 +13,23 @@ import Data.Word
 
 import Yesod
 
+import qualified Network.HTTP.Types as Http
+
 import Tickler.Client
 
 import Tickler.Web.Server.Foundation
 
 getAddR :: Handler Html
 getAddR =
-  withLogin $ \_ -> do
+  withLogin $ \t -> do
+    mPricing <- runClientOrErr clientGetPricing
+    AccountInfo {..} <- runClientOrErr $ clientGetAccountInfo t
+    tickles <- runClientOrErr $ clientGetItemUUIDs t
+    let canAdd =
+          case mPricing of
+            Nothing -> True
+            Just Pricing {..} ->
+              length tickles > pricingMaxItemsFree && isNothing accountInfoSubscribed
     token <- genToken
     withNavBar $(widgetFile "add")
 
@@ -93,14 +103,26 @@ postAddR =
     NewItem {..} <- runInputPost newItemForm
     case mkRecurrence newItemRecurrenceData of
       Nothing -> invalidArgs ["Invalid recurrence"]
-      Just recurrence ->
-        void $
-        runClientOrErr $
-        clientPostAddItem t $
-        Tickle
-          { tickleContent = textTypedItem $ unTextarea newItemText
-          , tickleScheduledDay = newItemScheduledDay
-          , tickleScheduledTime = newItemScheduledTime
-          , tickleRecurrence = recurrence
-          }
+      Just recurrence -> do
+        errOrRes <-
+          runClient $
+          clientPostAddItem t $
+          Tickle
+            { tickleContent = textTypedItem $ unTextarea newItemText
+            , tickleScheduledDay = newItemScheduledDay
+            , tickleScheduledTime = newItemScheduledTime
+            , tickleRecurrence = recurrence
+            }
+        case errOrRes of
+          Left err ->
+            handleStandardServantErrs err $ \resp ->
+              case responseStatusCode resp of
+                c
+                  | c == Http.unauthorized401 ->
+                    addNegativeMessage "You are not allowed to add items."
+                  | c == Http.paymentRequired402 ->
+                    addNegativeMessage
+                      "You have reached the limit of the free plan, subscribe to be able to add more items. Click 'Account' to get started."
+                  | otherwise -> sendResponseStatus Http.status500 $ show resp
+          Right _ -> pure ()
     redirect AddR

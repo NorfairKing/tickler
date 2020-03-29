@@ -20,6 +20,8 @@ import Data.Time
 import Database.Persist.Sql
 import Database.Persist.TH
 
+import qualified Web.Stripe.Types as Stripe
+
 import qualified Intray.Data as Intray
 
 import Tickler.Data.AccountUUID
@@ -31,6 +33,7 @@ import Tickler.Data.ItemType
 import Tickler.Data.ItemUUID
 import Tickler.Data.Recurrence
 import Tickler.Data.ServerTime ()
+import Tickler.Data.Stripe ()
 import Tickler.Data.Time ()
 import Tickler.Data.TriggerType
 import Tickler.Data.TriggerUUID
@@ -56,6 +59,24 @@ User
     deriving Ord
     deriving Generic
     deriving Typeable
+
+Customer
+    user AccountUUID
+    stripeCustomer Stripe.CustomerId
+    UniqueCustomerUser user
+    UniqueUserCustomer stripeCustomer
+    deriving Show
+    deriving Eq
+    deriving Generic
+
+
+StripeEvent
+    event Stripe.EventId
+    error Text Maybe
+    UniqueStripeEvent event
+    deriving Show
+    deriving Eq
+    deriving Generic
 
 
 UserSettings

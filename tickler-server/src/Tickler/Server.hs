@@ -13,6 +13,8 @@ module Tickler.Server
 
 import Import
 
+import Data.Cache
+
 import Control.Monad.Logger
 import Control.Monad.Trans.Resource (runResourceT)
 import Database.Persist.Sqlite
@@ -41,13 +43,23 @@ runTicklerServer ServeSettings {..} =
     signingKey <- liftIO loadSigningKey
     let jwtCfg = defaultJWTSettings signingKey
     let cookieCfg = defaultCookieSettings
-    loopersHandle <- liftIO $ startLoopers pool serveSetLooperSettings
+    loopersHandle <- liftIO $ startLoopers pool serveSetLooperSettings serveSetMonetisationSettings
+    mMonetisationEnv <-
+      forM serveSetMonetisationSettings $ \MonetisationSettings {..} -> do
+        planCache <- liftIO $ newCache Nothing
+        pure
+          MonetisationEnv
+            { monetisationEnvStripeSettings = monetisationSetStripeSettings
+            , monetisationEnvMaxItemsFree = monetisationSetMaxItemsFree
+            , monetisationEnvPlanCache = planCache
+            }
     let ticklerEnv =
           TicklerServerEnv
             { envConnectionPool = pool
             , envCookieSettings = cookieCfg
             , envJWTSettings = jwtCfg
             , envAdmins = serveSetAdmins
+            , envMonetisation = mMonetisationEnv
             , envLoopersHandle = loopersHandle
             }
     liftIO $ Warp.run serveSetPort $ ticklerApp ticklerEnv

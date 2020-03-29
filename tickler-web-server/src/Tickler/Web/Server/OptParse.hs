@@ -38,7 +38,8 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
       API.Flags
       API.Configuration
       envAPIEnvironment
-  let webPort = fromMaybe 8000 $ serveFlagPort `mplus` envPort
+  let webHost = serveFlagHost <|> envHost
+  let webPort = fromMaybe 8000 $ serveFlagPort <|> envPort
   when (API.serveSetPort apiServeSets == webPort) $
     die $
     unlines
@@ -46,11 +47,12 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
   pure
     ( DispatchServe
         ServeSettings
-          { serveSetPort = webPort
+          { serveSetHost = webHost
+          , serveSetPort = webPort
           , serveSetPersistLogins = fromMaybe False serveFlagPersistLogins
-          , serveSetDefaultIntrayUrl = serveFlagDefaultIntrayUrl `mplus` envDefaultIntrayUrl
-          , serveSetTracking = serveFlagTracking `mplus` envTracking
-          , serveSetVerification = serveFlagVerification `mplus` envVerification
+          , serveSetDefaultIntrayUrl = serveFlagDefaultIntrayUrl <|> envDefaultIntrayUrl
+          , serveSetTracking = serveFlagTracking <|> envTracking
+          , serveSetVerification = serveFlagVerification <|> envVerification
           , serveSetAPISettings = apiServeSets
           }
     , Settings)
@@ -61,9 +63,9 @@ getConfiguration _ _ = pure Configuration
 getEnvironment :: IO Environment
 getEnvironment = do
   env <- System.getEnvironment
-  let ms k = fromString <$> lookup k env
+  let ms k = fromString <$> lookup ("TICKLER_WEB_SERVER_" <> k) env
       mre k func =
-        forM (lookup ("TICKLER_WEB_SERVER_" <> k) env) $ \s ->
+        forM (ms k) $ \s ->
           case func s of
             Left e ->
               die $
@@ -75,6 +77,7 @@ getEnvironment = do
             Nothing -> Left "Parsing failed without a good error message."
             Just v -> Right v
       mr k = mrf k readMaybe
+  let envHost = ms "HOST"
   envPort <- mr "PORT"
   envDefaultIntrayUrl <- mre "DEFAULT_INTRAY_URL" (left show . parseBaseUrl)
   let envTracking = ms "TRACKING"
@@ -119,6 +122,14 @@ parseCommandServe = info parser modifier
     parser =
       CommandServe <$>
       (ServeFlags <$>
+       option
+         (Just . T.pack <$> str)
+         (mconcat
+            [ long "web-host"
+            , metavar "PORT"
+            , value Nothing
+            , help "the host to serve the web interface on"
+            ]) <*>
        option
          (Just <$> auto)
          (mconcat

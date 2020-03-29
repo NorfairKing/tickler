@@ -5,6 +5,9 @@ import Import
 import Control.Monad.Trans.AWS as AWS
 import Database.Persist.Sqlite
 
+import Web.Stripe.Client as Stripe
+import Web.Stripe.Types as Stripe
+
 import Tickler.API
 
 data Arguments =
@@ -23,7 +26,19 @@ data ServeFlags =
     , serveFlagWebHost :: Maybe String
     , serveFlagDb :: Maybe FilePath
     , serveFlagAdmins :: [String]
+    , serveFlagsMonetisationFlags :: MonetisationFlags
     , serveFlagsLooperFlags :: LooperFlags
+    }
+  deriving (Show, Eq)
+
+data MonetisationFlags =
+  MonetisationFlags
+    { monetisationFlagStripePlan :: !(Maybe String)
+    , monetisationFlagStripeSecretKey :: !(Maybe String)
+    , monetisationFlagStripePublishableKey :: !(Maybe String)
+    , monetisationFlagLooperStripeEventsFetcher :: LooperFlagsWith ()
+    , monetisationFlagLooperStripeEventsRetrier :: LooperFlagsWith ()
+    , monetisationFlagMaxItemsFree :: !(Maybe Int)
     }
   deriving (Show, Eq)
 
@@ -72,7 +87,19 @@ data Environment =
     { envDb :: Maybe FilePath
     , envWebHost :: Maybe String
     , envPort :: Maybe Int
+    , envMonetisationEnvironment :: MonetisationEnvironment
     , envLoopersEnvironment :: LoopersEnvironment
+    }
+  deriving (Show, Eq)
+
+data MonetisationEnvironment =
+  MonetisationEnvironment
+    { monetisationEnvStripePlan :: !(Maybe String)
+    , monetisationEnvStripeSecretKey :: !(Maybe String)
+    , monetisationEnvStripePulishableKey :: !(Maybe String)
+    , monetisationEnvLooperStripeEventsFetcher :: LooperEnvWith ()
+    , monetisationEnvLooperStripeEventsRetrier :: LooperEnvWith ()
+    , monetisationEnvMaxItemsFree :: !(Maybe Int)
     }
   deriving (Show, Eq)
 
@@ -118,10 +145,28 @@ data Settings =
 
 data ServeSettings =
   ServeSettings
-    { serveSetPort :: Int
-    , serveSetConnectionInfo :: SqliteConnectionInfo
-    , serveSetAdmins :: [Username]
-    , serveSetLooperSettings :: LooperSettings
+    { serveSetPort :: !Int
+    , serveSetConnectionInfo :: !SqliteConnectionInfo
+    , serveSetAdmins :: ![Username]
+    , serveSetMonetisationSettings :: !(Maybe MonetisationSettings)
+    , serveSetLooperSettings :: !LooperSettings
+    }
+  deriving (Show)
+
+data MonetisationSettings =
+  MonetisationSettings
+    { monetisationSetStripeSettings :: !StripeSettings
+    , monetisationSetStripeEventsFetcher :: !(LooperSetsWith ())
+    , monetisationSetStripeEventsRetrier :: !(LooperSetsWith ())
+    , monetisationSetMaxItemsFree :: !Int
+    }
+  deriving (Show)
+
+data StripeSettings =
+  StripeSettings
+    { stripeSetPlan :: !Stripe.PlanId
+    , stripeSetStripeConfig :: StripeConfig
+    , stripeSetPublishableKey :: !Text
     }
   deriving (Show)
 

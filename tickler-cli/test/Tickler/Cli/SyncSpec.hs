@@ -6,9 +6,10 @@ module Tickler.Cli.SyncSpec
 
 import TestImport
 
+import qualified Data.Map as M
 import qualified Data.Text as T
 
-import Data.Mergeful (clientStoreSize)
+import Data.Mergeful
 
 import Servant.API
 import Servant.Client
@@ -18,45 +19,81 @@ import Tickler.Server.TestUtils
 
 import Tickler.Cli.OptParse
 import Tickler.Cli.Session (loadToken)
-import Tickler.Cli.Store (readStoreOrEmpty)
+import Tickler.Cli.Store
 import Tickler.Cli.TestUtils
 
 spec :: Spec
-spec =
+spec = do
   withTicklerServer $
-  it "correctly deletes the local LastSeen after a sync if the item has dissappeared remotely" $ \cenv ->
-    forAllValid $ \ti ->
-      withSystemTempDir "tickler-cli-test-cache" $ \cacheDir ->
+    it "correctly deletes the local LastSeen after a sync if the item has dissappeared remotely" $ \cenv ->
+      forAllValid $ \ti ->
+        withSystemTempDir "tickler-cli-test-cache" $ \cacheDir ->
+          withSystemTempDir "tickler-cli-test-data" $ \dataDir ->
+            withValidNewUserAndData cenv $ \un pw _ -> do
+              let (ClientEnv _ burl _) = cenv
+              let u = T.unpack $ usernameText un
+              let p = T.unpack pw
+              setEnv "TICKLER_USERNAME" u
+              setEnv "TICKLER_PASSWORD" p
+              setEnv "TICKLER_URL" $ showBaseUrl burl
+              setEnv "TICKLER_CACHE_DIR" $ fromAbsDir cacheDir
+              setEnv "TICKLER_DATA_DIR" $ fromAbsDir dataDir
+              tickler ["login"]
+              let sets =
+                    Settings
+                      { setBaseUrl = Just burl
+                      , setUsername = Just un
+                      , setCacheDir = cacheDir
+                      , setDataDir = dataDir
+                      , setSyncStrategy = NeverSync
+                      }
+              mToken <- runReaderT loadToken sets
+              token <-
+                case mToken of
+                  Nothing -> do
+                    expectationFailure "Should have a token after logging in"
+                    undefined
+                  Just t -> pure t
+              uuid <- runClientOrError cenv $ clientPostAddItem token ti
+              tickler ["sync"]
+              s1 <- runReaderT readStoreOrEmpty sets
+              NoContent <- runClientOrError cenv $ clientDeleteItem token uuid
+              tickler ["sync"]
+              s2 <- runReaderT readStoreOrEmpty sets
+              clientStoreSize (storeTickles s1) `shouldBe` clientStoreSize (storeTickles s2) + 1
+  let maxFree = 2
+  withTicklerServerPaid maxFree $
+    it "Can add items past the maximum allowed number of free items locally but not remotely" $ \cenv ->
+      withValidNewUserAndData cenv $ \un pw _ ->
         withSystemTempDir "tickler-cli-test-data" $ \dataDir ->
-          withValidNewUserAndData cenv $ \un pw _ -> do
+          withSystemTempDir "tickler-cli-test-cache" $ \cacheDir -> do
             let (ClientEnv _ burl _) = cenv
-            let u = T.unpack $ usernameText un
-            let p = T.unpack pw
-            setEnv "TICKLER_USERNAME" u
-            setEnv "TICKLER_PASSWORD" p
+            setEnv "TICKLER_USERNAME" $ T.unpack $ usernameText un
+            setEnv "TICKLER_PASSWORD" $ T.unpack pw
             setEnv "TICKLER_URL" $ showBaseUrl burl
             setEnv "TICKLER_CACHE_DIR" $ fromAbsDir cacheDir
             setEnv "TICKLER_DATA_DIR" $ fromAbsDir dataDir
+            setEnv "TICKLER_SYNC_STRATEGY" "AlwaysSync"
             tickler ["login"]
             let sets =
                   Settings
-                    { setBaseUrl = Just burl
-                    , setUsername = Just un
+                    { setUsername = Nothing
+                    , setBaseUrl = Just burl
                     , setCacheDir = cacheDir
                     , setDataDir = dataDir
-                    , setSyncStrategy = NeverSync
+                    , setSyncStrategy = AlwaysSync
                     }
-            mToken <- runReaderT loadToken sets
-            token <-
-              case mToken of
-                Nothing -> do
-                  expectationFailure "Should have a token after logging in"
-                  undefined
-                Just t -> pure t
-            uuid <- runClientOrError cenv $ clientPostAddItem token ti
+            let size =
+                  flip runReaderT sets $ do
+                    cs <- storeTickles <$> readStoreOrEmpty
+                    pure (M.size (clientStoreAddedItems cs), M.size (clientStoreSyncedItems cs))
+            size `shouldReturn` (0, 0)
+            tickler ["add", "one", "2020-03-30"]
             tickler ["sync"]
-            s1 <- runReaderT readStoreOrEmpty sets
-            NoContent <- runClientOrError cenv $ clientDeleteItem token uuid
+            size `shouldReturn` (0, 1)
+            tickler ["add", "two", "2020-03-30"]
             tickler ["sync"]
-            s2 <- runReaderT readStoreOrEmpty sets
-            clientStoreSize (storeTickles s1) `shouldBe` clientStoreSize (storeTickles s2) + 1
+            size `shouldReturn` (0, 2)
+            tickler ["add", "three", "2020-03-30"]
+            tickler ["sync"]
+            size `shouldReturn` (1, 2)

@@ -55,6 +55,56 @@
     .
     In addition to the features on the web interface, the command-line client works offline with easy synchronisation.
 
+$maybe p <- mPricing
+  <div .ui .huge .padded .segment>
+    <h2 .ui .header> Pricing
+    <div .ui .cards .centered>
+      <div .ui .card>
+        <div .ui .content>
+          <div .ui .centered .header>
+            Trial
+          <div class="ui segments">
+              <div class="ui center aligned secondary segment">
+                 <div class="ui statistic">
+                    <div class="value">
+                      Free
+                    <div class="label">
+                      Forever
+              <div class="ui center aligned segment">
+                 <p> Maximum #{pricingMaxItemsFree p} items
+              <div class="ui center aligned segment">
+                 <p> Full API access
+              <div class="ui center aligned segment">
+                 <p> A Free command-line application
+           <div class="ui primary fluid button">
+            Get Started
+      <div .ui .card>
+        <div .ui .content>
+          <div .ui .centered .header>
+            Subscription
+          <div class="ui segments">
+              <div class="ui center aligned secondary segment">
+                 <div class="ui statistic">
+                    <div class="value">
+                      #{pricingShowAmountPerMonth p}
+                    <div class="label">
+                       per month
+              <div class="ui center aligned segment">
+                 <p> Unlimited items
+              <div class="ui center aligned segment">
+                 <p> Full API access
+              <div class="ui center aligned segment">
+                 <p> A Free command-line application
+              <div class="ui center aligned segment">
+                 <p> Unlimited synchronisation accross devices
+              $maybe tp <- pricingTrialPeriod p
+                <div class="ui center aligned segment">
+                   <p> #{show tp} day Trial period
+              <div class="ui center aligned segment">
+                 <p> Billed anually
+           <div class="ui primary fluid button">
+            Get Started
+
 <div .ui .huge .padded .segment>
   <h2 .ui .header> FAQ
   <div .ui .list>

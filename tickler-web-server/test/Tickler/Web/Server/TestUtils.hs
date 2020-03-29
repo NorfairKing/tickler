@@ -46,7 +46,8 @@ ticklerTestServeSettings = do
   let connInfo = mkSqliteConnectionInfo "tickler-test.db" & walEnabled .~ False
   pure
     ServeSettings
-      { serveSetPort = 8000
+      { serveSetHost = Nothing
+      , serveSetPort = 8000
       , serveSetPersistLogins = False
       , serveSetDefaultIntrayUrl = Nothing
       , serveSetTracking = Nothing
@@ -56,6 +57,7 @@ ticklerTestServeSettings = do
             { API.serveSetPort = 8001
             , API.serveSetConnectionInfo = connInfo
             , API.serveSetAdmins = catMaybes [parseUsername "admin"]
+            , API.serveSetMonetisationSettings = Nothing
             , API.serveSetLooperSettings =
                 API.LooperSettings
                   { API.looperSetTriggererSets = API.LooperDisabled

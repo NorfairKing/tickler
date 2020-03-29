@@ -22,8 +22,8 @@ import Tickler.Data
 
 import Tickler.Server.OptParse.Types
 
+import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
-import Tickler.Server.Looper.Utils
 
 runEmailer :: EmailerSettings -> Looper ()
 runEmailer EmailerSettings {..} = do

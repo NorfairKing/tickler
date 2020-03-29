@@ -24,6 +24,8 @@ library:
   - base >=4.7 && <5
   - blaze-html
   - bytestring
+  - cache
+  - conduit
   - containers
   - cookie
   - data-default
@@ -35,6 +37,7 @@ library:
   - http-client-tls
   - http-types
   - intray-client
+  - intray-server # Only for Web.Stripe.Conduit
   - jose
   - lens
   - markdown
@@ -61,6 +64,8 @@ library:
   - servant-docs
   - servant-server
   - shakespeare
+  - stripe-core
+  - stripe-haskell
   - template-haskell
   - text
   - tickler-api

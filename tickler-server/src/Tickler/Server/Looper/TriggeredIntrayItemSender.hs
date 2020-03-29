@@ -24,8 +24,8 @@ import qualified Intray.Client as Intray
 
 import Tickler.Client
 
+import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
-import Tickler.Server.Looper.Utils
 
 runTriggeredIntrayItemSender :: () -> Looper ()
 runTriggeredIntrayItemSender _ = do

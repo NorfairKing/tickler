@@ -2,12 +2,17 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.TestUtils
   ( withTicklerServer
+  , withTicklerServerFree
+  , withTicklerServerPaid_
+  , withTicklerServerPaid
   , setupTicklerTestConn
   , setupTestHttpManager
-  , setupTicklerTestApp
+  , setupPaidTicklerTestApp
+  , setupFreeTicklerTestApp
   , withTicklerApp
   , cleanupTicklerTestServer
   , withBothTicklerAndIntrayServer
@@ -25,12 +30,15 @@ import Import
 
 import Control.Monad.Logger
 import Control.Monad.Trans.Resource (runResourceT)
+import Data.Cache as Cache
 import qualified Data.Text as T
+import Data.Time
 import Data.UUID.Typed
 import Lens.Micro
 import qualified Network.HTTP.Client as HTTP
 import qualified Network.HTTP.Types as HTTP
 import Web.Cookie
+import Web.Stripe.Plan as Stripe
 
 import Servant
 import Servant.Auth.Client
@@ -43,25 +51,40 @@ import Network.Wai.Handler.Warp (testWithApplication)
 
 import Intray.Server.TestUtils (cleanupIntrayTestServer, setupIntrayTestApp)
 
-import Tickler.API
+-- import Tickler.API
 import Tickler.Client
 import Tickler.Server
 import Tickler.Server.Looper
+import Tickler.Server.OptParse.Types
 import Tickler.Server.Types
 
 import Tickler.API.Gen ()
 
 withTicklerServer :: SpecWith ClientEnv -> Spec
-withTicklerServer specFunc =
+withTicklerServer specFunc = do
+  describe "Free" $ withTicklerServerFree specFunc
+  describe "Paid" $ withTicklerServerPaid_ specFunc
+
+withTicklerServerFree :: SpecWith ClientEnv -> Spec
+withTicklerServerFree specFunc =
   afterAll_ cleanupTicklerTestServer $
-  beforeAll ((,) <$> setupTestHttpManager <*> setupTicklerTestApp) $
-  aroundWith withTicklerApp $ modifyMaxSuccess (`div` 20) specFunc
+  beforeAll ((,) <$> setupTestHttpManager <*> setupFreeTicklerTestApp) $
+  aroundWith withTicklerApp $ modifyMaxSuccess (`div` 20) $ modifyMaxShrinks (const 0) specFunc
+
+withTicklerServerPaid_ :: SpecWith ClientEnv -> Spec
+withTicklerServerPaid_ = withTicklerServerPaid 5
+
+withTicklerServerPaid :: Int -> SpecWith ClientEnv -> Spec
+withTicklerServerPaid maxFree specFunc =
+  afterAll_ cleanupTicklerTestServer $
+  beforeAll ((,) <$> setupTestHttpManager <*> setupPaidTicklerTestApp maxFree) $
+  aroundWith withTicklerApp $ modifyMaxSuccess (`div` 20) $ modifyMaxShrinks (const 0) specFunc
 
 withBothTicklerAndIntrayServer :: SpecWith (ClientEnv, ClientEnv) -> Spec
 withBothTicklerAndIntrayServer specFunc =
   afterAll_ cleanupTicklerTestServer $
   afterAll_ cleanupIntrayTestServer $
-  beforeAll ((,) <$> setupTicklerTestApp <*> setupIntrayTestApp Nothing) $
+  beforeAll ((,) <$> setupFreeTicklerTestApp <*> setupIntrayTestApp Nothing) $
   aroundWith withBoth $ modifyMaxSuccess (`div` 20) specFunc
   where
     withBoth ::
@@ -87,8 +110,41 @@ setupTicklerTestConn = do
 setupTestHttpManager :: IO HTTP.Manager
 setupTestHttpManager = HTTP.newManager HTTP.defaultManagerSettings
 
-setupTicklerTestApp :: IO Wai.Application
-setupTicklerTestApp = do
+setupPaidTicklerTestApp :: Int -> IO Wai.Application
+setupPaidTicklerTestApp maxFree = do
+  now <- getCurrentTime
+  let planName = PlanId "dummyPlan"
+      dummyPlan =
+        Stripe.Plan
+          { planInterval = Year
+          , planName = "dummy plan"
+          , planCreated = now
+          , planAmount = 1200
+          , planCurrency = CHF
+          , planId = planName
+          , planObject = "plan"
+          , planLiveMode = False
+          , planIntervalCount = Nothing
+          , planTrialPeriodDays = Nothing
+          , planMetaData = MetaData []
+          , planDescription = Nothing
+          }
+  monetisationEnvPlanCache <- newCache Nothing
+  Cache.insert monetisationEnvPlanCache planName dummyPlan
+  let monetisationEnvStripeSettings =
+        StripeSettings
+          { stripeSetPlan = planName
+          , stripeSetStripeConfig = error "should not try to access stripe during testing"
+          , stripeSetPublishableKey = "Example, should not be used."
+          }
+  let monetisationEnvMaxItemsFree = maxFree
+  setupTicklerTestApp $ Just MonetisationEnv {..}
+
+setupFreeTicklerTestApp :: IO Wai.Application
+setupFreeTicklerTestApp = setupTicklerTestApp Nothing
+
+setupTicklerTestApp :: Maybe MonetisationEnv -> IO Wai.Application
+setupTicklerTestApp menv = do
   pool <- setupTicklerTestConn
   jwtCfg <- defaultJWTSettings <$> Auth.generateKey
   let cookieCfg = defaultCookieSettings
@@ -98,6 +154,7 @@ setupTicklerTestApp = do
           , envCookieSettings = cookieCfg
           , envJWTSettings = jwtCfg
           , envAdmins = [fromJust $ parseUsername "admin"]
+          , envMonetisation = menv
           , envLoopersHandle =
               LoopersHandle
                 { emailerLooperHandle = LooperHandleDisabled
@@ -107,6 +164,8 @@ setupTicklerTestApp = do
                 , triggeredIntrayItemSenderLooperHandle = LooperHandleDisabled
                 , triggeredEmailSchedulerLooperHandle = LooperHandleDisabled
                 , triggeredEmailConverterLooperHandle = LooperHandleDisabled
+                , stripeEventsFetcherLooperHandle = LooperHandleDisabled
+                , stripeEventsRetrierLooperHandle = LooperHandleDisabled
                 }
           }
   pure $ serveWithContext ticklerAPI (ticklerAppContext ticklerEnv) (makeTicklerServer ticklerEnv)

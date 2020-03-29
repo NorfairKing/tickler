@@ -26,6 +26,9 @@
 /account/settings                                         AccountSettingsR     POST
 /account/delete                                           AccountDeleteR       POST
 
+/checkout/success                                         CheckoutSuccessR     GET
+/checkout/canceled                                        CheckoutCanceledR    GET
+
 /error/api-down/#Text                                     ErrorAPIDownR        GET
 
 /api/docs                                                 APIDocsR             GET

@@ -15,7 +15,7 @@ import Tickler.Server.TestUtils
 
 spec :: Spec
 spec =
-  withTicklerServer $
+  withTicklerServerFree $
   describe "ListItemUUIDs" $ do
     it "it lists item uuids of items that were just added" $ \cenv ->
       forAllValid $ \items ->
@@ -24,9 +24,11 @@ spec =
           itemUUIDs' <- runClientOrError cenv $ clientGetItemUUIDs token
           itemUUIDs' `shouldContain` uuids
     it "it always lists valid item uuids" $ \cenv ->
-      withValidNewUser cenv $ \token -> do
-        itemUUIDs <- runClientOrError cenv $ clientGetItemUUIDs token
-        shouldBeValid itemUUIDs
+      forAllValid $ \items ->
+        withValidNewUser cenv $ \token -> do
+          void $ runClientOrError cenv $ mapM (clientPostAddItem token) (items :: [AddItem])
+          itemUUIDs <- runClientOrError cenv $ clientGetItemUUIDs token
+          shouldBeValid itemUUIDs
     it "does not list others' item uuids" $ \cenv ->
       forAllValid $ \items1 ->
         forAllValid $ \items2 ->

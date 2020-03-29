@@ -22,6 +22,7 @@ library:
   - bytestring >=0.10 && <0.11
   - containers
   - cookie
+  - hashable
   - http-api-data
   - intray-api
   - intray-data
@@ -34,6 +35,7 @@ library:
   - servant-blaze
   - servant-client-core
   - servant-docs
+  - stripe-core
   - text
   - tickler-data
   - time

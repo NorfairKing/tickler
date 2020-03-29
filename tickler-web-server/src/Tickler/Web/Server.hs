@@ -46,7 +46,8 @@ makeTicklerApp ServeSettings {..} = do
   tokens <- newMVar HM.empty
   pure
     App
-      { appHttpManager = man
+      { appRoot = serveSetHost
+      , appHttpManager = man
       , appStatic = myStatic
       , appLoginTokens = tokens
       , appAPIBaseUrl = burl

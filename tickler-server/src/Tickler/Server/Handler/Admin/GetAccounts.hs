@@ -19,20 +19,12 @@ import Tickler.API
 
 import Tickler.Server.Types
 
+import Tickler.Server.Handler.GetAccountInfo
 import Tickler.Server.Handler.Utils
 
 serveAdminGetAccounts :: AuthResult AuthCookie -> TicklerHandler [AccountInfo]
 serveAdminGetAccounts (Authenticated AuthCookie {..}) =
   withAdminCreds authCookieUserUUID $ do
-    admins <- asks envAdmins
-    users <- runDb $ selectList [] [Asc UserId]
-    pure $
-      flip map users $ \(Entity _ User {..}) ->
-        AccountInfo
-          { accountInfoUUID = userIdentifier
-          , accountInfoUsername = userUsername
-          , accountInfoCreated = userCreated
-          , accountInfoLastLogin = userLastLogin
-          , accountInfoAdmin = userUsername `elem` admins
-          }
+    users <- runDb $ selectList [] [Desc UserLastLogin]
+    forM users $ \(Entity _ u) -> getUserAccountInfo u
 serveAdminGetAccounts _ = throwAll err401

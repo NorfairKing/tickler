@@ -9,9 +9,11 @@ module Tickler.Web.Server.Handler.Admin
 import Import
 
 import Data.Time
+import Text.Time.Pretty
 
 import Yesod
 
+import Tickler.API
 import Tickler.Client
 
 import Tickler.Web.Server.Foundation
@@ -20,10 +22,12 @@ import Tickler.Web.Server.Time
 getAdminR :: Handler Html
 getAdminR =
   withAdminCreds $ \t -> do
+    mPricing <- runClientOrErr clientGetPricing
     AdminStats {..} <- runClientOrErr $ clientAdminGetStats t
     users <- runClientOrErr $ clientAdminGetAccounts t
     now <- liftIO getCurrentTime
     token <- genToken
+    let ActiveUsers {..} = adminStatsActiveUsers
     withNavBar $(widgetFile "admin")
 
 postAdminAccountDeleteR :: AccountUUID -> Handler Html

@@ -30,6 +30,9 @@ data AccountInfo =
     , accountInfoCreated :: UTCTime
     , accountInfoLastLogin :: Maybe UTCTime
     , accountInfoAdmin :: Bool
+    , accountInfoTicklerItemCount :: Int
+    , accountInfoTriggeredItemCount :: Int
+    , accountInfoSubscribed :: Maybe UTCTime -- End of current subscription period
     }
   deriving (Show, Eq, Ord, Generic)
 
@@ -39,7 +42,10 @@ instance FromJSON AccountInfo where
   parseJSON =
     withObject "AccountInfo" $ \o ->
       AccountInfo <$> o .: "uuid" <*> o .: "username" <*> o .: "created" <*> o .: "last-login" <*>
-      o .: "admin"
+      o .: "admin" <*>
+      o .: "tickler-item-count" <*>
+      o .: "triggered-item-count" <*>
+      o .:? "subscribed"
 
 instance ToJSON AccountInfo where
   toJSON AccountInfo {..} =
@@ -49,6 +55,9 @@ instance ToJSON AccountInfo where
       , "created" .= accountInfoCreated
       , "last-login" .= accountInfoLastLogin
       , "admin" .= accountInfoAdmin
+      , "tickler-item-count" .= accountInfoTicklerItemCount
+      , "triggered-item-count" .= accountInfoTriggeredItemCount
+      , "subscribed" .= accountInfoSubscribed
       ]
 
 instance ToSample AccountInfo

@@ -16,7 +16,8 @@ newtype Command =
 
 data ServeFlags =
   ServeFlags
-    { serveFlagPort :: Maybe Int
+    { serveFlagHost :: Maybe Text
+    , serveFlagPort :: Maybe Int
     , serveFlagPersistLogins :: Maybe Bool
     , serveFlagDefaultIntrayUrl :: Maybe BaseUrl
     , serveFlagTracking :: Maybe Text
@@ -35,7 +36,8 @@ data Configuration =
 
 data Environment =
   Environment
-    { envPort :: Maybe Int
+    { envHost :: Maybe Text
+    , envPort :: Maybe Int
     , envDefaultIntrayUrl :: Maybe BaseUrl
     , envTracking :: Maybe Text
     , envVerification :: Maybe Text
@@ -49,7 +51,8 @@ newtype Dispatch =
 
 data ServeSettings =
   ServeSettings
-    { serveSetPort :: Int
+    { serveSetHost :: Maybe Text
+    , serveSetPort :: Int
     , serveSetPersistLogins :: Bool
     , serveSetDefaultIntrayUrl :: Maybe BaseUrl
     , serveSetTracking :: Maybe Text

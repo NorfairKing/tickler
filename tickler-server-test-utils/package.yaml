@@ -18,9 +18,10 @@ library:
   - NoImplicitPrelude
 
   dependencies:
-  - QuickCheck >=2.9
   - base
+  - QuickCheck >=2.9
   - bytestring >=0.10 && <0.11
+  - cache
   - cookie >=0.4 && <0.5
   - genvalidity-bytestring
   - genvalidity-hspec
@@ -32,13 +33,6 @@ library:
   - http-types
   - intray-server
   - intray-server-test-utils
-  - tickler-api
-  - tickler-api-gen
-  - tickler-client
-  - tickler-client-gen
-  - tickler-data
-  - tickler-data-gen
-  - tickler-server
   - microlens >=0.4 && <0.5
   - monad-logger
   - path
@@ -50,7 +44,16 @@ library:
   - servant-auth-server
   - servant-client
   - servant-server
+  - stripe-core
   - text >=1.2 && <1.3
+  - tickler-api
+  - tickler-api-gen
+  - tickler-client
+  - tickler-client-gen
+  - tickler-data
+  - tickler-data-gen
+  - tickler-server
+  - time
   - typed-uuid
   - wai
   - warp
@@ -67,8 +70,8 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - QuickCheck
     - base >=4.9 && <5
+    - QuickCheck
     - bytestring
     - containers
     - genvalidity-bytestring
@@ -79,6 +82,7 @@ tests:
     - http-types
     - intray-client
     - intray-server-test-utils
+    - mergeful
     - mergeless
     - path
     - path-io
@@ -106,8 +110,8 @@ benchmarks:
     - -Wall
     - -fno-warn-name-shadowing
     dependencies:
-    - QuickCheck
     - base
+    - QuickCheck
     - bytestring
     - cookie
     - criterion
