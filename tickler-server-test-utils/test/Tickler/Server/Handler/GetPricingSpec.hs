@@ -8,22 +8,22 @@ module Tickler.Server.Handler.GetPricingSpec
 
 import TestImport
 
-import Tickler.API
 import Tickler.Client
 
 import Tickler.API.Gen ()
 import Tickler.Server.TestUtils
 
 spec :: Spec
-spec =
+spec = do
   describe "Free" $
-  withTicklerServerFree $
-  describe "GetPricing" $
-  it "gets an empty pricing" $ \cenv -> do
-    p <- runClientOrError cenv clientGetPricing
-    p `shouldBe` Nothing
-  -- withTicklerServerPaid_  $
-  --   describe "GetPricing" $
-  --   it "gets a pricing" $ \cenv -> do
-  --     p <- runClientOrError cenv clientGetPricing
-  --     p `shouldSatisfy` isJust
+    withTicklerServerFree $
+    describe "GetPricing" $
+    it "gets an empty pricing" $ \cenv -> do
+      p <- runClientOrError cenv clientGetPricing
+      p `shouldBe` Nothing
+  describe "Paid" $
+    withTicklerServerPaid_ $
+    describe "GetPricing" $
+    it "gets a pricing" $ \cenv -> do
+      p <- runClientOrError cenv clientGetPricing
+      p `shouldSatisfy` isJust
