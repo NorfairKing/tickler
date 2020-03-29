@@ -1,5 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Handler.Public.GetPricing
   ( serveGetPricing
@@ -7,9 +6,33 @@ module Tickler.Server.Handler.Public.GetPricing
 
 import Import
 
+import Data.Cache as Cache
+
+import Web.Stripe.Plan as Stripe
+
 import Tickler.API
 
+import Tickler.Server.Handler.Stripe
+import Tickler.Server.OptParse.Types
 import Tickler.Server.Types
 
 serveGetPricing :: TicklerHandler (Maybe Pricing)
-serveGetPricing = undefined
+serveGetPricing = do
+  mMone <- asks envMonetisation
+  forM mMone $ \MonetisationEnv {..} -> do
+    let StripeSettings {..} = monetisationEnvStripeSettings
+    mPlan <- liftIO $ Cache.lookup monetisationEnvPlanCache stripeSetPlan
+    Stripe.Plan {..} <-
+      case mPlan of
+        Nothing -> do
+          plan <- runStripeHandlerOrErrorWith monetisationEnvStripeSettings $ getPlan stripeSetPlan
+          liftIO $ Cache.insert monetisationEnvPlanCache stripeSetPlan plan
+          pure plan
+        Just plan -> pure plan
+    let pricingPlan = stripeSetPlan
+        pricingTrialPeriod = planTrialPeriodDays
+        pricingPrice = Stripe.Amount planAmount
+        pricingCurrency = planCurrency
+        pricingStripePublishableKey = stripeSetPublishableKey
+        pricingMaxItemsFree = monetisationEnvMaxItemsFree
+    pure Pricing {..}

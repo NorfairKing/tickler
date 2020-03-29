@@ -63,6 +63,7 @@ library:
   - servant-server
   - shakespeare
   - stripe-core
+  - stripe-haskell
   - template-haskell
   - text
   - tickler-api
