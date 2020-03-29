@@ -65,6 +65,7 @@ data TicklerPublicSite route =
     , postLogin :: route :- PostLogin
     , getLoopersStatus :: route :- GetLoopersStatus
     , getDocs :: route :- GetDocs
+    , getPricing :: route :- GetPricing
     }
   deriving (Generic)
 
@@ -76,3 +77,5 @@ type PostLogin
 type GetLoopersStatus = "loopers" :> Get '[ JSON] LoopersInfo
 
 type GetDocs = Get '[ HTML] GetDocsResponse
+
+type GetPricing = "pricing" :> Get '[ JSON] (Maybe Pricing)

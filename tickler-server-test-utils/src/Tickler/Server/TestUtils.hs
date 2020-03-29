@@ -5,6 +5,8 @@
 
 module Tickler.Server.TestUtils
   ( withTicklerServer
+  , withTicklerServerFree
+  -- , withTicklerServerPaid
   , setupTicklerTestConn
   , setupTestHttpManager
   , setupTicklerTestApp
@@ -52,7 +54,13 @@ import Tickler.Server.Types
 import Tickler.API.Gen ()
 
 withTicklerServer :: SpecWith ClientEnv -> Spec
-withTicklerServer specFunc =
+withTicklerServer specFunc
+  -- describe "Paid" $ withTicklerServerPaid 5 specFunc
+ = do
+  describe "Free" $ withTicklerServerFree specFunc
+
+withTicklerServerFree :: SpecWith ClientEnv -> Spec
+withTicklerServerFree specFunc =
   afterAll_ cleanupTicklerTestServer $
   beforeAll ((,) <$> setupTestHttpManager <*> setupTicklerTestApp) $
   aroundWith withTicklerApp $ modifyMaxSuccess (`div` 20) specFunc

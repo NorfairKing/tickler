@@ -5,6 +5,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
@@ -29,6 +30,8 @@ import Servant.Auth.Server
 import Servant.Client.Core
 import Servant.Docs
 import Servant.HTML.Blaze
+
+import qualified Web.Stripe.Plan as Stripe
 
 import Intray.API ()
 
@@ -84,6 +87,72 @@ instance ToSample LoginForm
 
 instance ToSample Username
 
+data Pricing =
+  Pricing
+    { pricingPlan :: !Stripe.PlanId
+    , pricingTrialPeriod :: !(Maybe Int)
+    , pricingPrice :: !Stripe.Amount
+    , pricingCurrency :: !Stripe.Currency
+    , pricingStripePublishableKey :: !Text
+    , pricingMaxItemsFree :: !Int
+    }
+  deriving (Show, Eq, Generic)
+
+instance Validity Pricing
+
+instance FromJSON Pricing where
+  parseJSON =
+    withObject "Pricing" $ \o ->
+      Pricing <$> o .: "plan" <*> o .:? "trial-period" <*> o .: "price" <*> o .: "currency" <*>
+      o .: "publishable-key" <*>
+      o .: "max-items-free"
+
+instance ToJSON Pricing where
+  toJSON Pricing {..} =
+    object
+      [ "plan" .= pricingPlan
+      , "trial-period" .= pricingTrialPeriod
+      , "price" .= pricingPrice
+      , "currency" .= pricingCurrency
+      , "publishable-key" .= pricingStripePublishableKey
+      , "max-items-free" .= pricingMaxItemsFree
+      ]
+
+instance ToSample Pricing where
+  toSamples Proxy =
+    singleSample
+      Pricing
+        { pricingPrice = Stripe.Amount 100
+        , pricingTrialPeriod = Just 30
+        , pricingCurrency = Stripe.CHF
+        , pricingPlan = Stripe.PlanId "plan_FiN2Zsdv0DP0kh"
+        , pricingStripePublishableKey = "pk_test_zV5qVP1IQTjE9QYulRZpfD8C00cqGOnQ91"
+        , pricingMaxItemsFree = 5
+        }
+
+-- These are in intray
+-- instance Validity Stripe.Currency where
+--   validate = trivialValidation
+--
+-- instance ToJSON Stripe.Currency where
+--   toJSON c = toJSON $ T.toLower $ T.pack $ show c
+--
+-- deriving instance Validity Stripe.PlanId
+--
+-- deriving instance Hashable Stripe.PlanId
+--
+-- deriving instance ToJSON Stripe.PlanId
+--
+-- deriving instance FromJSON Stripe.PlanId
+--
+-- instance Validity Stripe.Amount where
+--   validate (Stripe.Amount a) = delve "getAmount" a
+--
+-- instance ToJSON Stripe.Amount where
+--   toJSON (Stripe.Amount a) = toJSON a
+--
+-- instance FromJSON Stripe.Amount where
+--   parseJSON v = Stripe.Amount <$> parseJSON v
 data LoopersInfo =
   LoopersInfo
     { emailerLooperInfo :: LooperInfo
