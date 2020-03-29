@@ -1,29 +1,67 @@
 <div .ui .segment>
-  <div class="ui two huge statistics">
-    <div class="statistic">
-      <div class="value">
-        #{adminStatsNbUsers}
-      <div class="label">
-        Members
+  $maybe _ <- mPricing
+    <div class="ui four huge statistics">
+      <div class="statistic">
+        <div class="value">
+          #{adminStatsNbSubscribers}
+        <div class="label">
+          Subscribers
 
-    <div class="statistic">
-      <div class="value">
-        #{adminStatsNbItems}
-      <div class="label">
-        Items
+      <div class="statistic">
+        <div class="value">
+          #{adminStatsNbUsers}
+        <div class="label">
+          Accounts
+
+      <div class="statistic">
+        <div class="value">
+          #{adminStatsNbTicklerItems}
+        <div class="label">
+          Tickler Items
+
+      <div class="statistic">
+        <div class="value">
+          #{adminStatsNbTriggeredItems}
+        <div class="label">
+          Tickler Items
+
+  $nothing
+    <div class="ui three huge statistics">
+      <div class="statistic">
+        <div class="value">
+          #{adminStatsNbUsers}
+        <div class="label">
+          Members
+
+      <div class="statistic">
+        <div class="value">
+          #{adminStatsNbTicklerItems}
+        <div class="label">
+          Tickler Items
+
+      <div class="statistic">
+        <div class="value">
+          #{adminStatsNbTriggeredItems}
+        <div class="label">
+          Tickler Items
 
 <div .ui .segment>
   <table .ui .celled .table>
     <thead>
       <tr>
         <th>
-          UUID
-        <th>
           Username
         <th>
           Created
         <th>
           Last Login
+        <th>
+          Tickler items
+        <th>
+          Triggered items
+        $maybe _ <- mPricing
+          <th>
+            Subscribed
         <th>
           Admin
         <th>
@@ -32,15 +70,26 @@
       $forall u <- users
         <tr>
           <td>
-            <code>
-              #{uuidText $ accountInfoUUID u}
+            <div data-tooltip="#{uuidText $ accountInfoUUID u}">
+              #{usernameText $ accountInfoUsername u}
           <td>
-            #{usernameText $ accountInfoUsername u}
-          <td>
-            #{prettyTimestamp now $ accountInfoCreated u}
+            <div data-tooltip="#{prettyTimestamp now $ accountInfoCreated u}">
+              #{prettyTimeAuto now $ accountInfoCreated u}
           <td>
             $maybe ll <- accountInfoLastLogin u
-              #{prettyTimestamp now ll}
+              <div data-tooltip="#{prettyTimestamp now ll}">
+                #{prettyTimeAuto now ll}
+          <td>
+            #{accountInfoTicklerItemCount u}
+          <td>
+            #{accountInfoTriggeredItemCount u}
+          $maybe _ <- mPricing
+            <td>
+              $maybe end <- accountInfoSubscribed u
+                <div data-tooltip="#{prettyTimestamp now end}">
+                  #{prettyTimeAuto now end}
+              $nothing
+                No
           <td>
             #{accountInfoAdmin u}
           <td>

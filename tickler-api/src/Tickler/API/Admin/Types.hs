@@ -18,17 +18,28 @@ import Tickler.API.Types ()
 
 data AdminStats =
   AdminStats
-    { adminStatsNbUsers :: Int
-    , adminStatsNbItems :: Int
+    { adminStatsNbUsers :: Word
+    , adminStatsNbSubscribers :: Word
+    , adminStatsNbTicklerItems :: Word
+    , adminStatsNbTriggeredItems :: Word
     }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity AdminStats
 
 instance FromJSON AdminStats where
-  parseJSON = withObject "AdminStats" $ \o -> AdminStats <$> o .: "users" <*> o .: "items"
+  parseJSON =
+    withObject "AdminStats" $ \o ->
+      AdminStats <$> o .: "users" <*> o .: "subscribers" <*> o .: "tickler-items" <*>
+      o .: "triggered-items"
 
 instance ToJSON AdminStats where
-  toJSON AdminStats {..} = object ["users" .= adminStatsNbUsers, "items" .= adminStatsNbItems]
+  toJSON AdminStats {..} =
+    object
+      [ "users" .= adminStatsNbUsers
+      , "subscribers" .= adminStatsNbSubscribers
+      , "tickler-items" .= adminStatsNbTicklerItems
+      , "triggered-items" .= adminStatsNbTriggeredItems
+      ]
 
 instance ToSample AdminStats
