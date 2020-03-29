@@ -12,8 +12,8 @@ import Database.Persist
 
 import Tickler.Data
 
+import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
-import Tickler.Server.Looper.Utils
 
 runTriggeredEmailScheduler :: () -> Looper ()
 runTriggeredEmailScheduler _ = do

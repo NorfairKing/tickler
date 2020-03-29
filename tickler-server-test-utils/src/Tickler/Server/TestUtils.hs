@@ -164,6 +164,8 @@ setupTicklerTestApp menv = do
                 , triggeredIntrayItemSenderLooperHandle = LooperHandleDisabled
                 , triggeredEmailSchedulerLooperHandle = LooperHandleDisabled
                 , triggeredEmailConverterLooperHandle = LooperHandleDisabled
+                , stripeEventsFetcherLooperHandle = LooperHandleDisabled
+                , stripeEventsRetrierLooperHandle = LooperHandleDisabled
                 }
           }
   pure $ serveWithContext ticklerAPI (ticklerAppContext ticklerEnv) (makeTicklerServer ticklerEnv)

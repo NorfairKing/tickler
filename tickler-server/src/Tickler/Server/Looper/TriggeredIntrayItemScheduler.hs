@@ -11,8 +11,8 @@ import Database.Persist.Sqlite
 
 import Tickler.Data
 
+import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
-import Tickler.Server.Looper.Utils
 
 runTriggeredIntrayItemScheduler :: () -> Looper ()
 runTriggeredIntrayItemScheduler _ = do

@@ -21,6 +21,7 @@ import Database.Persist.Sqlite
 import Tickler.Server.OptParse.Types
 
 import Tickler.Server.Looper.Emailer
+import Tickler.Server.Looper.StripeEventsFetcher
 import Tickler.Server.Looper.TriggeredEmailConverter
 import Tickler.Server.Looper.TriggeredEmailScheduler
 import Tickler.Server.Looper.TriggeredIntrayItemScheduler
@@ -38,33 +39,51 @@ data LoopersHandle =
     , triggeredIntrayItemSenderLooperHandle :: LooperHandle
     , triggeredEmailSchedulerLooperHandle :: LooperHandle
     , triggeredEmailConverterLooperHandle :: LooperHandle
+    , stripeEventsFetcherLooperHandle :: LooperHandle
+    , stripeEventsRetrierLooperHandle :: LooperHandle
     }
 
-startLoopers :: Pool SqlBackend -> LooperSettings -> IO LoopersHandle
-startLoopers pool LooperSettings {..} = do
-  emailerLooperHandle <- startLooperWithSets pool looperSetEmailerSets runEmailer
-  triggererLooperHandle <- startLooperWithSets pool looperSetTriggererSets runTriggerer
+startLoopers :: Pool SqlBackend -> LooperSettings -> Maybe MonetisationSettings -> IO LoopersHandle
+startLoopers pool LooperSettings {..} mms = do
+  let start :: LooperSetsWith a -> (a -> Looper b) -> IO LooperHandle
+      start = startLooperWithSets pool (monetisationSetStripeSettings <$> mms)
+  emailerLooperHandle <- start looperSetEmailerSets runEmailer
+  triggererLooperHandle <- start looperSetTriggererSets runTriggerer
   verificationEmailConverterLooperHandle <-
-    startLooperWithSets pool looperSetVerificationEmailConverterSets runVerificationEmailConverter
+    start looperSetVerificationEmailConverterSets runVerificationEmailConverter
   triggeredIntrayItemSchedulerLooperHandle <-
-    startLooperWithSets
-      pool
-      looperSetTriggeredIntrayItemSchedulerSets
-      runTriggeredIntrayItemScheduler
+    start looperSetTriggeredIntrayItemSchedulerSets runTriggeredIntrayItemScheduler
   triggeredIntrayItemSenderLooperHandle <-
-    startLooperWithSets pool looperSetTriggeredIntrayItemSenderSets runTriggeredIntrayItemSender
+    start looperSetTriggeredIntrayItemSenderSets runTriggeredIntrayItemSender
   triggeredEmailSchedulerLooperHandle <-
-    startLooperWithSets pool looperSetTriggeredEmailSchedulerSets runTriggeredEmailScheduler
+    start looperSetTriggeredEmailSchedulerSets runTriggeredEmailScheduler
   triggeredEmailConverterLooperHandle <-
-    startLooperWithSets pool looperSetTriggeredEmailConverterSets runTriggeredEmailConverter
+    start looperSetTriggeredEmailConverterSets runTriggeredEmailConverter
+  stripeEventsFetcherLooperHandle <-
+    maybe
+      (pure LooperHandleDisabled)
+      (\ms ->
+         start (monetisationSetStripeEventsFetcher ms) $ \() ->
+           runStripeEventsFetcher (monetisationSetStripeSettings ms))
+      mms
+  stripeEventsRetrierLooperHandle <-
+    maybe
+      (pure LooperHandleDisabled)
+      (\ms -> start (monetisationSetStripeEventsRetrier ms) $ \() -> pure ())
+      mms
   pure LoopersHandle {..}
 
-startLooperWithSets :: Pool SqlBackend -> LooperSetsWith a -> (a -> Looper b) -> IO LooperHandle
-startLooperWithSets pool lsw func =
+startLooperWithSets ::
+     Pool SqlBackend
+  -> Maybe StripeSettings
+  -> LooperSetsWith a
+  -> (a -> Looper b)
+  -> IO LooperHandle
+startLooperWithSets pool mss lsw func =
   case lsw of
     LooperDisabled -> pure LooperHandleDisabled
     LooperEnabled lsc@LooperStaticConfig {..} sets ->
-      let env = LooperEnv {looperEnvPool = pool}
+      let env = LooperEnv {looperEnvPool = pool, looperEnvStripeSettings = mss}
        in do a <-
                async $
                runLooper

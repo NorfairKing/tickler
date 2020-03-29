@@ -1,4 +1,4 @@
-module Tickler.Server.Looper.Utils
+module Tickler.Server.Looper.DB
   ( runDb
   ) where
 

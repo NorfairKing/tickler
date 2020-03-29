@@ -43,7 +43,7 @@ runTicklerServer ServeSettings {..} =
     signingKey <- liftIO loadSigningKey
     let jwtCfg = defaultJWTSettings signingKey
     let cookieCfg = defaultCookieSettings
-    loopersHandle <- liftIO $ startLoopers pool serveSetLooperSettings
+    loopersHandle <- liftIO $ startLoopers pool serveSetLooperSettings serveSetMonetisationSettings
     mMonetisationEnv <-
       forM serveSetMonetisationSettings $ \MonetisationSettings {..} -> do
         planCache <- liftIO $ newCache Nothing

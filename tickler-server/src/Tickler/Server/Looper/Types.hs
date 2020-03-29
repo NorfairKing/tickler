@@ -14,11 +14,13 @@ import Control.Monad.Catch
 import Control.Monad.Logger
 import Data.Pool
 import Database.Persist.Sqlite
+
 import Tickler.Server.OptParse.Types
 
-newtype LooperEnv =
+data LooperEnv =
   LooperEnv
     { looperEnvPool :: Pool SqlBackend
+    , looperEnvStripeSettings :: Maybe StripeSettings
     }
 
 newtype Looper a =
