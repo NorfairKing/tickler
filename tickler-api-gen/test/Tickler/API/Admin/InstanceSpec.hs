@@ -16,3 +16,5 @@ spec :: Spec
 spec = do
   genValidSpec @AdminStats
   jsonSpecOnValid @AdminStats
+  genValidSpec @ActiveUsers
+  jsonSpecOnValid @ActiveUsers

@@ -8,7 +8,10 @@ import Import
 import Tickler.API
 import Tickler.Data.Gen ()
 
-instance GenUnchecked AdminStats
-
 instance GenValid AdminStats where
-  genValid = (AdminStats <$> genValid <*> genValid) `suchThat` isValid
+  genValid = genValidStructurallyWithoutExtraChecking
+  shrinkValid = shrinkValidStructurallyWithoutExtraFiltering
+
+instance GenValid ActiveUsers where
+  genValid = genValidStructurallyWithoutExtraChecking
+  shrinkValid = shrinkValidStructurallyWithoutExtraFiltering
