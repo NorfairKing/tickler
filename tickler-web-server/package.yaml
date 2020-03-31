@@ -94,7 +94,7 @@ tests:
     - tickler-data
     - tickler-data-gen
     - tickler-server
-    - tickler-server-test-utils
+    - tickler-server-gen
     - tickler-web-server
     - typed-uuid
     - yesod-auth

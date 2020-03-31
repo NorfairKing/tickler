@@ -87,6 +87,6 @@ tests:
     - tickler-cli
     - tickler-client
     - tickler-data
-    - tickler-server-test-utils
+    - tickler-server-gen
     - time
     - containers

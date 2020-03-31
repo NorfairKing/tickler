@@ -8,7 +8,7 @@ packages:
 - tickler-data
 - tickler-data-gen
 - tickler-server
-- tickler-server-test-utils
+- tickler-server-gen
 - tickler-web-server
 extra-deps:
 - amazonka-1.6.1

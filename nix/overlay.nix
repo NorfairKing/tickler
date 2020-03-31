@@ -30,7 +30,7 @@ with final.haskell.lib;
         "tickler-data"
         "tickler-data-gen"
         "tickler-server"
-        "tickler-server-test-utils"
+        "tickler-server-gen"
       ] ticklerPkg // {
         "tickler-web-server" =
         let semantic-js = builtins.fetchurl {
