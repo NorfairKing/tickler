@@ -160,21 +160,6 @@ $maybe p <- mPricing
       <div .content>
         <div .header>
           <p>
-            Will Tickler remain free of charge?
-        <div .description>
-          <p>
-            Tickler is currently free of charge.
-            This is because the author uses it and running the service for only himself is
-            not cheaper than running it for multiple people.
-            If this ever changes, Tickler may start charging a small subscription fee to cover
-            the cost of operation.
-            You can expect this to be less than a dollar per month.
-
-    <div .item>
-      <i .question .icon>
-      <div .content>
-        <div .header>
-          <p>
             I don't trust you with my data, can I still use Tickler?
         <div .description>
           <p>
