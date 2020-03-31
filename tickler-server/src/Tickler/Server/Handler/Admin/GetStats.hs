@@ -13,9 +13,6 @@ import Import
 import Data.Time
 import Database.Persist
 
-import Servant hiding (BadPassword, NoSuchUser)
-import Servant.Auth.Server as Auth
-
 import Tickler.API
 
 import Tickler.Server.Types
@@ -23,8 +20,8 @@ import Tickler.Server.Types
 import Tickler.Server.Handler.Stripe
 import Tickler.Server.Handler.Utils
 
-serveAdminGetStats :: AuthResult AuthCookie -> TicklerHandler AdminStats
-serveAdminGetStats (Authenticated AuthCookie {..}) =
+serveAdminGetStats :: AuthCookie -> TicklerHandler AdminStats
+serveAdminGetStats AuthCookie {..} =
   withAdminCreds authCookieUserUUID $ do
     adminStatsNbUsers <- fromIntegral <$> runDb (count ([] :: [Filter User]))
     adminStatsNbTicklerItems <- fromIntegral <$> runDb (count ([] :: [Filter TicklerItem]))
@@ -50,4 +47,3 @@ serveAdminGetStats (Authenticated AuthCookie {..}) =
     activeUsersYearly <- activeUsers $ 365 * day
     let adminStatsActiveUsers = ActiveUsers {..}
     pure AdminStats {..}
-serveAdminGetStats _ = throwAll err401

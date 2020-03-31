@@ -35,7 +35,7 @@ data TicklerProtectedSite route =
     , postAddItem :: route :- PostAddItem
     , getItem :: route :- GetItem
     , deleteItem :: route :- DeleteItem
-    , retryTriggered :: route :- RetryTriggered
+    , postRetryTriggered :: route :- PostRetryTriggered
     , deleteTriggereds :: route :- DeleteTriggereds
     , postSync :: route :- PostSync
     , getTriggers :: route :- GetTriggers
@@ -79,7 +79,7 @@ instance ToCapture (Capture "id" ItemUUID) where
 type DeleteItem
    = ProtectAPI :> "tickler" :> "item" :> "delete" :> Capture "id" ItemUUID :> Delete '[ JSON] NoContent
 
-type RetryTriggered
+type PostRetryTriggered
    = ProtectAPI :> "tickler" :> "item" :> "retry" :> ReqBody '[ JSON] [ItemUUID] :> Post '[ JSON] NoContent
 
 type DeleteTriggereds

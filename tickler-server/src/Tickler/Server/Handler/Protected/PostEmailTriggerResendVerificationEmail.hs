@@ -5,7 +5,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Tickler.Server.Handler.PostEmailTriggerResendVerificationEmail
+module Tickler.Server.Handler.Protected.PostEmailTriggerResendVerificationEmail
   ( servePostEmailTriggerResendVerificationEmail
   ) where
 

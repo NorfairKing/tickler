@@ -5,7 +5,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Tickler.Server.Handler.PostAddIntrayTrigger
+module Tickler.Server.Handler.Protected.PostAddIntrayTrigger
   ( servePostAddIntrayTrigger
   ) where
 

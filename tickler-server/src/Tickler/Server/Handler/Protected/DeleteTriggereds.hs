@@ -4,7 +4,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Tickler.Server.Handler.DeleteTriggereds
+module Tickler.Server.Handler.Protected.DeleteTriggereds
   ( serveDeleteTriggereds
   ) where
 

@@ -5,7 +5,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Tickler.Server.Handler.GetItem
+module Tickler.Server.Handler.Protected.GetItem
   ( serveGetItem
   ) where
 

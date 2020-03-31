@@ -4,7 +4,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Tickler.Server.Handler.GetItemUUIDs
+module Tickler.Server.Handler.Protected.GetItemUUIDs
   ( serveGetItemUUIDs
   ) where
 

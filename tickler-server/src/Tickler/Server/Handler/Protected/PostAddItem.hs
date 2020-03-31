@@ -4,7 +4,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Tickler.Server.Handler.PostAddItem
+module Tickler.Server.Handler.Protected.PostAddItem
   ( servePostAddItem
   ) where
 

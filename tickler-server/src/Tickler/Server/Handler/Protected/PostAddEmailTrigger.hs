@@ -4,7 +4,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Tickler.Server.Handler.PostAddEmailTrigger
+module Tickler.Server.Handler.Protected.PostAddEmailTrigger
   ( servePostAddEmailTrigger
   ) where
 

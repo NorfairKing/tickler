@@ -4,7 +4,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Tickler.Server.Handler.PutAccountSettings
+module Tickler.Server.Handler.Protected.PutAccountSettings
   ( servePutAccountSettings
   ) where
 

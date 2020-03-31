@@ -5,7 +5,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Tickler.Server.Handler.GetTrigger where
+module Tickler.Server.Handler.Protected.GetTrigger where
 
 import Import
 
@@ -18,7 +18,7 @@ import Tickler.API
 
 import Tickler.Server.Types
 
-import Tickler.Server.Handler.GetTriggers
+import Tickler.Server.Handler.Trigger
 import Tickler.Server.Handler.Utils
 
 serveGetTrigger :: AuthCookie -> TriggerUUID -> TicklerHandler (TriggerInfo TypedTriggerInfo)

@@ -4,7 +4,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Tickler.Server.Handler.DeleteItem
+module Tickler.Server.Handler.Protected.DeleteItem
   ( serveDeleteItem
   ) where
 

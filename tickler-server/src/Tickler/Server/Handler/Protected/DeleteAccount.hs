@@ -4,7 +4,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Tickler.Server.Handler.DeleteAccount
+module Tickler.Server.Handler.Protected.DeleteAccount
   ( serveDeleteAccount
   ) where
 

@@ -106,7 +106,7 @@ ticklerProtectedServer =
     , postAddItem = withAuthResult servePostAddItem
     , getItem = withAuthResult serveGetItem
     , deleteItem = withAuthResult serveDeleteItem
-    , retryTriggered = withAuthResult serveRetryTriggered
+    , postRetryTriggered = withAuthResult servePostRetryTriggered
     , deleteTriggereds = withAuthResult serveDeleteTriggereds
     , postSync = withAuthResult servePostSync
     , getTriggers = withAuthResult serveGetTriggers
@@ -121,6 +121,24 @@ ticklerProtectedServer =
     , getAccountSettings = withAuthResult serveGetAccountSettings
     , putAccountSettings = withAuthResult servePutAccountSettings
     , deleteAccount = withAuthResult serveDeleteAccount
+    }
+
+ticklerPublicServer :: TicklerPublicSite (AsServerT TicklerHandler)
+ticklerPublicServer =
+  TicklerPublicSite
+    { postRegister = servePostRegister
+    , postLogin = servePostLogin
+    , getLoopersStatus = serveGetLoopersStatus
+    , getDocs = serveGetDocs
+    , getPricing = serveGetPricing
+    }
+
+ticklerAdminServer :: TicklerAdminSite (AsServerT TicklerHandler)
+ticklerAdminServer =
+  TicklerAdminSite
+    { adminGetStats = withAuthResult serveAdminGetStats
+    , adminDeleteAccount = withAuthResult serveAdminDeleteAccount
+    , adminGetAccounts = withAuthResult serveAdminGetAccounts
     }
 
 withAuthResult :: ThrowAll a => (AuthCookie -> a) -> (AuthResult AuthCookie -> a)

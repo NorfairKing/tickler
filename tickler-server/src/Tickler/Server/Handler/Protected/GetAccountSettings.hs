@@ -4,7 +4,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Tickler.Server.Handler.GetAccountSettings
+module Tickler.Server.Handler.Protected.GetAccountSettings
   ( serveGetAccountSettings
   ) where
 

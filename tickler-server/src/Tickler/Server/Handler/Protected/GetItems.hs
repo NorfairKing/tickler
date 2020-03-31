@@ -4,7 +4,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Tickler.Server.Handler.GetItems where
+module Tickler.Server.Handler.Protected.GetItems where
 
 import Import
 

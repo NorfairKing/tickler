@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Tickler.Server.Handler.DeleteTrigger
+module Tickler.Server.Handler.Protected.DeleteTrigger
   ( serveDeleteTrigger
   ) where
 

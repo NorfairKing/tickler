@@ -10,8 +10,7 @@ module Tickler.Server.Handler.Admin.DeleteAccount
 
 import Import
 
-import Servant hiding (BadPassword, NoSuchUser)
-import Servant.Auth.Server as Auth
+import Servant
 
 import Tickler.API
 
@@ -19,9 +18,8 @@ import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-serveAdminDeleteAccount :: AuthResult AuthCookie -> AccountUUID -> TicklerHandler NoContent
-serveAdminDeleteAccount (Authenticated AuthCookie {..}) uuid =
+serveAdminDeleteAccount :: AuthCookie -> AccountUUID -> TicklerHandler NoContent
+serveAdminDeleteAccount AuthCookie {..} uuid =
   withAdminCreds authCookieUserUUID $ do
     deleteAccountFully uuid
     pure NoContent
-serveAdminDeleteAccount _ _ = throwAll err401

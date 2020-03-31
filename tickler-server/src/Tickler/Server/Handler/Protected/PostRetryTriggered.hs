@@ -4,8 +4,8 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Tickler.Server.Handler.RetryTriggered
-  ( serveRetryTriggered
+module Tickler.Server.Handler.Protected.PostRetryTriggered
+  ( servePostRetryTriggered
   ) where
 
 import Import
@@ -20,8 +20,8 @@ import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-serveRetryTriggered :: AuthCookie -> [ItemUUID] -> TicklerHandler NoContent
-serveRetryTriggered AuthCookie {..} ids = do
+servePostRetryTriggered :: AuthCookie -> [ItemUUID] -> TicklerHandler NoContent
+servePostRetryTriggered AuthCookie {..} ids = do
   runDb $ do
     forM_ ids $ \i ->
       updateWhere [TriggeredIntrayItemItem ==. i] [TriggeredIntrayItemError =. Nothing]

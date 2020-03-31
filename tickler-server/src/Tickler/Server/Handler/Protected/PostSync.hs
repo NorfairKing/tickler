@@ -1,7 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module Tickler.Server.Handler.PostSync
+module Tickler.Server.Handler.Protected.PostSync
   ( servePostSync
   ) where
 
