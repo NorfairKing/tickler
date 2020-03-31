@@ -20,3 +20,5 @@ spec = do
   jsonSpecOnValid @AccountInfo
   genValidSpec @AccountSettings
   jsonSpecOnValid @AccountSettings
+  genValidSpec @PaidStatus
+  jsonSpecOnValid @PaidStatus

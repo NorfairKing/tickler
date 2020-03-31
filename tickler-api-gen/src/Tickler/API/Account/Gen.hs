@@ -15,6 +15,10 @@ instance GenValid AccountInfo where
   genValid = genValidStructurally
   shrinkValid = shrinkValidStructurally
 
+instance GenValid PaidStatus where
+  genValid = genValidStructurally
+  shrinkValid = shrinkValidStructurally
+
 instance GenValid AccountSettings where
   genValid = genValidStructurally
   shrinkValid = shrinkValidStructurally

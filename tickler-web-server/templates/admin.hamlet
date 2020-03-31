@@ -89,7 +89,7 @@
           Triggered items
         $maybe _ <- mPricing
           <th>
-            Subscribed
+            Status
         <th>
           Admin
         <th>
@@ -113,11 +113,15 @@
             #{accountInfoTriggeredItemCount u}
           $maybe _ <- mPricing
             <td>
-              $maybe end <- accountInfoSubscribed u
-                <div data-tooltip="#{prettyTimestamp now end}">
-                  #{prettyTimeAuto now end}
-              $nothing
-                No
+              $case accountInfoStatus u
+                $of NoPaymentNecessary
+                  No Payment Necessary
+                $of HasPaid end
+                  Subscribed until
+                  <div data-tooltip="#{prettyTimestamp now end}">
+                    #{prettyTimeAuto now end}
+                $of HasNotPaid _
+                  Not Subscribed
           <td>
             #{accountInfoAdmin u}
           <td>

@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
@@ -32,7 +33,7 @@ data AccountInfo =
     , accountInfoAdmin :: Bool
     , accountInfoTicklerItemCount :: Int
     , accountInfoTriggeredItemCount :: Int
-    , accountInfoSubscribed :: Maybe UTCTime -- End of current subscription period
+    , accountInfoStatus :: PaidStatus
     }
   deriving (Show, Eq, Ord, Generic)
 
@@ -45,7 +46,7 @@ instance FromJSON AccountInfo where
       o .: "admin" <*>
       o .: "tickler-item-count" <*>
       o .: "triggered-item-count" <*>
-      o .:? "subscribed"
+      o .: "status"
 
 instance ToJSON AccountInfo where
   toJSON AccountInfo {..} =
@@ -57,10 +58,38 @@ instance ToJSON AccountInfo where
       , "admin" .= accountInfoAdmin
       , "tickler-item-count" .= accountInfoTicklerItemCount
       , "triggered-item-count" .= accountInfoTriggeredItemCount
-      , "subscribed" .= accountInfoSubscribed
+      , "status" .= accountInfoStatus
       ]
 
 instance ToSample AccountInfo
+
+data PaidStatus
+  = HasNotPaid Int -- Number of extra items that they're still allowed
+  | HasPaid UTCTime
+  | NoPaymentNecessary
+  deriving (Show, Eq, Ord, Generic)
+
+instance Validity PaidStatus
+
+instance FromJSON PaidStatus where
+  parseJSON =
+    withObject "PaidStatus" $ \o -> do
+      t <- o .: "status"
+      case (t :: Text) of
+        "not-paid" -> HasNotPaid <$> o .: "items-left"
+        "paid" -> HasPaid <$> o .: "until"
+        "no-payment-necessary" -> pure NoPaymentNecessary
+        _ -> fail "Unknown PaidStatus"
+
+instance ToJSON PaidStatus where
+  toJSON =
+    let o t vs = object $ ("status" .= (t :: Text)) : vs
+     in \case
+          HasNotPaid itemsLeft -> o "not-paid" ["items-left" .= itemsLeft]
+          HasPaid ut -> o "paid" ["until" .= ut]
+          NoPaymentNecessary -> o "no-payment-necessary" []
+
+instance ToSample PaidStatus
 
 newtype AccountSettings =
   AccountSettings

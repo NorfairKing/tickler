@@ -25,11 +25,6 @@ getUserAccountInfo User {..} = do
   ticklerItemCount <- runDb $ count [TicklerItemUserId ==. userIdentifier]
   triggeredItemCount <- runDb $ count [TriggeredItemUserId ==. userIdentifier]
   ups <- getUserPaidStatus userIdentifier
-  let subbed =
-        case ups of
-          HasNotPaid _ -> Nothing
-          HasPaid u -> Just u
-          NoPaymentNecessary -> Nothing
   pure
     AccountInfo
       { accountInfoUUID = userIdentifier
@@ -39,5 +34,5 @@ getUserAccountInfo User {..} = do
       , accountInfoAdmin = userUsername `elem` admins
       , accountInfoTicklerItemCount = ticklerItemCount
       , accountInfoTriggeredItemCount = triggeredItemCount
-      , accountInfoSubscribed = subbed
+      , accountInfoStatus = ups
       }

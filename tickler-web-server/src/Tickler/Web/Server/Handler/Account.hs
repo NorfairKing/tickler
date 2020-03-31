@@ -71,9 +71,10 @@ accountInfoSegment mai mp =
     Just ai@AccountInfo {..} -> do
       now <- liftIO getCurrentTime
       let subbedWidget =
-            case accountInfoSubscribed of
-              Nothing -> [whamlet|Not subscribed|]
-              Just subbed -> [whamlet|Subscribed until ^{makeTimestampWidget now subbed}|]
+            case accountInfoStatus of
+              HasNotPaid _ -> [whamlet|Not subscribed|]
+              HasPaid subbed -> [whamlet|Subscribed until ^{makeTimestampWidget now subbed}|]
+              NoPaymentNecessary -> [whamlet|No payment necessary|]
           createdWidget = makeTimestampWidget now accountInfoCreated
       pure $
         mconcat
@@ -87,9 +88,10 @@ accountInfoSegment mai mp =
               <p>
                 Status: ^{subbedWidget}
           |]
-          , case accountInfoSubscribed of
-              Nothing -> maybe mempty (pricingStripeForm ai) mp
-              Just _ -> mempty -- Already subscribed
+          , case accountInfoStatus of
+              HasNotPaid _ -> maybe mempty (pricingStripeForm ai) mp
+              HasPaid _ -> mempty -- already bubscribed
+              NoPaymentNecessary -> mempty
           ]
 
 pricingStripeForm :: AccountInfo -> Pricing -> Widget

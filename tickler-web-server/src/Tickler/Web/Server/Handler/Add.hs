@@ -22,14 +22,12 @@ import Tickler.Web.Server.Foundation
 getAddR :: Handler Html
 getAddR =
   withLogin $ \t -> do
-    mPricing <- runClientOrErr clientGetPricing
     AccountInfo {..} <- runClientOrErr $ clientGetAccountInfo t
-    tickles <- runClientOrErr $ clientGetItemUUIDs t
     let canAdd =
-          case mPricing of
-            Nothing -> True
-            Just Pricing {..} ->
-              length tickles > pricingMaxItemsFree && isNothing accountInfoSubscribed
+          case accountInfoStatus of
+            HasPaid _ -> True
+            NoPaymentNecessary -> True
+            HasNotPaid itemsLeft -> itemsLeft >= 1
     token <- genToken
     withNavBar $(widgetFile "add")
 

@@ -80,12 +80,6 @@ getUserPaidStatus userId = do
                   c <- runDb $ count [TicklerItemUserId ==. userId]
                   pure $ HasNotPaid (monetisationEnvMaxItemsFree - c)
 
-data PaidStatus
-  = HasNotPaid Int -- Number of extra items that they're still allowed
-  | HasPaid UTCTime
-  | NoPaymentNecessary
-  deriving (Show, Eq)
-
 hasSubscribed :: StripeSettings -> AccountUUID -> TicklerHandler (Maybe UTCTime)
 hasSubscribed ss uuid = do
   mc <- runDb $ getBy $ UniqueCustomerUser uuid
