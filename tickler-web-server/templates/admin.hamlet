@@ -23,7 +23,7 @@
         <div class="value">
           #{adminStatsNbTriggeredItems}
         <div class="label">
-          Tickler Items
+          Triggered Items
 
   $nothing
     <div class="ui three huge statistics">
@@ -43,7 +43,7 @@
         <div class="value">
           #{adminStatsNbTriggeredItems}
         <div class="label">
-          Tickler Items
+          Triggered Items
 
 <div .ui .segment>
   <h3>
