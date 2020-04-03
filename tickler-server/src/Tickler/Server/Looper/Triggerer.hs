@@ -20,26 +20,31 @@ runTriggerer :: TriggererSettings -> Looper ()
 runTriggerer TriggererSettings = do
   logInfoNS "Triggerer" "Starting triggering tickles."
   nowZoned <- liftIO getZonedTime
-  let now = zonedTimeToUTC nowZoned
-      nowLocal = zonedTimeToLocalTime nowZoned
+  let nowLocal = zonedTimeToLocalTime nowZoned
       nowDay = localDay nowLocal
       later = addDays 2 nowDay
-  runDb $ do
-    itemsToConsider <-
-      selectList
-        [TicklerItemScheduledDay <=. later]
-        [Asc TicklerItemScheduledDay, Asc TicklerItemScheduledTime]
-    items <-
-      flip filterM itemsToConsider $ \(Entity _ ti@TicklerItem {..}) -> do
-        mSets <- getBy $ UniqueUserSettings ticklerItemUserId
-        let tz = maybe utc (userSettingsTimeZone . entityVal) mSets
-        pure $ shouldBeTriggered now tz ti -- utcTimeInUserTimezone <= now
-    forM_ items $ \(Entity tii ti) -> do
-      insert_ $ makeTriggeredItem now ti -- Make the triggered item
-      delete tii -- Delete the tickler item
-      nti <- liftIO $ makeNextTickleItem ti
-      forM nti insert_ -- Insert the next tickler item if necessary
+  itemsToConsider <-
+    runDb $
+    selectList
+      [TicklerItemScheduledDay <=. later]
+      [Asc TicklerItemScheduledDay, Asc TicklerItemScheduledTime]
+  mapM_ considerTicklerItem itemsToConsider
   logInfoNS "Triggerer" "Finished triggering tickles."
+
+considerTicklerItem :: Entity TicklerItem -> Looper ()
+considerTicklerItem e@(Entity _ ti@TicklerItem {..}) =
+  runDb $ do
+    now <- liftIO getCurrentTime
+    mSets <- getBy $ UniqueUserSettings ticklerItemUserId
+    let tz = maybe utc (userSettingsTimeZone . entityVal) mSets
+    when (shouldBeTriggered now tz ti) $ triggerTicklerItem now e
+
+triggerTicklerItem :: UTCTime -> Entity TicklerItem -> SqlPersistT IO ()
+triggerTicklerItem now (Entity tii ti) = do
+  insert_ $ makeTriggeredItem now ti -- Make the triggered item
+  case ticklerItemUpdates ti of
+    Nothing -> delete tii -- Delete the tickler item
+    Just updates -> update tii updates
 
 shouldBeTriggered :: UTCTime -> TimeZone -> TicklerItem -> Bool
 shouldBeTriggered now tz ti = localTimeToUTC tz (ticklerItemLocalScheduledTime ti) <= now
@@ -62,6 +67,12 @@ makeTriggeredItem now TicklerItem {..} =
     , triggeredItemTriggered = now
     }
 
+ticklerItemUpdates :: TicklerItem -> Maybe [Update TicklerItem]
+ticklerItemUpdates ti = do
+  r <- ticklerItemRecurrence ti
+  let (d, mtod) = nextScheduledTime (ticklerItemScheduledDay ti) (ticklerItemScheduledTime ti) r
+  pure [TicklerItemScheduledDay =. d, TicklerItemScheduledTime =. mtod]
+
 nextScheduledTime :: Day -> Maybe TimeOfDay -> Recurrence -> (Day, Maybe TimeOfDay)
 nextScheduledTime scheduledDay _ r =
   case r of
@@ -75,19 +86,3 @@ nextScheduledTime scheduledDay _ r =
                 let (y, m, _) = toGregorian clipped
                  in fromGregorian y m (fromIntegral d_)
        in (day, mtod)
-
-makeNextTickleItem :: TicklerItem -> IO (Maybe TicklerItem)
-makeNextTickleItem ti =
-  case ticklerItemRecurrence ti of
-    Nothing -> pure Nothing
-    Just r ->
-      fmap Just $ do
-        let (d, mtod) =
-              nextScheduledTime (ticklerItemScheduledDay ti) (ticklerItemScheduledTime ti) r
-        uuid <- nextRandomUUID
-        pure $
-          ti
-            { ticklerItemIdentifier = uuid
-            , ticklerItemScheduledDay = d
-            , ticklerItemScheduledTime = mtod
-            }

@@ -30,21 +30,3 @@ spec = do
         (Just midnight)
         (EveryMonthsOnDay 4 (Just 7) (Just midday)) `shouldBe`
       (fromGregorian 1970 05 07, Just midday)
-  describe "makeNextTickleItem" $ do
-    it "produces valid ticklerItems when it succeeds" $
-      forAllValid $ \ti -> do
-        mti' <- makeNextTickleItem ti
-        shouldBeValid mti'
-    it "produces Nothing if there is no recurrence" $
-      forAll ((\ti -> ti {ticklerItemRecurrence = Nothing}) <$> genValid) $ \ti ->
-        makeNextTickleItem ti `shouldReturn` Nothing
-    it "never produces the same tickle item" $
-      forAllValid $ \ti -> makeNextTickleItem ti `shouldNotReturn` Just ti
-    it "has a seperate ID" $
-      forAllValid $ \ti -> do
-        mti' <- makeNextTickleItem ti
-        case mti' of
-          Nothing -> pure ()
-          Just ti' -> do
-            ti' `shouldNotBe` ti
-            ticklerItemIdentifier ti' `shouldNotBe` ticklerItemIdentifier ti
