@@ -104,6 +104,7 @@ ticklerProtectedServer =
     { getItemUUIDs = withAuthResult serveGetItemUUIDs
     , getItems = withAuthResult serveGetItems
     , postAddItem = withAuthResult servePostAddItem
+    , postItem = withAuthResult servePostItem
     , getItem = withAuthResult serveGetItem
     , deleteItem = withAuthResult serveDeleteItem
     , postRetryTriggered = withAuthResult servePostRetryTriggered

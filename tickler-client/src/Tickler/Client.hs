@@ -31,6 +31,7 @@ clientGetItemUUIDs :: Token -> ClientM [ItemUUID]
 clientGetItems :: Token -> Maybe ItemFilter -> ClientM [ItemInfo TypedItem]
 clientPostAddItem :: Token -> AddItem -> ClientM ItemUUID
 clientGetItem :: Token -> ItemUUID -> ClientM (ItemInfo TypedItem)
+clientPostItem :: Token -> ItemUUID -> Tickle TypedItem -> ClientM NoContent
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
 clientRetryTriggered :: Token -> [ItemUUID] -> ClientM NoContent
 clientDeleteTriggereds :: Token -> ClientM NoContent
@@ -56,5 +57,5 @@ clientGetPricing :: ClientM (Maybe Pricing)
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientRetryTriggered :<|> clientDeleteTriggereds :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientPostEmailTriggerVerify :<|> clientPostEmailTriggerResendVerificationEmail :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetLoopersInfo :<|> clientGetDocs :<|> clientGetPricing :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientPostItem :<|> clientDeleteItem :<|> clientRetryTriggered :<|> clientDeleteTriggereds :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientPostEmailTriggerVerify :<|> clientPostEmailTriggerResendVerificationEmail :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetLoopersInfo :<|> clientGetDocs :<|> clientGetPricing :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
   client (flatten ticklerAPI)

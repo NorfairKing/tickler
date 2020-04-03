@@ -30,25 +30,26 @@ type TicklerProtectedAPI = ToServantApi TicklerProtectedSite
 
 data TicklerProtectedSite route =
   TicklerProtectedSite
-    { getItemUUIDs :: route :- GetItemUUIDs
-    , getItems :: route :- GetItems
-    , postAddItem :: route :- PostAddItem
-    , getItem :: route :- GetItem
-    , deleteItem :: route :- DeleteItem
-    , postRetryTriggered :: route :- PostRetryTriggered
-    , deleteTriggereds :: route :- DeleteTriggereds
-    , postSync :: route :- PostSync
-    , getTriggers :: route :- GetTriggers
-    , getTrigger :: route :- GetTrigger
-    , postAddIntrayTrigger :: route :- PostAddIntrayTrigger
-    , postAddEmailTrigger :: route :- PostAddEmailTrigger
-    , postEmailTriggerVerify :: route :- PostEmailTriggerVerify
-    , postEmailTriggerResendVerificationEmail :: route :- PostEmailTriggerResendVerificationEmail
-    , deleteTrigger :: route :- DeleteTrigger
-    , getAccountInfo :: route :- GetAccountInfo
-    , getAccountSettings :: route :- GetAccountSettings
-    , putAccountSettings :: route :- PutAccountSettings
-    , deleteAccount :: route :- DeleteAccount
+    { getItemUUIDs :: !(route :- GetItemUUIDs)
+    , getItems :: !(route :- GetItems)
+    , postAddItem :: !(route :- PostAddItem)
+    , getItem :: !(route :- GetItem)
+    , postItem :: !(route :- PostItem)
+    , deleteItem :: !(route :- DeleteItem)
+    , postRetryTriggered :: !(route :- PostRetryTriggered)
+    , deleteTriggereds :: !(route :- DeleteTriggereds)
+    , postSync :: !(route :- PostSync)
+    , getTriggers :: !(route :- GetTriggers)
+    , getTrigger :: !(route :- GetTrigger)
+    , postAddIntrayTrigger :: !(route :- PostAddIntrayTrigger)
+    , postAddEmailTrigger :: !(route :- PostAddEmailTrigger)
+    , postEmailTriggerVerify :: !(route :- PostEmailTriggerVerify)
+    , postEmailTriggerResendVerificationEmail :: !(route :- PostEmailTriggerResendVerificationEmail)
+    , deleteTrigger :: !(route :- DeleteTrigger)
+    , getAccountInfo :: !(route :- GetAccountInfo)
+    , getAccountSettings :: !(route :- GetAccountSettings)
+    , putAccountSettings :: !(route :- PutAccountSettings)
+    , deleteAccount :: !(route :- DeleteAccount)
     }
   deriving (Generic)
 
@@ -72,6 +73,9 @@ type PostAddItem
 
 type GetItem
    = ProtectAPI :> "tickler" :> "item" :> "info" :> Capture "id" ItemUUID :> Get '[ JSON] (ItemInfo TypedItem)
+
+type PostItem
+   = ProtectAPI :> "tickler" :> "item" :> "info" :> Capture "id" ItemUUID :> ReqBody '[ JSON] TypedTickle :> Post '[ JSON] NoContent
 
 instance ToCapture (Capture "id" ItemUUID) where
   toCapture _ = DocCapture "id" "The UUID of the item"
