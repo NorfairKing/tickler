@@ -18,42 +18,20 @@ with final.haskell.lib;
           failOnAllWarnings (
             disableLibraryProfiling ( final.haskellPackages.callCabal2nix name ( pathFor name ) {} )
           );
-      tickler-cli =
-        (ticklerPkg "tickler-cli").overrideAttrs (
-          old:
-            {
-              postInstall =
-                ''
-          ${old.postInstall or ""}
-          
-          exe=$out/bin/tickler
-
-          mkdir -p                            $out/share/bash-completion/completions
-          $exe --bash-completion-script $exe >$out/share/bash-completion/completions/tickler
-  
-          mkdir -p                            $out/share/fish/vendor_completions.d
-          $exe --fish-completion-script $exe >$out/share/fish/vendor_completions.d/tickler.fish
-
-          mkdir -p                           $out/share/zsh/vendor-completions
-          $exe --zsh-completion-script $exe >$out/share/zsh/vendor-completions/_tickler
-
-        '';
-            }
-        );
+      ticklerPkgWithComp = exeName: name: generateOptparseApplicativeCompletion exeName (ticklerPkg name);
+      ticklerPkgWithOwnComp = name: ticklerPkgWithComp name name;
+      tickler-cli = generateOptparseApplicativeCompletion "tickler" (ticklerPkg "tickler-cli");
     in
-      { inherit tickler-cli; } //
-      final.lib.genAttrs [
-        "tickler-data"
-        "tickler-data-gen"
-        "tickler-api"
-        "tickler-api-gen"
-        "tickler-client"
-        "tickler-client-gen"
-        "tickler-data"
-        "tickler-data-gen"
-        "tickler-server"
-        "tickler-server-gen"
-      ] ticklerPkg // {
+      {
+        "tickler-data" = ticklerPkg "tickler-data";
+        "tickler-data-gen" = ticklerPkg "tickler-data-gen";
+        "tickler-api" = ticklerPkg "tickler-api";
+        "tickler-api-gen" = ticklerPkg "tickler-api-gen";
+        "tickler-cli" = ticklerPkgWithComp "tickler" "tickler-cli";
+        "tickler-client" = ticklerPkg "tickler-client";
+        "tickler-client-gen" = ticklerPkg "tickler-client-gen";
+        "tickler-server" = ticklerPkgWithOwnComp "tickler-server";
+        "tickler-server-gen" = ticklerPkg "tickler-server-gen";
         "tickler-web-server" =
         let semantic-js = builtins.fetchurl {
               url = https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js;
@@ -79,7 +57,7 @@ with final.haskell.lib;
               url = https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.woff2;
               sha256 = "sha256:1lqd60f1pml8zc93hgwcm6amkcy6rnbq3cyxqv5a3a25jnsnci23";
             };
-        in overrideCabal (ticklerPkg "tickler-web-server") (old: {
+        in overrideCabal (ticklerPkgWithOwnComp "tickler-web-server") (old: {
           preConfigure = ''
             ${old.preConfigure or ""}
 
