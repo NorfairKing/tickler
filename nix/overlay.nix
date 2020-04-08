@@ -22,8 +22,6 @@ with final.haskell.lib;
         exeName: name:
           generateOptparseApplicativeCompletion exeName ( ticklerPkg name );
       ticklerPkgWithOwnComp = name: ticklerPkgWithComp name name;
-      tickler-cli =
-        generateOptparseApplicativeCompletion "tickler" ( ticklerPkg "tickler-cli" );
     in {
       "tickler-data" = ticklerPkg "tickler-data";
       "tickler-data-gen" = ticklerPkg "tickler-data-gen";
