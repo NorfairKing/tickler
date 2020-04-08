@@ -18,13 +18,35 @@ with final.haskell.lib;
           failOnAllWarnings (
             disableLibraryProfiling ( final.haskellPackages.callCabal2nix name ( pathFor name ) {} )
           );
+      tickler-cli =
+        (ticklerPkg "tickler-cli").overrideAttrs (
+          old:
+            {
+              postInstall =
+                ''
+          ${old.postInstall or ""}
+          
+          exe=$out/bin/tickler
+
+          mkdir -p                            $out/share/bash-completion/completions
+          $exe --bash-completion-script $exe >$out/share/bash-completion/completions/tickler
+  
+          mkdir -p                            $out/share/fish/vendor_completions.d
+          $exe --fish-completion-script $exe >$out/share/fish/vendor_completions.d/tickler.fish
+
+          mkdir -p                           $out/share/zsh/vendor-completions
+          $exe --zsh-completion-script $exe >$out/share/zsh/vendor-completions/_tickler
+
+        '';
+            }
+        );
     in
+      { inherit tickler-cli; } //
       final.lib.genAttrs [
         "tickler-data"
         "tickler-data-gen"
         "tickler-api"
         "tickler-api-gen"
-        "tickler-cli"
         "tickler-client"
         "tickler-client-gen"
         "tickler-data"

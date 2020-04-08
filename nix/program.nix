@@ -59,15 +59,7 @@ in {
     };
   config =
     let
-      ticklerRepo =
-        pkgs.fetchFromGitHub {
-          owner = "NorfairKing";
-          repo = "tickler";
-          rev = "9491d0cb5a62bf8285134b06fe08a50cbd30e4b7";
-          sha256 =
-            "sha256:0mhfn5hj30cw2zcgsjm8pswysdzszh2z11za97bw653lmn616zh8";
-        };
-      ticklerPkgs = import ( ticklerRepo + "/nix/release.nix" );
+      ticklerPkgs = (import ../nix/pkgs.nix).ticklerPackages;
 
       nullOrOption =
         name: opt: optionalString ( opt != null ) "${name}: ${opt}";
