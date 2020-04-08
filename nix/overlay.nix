@@ -4,15 +4,7 @@ with final.haskell.lib;
 {
   ticklerPackages =
     let
-      pathFor =
-        name:
-          builtins.path {
-            inherit name;
-            path = ../. + "/${name}";
-            filter =
-              path: type:
-                !final.lib.hasPrefix "." (baseNameOf path);
-          };
+      pathFor = name: final.gitignoreSource ( ../. + "/${name}" );
       ticklerPkg =
         name:
           failOnAllWarnings (

@@ -4,8 +4,8 @@ let
     final.fetchFromGitHub {
       owner = "hercules-ci";
       repo = "gitignore";
-      rev = "ec4a0039152655b6c919d289dafd7ba32206ea1f";
-      sha256 = "sha256:13qxqbs8jg2mz2fm2cs63czv30gxi39ws5qzf9j8mczqpdj6g3im";
+      rev = "2ced4519f865341adcb143c5d668f955a2cb997f";
+      sha256 = "sha256:0fc5bgv9syfcblp23y05kkfnpgh3gssz6vn24frs8dzw39algk2z";
     };
 in {
   inherit (import gitignoreSrc { inherit (final) lib; }) gitignoreSource;
