@@ -17,7 +17,6 @@ import qualified Data.UUID.Typed
 import Servant.API
 import Servant.API.Flatten
 import Servant.Auth.Client
-import Servant.Auth.Server hiding (BasicAuth)
 import Servant.Client
 
 import Tickler.API
@@ -48,9 +47,7 @@ clientGetAccountSettings :: Token -> ClientM AccountSettings
 clientPutAccountSettings :: Token -> AccountSettings -> ClientM NoContent
 clientDeleteAccount :: Token -> ClientM NoContent
 clientPostRegister :: Registration -> ClientM NoContent
-clientPostLogin ::
-     LoginForm
-  -> ClientM (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
+clientPostLogin :: LoginForm -> ClientM (Headers '[ Header "Set-Cookie" Text] NoContent)
 clientGetLoopersInfo :: ClientM LoopersInfo
 clientGetDocs :: ClientM GetDocsResponse
 clientGetPricing :: ClientM (Maybe Pricing)
