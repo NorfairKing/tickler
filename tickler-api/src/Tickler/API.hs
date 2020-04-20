@@ -19,8 +19,6 @@ import Import
 
 import Data.UUID.Typed
 
-import Web.Cookie
-
 import Servant.API
 import Servant.API.Generic
 import Servant.Auth.Docs ()
@@ -72,7 +70,7 @@ data TicklerPublicSite route =
 type PostRegister = "register" :> ReqBody '[ JSON] Registration :> Post '[ JSON] NoContent
 
 type PostLogin
-   = "login" :> ReqBody '[ JSON] LoginForm :> PostNoContent '[ JSON] (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
+   = "login" :> ReqBody '[ JSON] LoginForm :> PostNoContent '[ JSON] (Headers '[ Header "Set-Cookie" Text] NoContent)
 
 type GetLoopersStatus = "loopers" :> Get '[ JSON] LoopersInfo
 

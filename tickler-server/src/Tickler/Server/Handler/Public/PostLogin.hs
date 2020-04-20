@@ -24,9 +24,7 @@ import Tickler.Server.Types
 
 import Tickler.Server.Handler.Utils
 
-servePostLogin ::
-     LoginForm
-  -> TicklerHandler (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
+servePostLogin :: LoginForm -> TicklerHandler (Headers '[ Header "Set-Cookie" Text] NoContent)
 servePostLogin LoginForm {..} = do
   me <- runDb $ getBy $ UniqueUsername loginFormUsername
   case me of
@@ -36,11 +34,11 @@ servePostLogin LoginForm {..} = do
         then do
           let cookie = AuthCookie {authCookieUserUUID = userIdentifier user}
           TicklerServerEnv {..} <- ask
-          mApplyCookies <- liftIO $ acceptLogin envCookieSettings envJWTSettings cookie
-          case mApplyCookies of
+          mCookie <- liftIO $ makeSessionCookieBS envCookieSettings envJWTSettings cookie
+          case mCookie of
             Nothing -> throwError err401
-            Just applyCookies -> do
+            Just setCookie -> do
               now <- liftIO getCurrentTime
               runDb $ update uid [UserLastLogin =. Just now]
-              return $ applyCookies NoContent
+              return $ addHeader (TE.decodeUtf8 setCookie) NoContent
         else throwError err401

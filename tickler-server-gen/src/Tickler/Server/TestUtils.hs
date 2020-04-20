@@ -32,6 +32,7 @@ import Control.Monad.Logger
 import Control.Monad.Trans.Resource (runResourceT)
 import Data.Cache as Cache
 import qualified Data.Text as T
+import Data.Text.Encoding (encodeUtf8)
 import Data.Time
 import Data.UUID.Typed
 import Lens.Micro
@@ -226,12 +227,11 @@ withNewUser cenv r func = do
               { loginFormUsername = registrationUsername r
               , loginFormPassword = registrationPassword r
               }
-      Headers NoContent (HCons _ (HCons sessionHeader HNil)) <-
-        runClientOrError cenv $ clientPostLogin lf
+      Headers NoContent (HCons sessionHeader HNil) <- runClientOrError cenv $ clientPostLogin lf
       case sessionHeader of
         MissingHeader -> expectationFailure "Login should return a session header"
         UndecodableHeader _ -> expectationFailure "Login should return a decodable session header"
-        Header session -> func $ Token $ setCookieValue session
+        Header session -> func $ Token $ setCookieValue $ parseSetCookie $ encodeUtf8 session
 
 requiresAdmin :: ClientEnv -> (Token -> ClientM a) -> Expectation
 requiresAdmin cenv func =
