@@ -1,8 +1,8 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE QuasiQuotes #-}
 
 module Tickler.Web.Server.Handler.Edit
   ( getEditR
@@ -10,12 +10,9 @@ module Tickler.Web.Server.Handler.Edit
   ) where
 
 import Import
-
-import Yesod
-
 import Tickler.Client
-
 import Tickler.Web.Server.Foundation
+import Yesod
 
 getEditR :: ItemUUID -> Handler Html
 getEditR uuid =
@@ -40,9 +37,7 @@ postEditR uuid =
     ItemInfo {..} <- runClientOrErr $ clientGetItem t uuid
     EditItem {..} <- runInputPost editItemForm
     let newVersion = itemInfoContents {tickleContent = textTypedItem $ unTextarea editItemContents}
-    newUuid <-
-      runClientOrErr $ do
-        u <- clientPostAddItem t newVersion
-        void $ clientDeleteItem t uuid
-        pure u
-    redirect $ EditR newUuid
+    runClientOrErr $ do
+      NoContent <- clientPostItem t uuid newVersion
+      pure ()
+    redirect $ EditR uuid
