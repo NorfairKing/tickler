@@ -47,6 +47,7 @@ ticklerTestServeSettings = do
             { API.serveSetPort = 8001
             , API.serveSetConnectionInfo = connInfo
             , API.serveSetAdmins = catMaybes [parseUsername "admin"]
+            , API.serveSetFreeloaders = catMaybes [parseUsername "freeloader"]
             , API.serveSetMonetisationSettings = Nothing
             , API.serveSetLoopersSettings =
                 API.LoopersSettings

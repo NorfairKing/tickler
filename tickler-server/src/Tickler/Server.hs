@@ -53,6 +53,7 @@ runTicklerServer ServeSettings {..} =
             , envCookieSettings = cookieCfg
             , envJWTSettings = jwtCfg
             , envAdmins = serveSetAdmins
+            , envFreeloaders = serveSetFreeloaders
             , envMonetisation = mMonetisationEnv
             , envLoopersHandle = loopersHandle
             }

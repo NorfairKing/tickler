@@ -43,6 +43,7 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..}
   let serveSetConnectionInfo =
         mkSqliteConnectionInfo $ fromMaybe "tickler.db" $ serveFlagDb <|> envDb <|> mc confDb
   let serveSetAdmins = serveFlagAdmins ++ fromMaybe [] (mc confAdmins)
+  let serveSetFreeloaders = serveFlagFreeloaders ++ fromMaybe [] (mc confFreeloaders)
   serveSetLoopersSettings <-
     combineToLoopersSettings
       webHost
@@ -385,7 +386,12 @@ parseServeFlags =
   many
     (option
        (eitherReader (parseUsernameWithError . T.pack))
-       (mconcat [long "admin", metavar "USERNAME", help "An admin to use"])) <*>
+       (mconcat [long "admin", metavar "USERNAME", help "An admin"])) <*>
+  many
+    (option
+       (eitherReader (parseUsernameWithError . T.pack))
+       (mconcat
+          [long "freeloader", metavar "USERNAME", help "A user that can use the service for free"])) <*>
   parseMonetisationFlags <*>
   parseLoopersFlags
 

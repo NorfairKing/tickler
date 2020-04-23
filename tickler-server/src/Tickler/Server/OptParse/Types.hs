@@ -26,6 +26,7 @@ data ServeFlags =
     , serveFlagWebHost :: Maybe String
     , serveFlagDb :: Maybe Text
     , serveFlagAdmins :: [Username]
+    , serveFlagFreeloaders :: [Username]
     , serveFlagsMonetisationFlags :: MonetisationFlags
     , serveFlagsLooperFlags :: LoopersFlags
     }
@@ -86,6 +87,7 @@ data Configuration =
     , confWebHost :: !(Maybe String)
     , confPort :: !(Maybe Int)
     , confAdmins :: !(Maybe [Username])
+    , confFreeloaders :: !(Maybe [Username])
     , confMonetisationConfiguration :: !(Maybe MonetisationConfiguration)
     , confLoopersConfiguration :: !(Maybe LoopersConfiguration)
     }
@@ -96,6 +98,7 @@ instance FromJSON Configuration where
     withObject "Configuration" $ \o ->
       Configuration <$> o .:? "database" <*> o .:? "web-host" <*> o .:? "api-port" <*>
       o .:? "admins" <*>
+      o .:? "freeloaders" <*>
       o .:? "monetisation" <*>
       o .:? "loopers"
 
@@ -242,6 +245,7 @@ data ServeSettings =
     { serveSetPort :: !Int
     , serveSetConnectionInfo :: !SqliteConnectionInfo
     , serveSetAdmins :: ![Username]
+    , serveSetFreeloaders :: ![Username]
     , serveSetMonetisationSettings :: !(Maybe MonetisationSettings)
     , serveSetLoopersSettings :: !LoopersSettings
     }

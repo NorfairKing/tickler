@@ -26,8 +26,6 @@ module Tickler.Server.TestUtils
   , module Servant.Client
   ) where
 
-import Import
-
 import Control.Monad.Logger
 import Control.Monad.Trans.Resource (runResourceT)
 import Data.Cache as Cache
@@ -35,31 +33,28 @@ import qualified Data.Text as T
 import Data.Text.Encoding (encodeUtf8)
 import Data.Time
 import Data.UUID.Typed
+import Database.Persist.Sqlite
+import Import
+import Intray.Server.TestUtils (cleanupIntrayTestServer, setupIntrayTestApp)
 import Lens.Micro
 import qualified Network.HTTP.Client as HTTP
 import qualified Network.HTTP.Types as HTTP
-import Web.Cookie
-import Web.Stripe.Plan as Stripe
-
+import Network.Wai as Wai
+import Network.Wai.Handler.Warp (testWithApplication)
 import Servant
 import Servant.Auth.Client
 import Servant.Auth.Server as Auth
 import Servant.Client
 
-import Database.Persist.Sqlite
-import Network.Wai as Wai
-import Network.Wai.Handler.Warp (testWithApplication)
-
-import Intray.Server.TestUtils (cleanupIntrayTestServer, setupIntrayTestApp)
-
 -- import Tickler.API
+import Tickler.API.Gen ()
 import Tickler.Client
 import Tickler.Server
 import Tickler.Server.Looper
 import Tickler.Server.OptParse.Types
 import Tickler.Server.Types
-
-import Tickler.API.Gen ()
+import Web.Cookie
+import Web.Stripe.Plan as Stripe
 
 withTicklerServer :: SpecWith ClientEnv -> Spec
 withTicklerServer specFunc = do
@@ -154,7 +149,8 @@ setupTicklerTestApp menv = do
           { envConnectionPool = pool
           , envCookieSettings = cookieCfg
           , envJWTSettings = jwtCfg
-          , envAdmins = [fromJust $ parseUsername "admin"]
+          , envAdmins = catMaybes [parseUsername "admin"]
+          , envFreeloaders = catMaybes [parseUsername "freeloader"]
           , envMonetisation = menv
           , envLoopersHandle =
               LoopersHandle

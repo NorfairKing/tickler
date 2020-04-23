@@ -10,29 +10,23 @@ module Tickler.Server.Handler.Stripe
   , getUserPaidStatus
   ) where
 
-import Import
-
 import Control.Exception
-
 import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as LB8
 import Data.Ord
 import Data.Time
 import Database.Persist
-
+import Import
 import Servant
 import Servant.Auth.Server
-
-import Web.Stripe as Stripe (StripeError, StripeRequest, StripeReturn)
-import qualified Web.Stripe.Subscription as Stripe
-import qualified Web.Stripe.Types as Stripe
-
 import Tickler.API
-
 import Tickler.Server.Handler.Utils
 import Tickler.Server.OptParse.Types
 import Tickler.Server.Stripe
 import Tickler.Server.Types
+import Web.Stripe as Stripe (StripeError, StripeRequest, StripeReturn)
+import qualified Web.Stripe.Subscription as Stripe
+import qualified Web.Stripe.Types as Stripe
 
 runStripeHandler ::
      FromJSON (StripeReturn a)
@@ -69,16 +63,20 @@ getUserPaidStatus userId = do
       case mu of
         Nothing -> throwAll err404
         Just (Entity _ User {..}) -> do
-          isAdmin <- asks ((userUsername `elem`) . envAdmins)
-          if isAdmin
+          isFreeloader <- asks ((userUsername `elem`) . envFreeloaders)
+          if isFreeloader
             then pure NoPaymentNecessary
             else do
-              mSub <- hasSubscribed monetisationEnvStripeSettings userId
-              case mSub of
-                Just u -> pure $ HasPaid u
-                Nothing -> do
-                  c <- runDb $ count [TicklerItemUserId ==. userId]
-                  pure $ HasNotPaid (monetisationEnvMaxItemsFree - c)
+              isAdmin <- asks ((userUsername `elem`) . envAdmins)
+              if isAdmin
+                then pure NoPaymentNecessary
+                else do
+                  mSub <- hasSubscribed monetisationEnvStripeSettings userId
+                  case mSub of
+                    Just u -> pure $ HasPaid u
+                    Nothing -> do
+                      c <- runDb $ count [TicklerItemUserId ==. userId]
+                      pure $ HasNotPaid (monetisationEnvMaxItemsFree - c)
 
 hasSubscribed :: StripeSettings -> AccountUUID -> TicklerHandler (Maybe UTCTime)
 hasSubscribed ss uuid = do

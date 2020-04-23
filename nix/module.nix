@@ -101,6 +101,14 @@ in {
           description =
             "A list of the usernames that will have admin privileges";
         };
+      freeloaders =
+        mkOption {
+          type = types.nullOr ( types.listOf types.string );
+          default = null;
+          example = [ "freeloaders" ];
+          description =
+            "A list of the usernames that will have have access without payment";
+        };
       email-verification-address =
         mkOption {
           type = types.nullOr types.string;
@@ -225,6 +233,7 @@ in {
                   tracking = cfg.tracking-id;
                   verification = cfg.verification-tag;
                   admins = cfg.admins;
+                  freeloaders = cfg.freeloaders;
                   monetisation =
                     optionalAttrs ( !builtins.isNull cfg.monetisation ) {
                       stripe-plan = cfg.monetisation.stripe-plan;
@@ -235,37 +244,52 @@ in {
                   loopers =
                     let
                       looperConf =
-                        subcfg: conf:
-                          optionalAttrs ( subcfg != null ) {
-                            enable = subcfg.enabled;
+                        subcfg:
+                          optionalAttrs ( !builtins.isNull subcfg ) {
+                            enable = subcfg.enabled or null;
                             period = subcfg.period;
                             retry-policy =
                               {
                                 delay = subcfg.retry-delay;
                                 amount = subcfg.retry-amount;
                               };
-                            inherit conf;
                           };
-                      looperConf' = subcfg: looperConf subcfg null;
-                    in {
-                      "default-enabled" = cfg.default-looper-enabled;
-                      "default-period" = cfg.default-looper-period;
-                      "default-retry-delay" = cfg.default-looper-retry-delay;
-                      "default-retry-amount" =
-                        cfg.default-looper-retry-amount;
-                      "triggerer" = looperConf' cfg.loopers.triggerer;
-                      "emailer" = looperConf' cfg.loopers.emailer;
-                      "triggered-intray-item-scheduler" =
-                        looperConf' cfg.loopers.triggered-intray-item-scheduler;
-                      "triggered-intray-item-sender" =
-                        looperConf' cfg.loopers.triggered-intray-item-sender;
-                      "verification-email-converter" =
-                        looperConf cfg.loopers.verification-email-converter cfg.email-verification-address;
-                      "triggered-email-scheduler" =
-                        looperConf' cfg.loopers.triggered-email-scheduler;
-                      "triggered-email-converter" =
-                        looperConf cfg.loopers.triggered-email-converter cfg.email-triggered-address;
-                    };
+                      looperConfSet =
+                        name: val: extra:
+                          {
+                            "${name}" =
+                              optionalAttrs ( !builtins.isNull cfg.loopers ) (looperConf val) // { conf = extra; };
+                          };
+                    in
+                      concatAttrs [
+                        {
+                          "default-enabled" = cfg.default-looper-enabled;
+                          "default-period" = cfg.default-looper-period;
+                          "default-retry-delay" =
+                            cfg.default-looper-retry-delay;
+                          "default-retry-amount" =
+                            cfg.default-looper-retry-amount;
+                        }
+                        (
+                          looperConfSet "triggerer" cfg.loopers.triggerer null
+                        )
+                        ( looperConfSet "emailer" cfg.loopers.emailer null )
+                        (
+                          looperConfSet "triggered-intray-item-scheduler" cfg.loopers.triggered-intray-item-scheduler null
+                        )
+                        (
+                          looperConfSet "triggered-intray-item-sender" cfg.loopers.triggered-intray-item-sender null
+                        )
+                        (
+                          looperConfSet "verification-email-converter" cfg.loopers.verification-email-converter cfg.email-verification-address
+                        )
+                        (
+                          looperConfSet "triggered-email-scheduler" cfg.loopers.triggered-email-scheduler null
+                        )
+                        (
+                          looperConfSet "triggered-email-converter" cfg.loopers.triggered-email-converter cfg.email-triggered-address
+                        )
+                      ];
                 };
             in
               pkgs.writeText "tickler-config" ( builtins.toJSON config );
