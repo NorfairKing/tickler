@@ -1,23 +1,18 @@
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Looper.Triggerer where
-
-import Import
 
 import Control.Monad.Logger
 import Data.Time
 import Database.Persist.Sqlite
-
+import Import
 import Tickler.API
-
-import Tickler.Server.OptParse.Types
-
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
 
-runTriggerer :: TriggererSettings -> Looper ()
-runTriggerer TriggererSettings = do
+runTriggerer :: () -> Looper ()
+runTriggerer () = do
   logInfoNS "Triggerer" "Starting triggering tickles."
   nowZoned <- liftIO getZonedTime
   let nowLocal = zonedTimeToLocalTime nowZoned
@@ -25,9 +20,9 @@ runTriggerer TriggererSettings = do
       later = addDays 2 nowDay
   itemsToConsider <-
     runDb $
-    selectList
-      [TicklerItemScheduledDay <=. later]
-      [Asc TicklerItemScheduledDay, Asc TicklerItemScheduledTime]
+      selectList
+        [TicklerItemScheduledDay <=. later]
+        [Asc TicklerItemScheduledDay, Asc TicklerItemScheduledTime]
   mapM_ considerTicklerItem itemsToConsider
   logInfoNS "Triggerer" "Finished triggering tickles."
 
@@ -56,15 +51,15 @@ ticklerItemLocalScheduledTime TicklerItem {..} =
 makeTriggeredItem :: UTCTime -> TicklerItem -> TriggeredItem
 makeTriggeredItem now TicklerItem {..} =
   TriggeredItem
-    { triggeredItemIdentifier = ticklerItemIdentifier
-    , triggeredItemUserId = ticklerItemUserId
-    , triggeredItemType = ticklerItemType
-    , triggeredItemContents = ticklerItemContents
-    , triggeredItemCreated = ticklerItemCreated
-    , triggeredItemScheduledDay = ticklerItemScheduledDay
-    , triggeredItemScheduledTime = ticklerItemScheduledTime
-    , triggeredItemRecurrence = ticklerItemRecurrence
-    , triggeredItemTriggered = now
+    { triggeredItemIdentifier = ticklerItemIdentifier,
+      triggeredItemUserId = ticklerItemUserId,
+      triggeredItemType = ticklerItemType,
+      triggeredItemContents = ticklerItemContents,
+      triggeredItemCreated = ticklerItemCreated,
+      triggeredItemScheduledDay = ticklerItemScheduledDay,
+      triggeredItemScheduledTime = ticklerItemScheduledTime,
+      triggeredItemRecurrence = ticklerItemRecurrence,
+      triggeredItemTriggered = now
     }
 
 ticklerItemUpdates :: TicklerItem -> Maybe [Update TicklerItem]
