@@ -25,7 +25,7 @@ data ServeFlags =
     { serveFlagPort :: Maybe Int
     , serveFlagWebHost :: Maybe String
     , serveFlagDb :: Maybe Text
-    , serveFlagAdmins :: [String]
+    , serveFlagAdmins :: [Username]
     , serveFlagsMonetisationFlags :: MonetisationFlags
     , serveFlagsLooperFlags :: LoopersFlags
     }
@@ -85,6 +85,7 @@ data Configuration =
     { confDb :: !(Maybe Text)
     , confWebHost :: !(Maybe String)
     , confPort :: !(Maybe Int)
+    , confAdmins :: !(Maybe [Username])
     , confMonetisationConfiguration :: !(Maybe MonetisationConfiguration)
     , confLoopersConfiguration :: !(Maybe LoopersConfiguration)
     }
@@ -93,9 +94,10 @@ data Configuration =
 instance FromJSON Configuration where
   parseJSON =
     withObject "Configuration" $ \o ->
-      Configuration <$> o .: "database" <*> o .: "web-host" <*> o .: "api-port" <*>
-      o .: "monetisation" <*>
-      o .: "loopers"
+      Configuration <$> o .:? "database" <*> o .:? "web-host" <*> o .:? "api-port" <*>
+      o .:? "admins" <*>
+      o .:? "monetisation" <*>
+      o .:? "loopers"
 
 data MonetisationConfiguration =
   MonetisationConfiguration
@@ -111,11 +113,11 @@ data MonetisationConfiguration =
 instance FromJSON MonetisationConfiguration where
   parseJSON =
     withObject "MonetisationConfiguration" $ \o ->
-      MonetisationConfiguration <$> o .: "stripe-plan" <*> o .: "stripe-secret-key" <*>
-      o .: "stripe-publishable-key" <*>
-      o .: "stripe-stripe-events-fetcher" <*>
-      o .: "stripe-stripe-events-retrier" <*>
-      o .: "max-items-free"
+      MonetisationConfiguration <$> o .:? "stripe-plan" <*> o .:? "stripe-secret-key" <*>
+      o .:? "stripe-publishable-key" <*>
+      o .:? "stripe-stripe-events-fetcher" <*>
+      o .:? "stripe-stripe-events-retrier" <*>
+      o .:? "max-items-free"
 
 data LoopersConfiguration =
   LoopersConfiguration

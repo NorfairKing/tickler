@@ -17,8 +17,7 @@ newtype Command =
 
 data ServeFlags =
   ServeFlags
-    { serveFlagHost :: Maybe Text
-    , serveFlagPort :: Maybe Int
+    { serveFlagPort :: Maybe Int
     , serveFlagPersistLogins :: Maybe Bool
     , serveFlagDefaultIntrayUrl :: Maybe BaseUrl
     , serveFlagTracking :: Maybe Text
@@ -35,8 +34,7 @@ data Flags =
 
 data Configuration =
   Configuration
-    { confHost :: Maybe Text
-    , confPort :: Maybe Int
+    { confPort :: Maybe Int
     , confPersistLogins :: Maybe Bool
     , confDefaultIntrayUrl :: Maybe BaseUrl
     , confTracking :: Maybe Text
@@ -48,16 +46,14 @@ data Configuration =
 instance FromJSON Configuration where
   parseJSON v =
     flip (withObject "Configuration") v $ \o ->
-      Configuration <$> o .: "web-host" <*> o .: "web-port" <*> o .: "persist-logins" <*>
-      o .: "default-intray-url" <*>
-      o .: "tracking" <*>
-      o .: "verification" <*>
+      Configuration <$> o .:? "web-port" <*> o .:? "persist-logins" <*> o .:? "default-intray-url" <*>
+      o .:? "tracking" <*>
+      o .:? "verification" <*>
       parseJSON v
 
 data Environment =
   Environment
-    { envHost :: Maybe Text
-    , envPort :: Maybe Int
+    { envPort :: Maybe Int
     , envPersistLogins :: Maybe Bool
     , envDefaultIntrayUrl :: Maybe BaseUrl
     , envTracking :: Maybe Text
@@ -72,8 +68,7 @@ newtype Dispatch =
 
 data ServeSettings =
   ServeSettings
-    { serveSetHost :: Maybe Text
-    , serveSetPort :: Int
+    { serveSetPort :: Int
     , serveSetPersistLogins :: Bool
     , serveSetDefaultIntrayUrl :: Maybe BaseUrl
     , serveSetTracking :: Maybe Text

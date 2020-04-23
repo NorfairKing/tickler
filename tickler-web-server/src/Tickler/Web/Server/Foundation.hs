@@ -16,37 +16,29 @@ module Tickler.Web.Server.Foundation
   , module Tickler.Web.Server.Constants
   ) where
 
-import Import
-
+import Control.Concurrent
+import Control.Monad.Trans.Maybe
 import Data.HashMap.Strict (HashMap)
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import Data.Text.Encoding (encodeUtf8)
-
-import Control.Concurrent
-
-import Control.Monad.Trans.Maybe
-
+import Import
 import qualified Network.HTTP.Client as Http
 import qualified Network.HTTP.Types as Http
-import Web.Cookie
-
-import Text.Hamlet
-import Yesod hiding (Header)
-import Yesod.Auth
-import qualified Yesod.Auth.Message as Msg
-import Yesod.EmbeddedStatic
-
 import Servant.API
 import Servant.Auth.Client (Token(..))
 import Servant.Client
-
+import Text.Hamlet
 import Tickler.Client
-
 import Tickler.Web.Server.Constants
 import Tickler.Web.Server.Persistence
 import Tickler.Web.Server.Static
 import Tickler.Web.Server.Widget
+import Web.Cookie
+import Yesod hiding (Header)
+import Yesod.Auth
+import qualified Yesod.Auth.Message as Msg
+import Yesod.EmbeddedStatic
 
 type TicklerWidget = TicklerWidget' ()
 
@@ -58,8 +50,7 @@ type TicklerAuthHandler a = AuthHandler App a
 
 data App =
   App
-    { appRoot :: Maybe Text
-    , appHttpManager :: Http.Manager
+    { appHttpManager :: Http.Manager
     , appStatic :: EmbeddedStatic
     , appAPIBaseUrl :: BaseUrl
     , appPersistLogins :: Bool
@@ -72,11 +63,6 @@ data App =
 mkYesodData "App" $(parseRoutesFile "routes")
 
 instance Yesod App where
-  approot =
-    ApprootRequest $ \master req ->
-      case appRoot master of
-        Nothing -> getApprootText guessApproot master req
-        Just root -> root
   defaultLayout widget = do
     app_ <- getYesod
     pc <- widgetToPageContent $(widgetFile "default-body")

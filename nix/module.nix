@@ -93,6 +93,14 @@ in {
           default = null;
           description = "The verification tag for google search console";
         };
+      admins =
+        mkOption {
+          type = types.nullOr ( types.listOf types.string );
+          default = null;
+          example = [ "syd" ];
+          description =
+            "A list of the usernames that will have admin privileges";
+        };
       email-verification-address =
         mkOption {
           type = types.nullOr types.string;
@@ -140,54 +148,58 @@ in {
       loopers =
         mkOption {
           type =
-            types.submodule {
-              options =
-                let
-                  looperOption =
-                    mkOption {
-                      type =
-                        types.submodule {
-                          options =
-                            {
-                              enabled = mkEnableOption "Looper";
-                              period =
-                                mkOption {
-                                  type = types.nullOr ( types.int );
-                                  default = null;
-                                  example = 60;
-                                  description =
-                                    "The number of seconds between running the looper";
+            types.nullOr (
+              types.submodule {
+                options =
+                  let
+                    looperOption =
+                      mkOption {
+                        type =
+                          types.nullOr (
+                            types.submodule {
+                              options =
+                                {
+                                  enabled = mkEnableOption "Looper";
+                                  period =
+                                    mkOption {
+                                      type = types.nullOr ( types.int );
+                                      default = null;
+                                      example = 60;
+                                      description =
+                                        "The number of seconds between running the looper";
+                                    };
+                                  retry-delay =
+                                    mkOption {
+                                      type = types.nullOr ( types.int );
+                                      default = null;
+                                      example = 1000000;
+                                      description =
+                                        "The number of microseconds between retrying the looper when it fails";
+                                    };
+                                  retry-amount =
+                                    mkOption {
+                                      type = types.nullOr ( types.int );
+                                      default = null;
+                                      example = 5;
+                                      description =
+                                        "The number of times to retry the looper when it fails";
+                                    };
                                 };
-                              retry-delay =
-                                mkOption {
-                                  type = types.nullOr ( types.int );
-                                  default = null;
-                                  example = 1000000;
-                                  description =
-                                    "The number of microseconds between retrying the looper when it fails";
-                                };
-                              retry-amount =
-                                mkOption {
-                                  type = types.nullOr ( types.int );
-                                  default = null;
-                                  example = 5;
-                                  description =
-                                    "The number of times to retry the looper when it fails";
-                                };
-                            };
-                        };
-                      default = null;
-                    };
-                in {
-                  triggerer = looperOption;
-                  emailer = looperOption;
-                  triggered-intray-item-scheduler = looperOption;
-                  triggered-intray-item-sender = looperOption;
-                  verification-email-converter = looperOption;
-                  triggered-email-scheduler = looperOption;
-                  triggered-email-converter = looperOption;
-                };
-            };
+                            }
+                          );
+                        default = null;
+                      };
+                  in {
+                    triggerer = looperOption;
+                    emailer = looperOption;
+                    triggered-intray-item-scheduler = looperOption;
+                    triggered-intray-item-sender = looperOption;
+                    verification-email-converter = looperOption;
+                    triggered-email-scheduler = looperOption;
+                    triggered-email-converter = looperOption;
+                  };
+              }
+            );
           default = null;
         };
 
@@ -202,169 +214,81 @@ in {
         let
           workingDir = "/www/tickler/${envname}/data/";
           tickler-pkgs = (import ../nix/pkgs.nix).ticklerPackages;
+          configFile =
+            let
+              config =
+                {
+                  api-port = cfg.api-port;
+                  web-port = cfg.web-port;
+                  web-host = cfg.web-host;
+                  default-intray-url = cfg.default-intray-url;
+                  tracking = cfg.tracking-id;
+                  verification = cfg.verification-tag;
+                  admins = cfg.admins;
+                  monetisation =
+                    optionalAttrs ( !builtins.isNull cfg.monetisation ) {
+                      stripe-plan = cfg.monetisation.stripe-plan;
+                      stripe-secret-key = cfg.monetisation.stripe-secret-key;
+                      stripe-publishable-key =
+                        cfg.monetisation.stripe-publishable-key;
+                    };
+                  loopers =
+                    let
+                      looperConf =
+                        subcfg: conf:
+                          optionalAttrs ( subcfg != null ) {
+                            enable = subcfg.enabled;
+                            period = subcfg.period;
+                            retry-policy =
+                              {
+                                delay = subcfg.retry-delay;
+                                amount = subcfg.retry-amount;
+                              };
+                            inherit conf;
+                          };
+                      looperConf' = subcfg: looperConf subcfg null;
+                    in {
+                      "default-enabled" = cfg.default-looper-enabled;
+                      "default-period" = cfg.default-looper-period;
+                      "default-retry-delay" = cfg.default-looper-retry-delay;
+                      "default-retry-amount" =
+                        cfg.default-looper-retry-amount;
+                      "triggerer" = looperConf' cfg.loopers.triggerer;
+                      "emailer" = looperConf' cfg.loopers.emailer;
+                      "triggered-intray-item-scheduler" =
+                        looperConf' cfg.loopers.triggered-intray-item-scheduler;
+                      "triggered-intray-item-sender" =
+                        looperConf' cfg.loopers.triggered-intray-item-sender;
+                      "verification-email-converter" =
+                        looperConf cfg.loopers.verification-email-converter cfg.email-verification-address;
+                      "triggered-email-scheduler" =
+                        looperConf' cfg.loopers.triggered-email-scheduler;
+                      "triggered-email-converter" =
+                        looperConf cfg.loopers.triggered-email-converter cfg.email-triggered-address;
+                    };
+                };
+            in
+              pkgs.writeText "tickler-config" ( builtins.toJSON config );
           unlessNull = o: optionalAttrs ( !builtins.isNull o );
-          mkLooperVars =
-            name: looper:
-              unlessNull looper (
-                with looper;
-
-                concatAttrs [
-                  (
-                    unlessNull enabled {
-                      "TICKLER_SERVER_LOOPER_${name}_ENABLED" =
-                        "${if enabled then "True" else "False"}";
-                    }
-                  )
-                  (
-                    unlessNull period {
-                      "TICKLER_SERVER_LOOPER_${name}_PERIOD" =
-                        "${builtins.toString period}";
-                    }
-                  )
-                  (
-                    unlessNull retry-delay {
-                      "TICKLER_SERVER_LOOPER_${name}_RETRY_DELAY" =
-                        "${builtins.toString retry-delay}";
-                    }
-                  )
-                  (
-                    unlessNull retry-amount {
-                      "TICKLER_SERVER_LOOPER_${name}_RETRY_AMOUNT" =
-                        "${builtins.toString retry-amount}";
-                    }
-                  )
-                ]
-              );
         in {
           description = "Tickler ${envname} Service";
           wantedBy = [ "multi-user.target" ];
-          environment =
-            concatAttrs [
-              {
-                "TICKLER_SERVER_WEB_HOST" =
-                  "${builtins.toString (cfg.web-host)}";
-                "TICKLER_WEB_SERVER_PORT" =
-                  "${builtins.toString (cfg.web-port)}";
-                "TICKLER_SERVER_PORT" = "${builtins.toString (cfg.api-port)}";
-                "TICKLER_WEB_SERVER_DEFAULT_INTRAY_URL" =
-                  cfg.default-intray-url;
-              }
-              (
-                unlessNull cfg.tracking-id {
-                  "TICKLER_WEB_SERVER_TRACKING" = cfg.tracking-id;
-                }
-              )
-              (
-                unlessNull cfg.verification-tag {
-                  "TICKLER_WEB_SERVER_SEARCH_CONSOLE_VERIFICATION" =
-                    cfg.verification-tag;
-                }
-              )
-              (
-                unlessNull cfg.email-verification-address {
-                  "TICKLER_SERVER_VERIFICATION_EMAIL_ADDRESS" =
-                    cfg.email-verification-address;
-                }
-              )
-              (
-                unlessNull cfg.email-verification-address {
-                  "TICKLER_SERVER_TRIGGERED_EMAIL_ADDRESS" =
-                    cfg.email-triggered-address;
-                }
-              )
-              (
-                optionalAttrs ( cfg.monetisation != null ) (
-                  with cfg.monetisation;
-
-                  {
-                    "TICKLER_SERVER_STRIPE_PLAN" = "${stripe-plan}";
-                    "TICKLER_SERVER_STRIPE_SECRET_KEY" =
-                      "${stripe-secret-key}";
-                    "TICKLER_SERVER_STRIPE_PUBLISHABLE_KEY" =
-                      "${stripe-publishable-key}";
-                  }
-                )
-              )
-              (
-                with cfg;
-
-                concatAttrs [
-                  (
-                    unlessNull default-looper-enabled {
-                      "TICKLER_SERVER_LOOPERS_DEFAULT_ENABLED" =
-                        "${if default-looper-enabled then "True" else "False"}";
-                    }
-                  )
-                  (
-                    unlessNull default-looper-period {
-                      "TICKLER_SERVER_LOOPERS_DEFAULT_PERIOD" =
-                        "${builtins.toString default-looper-period}";
-                    }
-                  )
-                  (
-                    unlessNull default-looper-retry-delay {
-                      "TICKLER_SERVER_LOOPERS_DEFAULT_RETRY_DELAY" =
-                        "${builtins.toString default-looper-retry-delay}";
-                    }
-                  )
-                  (
-                    unlessNull default-looper-retry-amount {
-                      "TICKLER_SERVER_LOOPERS_DEFAULT_RETRY_AMOUNT" =
-                        "${builtins.toString default-looper-retry-amount}";
-                    }
-                  )
-                ]
-              )
-              (
-                with cfg.loopers;
-
-                concatAttrs [
-                  (
-                    unlessNull triggerer ( mkLooperVars "TRIGGERER" triggerer )
-                  )
-                  ( unlessNull emailer ( mkLooperVars "EMAILER" emailer ) )
-                  (
-                    unlessNull triggered-intray-item-scheduler (
-                      mkLooperVars "TRIGGERED_INTRAY_ITEM_SCHEDULER" triggered-intray-item-scheduler
-                    )
-                  )
-                  (
-                    unlessNull triggered-intray-item-sender (
-                      mkLooperVars "TRIGGERED_INTRAY_ITEM_SENDER" triggered-intray-item-sender
-                    )
-                  )
-                  (
-                    unlessNull verification-email-converter (
-                      mkLooperVars "VERIFICATION_EMAIL_CONVERTER" verification-email-converter
-                    )
-                  )
-                  (
-                    unlessNull triggered-email-scheduler (
-                      mkLooperVars "TRIGGERED_EMAIL_SCHEDULER" triggered-email-scheduler
-                    )
-                  )
-                  (
-                    unlessNull triggered-email-converter (
-                      mkLooperVars "TRIGGERED_EMAIL_CONVERTER" triggered-email-converter
-                    )
-                  )
-                ]
-              )
-            ];
           script =
             ''
               mkdir -p "${workingDir}"
               cd "${workingDir}"
-              ${tickler-pkgs.tickler-web-server}/bin/tickler-web-server \
-                serve \
-                --admin \
-                syd
+              ${tickler-pkgs.tickler-web-server}/bin/tickler-web-server serve --config-file ${configFile}
             '';
           serviceConfig =
             {
               Restart = "always";
               RestartSec = 1;
               Nice = 15;
+            };
+          unitConfig =
+            {
+              StartLimitIntervalSec = 0;
+              # ensure Restart=always is always honoured
             };
         };
     in

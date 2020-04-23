@@ -42,11 +42,7 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..}
       Just wh -> pure $ T.pack wh
   let serveSetConnectionInfo =
         mkSqliteConnectionInfo $ fromMaybe "tickler.db" $ serveFlagDb <|> envDb <|> mc confDb
-  serveSetAdmins <-
-    forM serveFlagAdmins $ \s ->
-      case parseUsername $ T.pack s of
-        Nothing -> die $ unwords ["Invalid admin username:", s]
-        Just u -> pure u
+  let serveSetAdmins = serveFlagAdmins ++ fromMaybe [] (mc confAdmins)
   serveSetLoopersSettings <-
     combineToLoopersSettings
       webHost
@@ -386,7 +382,10 @@ parseServeFlags =
        , metavar "DATABASE_CONNECTION_STRING"
        , help "The sqlite connection string"
        ]) <*>
-  many (strOption (mconcat [long "admin", metavar "USERNAME", help "An admin to use"])) <*>
+  many
+    (option
+       (eitherReader (parseUsernameWithError . T.pack))
+       (mconcat [long "admin", metavar "USERNAME", help "An admin to use"])) <*>
   parseMonetisationFlags <*>
   parseLoopersFlags
 

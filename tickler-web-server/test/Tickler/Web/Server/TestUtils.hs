@@ -37,8 +37,7 @@ ticklerTestServeSettings = do
   let connInfo = mkSqliteConnectionInfo "tickler-test.db" & walEnabled .~ False
   pure
     ServeSettings
-      { serveSetHost = Nothing
-      , serveSetPort = 8000
+      { serveSetPort = 8000
       , serveSetPersistLogins = False
       , serveSetDefaultIntrayUrl = Nothing
       , serveSetTracking = Nothing

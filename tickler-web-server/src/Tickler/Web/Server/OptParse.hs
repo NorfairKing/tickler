@@ -37,7 +37,6 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..}
       flagAPIFlags
       envAPIEnvironment
       (confAPIConf <$> mConf)
-  let webHost = serveFlagHost <|> envHost <|> mc confHost
   let webPort = fromMaybe 8000 $ serveFlagPort <|> envPort <|> mc confPort
   when (API.serveSetPort apiServeSets == webPort) $
     die $
@@ -46,8 +45,7 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..}
   pure
     ( DispatchServe
         ServeSettings
-          { serveSetHost = webHost
-          , serveSetPort = webPort
+          { serveSetPort = webPort
           , serveSetPersistLogins =
               fromMaybe False $ serveFlagPersistLogins <|> envPersistLogins <|> mc confPersistLogins
           , serveSetDefaultIntrayUrl =
@@ -92,7 +90,6 @@ getEnvironment = do
             Nothing -> Left "Parsing failed without a good error message."
             Just v -> Right v
       mr k = mrf k readMaybe
-  let envHost = ms "HOST"
   envPort <- mr "PORT"
   envPersistLogins <- mr "PERSIST_LOGINS"
   envDefaultIntrayUrl <- mre "DEFAULT_INTRAY_URL" (left show . parseBaseUrl)
@@ -138,14 +135,6 @@ parseCommandServe = info parser modifier
     parser =
       CommandServe <$>
       (ServeFlags <$>
-       option
-         (Just . T.pack <$> str)
-         (mconcat
-            [ long "web-host"
-            , metavar "PORT"
-            , value Nothing
-            , help "the host to serve the web interface on"
-            ]) <*>
        option
          (Just <$> auto)
          (mconcat

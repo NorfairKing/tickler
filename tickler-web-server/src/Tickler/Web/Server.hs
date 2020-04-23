@@ -1,30 +1,25 @@
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Web.Server
   ( ticklerWebServer
   , makeTicklerApp
   ) where
 
-import Import
-
 import Control.Concurrent
 import Control.Concurrent.Async (concurrently_)
 import qualified Data.HashMap.Strict as HM
+import Import
 import qualified Network.HTTP.Client as Http
 import qualified Network.HTTP.Client.TLS as Http
-
-import Yesod
-
 import Servant.Client (parseBaseUrl)
-
 import qualified Tickler.Server as API
 import qualified Tickler.Server.OptParse as API
-
 import Tickler.Web.Server.Application ()
 import Tickler.Web.Server.BootCheck
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.OptParse
+import Yesod
 
 ticklerWebServer :: IO ()
 ticklerWebServer = do
@@ -46,8 +41,7 @@ makeTicklerApp ServeSettings {..} = do
   tokens <- newMVar HM.empty
   pure
     App
-      { appRoot = serveSetHost
-      , appHttpManager = man
+      { appHttpManager = man
       , appStatic = myStatic
       , appLoginTokens = tokens
       , appAPIBaseUrl = burl
