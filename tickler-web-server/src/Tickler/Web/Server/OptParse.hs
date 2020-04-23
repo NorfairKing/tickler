@@ -10,7 +10,9 @@ module Tickler.Web.Server.OptParse
   )
 where
 
+import qualified Data.ByteString as SB
 import qualified Data.Text as T
+import qualified Data.Yaml as Yaml
 import Import
 import Options.Applicative
 import Servant.Client.Core
@@ -22,18 +24,18 @@ import Tickler.Web.Server.OptParse.Types
 getInstructions :: IO Instructions
 getInstructions = do
   (cmd, flags) <- getArguments
-  config <- getConfiguration cmd flags
   env <- getEnvironment
+  config <- getConfiguration flags env
   combineToInstructions cmd flags env config
 
 combineToInstructions :: Command -> Flags -> Environment -> Maybe Configuration -> IO Instructions
-combineToInstructions (CommandServe ServeFlags {..}) Flags Environment {..} mConf = do
+combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..} mConf = do
   let mc :: (Configuration -> Maybe a) -> Maybe a
       mc f = mConf >>= f
   API.Instructions (API.DispatchServe apiServeSets) API.Settings <-
     API.combineToInstructions
       (API.CommandServe serveFlagAPIServeFlags)
-      API.Flags
+      flagAPIFlags
       envAPIEnvironment
       (confAPIConf <$> mConf)
   let webHost = serveFlagHost <|> envHost <|> mc confHost
@@ -56,8 +58,22 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Environment {..} mCon
       Settings
     )
 
-getConfiguration :: Command -> Flags -> IO (Maybe Configuration)
-getConfiguration _ _ = pure Nothing
+getConfiguration :: Flags -> Environment -> IO (Maybe Configuration)
+getConfiguration Flags {..} Environment {..} = do
+  configFile <-
+    case API.flagConfigFile flagAPIFlags <|> API.envConfigFile envAPIEnvironment of
+      Nothing -> API.getDefaultConfigFile
+      Just cf -> resolveFile' cf
+  mContents <- forgivingAbsence $ SB.readFile (fromAbsFile configFile)
+  forM mContents $ \contents ->
+    case Yaml.decodeEither' contents of
+      Left err ->
+        die $
+          unlines
+            [ unwords ["Failed to read config file:", fromAbsFile configFile],
+              Yaml.prettyPrintParseException err
+            ]
+      Right res -> pure res
 
 getEnvironment :: IO Environment
 getEnvironment = do
@@ -180,4 +196,4 @@ parseCommandServe = info parser modifier
     modifier = fullDesc <> progDesc "Serve."
 
 parseFlags :: Parser Flags
-parseFlags = pure Flags
+parseFlags = Flags <$> API.parseFlags

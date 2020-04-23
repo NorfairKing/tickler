@@ -28,7 +28,7 @@ data ServeFlags
   deriving (Show, Eq)
 
 data Flags
-  = Flags
+  = Flags {flagAPIFlags :: API.Flags}
   deriving (Show, Eq)
 
 data Configuration

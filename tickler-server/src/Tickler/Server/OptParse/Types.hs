@@ -75,7 +75,7 @@ data LooperFlagsRetryPolicy
   deriving (Show, Eq)
 
 data Flags
-  = Flags
+  = Flags {flagConfigFile :: Maybe FilePath}
   deriving (Show, Eq)
 
 data Configuration
@@ -176,7 +176,8 @@ instance FromJSON LooperConfRetryPolicy where
 
 data Environment
   = Environment
-      { envDb :: Maybe Text,
+      { envConfigFile :: Maybe String,
+        envDb :: Maybe Text,
         envWebHost :: Maybe String,
         envPort :: Maybe Int,
         envMonetisationEnvironment :: MonetisationEnvironment,

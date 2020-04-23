@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
@@ -10,8 +11,10 @@ where
 
 import Control.Applicative
 import Control.Monad.Trans.AWS as AWS
+import qualified Data.ByteString as SB
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
+import qualified Data.Yaml as Yaml
 import Database.Persist.Sqlite
 import Import
 import Options.Applicative
@@ -25,12 +28,12 @@ import Web.Stripe.Types as Stripe
 getInstructions :: IO Instructions
 getInstructions = do
   Arguments cmd flags <- getArguments
-  config <- getConfiguration cmd flags
   env <- getEnvironment
+  config <- getConfiguration flags env
   combineToInstructions cmd flags env config
 
 combineToInstructions :: Command -> Flags -> Environment -> Maybe Configuration -> IO Instructions
-combineToInstructions (CommandServe ServeFlags {..}) Flags Environment {..} mConf = do
+combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..} mConf = do
   let mc :: (Configuration -> Maybe a) -> Maybe a
       mc func = mConf >>= func
   let serveSetPort = fromMaybe 8001 $ serveFlagPort <|> envPort <|> mc confPort
@@ -217,12 +220,32 @@ combineToLooperSettings defEnabled defStatic LooperFlagsWith {..} LooperEnvWith 
       LooperEnabled static <$> func looperFlags looperEnv (mlc looperConf)
     else pure LooperDisabled
 
-getConfiguration :: Command -> Flags -> IO (Maybe Configuration)
-getConfiguration _ _ = pure Nothing
+getConfiguration :: Flags -> Environment -> IO (Maybe Configuration)
+getConfiguration Flags {..} Environment {..} = do
+  configFile <-
+    case flagConfigFile <|> envConfigFile of
+      Nothing -> getDefaultConfigFile
+      Just cf -> resolveFile' cf
+  mContents <- forgivingAbsence $ SB.readFile (fromAbsFile configFile)
+  forM mContents $ \contents ->
+    case Yaml.decodeEither' contents of
+      Left err ->
+        die $
+          unlines
+            [ unwords ["Failed to read config file:", fromAbsFile configFile],
+              Yaml.prettyPrintParseException err
+            ]
+      Right res -> pure res
+
+getDefaultConfigFile :: IO (Path Abs File)
+getDefaultConfigFile = do
+  configDir <- getXdgDir XdgConfig (Just [reldir|tickler|])
+  resolveFile configDir "config.yaml"
 
 getEnvironment :: IO Environment
 getEnvironment = do
   env <- System.getEnvironment
+  let envConfigFile = getEnv env "CONFIG_FILE"
   let envDb = T.pack <$> getEnv env "DATABASE"
   let envWebHost = getEnv env "WEB_HOST"
   envPort <- readEnv env "PORT"
@@ -507,4 +530,8 @@ onOffFlag suffix mods =
     pf s = intercalate "-" [s, suffix]
 
 parseFlags :: Parser Flags
-parseFlags = pure Flags
+parseFlags =
+  Flags
+    <$> option
+      (Just <$> str)
+      (mconcat [long "config-file", value Nothing, metavar "FILEPATH", help "The config file"])
