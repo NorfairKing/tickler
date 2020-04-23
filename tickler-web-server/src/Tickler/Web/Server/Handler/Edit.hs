@@ -1,8 +1,4 @@
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Web.Server.Handler.Edit
   ( getEditR
@@ -12,32 +8,22 @@ module Tickler.Web.Server.Handler.Edit
 import Import
 import Tickler.Client
 import Tickler.Web.Server.Foundation
+import Tickler.Web.Server.Handler.Item
 import Yesod
 
 getEditR :: ItemUUID -> Handler Html
 getEditR uuid =
   withLogin $ \t -> do
-    token <- genToken
-    ItemInfo {..} <- runClientOrErr $ clientGetItem t uuid
-    withNavBar $(widgetFile "edit")
-
-data EditItem =
-  EditItem
-    { editItemContents :: Textarea
-    }
-  deriving (Show, Eq, Generic)
-
-editItemForm :: FormInput Handler EditItem
-editItemForm = EditItem <$> ireq textareaField "contents"
+    ii <- runClientOrErr $ clientGetItem t uuid
+    w <- makeEditItemFormWidget (Just (uuid, ii))
+    withNavBar w
 
 postEditR :: ItemUUID -> Handler Html
 postEditR uuid =
   withLogin $ \t -> do
     AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
-    ItemInfo {..} <- runClientOrErr $ clientGetItem t uuid
-    EditItem {..} <- runInputPost editItemForm
-    let newVersion = itemInfoContents {tickleContent = textTypedItem $ unTextarea editItemContents}
+    tickle <- handleEditItemForm
     runClientOrErr $ do
-      NoContent <- clientPostItem t uuid newVersion
+      NoContent <- clientPostItem t uuid tickle
       pure ()
     redirect $ EditR uuid

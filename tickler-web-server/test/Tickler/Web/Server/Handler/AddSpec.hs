@@ -2,16 +2,13 @@
 
 module Tickler.Web.Server.Handler.AddSpec where
 
-import TestImport
-
-import Yesod.Test
-
 import Network.HTTP.Types
-
+import TestImport
 import Tickler.Data
 import Tickler.Web.Server.Foundation
-import Tickler.Web.Server.Handler.Add
+import Tickler.Web.Server.Handler.Item
 import Tickler.Web.Server.TestUtils
+import Yesod.Test
 
 spec :: Spec
 spec = do
@@ -61,10 +58,10 @@ spec = do
       Just (Just (EveryMonthsOnDay 8 Nothing Nothing))
   ticklerWebServerSpec $
     ydescribe "Add" $
-         --  yit "gets a 200 for a logged-in user" $ do
-         --      withExampleAccountAndLogin_ $ do
-         --          get AddR
-         --          statusIs 200
+    --  yit "gets a 200 for a logged-in user" $ do
+    --      withExampleAccountAndLogin_ $ do
+    --          get AddR
+    --          statusIs 200
     yit "can post an example item" $
     withExampleAccountAndLogin_ $ do
       get AddR

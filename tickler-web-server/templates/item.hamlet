@@ -1,0 +1,101 @@
+<div .ui .segment>
+  <form
+    .ui .form
+    method=post
+    action=@{maybe AddR EditR mUUID}>
+      $maybe contents <- mContents
+        $case typedItemCase contents
+          $of Left err
+            Invalid item: #{err}
+          $of Right i
+            $case i
+              $of CaseTextItem t
+                <div .ui .field>
+                  <textarea
+                    name="contents"
+                    autofocus>
+                    #{Textarea t}
+      $nothing
+        <div .ui .field>
+          <textarea
+            name="contents"
+            autofocus>
+
+      <div .ui .field>
+        <div .ui .left .labeled .input>
+          <div .ui .basic .label>
+            On
+          <input .ui .input type="date" name="scheduled-day" value=#{scheduledDayVal}>
+
+      <div .ui .field>
+        <div .ui .left .labeled .input>
+          <div .ui .basic .label>
+            At
+          <input .ui .input type="time" name="scheduled-time" value=#{scheduledTimeVal}>
+
+      <div .ui .inline .fields>
+        <div .ui .field>
+          <input id="None" .recurrence-option .ui .radio .checkbox type="radio" name="recurrence" value="NoRecurrence" :noRecurrenceChecked:checked>
+          <label>
+            No recurrence
+
+        <div .ui .field>
+          <input id="EveryDay" .recurrence-option .ui .slider .checkbox type="radio" name="recurrence" value="Days" :everyXDaysChecked:checked>
+          <label>
+            Every X Days
+
+        <div .ui .field>
+          <input id="EveryMonth" .recurrence-option .ui .slider .checkbox type="radio" name="recurrence" value="Months" :everyXMonthsChecked:checked>
+          <label>
+            Every X Months
+
+      <div .EveryDay-input .changable .ui .inline .fields style="display: none;">
+        <div .ui .field>
+          <div .ui .left .right .labeled .input>
+            <div .ui .basic .label>
+              Every
+            <input .ui .input type="number" name="days" value="#{daysVal}">
+            <div .ui .basic .label>
+              days
+
+        <div .ui .field>
+          <div .ui .left .labeled .input>
+            <div .ui .basic .label>
+              At
+            <input .ui .input type="time" name="day-time-of-day" value="#{timeVal}">
+
+      <div .EveryMonth-input .changable .ui .inline .fields style="display: none;">
+        <div .ui .field>
+          <div .ui .left .right .labeled .input>
+            <div .ui .basic .label>
+              Every
+            <input .ui .input type="number" name="months" value="#{monthsVal}">
+            <div .ui .basic .label>
+              months
+
+        <div .ui .field>
+          <div .ui .left .right .labeled .input>
+            <div .ui .basic .label>
+              On day
+            <input .ui .input type="number" name="day" value="#{monthsDayVal}">
+            <div .ui .basic .label>
+              of the month
+
+        <div .ui .field>
+          <div .ui .left .labeled .input>
+            <div .ui .basic .label>
+              At
+            <input .ui .input type="time" name="month-time-of-day" value="#{monthsTodVal}">
+
+
+
+
+      ^{token}
+      <div .ui .buttons>
+        <button .ui .positive .button type="submit">
+          Save
+        <a .ui .button href=@{TicklesR}>
+          Cancel
+
+
+
