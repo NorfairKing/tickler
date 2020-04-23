@@ -20,9 +20,9 @@ runTriggerer () = do
       later = addDays 2 nowDay
   itemsToConsider <-
     runDb $
-      selectList
-        [TicklerItemScheduledDay <=. later]
-        [Asc TicklerItemScheduledDay, Asc TicklerItemScheduledTime]
+    selectList
+      [TicklerItemScheduledDay <=. later]
+      [Asc TicklerItemScheduledDay, Asc TicklerItemScheduledTime]
   mapM_ considerTicklerItem itemsToConsider
   logInfoNS "Triggerer" "Finished triggering tickles."
 
@@ -51,15 +51,15 @@ ticklerItemLocalScheduledTime TicklerItem {..} =
 makeTriggeredItem :: UTCTime -> TicklerItem -> TriggeredItem
 makeTriggeredItem now TicklerItem {..} =
   TriggeredItem
-    { triggeredItemIdentifier = ticklerItemIdentifier,
-      triggeredItemUserId = ticklerItemUserId,
-      triggeredItemType = ticklerItemType,
-      triggeredItemContents = ticklerItemContents,
-      triggeredItemCreated = ticklerItemCreated,
-      triggeredItemScheduledDay = ticklerItemScheduledDay,
-      triggeredItemScheduledTime = ticklerItemScheduledTime,
-      triggeredItemRecurrence = ticklerItemRecurrence,
-      triggeredItemTriggered = now
+    { triggeredItemIdentifier = ticklerItemIdentifier
+    , triggeredItemUserId = ticklerItemUserId
+    , triggeredItemType = ticklerItemType
+    , triggeredItemContents = ticklerItemContents
+    , triggeredItemCreated = ticklerItemCreated
+    , triggeredItemScheduledDay = ticklerItemScheduledDay
+    , triggeredItemScheduledTime = ticklerItemScheduledTime
+    , triggeredItemRecurrence = ticklerItemRecurrence
+    , triggeredItemTriggered = now
     }
 
 ticklerItemUpdates :: TicklerItem -> Maybe [Update TicklerItem]

@@ -1,4 +1,4 @@
-resolver: lts-14.20
+resolver: lts-14.23
 packages:
 - tickler-api
 - tickler-api-gen
@@ -17,9 +17,6 @@ extra-deps:
 - servant-auth-client-0.4.0.0@sha256:68879b7f44d87f73ef68c7bb21006167f5623c4cd6a2a3fce4d5ea3959a8c730,3426
 - servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
 
-- github: NorfairKing/looper
-  commit: 929a8ad6a99a84624767bd9d619cc5318c6bda56
-
 - github: NorfairKing/yesod-static-remote
   commit: 22c0a92c1d62f1b8d432003844ef0636a9131b08
 
@@ -32,7 +29,7 @@ extra-deps:
     - stripe-http-streams
 
 - github: NorfairKing/intray
-  commit: 524391c575a29a4cfcdb99dea2530327035f6b22
+  commit: 679617d7c8203299c0094a43049da30a7a09f1ba
   subdirs:
     - intray-data
     - intray-data-gen
@@ -40,22 +37,22 @@ extra-deps:
     - intray-api-gen
     - intray-client
     - intray-server
-    - intray-server-test-utils
+    - intray-server-gen
 
 - github: NorfairKing/mergeless
-  commit: bf61e179d1935282fd32a85121613d2b98a927d9
+  commit: 32fb75445723213ed78f678c20a2271a48e5dd41
   subdirs:
     - mergeless
     - genvalidity-mergeless
 
 - github: NorfairKing/mergeful
-  commit: 70e6971e9a7c2e099136c6447b7b315a935b9690
+  commit: 4e3cf189c76d04daf9c26267a64523ec8bb071aa
   subdirs:
     - mergeful
     - genvalidity-mergeful
 
 - github: NorfairKing/validity
-  commit: 3a1e12ceb64611ead94faee969200c22142b59d4
+  commit: ac28a5c0fc8559f96ffe7f9286ffff1b879a39f3
   subdirs:
     - validity
     - validity-aeson
@@ -85,13 +82,15 @@ extra-deps:
     - genvalidity-vector
 
 - github: NorfairKing/typed-uuid
-  commit: 4c5739c5e231b1cee6bd568ec55734116691ac8f
+  commit: dbc8fd4b56b78b1f9cf00bc2890d43dc19b97c5c
   subdirs:
     - typed-uuid
     - genvalidity-typed-uuid
 
 - github: NorfairKing/pretty-relative-time
   commit: 4eb01d55ef8f0f37fa63093be3ec67e99df4962f
+- github: NorfairKing/looper
+  commit: 929a8ad6a99a84624767bd9d619cc5318c6bda56
 
 nix:
   path: [ "nixpkgs=https://github.com/NixOS/nixpkgs/archive/323fe92057bb38475a446ff5e18d3b388c2e4403.tar.gz" ]

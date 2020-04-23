@@ -103,14 +103,6 @@ with final.haskell.lib;
               sha256 =
                 "sha256:04dsfx568hmmrr7zg5gbqwipdiy7lvpckfk2ayln6gh6zf9jxl13";
             };
-          looperRepo =
-            final.fetchFromGitHub {
-              owner = "NorfairKing";
-              repo = "looper";
-              rev = "929a8ad6a99a84624767bd9d619cc5318c6bda56";
-              sha256 =
-                "07wc2as7p2pz08a9qfx2jm3kz1cvfg73d872il3zhyplbd6yhzbx";
-            };
           stripeHaskellPkg =
             name:
               dontCheck (
@@ -124,7 +116,6 @@ with final.haskell.lib;
               amazonka-test = callHackage "amazonka-test" "1.6.1" {};
               amazonka-core = callHackage "amazonka-core" "1.6.1" {};
               amazonka-ses = callHackage "amazonka-ses" "1.6.1" {};
-              looper = self.callCabal2nix "looper" looperRepo {};
             } // final.lib.genAttrs [
               "stripe-core"
               "stripe-haskell"

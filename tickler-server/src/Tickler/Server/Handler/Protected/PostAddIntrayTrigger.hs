@@ -9,25 +9,19 @@ module Tickler.Server.Handler.Protected.PostAddIntrayTrigger
   ( servePostAddIntrayTrigger
   ) where
 
-import Import
-
 import qualified Data.Text as T
 import Data.Time
 import Data.UUID.Typed
 import Database.Persist
+import Import
+import qualified Intray.Client as Intray
 import qualified Network.HTTP.Client as Http
 import qualified Network.HTTP.Client.TLS as Http
-
 import Servant hiding (BadPassword, NoSuchUser)
 import Servant.Client
-
-import qualified Intray.Client as Intray
-
 import Tickler.API
-
-import Tickler.Server.Types
-
 import Tickler.Server.Handler.Utils
+import Tickler.Server.Types
 
 servePostAddIntrayTrigger ::
      AuthCookie -> AddIntrayTrigger -> TicklerHandler (Either Text TriggerUUID)
@@ -46,7 +40,7 @@ servePostAddIntrayTrigger AuthCookie {..} AddIntrayTrigger {..} = do
                    }
            res <- Intray.clientPostLogin loginForm
            case res of
-             Headers Intray.NoContent (HCons _ (HCons _ HNil)) -> pure ()
+             Headers Intray.NoContent (HCons _ HNil) -> pure ()
   case errOrOk of
     Left err ->
       case err of

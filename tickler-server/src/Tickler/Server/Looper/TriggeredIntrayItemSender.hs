@@ -1,31 +1,26 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Looper.TriggeredIntrayItemSender
   ( runTriggeredIntrayItemSender
   ) where
 
-import Import
-
-import qualified Data.Text as T
-
 import Control.Monad.Logger
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
 import Database.Persist.Sqlite
+import Import
+import qualified Intray.Client as Intray
 import qualified Network.HTTP.Client as Http
 import qualified Network.HTTP.Client.TLS as Http
-import Web.Cookie
-
 import Servant
 import Servant.Auth.Client
 import Servant.Client
-
-import qualified Intray.Client as Intray
-
 import Tickler.Client
-
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
+import Web.Cookie
 
 runTriggeredIntrayItemSender :: () -> Looper ()
 runTriggeredIntrayItemSender _ = do
@@ -58,21 +53,28 @@ runTriggeredIntrayItemSender _ = do
                           }
                   res <- Intray.clientPostLogin loginForm
                   case res of
-                    Headers Intray.NoContent (HCons _ (HCons sessionHeader HNil)) ->
+                    Headers Intray.NoContent (HCons sessionHeader HNil) ->
                       case sessionHeader of
                         MissingHeader -> pure $ Left "Login should return a session header"
                         UndecodableHeader _ ->
                           pure $ Left "Login should return a decodable session header"
-                        Header session -> do
-                          let token = Token $ setCookieValue session
-                          let item =
-                                Intray.TypedItem
-                                  { Intray.itemType =
-                                      case triggeredItemType of
-                                        TextItem -> Intray.TextItem
-                                  , Intray.itemData = triggeredItemContents
-                                  }
-                          Right <$> Intray.clientPostAddItem token item
+                        Header setCookieText -> do
+                          let cookies = parseSetCookie . TE.encodeUtf8 <$> T.lines setCookieText
+                              jwtCookie = find ((== "JWT-Cookie") . setCookieName) cookies
+                          case jwtCookie of
+                            Nothing ->
+                              pure $
+                              Left "No JWT-Cookie was found in the Set-Cookie session header."
+                            Just session -> do
+                              let token = Token $ setCookieValue session
+                              let item =
+                                    Intray.TypedItem
+                                      { Intray.itemType =
+                                          case triggeredItemType of
+                                            TextItem -> Intray.TextItem
+                                      , Intray.itemData = triggeredItemContents
+                                      }
+                              Right <$> Intray.clientPostAddItem token item
               case errOrUuid of
                 Left (ConnectionError err) -> do
                   logErrorNS "TriggeredIntraySender" $
