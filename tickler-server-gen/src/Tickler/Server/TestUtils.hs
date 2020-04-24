@@ -162,6 +162,7 @@ setupTicklerTestApp menv = do
                 , triggeredIntrayItemSenderLooperHandle = LooperHandleDisabled
                 , triggeredEmailSchedulerLooperHandle = LooperHandleDisabled
                 , triggeredEmailConverterLooperHandle = LooperHandleDisabled
+                , adminNotificationEmailConverterLooperHandle = LooperHandleDisabled
                 , stripeEventsFetcherLooperHandle = LooperHandleDisabled
                 , stripeEventsRetrierLooperHandle = LooperHandleDisabled
                 }

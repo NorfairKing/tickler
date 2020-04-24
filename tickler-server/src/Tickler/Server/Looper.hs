@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Tickler.Server.Looper
   ( LoopersHandle(..)
@@ -9,6 +10,8 @@ module Tickler.Server.Looper
 
 import Control.Concurrent
 import Control.Concurrent.Async
+import Control.Exception
+import Control.Monad.Catch as Exception
 import Control.Monad.Logger
 import Control.Retry
 import Data.Pool
@@ -16,7 +19,9 @@ import qualified Data.Text as T
 import Data.Time
 import Database.Persist.Sqlite
 import Import
+import Tickler.Data
 import Tickler.Server.Looper.AdminNotificationEmailConverter
+import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Emailer
 import Tickler.Server.Looper.StripeEventsFetcher
 import Tickler.Server.Looper.TriggeredEmailConverter
@@ -96,7 +101,7 @@ startLooperWithSets pool mss lsw func =
 retryLooperWith :: LooperRetryPolicy -> Looper b -> Looper b
 retryLooperWith LooperRetryPolicy {..} looperFunc =
   let policy = constantDelay looperRetryPolicyDelay <> limitRetries looperRetryPolicyAmount
-   in recoverAll policy $ \RetryStatus {..} -> do
+   in recoverWithAdminNotification policy $ \RetryStatus {..} -> do
         unless (rsIterNumber == 0) $
           logWarnNS "Looper" $
           T.unwords
@@ -106,6 +111,23 @@ retryLooperWith LooperRetryPolicy {..} looperFunc =
             , T.pack $ show rsCumulativeDelay
             ]
         looperFunc
+
+recoverWithAdminNotification :: RetryPolicyM Looper -> (RetryStatus -> Looper a) -> Looper a
+recoverWithAdminNotification set = recovering set handlers
+  where
+    handlers = skipAsyncExceptions ++ [h]
+    h :: RetryStatus -> Exception.Handler Looper Bool
+    h _ =
+      Exception.Handler $ \(e :: SomeException) -> do
+        runDb $
+          insert_
+            AdminNotificationEmail
+              { adminNotificationEmailEmail = Nothing
+              , adminNotificationEmailContents =
+                  T.pack $
+                  unlines ["The following exception occurred in a looper:", displayException e]
+              }
+        return True
 
 runLooperContinuously :: MonadIO m => Int -> m b -> m ()
 runLooperContinuously period func = go

@@ -58,6 +58,7 @@ ticklerTestServeSettings = do
                   , API.looperSetVerificationEmailConverterSets = API.LooperDisabled
                   , API.looperSetTriggeredEmailSchedulerSets = API.LooperDisabled
                   , API.looperSetTriggeredEmailConverterSets = API.LooperDisabled
+                  , API.looperSetAdminNotificationEmailConverterSets = API.LooperDisabled
                   }
             }
       }

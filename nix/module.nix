@@ -123,6 +123,22 @@ in {
           default = null;
           description = "The email address to use for email triggering";
         };
+      email-admin-notification-from-address =
+        mkOption {
+          type = types.nullOr types.string;
+          example = "admin-notification@tickler.cs-syd.eu";
+          default = null;
+          description =
+            "The email address to use to send admin notifications from";
+        };
+      email-admin-notification-to-address =
+        mkOption {
+          type = types.nullOr types.string;
+          example = "syd@example.com";
+          default = null;
+          description =
+            "The email address to use to send admin notifications from";
+        };
       monetisation =
         mkOption {
           default = null;
@@ -205,6 +221,7 @@ in {
                     verification-email-converter = looperOption;
                     triggered-email-scheduler = looperOption;
                     triggered-email-converter = looperOption;
+                    admin-notification-email-converter = looperOption;
                   };
               }
             );
@@ -288,6 +305,13 @@ in {
                         )
                         (
                           looperConfSet "triggered-email-converter" cfg.loopers.triggered-email-converter cfg.email-triggered-address
+                        )
+                        (
+                          looperConfSet "admin-notification-email-converter" cfg.loopers.admin-notification-email-converter {
+                            "from" =
+                              cfg.email-admin-notification-from-address;
+                            "to" = cfg.email-admin-notification-to-address;
+                          }
                         )
                       ];
                 };

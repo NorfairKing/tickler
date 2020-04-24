@@ -1,28 +1,24 @@
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Looper.StripeEventsFetcher where
 
-import Import
-
-import Control.Monad.Logger
-
-import qualified Web.Stripe as Stripe
-import Web.Stripe as Stripe ((-&-))
-import qualified Web.Stripe.Customer as Stripe
-import qualified Web.Stripe.Event as Stripe
-import qualified Web.Stripe.Session as Stripe
-
 import Conduit
-import Web.Stripe.Conduit
-
+import Control.Monad.Logger
+import qualified Data.Text as T
 import Database.Persist
-
+import Import
 import Tickler.Data
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
 import Tickler.Server.OptParse.Types
+import qualified Web.Stripe as Stripe
+import Web.Stripe as Stripe ((-&-))
+import Web.Stripe.Conduit
+import qualified Web.Stripe.Customer as Stripe
+import qualified Web.Stripe.Event as Stripe
+import qualified Web.Stripe.Session as Stripe
 
 runStripeEventsFetcher :: StripeSettings -> Looper ()
 runStripeEventsFetcher ss = do
@@ -56,6 +52,13 @@ handleEvent :: Stripe.Event -> Looper StripeEvent
 handleEvent Stripe.Event {..} =
   let err t = do
         logErr t
+        runDb $
+          insert_ $
+          AdminNotificationEmail
+            { adminNotificationEmailContents =
+                T.unlines ["The following problem occurred during Stripe event handling: ", t]
+            , adminNotificationEmailEmail = Nothing
+            }
         pure $ StripeEvent {stripeEventEvent = eventId, stripeEventError = Just t}
    in case eventType of
         Stripe.CheckoutSessionCompletedEvent ->

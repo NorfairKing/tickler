@@ -6,21 +6,18 @@
 module Tickler.Server.Handler.Utils
   ( runDb
   , withAdminCreds
+  , sendAdminNotification
   , deleteAccountFully
   ) where
-
-import Import
 
 import qualified Database.Esqueleto as E
 import Database.Esqueleto ((^.))
 import Database.Persist
 import Database.Persist.Sqlite
-
+import Import
 import Servant
 import Servant.Auth.Server as Auth
-
 import Tickler.API
-
 import Tickler.Server.Types
 
 runDb :: (MonadReader TicklerServerEnv m, MonadIO m) => SqlPersistT IO b -> m b
@@ -38,6 +35,12 @@ withAdminCreds adminCandidate func = do
       if userUsername `elem` admins
         then func
         else throwAll err401
+
+sendAdminNotification :: MonadIO m => Text -> SqlPersistT m ()
+sendAdminNotification contents =
+  insert_
+    AdminNotificationEmail
+      {adminNotificationEmailContents = contents, adminNotificationEmailEmail = Nothing}
 
 deleteAccountFully :: AccountUUID -> TicklerHandler ()
 deleteAccountFully uuid = do
