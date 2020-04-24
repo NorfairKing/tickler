@@ -13,15 +13,11 @@ module Tickler.API.Types
   , module Data.UUID.Typed
   ) where
 
-import Import
-
 import Data.Aeson as JSON
 import Data.Time
 import Data.UUID.Typed
-
-import Text.Blaze as HTML
-import Text.Blaze.Html as HTML
-
+import Import
+import Intray.API ()
 import Servant.API
 import Servant.Auth
 import Servant.Auth.Docs ()
@@ -29,12 +25,10 @@ import Servant.Auth.Server
 import Servant.Client.Core
 import Servant.Docs
 import Servant.HTML.Blaze
-
-import qualified Web.Stripe.Plan as Stripe
-
-import Intray.API ()
-
+import Text.Blaze as HTML
+import Text.Blaze.Html as HTML
 import Tickler.Data
+import qualified Web.Stripe.Plan as Stripe
 
 type ProtectAPI = Auth '[ JWT] AuthCookie
 
@@ -85,6 +79,26 @@ instance ToJSON LoginForm where
 instance ToSample LoginForm
 
 instance ToSample Username
+
+data ChangePassphrase =
+  ChangePassphrase
+    { changePassphraseOld :: Text
+    , changePassphraseNew :: Text
+    }
+  deriving (Show, Eq, Generic)
+
+instance Validity ChangePassphrase
+
+instance FromJSON ChangePassphrase where
+  parseJSON =
+    withObject "ChangePassphrase" $ \o ->
+      ChangePassphrase <$> o .: "old-passphrase" <*> o .: "new-passphrase"
+
+instance ToJSON ChangePassphrase where
+  toJSON ChangePassphrase {..} =
+    object ["old-passphrase" .= changePassphraseOld, "new-passphrase" .= changePassphraseNew]
+
+instance ToSample ChangePassphrase
 
 data Pricing =
   Pricing

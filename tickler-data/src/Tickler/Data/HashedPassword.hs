@@ -7,12 +7,10 @@ module Tickler.Data.HashedPassword
   , validatePassword
   ) where
 
-import Import
-
 import qualified Crypto.BCrypt as BCrypt
 import qualified Data.Text.Encoding as TE
-
 import Database.Persist.Sql
+import Import
 
 newtype HashedPassword =
   HashedPassword ByteString
@@ -27,5 +25,5 @@ passwordHash :: Text -> IO (Maybe HashedPassword)
 passwordHash =
   fmap (fmap HashedPassword) . BCrypt.hashPasswordUsingPolicy hashingpolicy . TE.encodeUtf8
 
-validatePassword :: HashedPassword -> ByteString -> Bool
-validatePassword (HashedPassword hp) = BCrypt.validatePassword hp
+validatePassword :: HashedPassword -> Text -> Bool
+validatePassword (HashedPassword hp) = BCrypt.validatePassword hp . TE.encodeUtf8

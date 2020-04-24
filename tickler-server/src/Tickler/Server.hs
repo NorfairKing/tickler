@@ -115,6 +115,7 @@ ticklerProtectedServer =
     , deleteTrigger = withAuthResult serveDeleteTrigger
     , getAccountInfo = withAuthResult serveGetAccountInfo
     , getAccountSettings = withAuthResult serveGetAccountSettings
+    , postChangePassphrase = withAuthResult servePostChangePassphrase
     , putAccountSettings = withAuthResult servePutAccountSettings
     , deleteAccount = withAuthResult serveDeleteAccount
     }

@@ -16,15 +16,21 @@
 
 
 <div .ui .segment>
-  <h2> Danger zone
-  <form
-     method=post
-     action=@{AccountDeleteR}>
-    ^{token}
-    <button 
-      .negative .ui .button
-     onclick="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
-      Delete account
+  <h3> Danger zone
+  <p>
+    <a .ui .button
+      href=@{AuthR changePasswordTargetR}>
+      Change password
+
+  <p>
+    <form
+       method=post
+       action=@{AccountDeleteR}>
+      ^{token}
+      <button 
+        .negative .ui .button
+       onclick="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+        Delete account
 
 
 ^{adminSegment mai}

@@ -15,21 +15,17 @@ module Tickler.API
   , module Data.UUID.Typed
   ) where
 
-import Import
-
 import Data.UUID.Typed
-
+import Import
 import Servant.API
 import Servant.API.Generic
 import Servant.Auth.Docs ()
 import Servant.HTML.Blaze
-
-import Tickler.Data
-
 import Tickler.API.Account.Types
 import Tickler.API.Admin
 import Tickler.API.Protected
 import Tickler.API.Types
+import Tickler.Data
 
 ticklerAPI :: Proxy TicklerAPI
 ticklerAPI = Proxy

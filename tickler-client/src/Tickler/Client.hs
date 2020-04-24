@@ -10,17 +10,13 @@ module Tickler.Client
   , module Servant.Client
   ) where
 
-import Import
-
 import qualified Data.UUID.Typed
-
+import Import
 import Servant.API
 import Servant.API.Flatten
 import Servant.Auth.Client
 import Servant.Client
-
 import Tickler.API
-
 import Tickler.Client.Store
 
 clientGetAllItems :: Token -> ClientM [ItemInfo TypedItem]
@@ -44,6 +40,7 @@ clientPostEmailTriggerResendVerificationEmail :: Token -> TriggerUUID -> ClientM
 clientDeleteTrigger :: Token -> TriggerUUID -> ClientM NoContent
 clientGetAccountInfo :: Token -> ClientM AccountInfo
 clientGetAccountSettings :: Token -> ClientM AccountSettings
+clientPostChangePassphrase :: Token -> ChangePassphrase -> ClientM NoContent
 clientPutAccountSettings :: Token -> AccountSettings -> ClientM NoContent
 clientDeleteAccount :: Token -> ClientM NoContent
 clientPostRegister :: Registration -> ClientM NoContent
@@ -54,5 +51,5 @@ clientGetPricing :: ClientM (Maybe Pricing)
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientPostItem :<|> clientDeleteItem :<|> clientRetryTriggered :<|> clientDeleteTriggereds :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientPostEmailTriggerVerify :<|> clientPostEmailTriggerResendVerificationEmail :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetLoopersInfo :<|> clientGetDocs :<|> clientGetPricing :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientPostItem :<|> clientDeleteItem :<|> clientRetryTriggered :<|> clientDeleteTriggereds :<|> clientPostSync :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientPostEmailTriggerVerify :<|> clientPostEmailTriggerResendVerificationEmail :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPostChangePassphrase :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetLoopersInfo :<|> clientGetDocs :<|> clientGetPricing :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
   client (flatten ticklerAPI)

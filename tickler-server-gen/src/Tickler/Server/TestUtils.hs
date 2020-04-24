@@ -23,6 +23,7 @@ module Tickler.Server.TestUtils
   , withValidNewUser
   , withValidNewUserAndData
   , requiresAdmin
+  , login
   , module Servant.Client
   ) where
 
@@ -215,19 +216,9 @@ withNewUser cenv r func = do
   errOrUUID <- runClient cenv $ clientPostRegister r
   case errOrUUID of
     Left (ConnectionError t) ->
-      expectationFailure $ unlines ["Registration should not fail with error: ", show t]
-    Left err -> expectationFailure $ unlines ["Registration should not fail with error: ", show err]
-    Right NoContent -> do
-      let lf =
-            LoginForm
-              { loginFormUsername = registrationUsername r
-              , loginFormPassword = registrationPassword r
-              }
-      Headers NoContent (HCons sessionHeader HNil) <- runClientOrError cenv $ clientPostLogin lf
-      case sessionHeader of
-        MissingHeader -> expectationFailure "Login should return a session header"
-        UndecodableHeader _ -> expectationFailure "Login should return a decodable session header"
-        Header session -> func $ Token $ setCookieValue $ parseSetCookie $ encodeUtf8 session
+      failure $ unlines ["Registration should not fail with error: ", show t]
+    Left err -> failure $ unlines ["Registration should not fail with error: ", show err]
+    Right NoContent -> login cenv (registrationUsername r) (registrationPassword r) >>= func
 
 requiresAdmin :: ClientEnv -> (Token -> ClientM a) -> Expectation
 requiresAdmin cenv func =
@@ -238,5 +229,19 @@ requiresAdmin cenv func =
         case err of
           FailureResponse _ resp ->
             HTTP.statusCode (Servant.Client.responseStatusCode resp) `shouldBe` 401
-          _ -> expectationFailure "Should have got a failure response."
-      Right _ -> expectationFailure "Should not have been allowed."
+          _ -> failure "Should have got a failure response."
+      Right _ -> failure "Should not have been allowed."
+
+login :: ClientEnv -> Username -> Text -> IO Token
+login cenv un pw = do
+  let lf = LoginForm {loginFormUsername = un, loginFormPassword = pw}
+  Headers NoContent (HCons sessionHeader HNil) <- runClientOrError cenv $ clientPostLogin lf
+  case sessionHeader of
+    MissingHeader -> failure "Login should return a session header"
+    UndecodableHeader _ -> failure "Login should return a decodable session header"
+    Header session -> pure $ Token $ setCookieValue $ parseSetCookie $ encodeUtf8 session
+
+failure :: String -> IO a
+failure s = do
+  expectationFailure s
+  undefined -- Won't get here anyway

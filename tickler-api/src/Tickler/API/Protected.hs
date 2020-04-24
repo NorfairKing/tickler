@@ -14,17 +14,14 @@ module Tickler.API.Protected
   ) where
 
 import Import
-
 import Servant.API
 import Servant.API.Generic
 import Servant.Auth.Docs ()
 import Servant.Docs
-
-import Tickler.Data
-
 import Tickler.API.Account.Types
 import Tickler.API.Protected.Types
 import Tickler.API.Types
+import Tickler.Data
 
 type TicklerProtectedAPI = ToServantApi TicklerProtectedSite
 
@@ -48,6 +45,7 @@ data TicklerProtectedSite route =
     , deleteTrigger :: !(route :- DeleteTrigger)
     , getAccountInfo :: !(route :- GetAccountInfo)
     , getAccountSettings :: !(route :- GetAccountSettings)
+    , postChangePassphrase :: route :- PostChangePassphrase
     , putAccountSettings :: !(route :- PutAccountSettings)
     , deleteAccount :: !(route :- DeleteAccount)
     }
@@ -120,6 +118,9 @@ type DeleteTrigger
 type GetAccountInfo = ProtectAPI :> "account" :> Get '[ JSON] AccountInfo
 
 type GetAccountSettings = ProtectAPI :> "account" :> "settings" :> Get '[ JSON] AccountSettings
+
+type PostChangePassphrase
+   = ProtectAPI :> ReqBody '[ JSON] ChangePassphrase :> PostNoContent '[ JSON] NoContent
 
 type PutAccountSettings
    = ProtectAPI :> "account" :> "settings" :> ReqBody '[ JSON] AccountSettings :> Put '[ JSON] NoContent
