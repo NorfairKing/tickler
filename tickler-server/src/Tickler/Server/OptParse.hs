@@ -62,17 +62,21 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..}
        let mmc :: (MonetisationConfiguration -> Maybe a) -> Maybe a
            mmc func = mc confMonetisationConfiguration >>= func
        let plan =
-             Stripe.PlanId . T.pack <$> (monetisationFlagStripePlan <|> monetisationEnvStripePlan)
+             Stripe.PlanId . T.pack <$>
+             (monetisationFlagStripePlan <|> monetisationEnvStripePlan <|>
+              mmc monetisationConfStripePlan)
        let config =
              (\sk ->
                 StripeConfig
                   { Stripe.secretKey = StripeKey $ TE.encodeUtf8 $ T.pack sk
                   , stripeEndpoint = Nothing
                   }) <$>
-             (monetisationFlagStripeSecretKey <|> monetisationEnvStripeSecretKey)
+             (monetisationFlagStripeSecretKey <|> monetisationEnvStripeSecretKey <|>
+              mmc monetisationConfStripeSecretKey)
        let publicKey =
              T.pack <$>
-             (monetisationFlagStripePublishableKey <|> monetisationEnvStripePulishableKey)
+             (monetisationFlagStripePublishableKey <|> monetisationEnvStripePulishableKey <|>
+              mmc monetisationConfStripePulishableKey)
        monetisationSetStripeEventsFetcher <-
          comb'
            monetisationFlagLooperStripeEventsFetcher

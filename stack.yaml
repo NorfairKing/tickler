@@ -95,7 +95,7 @@ extra-deps:
 nix:
   path: [ "nixpkgs=https://github.com/NixOS/nixpkgs/archive/323fe92057bb38475a446ff5e18d3b388c2e4403.tar.gz" ]
   add-gc-roots: true
-  pure: true
+  pure: false # To make sure that ./scripts/devel-tickler-web-server-paid.sh works the way I want it.
   packages:
   - zlib
   - unzip
