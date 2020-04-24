@@ -181,6 +181,33 @@ combineToLoopersSettings webHost lf@LoopersFlags {..} le@LoopersEnvironment {..}
           , triggeredEmailConverterSetFromName = "Tickler Triggerer"
           , triggeredEmailConverterSetWebHost = webHost
           }
+  looperSetAdminNotificationEmailConverterSets <-
+    comb
+      looperFlagAdminNotificationEmailConverterFlags
+      looperEnvAdminNotificationEmailConverterEnv
+      (mc looperConfAdminNotificationEmailConverterConf) $ \AdminNotificationEmailConverterFlags {..} AdminNotificationEmailConverterEnvironment {..} mANECConf -> do
+      let malc :: (AdminNotificationEmailConverterConf -> Maybe a) -> Maybe a
+          malc f = mANECConf >>= f
+      fromAddress <-
+        case adminNotificationEmailConverterFlagFromAddress <|>
+             adminNotificationEmailConverterEnvFromAddress <|>
+             malc adminNotificationEmailConverterConfFromAddress of
+          Nothing -> die "No 'from' email configured for the admin notification emails"
+          Just ea -> pure ea
+      toAddress <-
+        case adminNotificationEmailConverterFlagToAddress <|>
+             adminNotificationEmailConverterEnvFromAddress <|>
+             malc adminNotificationEmailConverterConfFromAddress of
+          Nothing -> die "No 'to' email configured for the admin notification emails"
+          Just ea -> pure ea
+      pure
+        AdminNotificationEmailConverterSettings
+          { adminNotificationEmailConverterSetFromAddress = fromAddress
+          , adminNotificationEmailConverterSetFromName = "Tickler Admin Notification"
+          , adminNotificationEmailConverterSetToAddress = toAddress
+          , adminNotificationEmailConverterSetToName = "Tickler Admin"
+          , adminNotificationEmailConverterSetWebHost = webHost
+          }
   pure LoopersSettings {..}
 
 combineToLooperSettings' ::
@@ -294,6 +321,11 @@ getLoopersEnv env = do
   looperEnvTriggeredEmailConverterEnv <-
     getLooperEnvWith env "TRIGGERED_EMAIL_CONVERTER" $
     getEitherEnv env emailValidateFromString "TRIGGERED_EMAIL_ADDRESS"
+  looperEnvAdminNotificationEmailConverterEnv <-
+    getLooperEnvWith env "ADMIN_NOTIFICATION_EMAIL_CONVERTER" $
+    AdminNotificationEmailConverterEnvironment <$>
+    getEitherEnv env emailValidateFromString "ADMIN_NOTIFICATION_FROM_EMAIL_ADDRESS" <*>
+    getEitherEnv env emailValidateFromString "ADMIN_NOTIFICATION_TO_EMAIL_ADDRESS"
   pure LoopersEnvironment {..}
 
 getLooperEnvWith :: [(String, String)] -> String -> IO a -> IO (LooperEnvWith a)
@@ -485,7 +517,30 @@ parseLoopersFlags =
           , value Nothing
           , metavar "EMAIL_ADDRESS"
           , help "The email address to use to send triggered item emails from"
-          ]))
+          ])) <*>
+  parseLooperFlagsWith
+    "admin-notification-email-converter"
+    parseAdminNotificationEmailConverterFlags
+
+parseAdminNotificationEmailConverterFlags :: Parser AdminNotificationEmailConverterFlags
+parseAdminNotificationEmailConverterFlags =
+  AdminNotificationEmailConverterFlags <$>
+  option
+    (Just <$> eitherReader emailValidateFromString)
+    (mconcat
+       [ long "admin-notification-from-email-address"
+       , value Nothing
+       , metavar "EMAIL_ADDRESS"
+       , help "The email address to use to send admin notification emails from"
+       ]) <*>
+  option
+    (Just <$> eitherReader emailValidateFromString)
+    (mconcat
+       [ long "admin-notification-to-email-address"
+       , value Nothing
+       , metavar "EMAIL_ADDRESS"
+       , help "The email address of the admin to use to send admin notification emails to"
+       ])
 
 parseLooperFlagsWith :: String -> Parser a -> Parser (LooperFlagsWith a)
 parseLooperFlagsWith name func =

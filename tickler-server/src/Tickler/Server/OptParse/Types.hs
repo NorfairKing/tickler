@@ -56,6 +56,14 @@ data LoopersFlags =
     , looperFlagVerificationEmailConverterFlags :: LooperFlagsWith (Maybe EmailAddress)
     , looperFlagTriggeredEmailSchedulerFlags :: LooperFlagsWith ()
     , looperFlagTriggeredEmailConverterFlags :: LooperFlagsWith (Maybe EmailAddress)
+    , looperFlagAdminNotificationEmailConverterFlags :: LooperFlagsWith AdminNotificationEmailConverterFlags
+    }
+  deriving (Show, Eq)
+
+data AdminNotificationEmailConverterFlags =
+  AdminNotificationEmailConverterFlags
+    { adminNotificationEmailConverterFlagFromAddress :: Maybe EmailAddress
+    , adminNotificationEmailConverterFlagToAddress :: Maybe EmailAddress
     }
   deriving (Show, Eq)
 
@@ -135,6 +143,7 @@ data LoopersConfiguration =
     , looperConfVerificationEmailConverterConf :: !(Maybe (LooperConfWith (Maybe EmailAddress)))
     , looperConfTriggeredEmailSchedulerConf :: !(Maybe (LooperConfWith ()))
     , looperConfTriggeredEmailConverterConf :: !(Maybe (LooperConfWith (Maybe EmailAddress)))
+    , looperConfAdminNotificationEmailConverterConf :: !(Maybe (LooperConfWith AdminNotificationEmailConverterConf))
     }
   deriving (Show, Eq)
 
@@ -150,7 +159,8 @@ instance FromJSON LoopersConfiguration where
       o .:? "triggered-intray-item-sender" <*>
       o .:? "verification-email-converter" <*>
       o .:? "triggered-email-scheduler" <*>
-      o .:? "triggered-email-converter"
+      o .:? "triggered-email-converter" <*>
+      o .:? "admin-notification-email-converter"
 
 data LooperConfWith a =
   LooperConfWith
@@ -177,6 +187,18 @@ instance FromJSON LooperConfRetryPolicy where
   parseJSON =
     withObject "LooperConfRetryPolicy" $ \o ->
       LooperConfRetryPolicy <$> o .:? "delay" <*> o .:? "amount"
+
+data AdminNotificationEmailConverterConf =
+  AdminNotificationEmailConverterConf
+    { adminNotificationEmailConverterConfFromAddress :: Maybe EmailAddress
+    , adminNotificationEmailConverterConfToAddress :: Maybe EmailAddress
+    }
+  deriving (Show, Eq)
+
+instance FromJSON AdminNotificationEmailConverterConf where
+  parseJSON =
+    withObject "AdminNotificationEmailConverterConf" $ \o ->
+      AdminNotificationEmailConverterConf <$> o .:? "from" <*> o .:? "to"
 
 data Environment =
   Environment
@@ -213,6 +235,7 @@ data LoopersEnvironment =
     , looperEnvVerificationEmailConverterEnv :: LooperEnvWith (Maybe EmailAddress)
     , looperEnvTriggeredEmailSchedulerEnv :: LooperEnvWith ()
     , looperEnvTriggeredEmailConverterEnv :: LooperEnvWith (Maybe EmailAddress)
+    , looperEnvAdminNotificationEmailConverterEnv :: LooperEnvWith AdminNotificationEmailConverterEnvironment
     }
   deriving (Show, Eq)
 
@@ -229,6 +252,13 @@ data LooperEnvRetryPolicy =
   LooperEnvRetryPolicy
     { looperEnvRetryDelay :: Maybe Int
     , looperEnvRetryAmount :: Maybe Int
+    }
+  deriving (Show, Eq)
+
+data AdminNotificationEmailConverterEnvironment =
+  AdminNotificationEmailConverterEnvironment
+    { adminNotificationEmailConverterEnvFromAddress :: Maybe EmailAddress
+    , adminNotificationEmailConverterEnvToAddress :: Maybe EmailAddress
     }
   deriving (Show, Eq)
 
@@ -277,6 +307,7 @@ data LoopersSettings =
     , looperSetVerificationEmailConverterSets :: LooperSetsWith VerificationEmailConverterSettings
     , looperSetTriggeredEmailSchedulerSets :: LooperSetsWith ()
     , looperSetTriggeredEmailConverterSets :: LooperSetsWith TriggeredEmailConverterSettings
+    , looperSetAdminNotificationEmailConverterSets :: LooperSetsWith AdminNotificationEmailConverterSettings
     }
   deriving (Show)
 
@@ -318,5 +349,15 @@ data TriggeredEmailConverterSettings =
     { triggeredEmailConverterSetFromAddress :: !EmailAddress
     , triggeredEmailConverterSetFromName :: !Text
     , triggeredEmailConverterSetWebHost :: !Text
+    }
+  deriving (Show)
+
+data AdminNotificationEmailConverterSettings =
+  AdminNotificationEmailConverterSettings
+    { adminNotificationEmailConverterSetFromAddress :: !EmailAddress
+    , adminNotificationEmailConverterSetFromName :: !Text
+    , adminNotificationEmailConverterSetToAddress :: !EmailAddress
+    , adminNotificationEmailConverterSetToName :: !Text
+    , adminNotificationEmailConverterSetWebHost :: !Text
     }
   deriving (Show)

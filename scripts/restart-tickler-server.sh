@@ -14,4 +14,4 @@ export TICKLER_SERVER_TRIGGERED_EMAIL_ADDRESS=triggered@example.com
 export TICKLER_SERVER_LOOPERS_DEFAULT_ENABLED=False
 
 
-tickler-server serve --admin admin $@ &
+tickler-server serve $@ &
