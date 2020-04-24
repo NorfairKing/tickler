@@ -67,17 +67,3 @@ ticklerItemUpdates ti = do
   r <- ticklerItemRecurrence ti
   let (d, mtod) = nextScheduledTime (ticklerItemScheduledDay ti) (ticklerItemScheduledTime ti) r
   pure [TicklerItemScheduledDay =. d, TicklerItemScheduledTime =. mtod]
-
-nextScheduledTime :: Day -> Maybe TimeOfDay -> Recurrence -> (Day, Maybe TimeOfDay)
-nextScheduledTime scheduledDay _ r =
-  case r of
-    EveryDaysAtTime ds mtod -> (addDays (fromIntegral ds) scheduledDay, mtod)
-    EveryMonthsOnDay ms md mtod ->
-      let clipped = addGregorianMonthsClip (fromIntegral ms) scheduledDay
-          day =
-            case md of
-              Nothing -> clipped
-              Just d_ ->
-                let (y, m, _) = toGregorian clipped
-                 in fromGregorian y m (fromIntegral d_)
-       in (day, mtod)

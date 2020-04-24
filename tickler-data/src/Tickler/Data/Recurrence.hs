@@ -3,16 +3,13 @@
 
 module Tickler.Data.Recurrence where
 
-import Import
-
 import Control.Applicative
-
 import Data.Aeson
 import Data.Time
 import Data.Word
-
 import Database.Persist
 import Database.Persist.Sql
+import Import
 
 data Recurrence
   = EveryDaysAtTime Word (Maybe TimeOfDay)
@@ -78,3 +75,17 @@ everyDaysAtTime ds mtod = constructValid $ EveryDaysAtTime ds mtod
 
 everyMonthsOnDayAtTime :: Word -> Maybe Word8 -> Maybe TimeOfDay -> Maybe Recurrence
 everyMonthsOnDayAtTime ms md mtod = constructValid $ EveryMonthsOnDay ms md mtod
+
+nextScheduledTime :: Day -> Maybe TimeOfDay -> Recurrence -> (Day, Maybe TimeOfDay)
+nextScheduledTime scheduledDay _ r =
+  case r of
+    EveryDaysAtTime ds mtod -> (addDays (fromIntegral ds) scheduledDay, mtod)
+    EveryMonthsOnDay ms md mtod ->
+      let clipped = addGregorianMonthsClip (fromIntegral ms) scheduledDay
+          day =
+            case md of
+              Nothing -> clipped
+              Just d_ ->
+                let (y, m, _) = toGregorian clipped
+                 in fromGregorian y m (fromIntegral d_)
+       in (day, mtod)

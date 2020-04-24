@@ -20,36 +20,41 @@ handleEditItemForm = do
   EditItem {..} <- runInputPost editItemForm
   case mkRecurrence editItemRecurrenceData of
     Nothing -> invalidArgs ["Invalid recurrence"]
-    Just recurrence ->
+    Just recurrence -> do
+      now <- liftIO getCurrentTime
+      let (d, mtod) =
+            case editItemScheduledDay of
+              Nothing -> defaultScheduledDay now editItemScheduledTime recurrence
+              Just r -> (r, editItemScheduledTime)
       pure
         Tickle
           { tickleContent = textTypedItem $ unTextarea editItemText
-          , tickleScheduledDay = editItemScheduledDay
-          , tickleScheduledTime = editItemScheduledTime
+          , tickleScheduledDay = d
+          , tickleScheduledTime = mtod
           , tickleRecurrence = recurrence
           }
 
 data EditItem =
   EditItem
     { editItemText :: Textarea
-    , editItemScheduledDay :: Day
-    , editItemScheduledTime :: Maybe TimeOfDay
+    , editItemScheduledDay :: !(Maybe Day)
+    , editItemScheduledTime :: !(Maybe TimeOfDay)
     , editItemRecurrenceData :: RecurrenceData
     }
 
 data RecurrenceData =
   RecurrenceData
     { recurrenceDataOption :: RecurrenceOption
-    , recurrenceDataDays :: Maybe Word
-    , recurrenceDataDayTimeOfDay :: Maybe TimeOfDay
-    , recurrenceDataMonths :: Maybe Word
-    , recurrenceDataMonthDay :: Maybe Word8
-    , recurrenceDataMonthTimeOfDay :: Maybe TimeOfDay
+    , recurrenceDataDays :: !(Maybe Word)
+    , recurrenceDataDayTimeOfDay :: !(Maybe TimeOfDay)
+    , recurrenceDataMonths :: !(Maybe Word)
+    , recurrenceDataMonthDay :: !(Maybe Word8)
+    , recurrenceDataMonthTimeOfDay :: !(Maybe TimeOfDay)
     }
 
 editItemForm :: FormInput Handler EditItem
 editItemForm =
-  EditItem <$> ireq textareaField "contents" <*> ireq dayField "scheduled-day" <*>
+  EditItem <$> ireq textareaField "contents" <*> iopt dayField "scheduled-day" <*>
   iopt timeField "scheduled-time" <*>
   recurrenceDataForm
 
@@ -74,6 +79,12 @@ data RecurrenceOption
   | Days
   | Months
   deriving (Show, Read, Eq, Enum, Bounded)
+
+defaultScheduledDay :: UTCTime -> Maybe TimeOfDay -> Maybe Recurrence -> (Day, Maybe TimeOfDay)
+defaultScheduledDay now mtod mrec =
+  case mrec of
+    Nothing -> (utctDay $ addUTCTime nominalDay now, mtod)
+    Just r -> nextScheduledTime (utctDay now) mtod r
 
 -- The first maybe is for failure, the second is for whether or not there is recurrence.
 mkRecurrence :: RecurrenceData -> Maybe (Maybe Recurrence)
