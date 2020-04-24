@@ -1,43 +1,34 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Tickler.Server.Looper.VerificationEmailConverter
   ( runVerificationEmailConverter
   ) where
 
-import Import
-
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as LT
 import qualified Data.Text.Lazy.Builder as LTB
 import Data.Time
-
-import Control.Monad.Logger
 import Database.Persist.Sqlite
-
+import Import
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Text.Hamlet
 import Text.Shakespeare.Text
-
 import Tickler.Data
-
-import Tickler.Server.OptParse.Types
-
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
+import Tickler.Server.OptParse.Types
 
 runVerificationEmailConverter :: VerificationEmailConverterSettings -> Looper ()
 runVerificationEmailConverter vecs@VerificationEmailConverterSettings {..} = do
-  logInfoNS "TriggeredEmailConverter" "Starting converting VerificationEmails to Emails."
   ves <- runDb $ selectList [VerificationEmailEmail ==. Nothing] []
   forM_ ves $ \(Entity vid ve@VerificationEmail {..}) -> do
     e <- makeVerificationEmail vecs ve undefined
     runDb $ do
       eid <- insert e
       update vid [VerificationEmailEmail =. Just eid]
-  logInfoNS "TriggeredEmailConverter" "Finished converting VerificationEmails to Emails."
 
 makeVerificationEmail ::
      VerificationEmailConverterSettings -> VerificationEmail -> Render Text -> Looper Email

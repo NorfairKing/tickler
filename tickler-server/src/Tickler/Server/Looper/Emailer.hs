@@ -5,39 +5,31 @@ module Tickler.Server.Looper.Emailer
   ( runEmailer
   ) where
 
-import Import
-
 import Control.Lens
-import Control.Monad.Logger
 import Control.Monad.Trans.AWS
 import Control.Monad.Trans.Resource (runResourceT)
 import qualified Data.Text as T
 import Data.Time
 import Database.Persist.Sqlite
+import Import
 import Network.AWS as AWS
 import Network.AWS.SES
 import System.IO
-
 import Tickler.Data
-
-import Tickler.Server.OptParse.Types
-
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
+import Tickler.Server.OptParse.Types
 
 runEmailer :: EmailerSettings -> Looper ()
-runEmailer EmailerSettings {..} = do
-  logInfoNS "Emailer" "Starting to send emails."
-  go
-  logInfoNS "Emailer" "Finished sending emails."
-  where
-    go = do
-      list <- runDb $ selectFirst [EmailStatus ==. EmailUnsent] [Asc EmailScheduled]
-      case list of
-        Nothing -> pure ()
-        Just e -> do
-          handleSingleEmail emailerSetAWSCredentials e
-          go -- Go on until there are no more emails to be sent.
+runEmailer EmailerSettings {..} =
+  let go = do
+        list <- runDb $ selectFirst [EmailStatus ==. EmailUnsent] [Asc EmailScheduled]
+        case list of
+          Nothing -> pure ()
+          Just e -> do
+            handleSingleEmail emailerSetAWSCredentials e
+            go -- Go on until there are no more emails to be sent.
+   in go
 
 handleSingleEmail :: AWS.Credentials -> Entity Email -> Looper ()
 handleSingleEmail awsCreds (Entity emailId email) =

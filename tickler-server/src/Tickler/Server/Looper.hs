@@ -49,43 +49,56 @@ data LoopersHandle =
 
 startLoopers :: Pool SqlBackend -> LoopersSettings -> Maybe MonetisationSettings -> IO LoopersHandle
 startLoopers pool LoopersSettings {..} mms = do
-  let start :: LooperSetsWith a -> (a -> Looper b) -> IO LooperHandle
+  let start :: String -> LooperSetsWith a -> (a -> Looper b) -> IO LooperHandle
       start = startLooperWithSets pool (monetisationSetStripeSettings <$> mms)
-  emailerLooperHandle <- start looperSetEmailerSets runEmailer
-  triggererLooperHandle <- start looperSetTriggererSets runTriggerer
+  emailerLooperHandle <- start "Emailer" looperSetEmailerSets runEmailer
+  triggererLooperHandle <- start "Triggerer" looperSetTriggererSets runTriggerer
   verificationEmailConverterLooperHandle <-
-    start looperSetVerificationEmailConverterSets runVerificationEmailConverter
+    start
+      "TriggeredVerificationEmailConverter"
+      looperSetVerificationEmailConverterSets
+      runVerificationEmailConverter
   triggeredIntrayItemSchedulerLooperHandle <-
-    start looperSetTriggeredIntrayItemSchedulerSets runTriggeredIntrayItemScheduler
+    start
+      "TriggeredIntrayItemScheduler"
+      looperSetTriggeredIntrayItemSchedulerSets
+      runTriggeredIntrayItemScheduler
   triggeredIntrayItemSenderLooperHandle <-
-    start looperSetTriggeredIntrayItemSenderSets runTriggeredIntrayItemSender
+    start
+      "TriggeredIntrayItemSender"
+      looperSetTriggeredIntrayItemSenderSets
+      runTriggeredIntrayItemSender
   triggeredEmailSchedulerLooperHandle <-
-    start looperSetTriggeredEmailSchedulerSets runTriggeredEmailScheduler
+    start "TriggeredEmailScheduler" looperSetTriggeredEmailSchedulerSets runTriggeredEmailScheduler
   triggeredEmailConverterLooperHandle <-
-    start looperSetTriggeredEmailConverterSets runTriggeredEmailConverter
+    start "TriggeredEmailConverter" looperSetTriggeredEmailConverterSets runTriggeredEmailConverter
   adminNotificationEmailConverterLooperHandle <-
-    start looperSetAdminNotificationEmailConverterSets runAdminNotificationEmailConverter
+    start
+      "AdminNotificationEmailConverter"
+      looperSetAdminNotificationEmailConverterSets
+      runAdminNotificationEmailConverter
   stripeEventsFetcherLooperHandle <-
     maybe
       (pure LooperHandleDisabled)
       (\ms ->
-         start (monetisationSetStripeEventsFetcher ms) $ \() ->
+         start "StripeEventsFetcher" (monetisationSetStripeEventsFetcher ms) $ \() ->
            runStripeEventsFetcher (monetisationSetStripeSettings ms))
       mms
   stripeEventsRetrierLooperHandle <-
     maybe
       (pure LooperHandleDisabled)
-      (\ms -> start (monetisationSetStripeEventsRetrier ms) $ \() -> pure ())
+      (\ms -> start "StripeEventsRetrier" (monetisationSetStripeEventsRetrier ms) $ \() -> pure ())
       mms
   pure LoopersHandle {..}
 
 startLooperWithSets ::
      Pool SqlBackend
   -> Maybe StripeSettings
+  -> String
   -> LooperSetsWith a
   -> (a -> Looper b)
   -> IO LooperHandle
-startLooperWithSets pool mss lsw func =
+startLooperWithSets pool mss name lsw func =
   case lsw of
     LooperDisabled -> pure LooperHandleDisabled
     LooperEnabled lsc@LooperStaticConfig {..} sets ->
@@ -93,17 +106,17 @@ startLooperWithSets pool mss lsw func =
        in do a <-
                async $
                runLooper
-                 (retryLooperWith looperStaticConfigRetryPolicy $
-                  runLooperContinuously looperStaticConfigPeriod $ func sets)
+                 (retryLooperWith name looperStaticConfigRetryPolicy $
+                  runLooperContinuously name looperStaticConfigPeriod $ func sets)
                  env
              pure $ LooperHandleEnabled a lsc
 
-retryLooperWith :: LooperRetryPolicy -> Looper b -> Looper b
-retryLooperWith LooperRetryPolicy {..} looperFunc =
+retryLooperWith :: String -> LooperRetryPolicy -> Looper b -> Looper b
+retryLooperWith name LooperRetryPolicy {..} looperFunc =
   let policy = constantDelay looperRetryPolicyDelay <> limitRetries looperRetryPolicyAmount
-   in recoverWithAdminNotification policy $ \RetryStatus {..} -> do
+   in recoverWithAdminNotification name policy $ \RetryStatus {..} -> do
         unless (rsIterNumber == 0) $
-          logWarnNS "Looper" $
+          logWarnNS (T.pack name <> "Looper") $
           T.unwords
             [ "Retry number"
             , T.pack $ show rsIterNumber
@@ -112,8 +125,9 @@ retryLooperWith LooperRetryPolicy {..} looperFunc =
             ]
         looperFunc
 
-recoverWithAdminNotification :: RetryPolicyM Looper -> (RetryStatus -> Looper a) -> Looper a
-recoverWithAdminNotification set = recovering set handlers
+recoverWithAdminNotification ::
+     String -> RetryPolicyM Looper -> (RetryStatus -> Looper a) -> Looper a
+recoverWithAdminNotification name set = recovering set handlers
   where
     handlers = skipAsyncExceptions ++ [h]
     h :: RetryStatus -> Exception.Handler Looper Bool
@@ -125,18 +139,23 @@ recoverWithAdminNotification set = recovering set handlers
               { adminNotificationEmailEmail = Nothing
               , adminNotificationEmailContents =
                   T.pack $
-                  unlines ["The following exception occurred in a looper:", displayException e]
+                  unlines
+                    [ unwords ["The following exception occurred in the", name, "looper:"]
+                    , displayException e
+                    ]
               }
         return True
 
-runLooperContinuously :: MonadIO m => Int -> m b -> m ()
-runLooperContinuously period func = go
+runLooperContinuously :: (MonadIO m, MonadLogger m) => String -> Int -> m b -> m ()
+runLooperContinuously name period func = go
   where
     go = do
+      logInfoNS (T.pack name <> "Looper") "Starting"
       start <- liftIO getCurrentTime
       void func
       end <- liftIO getCurrentTime
       let diff = diffUTCTime end start
+      logInfoNS (T.pack name <> "Looper") $ T.unwords ["Finished, took", T.pack $ show diff]
       liftIO $
         threadDelay $
         period * 1000 * 1000 -

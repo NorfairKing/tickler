@@ -1,9 +1,7 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Looper.Triggerer where
 
-import Control.Monad.Logger
 import Data.Time
 import Database.Persist.Sqlite
 import Import
@@ -13,7 +11,6 @@ import Tickler.Server.Looper.Types
 
 runTriggerer :: () -> Looper ()
 runTriggerer () = do
-  logInfoNS "Triggerer" "Starting triggering tickles."
   nowZoned <- liftIO getZonedTime
   let nowLocal = zonedTimeToLocalTime nowZoned
       nowDay = localDay nowLocal
@@ -24,7 +21,6 @@ runTriggerer () = do
       [TicklerItemScheduledDay <=. later]
       [Asc TicklerItemScheduledDay, Asc TicklerItemScheduledTime]
   mapM_ considerTicklerItem itemsToConsider
-  logInfoNS "Triggerer" "Finished triggering tickles."
 
 considerTicklerItem :: Entity TicklerItem -> Looper ()
 considerTicklerItem e@(Entity _ ti@TicklerItem {..}) =

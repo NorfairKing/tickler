@@ -7,32 +7,24 @@ module Tickler.Server.Looper.TriggeredEmailConverter
   ( runTriggeredEmailConverter
   ) where
 
-import Import
-
 import Data.Char as Char
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as LT
 import qualified Data.Text.Lazy.Builder as LTB
 import Data.Time
-
-import Control.Monad.Logger
 import Database.Persist.Sqlite
-
+import Import
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Text.Hamlet
 import Text.Shakespeare.Text
-
 import Tickler.Data
-
-import Tickler.Server.OptParse.Types
-
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
+import Tickler.Server.OptParse.Types
 
 runTriggeredEmailConverter :: TriggeredEmailConverterSettings -> Looper ()
 runTriggeredEmailConverter tess = do
-  logInfoNS "TriggeredEmailConverter" "Starting converting TriggeredEmails to Emails."
   tes <- runDb $ selectList [TriggeredEmailEmail ==. Nothing] []
   tups <-
     fmap catMaybes $
@@ -46,9 +38,8 @@ runTriggeredEmailConverter tess = do
   runDb $
     forM_ tups $ \(tid, e) -> do
       eid <- insert e
-            -- FIXME This should be a transaction.
+      -- FIXME This should be a transaction.
       update tid [TriggeredEmailEmail =. Just eid]
-  logInfoNS "TriggeredEmailConverter" "Finished converting TriggeredEmails to Emails."
 
 makeTriggeredEmail ::
      TriggeredEmailConverterSettings -> EmailTrigger -> TriggeredItem -> Render Text -> Looper Email

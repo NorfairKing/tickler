@@ -1,24 +1,15 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Tickler.Server.Looper.TriggeredIntrayItemScheduler
   ( runTriggeredIntrayItemScheduler
   ) where
 
-import Import
-
-import Control.Monad.Logger
 import Database.Persist.Sqlite
-
+import Import
 import Tickler.Data
-
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
 
 runTriggeredIntrayItemScheduler :: () -> Looper ()
-runTriggeredIntrayItemScheduler _ = do
-  logInfoNS
-    "TriggeredIntrayScheduler"
-    "Starting scheduling TriggeredIntrayItems from triggered items."
+runTriggeredIntrayItemScheduler () = do
   tis <- runDb $ selectList [] [Asc TriggeredItemScheduledDay, Asc TriggeredItemScheduledTime]
   tes <-
     fmap concat $
@@ -47,6 +38,3 @@ runTriggeredIntrayItemScheduler _ = do
                     }
               Just _ -> Nothing
   runDb $ insertMany_ tes
-  logInfoNS
-    "TriggeredIntrayScheduler"
-    "Finished scheduling TriggeredIntrayItems from triggered items."

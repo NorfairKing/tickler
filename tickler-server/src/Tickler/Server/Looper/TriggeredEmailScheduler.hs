@@ -1,23 +1,17 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Looper.TriggeredEmailScheduler
   ( runTriggeredEmailScheduler
   ) where
 
-import Import
-
-import Control.Monad.Logger
 import Database.Persist
-
+import Import
 import Tickler.Data
-
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
 
 runTriggeredEmailScheduler :: () -> Looper ()
-runTriggeredEmailScheduler _ = do
-  logInfoNS "TriggeredEmailScheduler" "Starting scheduling TriggeredEmails from triggered items."
+runTriggeredEmailScheduler () = do
   tis <- runDb $ selectList [] [Asc TriggeredItemScheduledDay, Asc TriggeredItemScheduledTime]
   tes <-
     fmap concat $
@@ -54,4 +48,3 @@ runTriggeredEmailScheduler _ = do
                       Just _ -> Nothing
                 else pure Nothing
   runDb $ insertMany_ tes
-  logInfoNS "TriggeredEmailScheduler" "Finished scheduling TriggeredEmails from triggered items."
