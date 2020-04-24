@@ -17,4 +17,4 @@ export TICKLER_SERVER_PORT=8001
 export TICKLER_SERVER_LOOPERS_DEFAULT_ENABLED=False
 
 
-tickler-server serve $@ &
+tickler-server serve --admin admin $@ &

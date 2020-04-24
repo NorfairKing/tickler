@@ -373,15 +373,7 @@ getArguments = do
 runArgumentsParser :: [String] -> ParserResult Arguments
 runArgumentsParser = execParserPure prefs_ argParser
   where
-    prefs_ =
-      ParserPrefs
-        { prefMultiSuffix = ""
-        , prefDisambiguate = True
-        , prefShowHelpOnError = True
-        , prefShowHelpOnEmpty = True
-        , prefBacktrack = True
-        , prefColumns = 80
-        }
+    prefs_ = defaultPrefs {prefShowHelpOnError = True, prefShowHelpOnEmpty = True}
 
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_
