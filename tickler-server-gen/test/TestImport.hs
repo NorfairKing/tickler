@@ -18,6 +18,7 @@ import Path as X
 import Path.IO as X
 
 import Test.Hspec as X
+import Test.Hspec.QuickCheck as X
 import Test.QuickCheck as X
 import Test.Validity as X
 

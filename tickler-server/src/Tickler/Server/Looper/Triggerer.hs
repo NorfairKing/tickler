@@ -36,7 +36,8 @@ considerTicklerItem e@(Entity _ ti@TicklerItem {..}) =
 
 triggerTicklerItem :: UTCTime -> Entity TicklerItem -> SqlPersistT IO ()
 triggerTicklerItem now (Entity tii ti) = do
-  insert_ $ makeTriggeredItem now ti -- Make the triggered item
+  uuid <- nextRandomUUID
+  insert_ $ makeTriggeredItem uuid now ti -- Make the triggered item
   case ticklerItemUpdates ti of
     Nothing -> delete tii -- Delete the tickler item
     Just updates -> update tii updates
@@ -48,10 +49,10 @@ ticklerItemLocalScheduledTime :: TicklerItem -> LocalTime
 ticklerItemLocalScheduledTime TicklerItem {..} =
   LocalTime ticklerItemScheduledDay $ fromMaybe midnight ticklerItemScheduledTime
 
-makeTriggeredItem :: UTCTime -> TicklerItem -> TriggeredItem
-makeTriggeredItem now TicklerItem {..} =
+makeTriggeredItem :: ItemUUID -> UTCTime -> TicklerItem -> TriggeredItem
+makeTriggeredItem uuid now TicklerItem {..} =
   TriggeredItem
-    { triggeredItemIdentifier = ticklerItemIdentifier
+    { triggeredItemIdentifier = uuid
     , triggeredItemUserId = ticklerItemUserId
     , triggeredItemType = ticklerItemType
     , triggeredItemContents = ticklerItemContents

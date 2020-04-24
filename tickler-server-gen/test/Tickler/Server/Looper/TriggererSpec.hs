@@ -1,13 +1,10 @@
 module Tickler.Server.Looper.TriggererSpec where
 
-import TestImport
-
 import Data.Time
-
+import TestImport
 import Tickler.Data
-import Tickler.Server.Looper.Triggerer
-
 import Tickler.Data.Gen ()
+import Tickler.Server.Looper.Triggerer
 
 spec :: Spec
 spec = do
@@ -15,7 +12,7 @@ spec = do
   describe "ticklerItemLocalScheduledTime" $
     it "makes valid local times" $ producesValidsOnValids ticklerItemLocalScheduledTime
   describe "makeTriggeredItem" $
-    it "produces valid ticklerItems when it succeeds" $ producesValidsOnValids2 makeTriggeredItem
+    it "produces valid ticklerItems when it succeeds" $ producesValidsOnValids3 makeTriggeredItem
   describe "nextScheduledTime" $ do
     it "produces valid utc times" $ producesValidsOnValids3 nextScheduledTime
     it "never produces the same scheduled time and day" $
