@@ -1,0 +1,8 @@
+<p>
+  This is an admin notification about Tickler at #{adminNotificationEmailConverterSetWebHost}.
+
+<pre>
+  #{adminNotificationEmailContents}
+
+<p>
+  You received this email because you are listed as the administrator for Tickler at #{adminNotificationEmailConverterSetWebHost}.

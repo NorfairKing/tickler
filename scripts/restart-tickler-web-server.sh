@@ -15,4 +15,4 @@ export TICKLER_SERVER_VERIFICATION_EMAIL_ADDRESS=verification@example.com
 export TICKLER_SERVER_TRIGGERED_EMAIL_ADDRESS=triggered@example.com
 export TICKLER_SERVER_LOOPERS_DEFAULT_ENABLED=False
 
-tickler-web-server serve --persist-logins --admin admin $@ &
+tickler-web-server serve --persist-logins $@ &

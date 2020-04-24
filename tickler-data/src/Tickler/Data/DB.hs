@@ -12,18 +12,12 @@
 
 module Tickler.Data.DB where
 
-import Import
-
 import Data.Mergeful.Timed as Mergeful
 import Data.Time
-
 import Database.Persist.Sql
 import Database.Persist.TH
-
-import qualified Web.Stripe.Types as Stripe
-
+import Import
 import qualified Intray.Data as Intray
-
 import Tickler.Data.AccountUUID
 import Tickler.Data.EmailAddress
 import Tickler.Data.EmailStatus
@@ -39,6 +33,7 @@ import Tickler.Data.TriggerType
 import Tickler.Data.TriggerUUID
 import Tickler.Data.Url
 import Tickler.Data.Username
+import qualified Web.Stripe.Types as Stripe
 
 share
   [mkPersist sqlSettings, mkDeleteCascade sqlSettings, mkMigrate "migrateAll"]
@@ -194,6 +189,16 @@ VerificationEmail
     deriving Generic
     deriving Typeable
 
+
+AdminNotificationEmail
+    contents    Text
+    email       EmailId      Maybe
+
+    deriving Show
+    deriving Eq
+    deriving Ord
+    deriving Generic
+    deriving Typeable
 
 TriggeredIntrayItem
     item            ItemUUID

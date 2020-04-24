@@ -101,4 +101,4 @@ nix:
   - unzip
   - haskellPackages.autoexporter
   - procps
-
+  - killall

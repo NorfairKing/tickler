@@ -5,3 +5,6 @@
 ^{mkLooperInfoWidget "Triggered Intray Item Sender" triggeredIntrayItemSenderLooperInfo}
 ^{mkLooperInfoWidget "Triggered Email Scheduler" triggeredEmailSchedulerLooperInfo}
 ^{mkLooperInfoWidget "Triggered Email Converter" triggeredEmailConverterLooperInfo}
+^{mkLooperInfoWidget "Admin Notification Email Converter" adminNotificationEmailConverterLooperInfo}
+^{mkLooperInfoWidget "Stripe Events Fetcher" stripeEventsFetcherLooperInfo}
+^{mkLooperInfoWidget "Stripe Events Retrier" stripeEventsRetrierLooperInfo}

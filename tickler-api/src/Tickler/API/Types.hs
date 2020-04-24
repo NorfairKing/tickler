@@ -175,6 +175,9 @@ data LoopersInfo =
     , triggeredIntrayItemSenderLooperInfo :: LooperInfo
     , triggeredEmailSchedulerLooperInfo :: LooperInfo
     , triggeredEmailConverterLooperInfo :: LooperInfo
+    , adminNotificationEmailConverterLooperInfo :: LooperInfo
+    , stripeEventsFetcherLooperInfo :: LooperInfo
+    , stripeEventsRetrierLooperInfo :: LooperInfo
     }
   deriving (Show, Eq, Generic)
 

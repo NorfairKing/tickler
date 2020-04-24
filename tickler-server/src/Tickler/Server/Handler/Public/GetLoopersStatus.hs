@@ -4,13 +4,10 @@ module Tickler.Server.Handler.Public.GetLoopersStatus
   ( serveGetLoopersStatus
   ) where
 
-import Import
-
 import qualified Control.Concurrent.Async as Async
 import qualified Data.Text as T
-
+import Import
 import Tickler.API
-
 import Tickler.Server.Looper
 import Tickler.Server.OptParse.Types
 import Tickler.Server.Types
@@ -29,6 +26,10 @@ mkLoopersInfo LoopersHandle {..} = do
   triggeredIntrayItemSenderLooperInfo <- mkLooperInfo triggeredIntrayItemSenderLooperHandle
   triggeredEmailSchedulerLooperInfo <- mkLooperInfo triggeredEmailSchedulerLooperHandle
   triggeredEmailConverterLooperInfo <- mkLooperInfo triggeredEmailConverterLooperHandle
+  adminNotificationEmailConverterLooperInfo <-
+    mkLooperInfo adminNotificationEmailConverterLooperHandle
+  stripeEventsFetcherLooperInfo <- mkLooperInfo stripeEventsFetcherLooperHandle
+  stripeEventsRetrierLooperInfo <- mkLooperInfo stripeEventsRetrierLooperHandle
   pure LoopersInfo {..}
 
 mkLooperInfo :: LooperHandle -> IO LooperInfo

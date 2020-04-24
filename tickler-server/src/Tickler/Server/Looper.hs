@@ -16,6 +16,7 @@ import qualified Data.Text as T
 import Data.Time
 import Database.Persist.Sqlite
 import Import
+import Tickler.Server.Looper.AdminNotificationEmailConverter
 import Tickler.Server.Looper.Emailer
 import Tickler.Server.Looper.StripeEventsFetcher
 import Tickler.Server.Looper.TriggeredEmailConverter
@@ -36,6 +37,7 @@ data LoopersHandle =
     , triggeredIntrayItemSenderLooperHandle :: LooperHandle
     , triggeredEmailSchedulerLooperHandle :: LooperHandle
     , triggeredEmailConverterLooperHandle :: LooperHandle
+    , adminNotificationEmailConverterLooperHandle :: LooperHandle
     , stripeEventsFetcherLooperHandle :: LooperHandle
     , stripeEventsRetrierLooperHandle :: LooperHandle
     }
@@ -56,6 +58,8 @@ startLoopers pool LoopersSettings {..} mms = do
     start looperSetTriggeredEmailSchedulerSets runTriggeredEmailScheduler
   triggeredEmailConverterLooperHandle <-
     start looperSetTriggeredEmailConverterSets runTriggeredEmailConverter
+  adminNotificationEmailConverterLooperHandle <-
+    start looperSetAdminNotificationEmailConverterSets runAdminNotificationEmailConverter
   stripeEventsFetcherLooperHandle <-
     maybe
       (pure LooperHandleDisabled)
