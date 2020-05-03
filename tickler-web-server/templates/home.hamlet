@@ -194,10 +194,19 @@ $maybe p <- mPricing
 
 
 <div .ui .huge .padded .segment>
-  <h2 .ui .header>
-    Contact
+  <p>
+    Tickler is a 
+    <a href="https://cs-syd.eu">
+      CS SYD
+    Product.
+  <p>
+    Self-management training which includes Tickler is available 
+    <a href="https://cs-syd.eu/self-management">
+      via CS SYD
+    . 
   <p>
     For questions and feedback, feel free to
     <a href="mailto:tickler@cs-syd.eu">
       contact us
     .
+
