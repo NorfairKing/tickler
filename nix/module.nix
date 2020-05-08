@@ -298,13 +298,13 @@ in {
                           looperConfSet "triggered-intray-item-sender" cfg.loopers.triggered-intray-item-sender null
                         )
                         (
-                          looperConfSet "verification-email-converter" cfg.loopers.verification-email-converter cfg.email-verification-address
+                          looperConfSet "verification-email-converter" cfg.loopers.verification-email-converter { "from" = cfg.email-verification-address; }
                         )
                         (
                           looperConfSet "triggered-email-scheduler" cfg.loopers.triggered-email-scheduler null
                         )
                         (
-                          looperConfSet "triggered-email-converter" cfg.loopers.triggered-email-converter cfg.email-triggered-address
+                          looperConfSet "triggered-email-converter" cfg.loopers.triggered-email-converter { "from" = cfg.email-triggered-address; }
                         )
                         (
                           looperConfSet "admin-notification-email-converter" cfg.loopers.admin-notification-email-converter {
