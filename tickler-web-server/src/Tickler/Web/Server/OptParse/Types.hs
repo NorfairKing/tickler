@@ -6,6 +6,7 @@ import Data.Aeson
 import Import
 import Servant.Client.Core
 import qualified Tickler.Server.OptParse.Types as API
+import YamlParse.Applicative
 
 type Arguments = (Command, Flags)
 
@@ -34,22 +35,32 @@ data Flags =
 
 data Configuration =
   Configuration
-    { confPort :: Maybe Int
+    { confAPIConf :: API.Configuration
+    , confPort :: Maybe Int
     , confPersistLogins :: Maybe Bool
     , confDefaultIntrayUrl :: Maybe BaseUrl
     , confTracking :: Maybe Text
     , confVerification :: Maybe Text
-    , confAPIConf :: API.Configuration
     }
   deriving (Show, Eq)
 
 instance FromJSON Configuration where
-  parseJSON v =
-    flip (withObject "Configuration") v $ \o ->
-      Configuration <$> o .:? "web-port" <*> o .:? "persist-logins" <*> o .:? "default-intray-url" <*>
-      o .:? "tracking" <*>
-      o .:? "verification" <*>
-      parseJSON v
+  parseJSON = viaYamlSchema
+
+instance YamlSchema Configuration where
+  yamlSchema =
+    (\apiConf (a, b, c, d, e) -> Configuration apiConf a b c d e) <$> yamlSchema <*>
+    objectParser
+      "Configuration"
+      ((,,,,) <$> optionalField "web-port" "The port to serve web requests on" <*>
+       optionalField
+         "persist-logins"
+         "Whether to persist logins accross server restarts. Don't use this in production." <*>
+       optionalField
+         "default-intray-url"
+         "The default intray url to fill in for setting up intray triggers" <*>
+       optionalField "tracking" "The google analytics tracking code" <*>
+       optionalField "verification" "The google search console verification code")
 
 data Environment =
   Environment

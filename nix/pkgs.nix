@@ -18,6 +18,11 @@ let
     import (
       pkgs.fetchFromGitHub (import ./pretty-relative-time-version.nix) + "/nix/overlay.nix"
     );
+  yamlparse-applicative-version = import ./yamlparse-applicative-version.nix;
+  yamlparse-applicative-overlay =
+    import (
+      pkgs.fetchFromGitHub yamlparse-applicative-version + "/nix/overlay.nix"
+    );
 
 in
   pkgsv {
@@ -28,6 +33,7 @@ in
         pretty-relative-time-overlay
         mergeless-overlay
         mergeful-overlay
+        yamlparse-applicative-overlay
         ( import ./gitignore-src.nix )
         ( import ./overlay.nix )
       ];

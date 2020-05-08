@@ -2,6 +2,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Tickler.Server.OptParse
   ( module Tickler.Server.OptParse
@@ -10,10 +11,8 @@ module Tickler.Server.OptParse
 
 import Control.Applicative
 import Control.Monad.Trans.AWS as AWS
-import qualified Data.ByteString as SB
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import qualified Data.Yaml as Yaml
 import Database.Persist.Sqlite
 import Import
 import Options.Applicative
@@ -23,6 +22,7 @@ import Tickler.API
 import Tickler.Server.OptParse.Types
 import Web.Stripe.Client as Stripe
 import Web.Stripe.Types as Stripe
+import YamlParse.Applicative (confDesc, readConfigFile)
 
 getInstructions :: IO Instructions
 getInstructions = do
@@ -156,7 +156,7 @@ combineToLoopersSettings webHost lf@LoopersFlags {..} le@LoopersEnvironment {..}
       looperEnvVerificationEmailConverterEnv
       (mc looperConfVerificationEmailConverterConf) $ \f e c -> do
       ea <-
-        case f <|> e <|> join c of
+        case f <|> e <|> (c >>= verificationEmailConverterConfFromAddress) of
           Nothing -> die "No email configured for the email triggerer"
           Just ea -> pure ea
       pure
@@ -176,7 +176,7 @@ combineToLoopersSettings webHost lf@LoopersFlags {..} le@LoopersEnvironment {..}
       looperEnvTriggeredEmailConverterEnv
       (mc looperConfTriggeredEmailConverterConf) $ \f e c -> do
       ea <-
-        case f <|> e <|> join c of
+        case f <|> e <|> (c >>= triggeredEmailConverterConfFromAddress) of
           Nothing -> die "No email configured for the email triggerer"
           Just ea -> pure ea
       pure
@@ -269,16 +269,7 @@ getConfiguration Flags {..} Environment {..} = do
     case flagConfigFile <|> envConfigFile of
       Nothing -> getDefaultConfigFile
       Just cf -> resolveFile' cf
-  mContents <- forgivingAbsence $ SB.readFile (fromAbsFile configFile)
-  forM mContents $ \contents ->
-    case Yaml.decodeEither' contents of
-      Left err ->
-        die $
-        unlines
-          [ unwords ["Failed to read config file:", fromAbsFile configFile]
-          , Yaml.prettyPrintParseException err
-          ]
-      Right res -> pure res
+  readConfigFile configFile
 
 getDefaultConfigFile :: IO (Path Abs File)
 getDefaultConfigFile = do
@@ -378,7 +369,7 @@ runArgumentsParser = execParserPure prefs_ argParser
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_
   where
-    help_ = fullDesc <> progDesc description
+    help_ = fullDesc <> progDesc description <> confDesc @Configuration
     description = "Tickler server"
 
 parseArgs :: Parser Arguments

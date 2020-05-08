@@ -29,7 +29,7 @@ extra-deps:
     - stripe-http-streams
 
 - github: NorfairKing/intray
-  commit: 679617d7c8203299c0094a43049da30a7a09f1ba
+  commit: 38736b04d5923fb87c2d45e47b5b39685ce90acf
   subdirs:
     - intray-data
     - intray-data-gen
@@ -90,7 +90,12 @@ extra-deps:
 - github: NorfairKing/pretty-relative-time
   commit: 4eb01d55ef8f0f37fa63093be3ec67e99df4962f
 - github: NorfairKing/looper
-  commit: 929a8ad6a99a84624767bd9d619cc5318c6bda56
+  commit: 675ef7ef0b47b7021ea1bde1644e953a75d2c373
+- github: NorfairKing/yamlparse-applicative
+  commit: 08369b1b3e1c0ebc0f4e2763e63db48227345081
+  subdirs:
+  - yamlparse-applicative
+
 
 nix:
   path: [ "nixpkgs=https://github.com/NixOS/nixpkgs/archive/323fe92057bb38475a446ff5e18d3b388c2e4403.tar.gz" ]

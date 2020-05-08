@@ -11,6 +11,7 @@ import Data.Text (Text)
 import Data.Time
 import Data.Word
 import Data.Yaml as Yaml
+import YamlParse.Applicative
 
 import Servant.Client
 
@@ -94,11 +95,24 @@ data Configuration =
   deriving (Show, Eq, Generic)
 
 instance FromJSON Configuration where
-  parseJSON =
-    withObject "Configuration" $ \o ->
-      Configuration <$> o .:? "url" <*> o .:? "username" <*> o .:? "password" <*> o .:? "cache-dir" <*>
-      o .:? "data-dir" <*>
-      o .:? "sync"
+  parseJSON = viaYamlSchema
+
+instance YamlSchema Configuration where
+  yamlSchema =
+    objectParser "Configuration" $
+    Configuration <$>
+    optionalField "url" "The api url of the tickler server. Example: api.tickler.cs-syd.eu" <*>
+    optionalField "username" "The username to log in with" <*>
+    optionalField
+      "password"
+      "The password to log in with. Note that leaving your password in plaintext in a config file is not safe. Only use this for automation." <*>
+    optionalField
+      "cache-dir"
+      "The directory to store cache information. You can remove this directory as necessary." <*>
+    optionalField
+      "data-dir"
+      "The directory to store data information. Removing this directory could lead to data loss." <*>
+    optionalField "sync" "The sync strategy for non-sync commands."
 
 data Settings =
   Settings
@@ -115,9 +129,23 @@ data SyncStrategy
   | AlwaysSync
   deriving (Show, Read, Eq, Generic)
 
-instance FromJSON SyncStrategy
+instance FromJSON SyncStrategy where
+  parseJSON = viaYamlSchema
 
 instance ToJSON SyncStrategy
+
+instance YamlSchema SyncStrategy where
+  yamlSchema =
+    alternatives
+      [ literalValue NeverSync <??>
+        [ "Only sync when manually running 'intray sync'."
+        , "When using this option, you essentially promise that you will take care of ensuring that syncing happens regularly."
+        ]
+      , literalValue AlwaysSync <??>
+        [ "Sync on every change to the local state."
+        , "Commands will still succeed even if the sync fails because of internet connect problems for example."
+        ]
+      ]
 
 data Dispatch
   = DispatchRegister RegisterSettings

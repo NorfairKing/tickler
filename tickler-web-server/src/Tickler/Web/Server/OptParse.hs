@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Tickler.Web.Server.OptParse
   ( getInstructions
@@ -9,9 +10,7 @@ module Tickler.Web.Server.OptParse
   , ServeSettings(..)
   ) where
 
-import qualified Data.ByteString as SB
 import qualified Data.Text as T
-import qualified Data.Yaml as Yaml
 import Import
 import Options.Applicative
 import Servant.Client.Core
@@ -19,6 +18,7 @@ import qualified System.Environment as System (getArgs, getEnvironment)
 import Text.Read
 import qualified Tickler.Server.OptParse as API
 import Tickler.Web.Server.OptParse.Types
+import YamlParse.Applicative (confDesc, readConfigFile)
 
 getInstructions :: IO Instructions
 getInstructions = do
@@ -62,16 +62,7 @@ getConfiguration Flags {..} Environment {..} = do
     case API.flagConfigFile flagAPIFlags <|> API.envConfigFile envAPIEnvironment of
       Nothing -> API.getDefaultConfigFile
       Just cf -> resolveFile' cf
-  mContents <- forgivingAbsence $ SB.readFile (fromAbsFile configFile)
-  forM mContents $ \contents ->
-    case Yaml.decodeEither' contents of
-      Left err ->
-        die $
-        unlines
-          [ unwords ["Failed to read config file:", fromAbsFile configFile]
-          , Yaml.prettyPrintParseException err
-          ]
-      Right res -> pure res
+  readConfigFile configFile
 
 getEnvironment :: IO Environment
 getEnvironment = do
@@ -112,7 +103,7 @@ runArgumentsParser = execParserPure prefs_ argParser
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_
   where
-    help_ = fullDesc <> progDesc description
+    help_ = fullDesc <> progDesc description <> confDesc @Configuration
     description = "Tickler web server"
 
 parseArgs :: Parser Arguments

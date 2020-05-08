@@ -48,6 +48,7 @@ library:
   - text >=1.2
   - time
   - yaml >=0.8
+  - yamlparse-applicative
 
 executables:
   tickler:

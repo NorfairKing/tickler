@@ -9,6 +9,7 @@ import Import
 import Tickler.API
 import Web.Stripe.Client as Stripe
 import Web.Stripe.Types as Stripe
+import YamlParse.Applicative
 
 data Arguments =
   Arguments Command Flags
@@ -102,13 +103,22 @@ data Configuration =
   deriving (Show, Eq)
 
 instance FromJSON Configuration where
-  parseJSON =
-    withObject "Configuration" $ \o ->
-      Configuration <$> o .:? "database" <*> o .:? "web-host" <*> o .:? "api-port" <*>
-      o .:? "admins" <*>
-      o .:? "freeloaders" <*>
-      o .:? "monetisation" <*>
-      o .:? "loopers"
+  parseJSON = viaYamlSchema
+
+instance YamlSchema Configuration where
+  yamlSchema =
+    objectParser "Configuration" $
+    Configuration <$> optionalField "database" "The database file" <*>
+    optionalField
+      "web-host"
+      "The host to serve the web-server on, this is used to to send emails with links to the web interface" <*>
+    optionalField "api-port" "The port to serve the api-server on" <*>
+    optionalField "admins" "The list of usernames that will be considered administrators" <*>
+    optionalField "freeloaders" "The list of usernames that won't have to pay" <*>
+    optionalField
+      "monetisation"
+      "Monetisation configuration. If this is not configured then the server is run for free." <*>
+    optionalField "loopers" "The configuration for all the loopers"
 
 data MonetisationConfiguration =
   MonetisationConfiguration
@@ -122,13 +132,20 @@ data MonetisationConfiguration =
   deriving (Show, Eq)
 
 instance FromJSON MonetisationConfiguration where
-  parseJSON =
-    withObject "MonetisationConfiguration" $ \o ->
-      MonetisationConfiguration <$> o .:? "stripe-plan" <*> o .:? "stripe-secret-key" <*>
-      o .:? "stripe-publishable-key" <*>
-      o .:? "stripe-stripe-events-fetcher" <*>
-      o .:? "stripe-stripe-events-retrier" <*>
-      o .:? "max-items-free"
+  parseJSON = viaYamlSchema
+
+instance YamlSchema MonetisationConfiguration where
+  yamlSchema =
+    objectParser "MonetisationConfiguration" $
+    MonetisationConfiguration <$>
+    optionalField
+      "stripe-plan"
+      "The stripe identifier of the stripe plan used to checkout a subscription" <*>
+    optionalField "stripe-secret-key" "The secret key for calling the stripe api" <*>
+    optionalField "stripe-publishable-key" "The publishable key for calling the stripe api" <*>
+    optionalField "stripe-events-fetcher" "The configuration for the stripe events fetcher" <*>
+    optionalField "stripe-events-retrier" "The configuration for the stripe events fetcher" <*>
+    optionalField "max-items-free" "The number of items a free user can have on the server"
 
 data LoopersConfiguration =
   LoopersConfiguration
@@ -140,27 +157,48 @@ data LoopersConfiguration =
     , looperConfEmailerConf :: !(Maybe (LooperConfWith ()))
     , looperConfTriggeredIntrayItemSchedulerConf :: !(Maybe (LooperConfWith ()))
     , looperConfTriggeredIntrayItemSenderConf :: !(Maybe (LooperConfWith ()))
-    , looperConfVerificationEmailConverterConf :: !(Maybe (LooperConfWith (Maybe EmailAddress)))
+    , looperConfVerificationEmailConverterConf :: !(Maybe (LooperConfWith VerificationEmailConverterConf))
     , looperConfTriggeredEmailSchedulerConf :: !(Maybe (LooperConfWith ()))
-    , looperConfTriggeredEmailConverterConf :: !(Maybe (LooperConfWith (Maybe EmailAddress)))
+    , looperConfTriggeredEmailConverterConf :: !(Maybe (LooperConfWith TriggeredEmailConverterConf))
     , looperConfAdminNotificationEmailConverterConf :: !(Maybe (LooperConfWith AdminNotificationEmailConverterConf))
     }
   deriving (Show, Eq)
 
 instance FromJSON LoopersConfiguration where
-  parseJSON =
-    withObject "LoopersConfiguration" $ \o ->
-      LoopersConfiguration <$> o .:? "default-enabled" <*> o .:? "default-period" <*>
-      o .:? "default-retry-delay" <*>
-      o .:? "default-retry-times" <*>
-      o .:? "triggerer" <*>
-      o .:? "emailer" <*>
-      o .:? "triggered-intray-item-scheduler" <*>
-      o .:? "triggered-intray-item-sender" <*>
-      o .:? "verification-email-converter" <*>
-      o .:? "triggered-email-scheduler" <*>
-      o .:? "triggered-email-converter" <*>
-      o .:? "admin-notification-email-converter"
+  parseJSON = viaYamlSchema
+
+instance YamlSchema LoopersConfiguration where
+  yamlSchema =
+    objectParser "LoopersConfiguration" $
+    LoopersConfiguration <$>
+    optionalField "default-enabled" "Whether to enable any given looper by default" <*>
+    optionalField "default-period" "The default period for any given looper by default (in seconds)" <*>
+    optionalField
+      "default-retry-delay"
+      "The default delay to retry for any given looper by default (in microseconds)" <*>
+    optionalField
+      "default-retry-times"
+      "The default number of times to retry for any given looper by default (in microseconds)" <*>
+    optionalField "triggerer" "The looper that triggers tickles" <*>
+    optionalField "emailer" "The looper that sends emails" <*>
+    optionalField
+      "triggered-intray-item-scheduler"
+      "The looper that schedules adding intray items for a triggered tickle" <*>
+    optionalField
+      "triggered-intray-item-sender"
+      "The looper that actually adds intray items for a triggered tickle" <*>
+    optionalField
+      "verification-email-converter"
+      "The looper that converts verification emails in the database to actual emails" <*>
+    optionalField
+      "triggered-email-scheduler"
+      "The looper that schedules sending emails for a triggered tickle" <*>
+    optionalField
+      "triggered-email-converter"
+      "The looper that converts triggered item emails in the database to actual emails" <*>
+    optionalField
+      "admin-notification-email-converter"
+      "The looper that converts admin notifications to actual emails"
 
 data LooperConfWith a =
   LooperConfWith
@@ -171,10 +209,16 @@ data LooperConfWith a =
     }
   deriving (Show, Eq)
 
-instance FromJSON a => FromJSON (LooperConfWith a) where
-  parseJSON =
-    withObject "LooperConfWith" $ \o ->
-      LooperConfWith <$> o .:? "enable" <*> o .:? "period" <*> o .:? "retry-policy" <*> o .:? "conf"
+instance YamlSchema a => FromJSON (LooperConfWith a) where
+  parseJSON = viaYamlSchema
+
+instance YamlSchema a => YamlSchema (LooperConfWith a) where
+  yamlSchema =
+    objectParser "LooperConfWith" $
+    LooperConfWith <$> optionalField "enable" "Wether to enable the looper" <*>
+    optionalField "period" "The period between runs of the looper" <*>
+    optionalField "retry-policy" "The retry policy of the looper" <*>
+    optionalField "conf" "The looper-specific configuration of the looper"
 
 data LooperConfRetryPolicy =
   LooperConfRetryPolicy
@@ -184,9 +228,44 @@ data LooperConfRetryPolicy =
   deriving (Show, Eq)
 
 instance FromJSON LooperConfRetryPolicy where
-  parseJSON =
-    withObject "LooperConfRetryPolicy" $ \o ->
-      LooperConfRetryPolicy <$> o .:? "delay" <*> o .:? "amount"
+  parseJSON = viaYamlSchema
+
+instance YamlSchema LooperConfRetryPolicy where
+  yamlSchema =
+    objectParser "LooperConfRetryPolicy" $
+    LooperConfRetryPolicy <$>
+    optionalField "delay" "The delay to retry the looper (in microseconds)" <*>
+    optionalField "amount" "The number of times to retry the looper"
+
+data VerificationEmailConverterConf =
+  VerificationEmailConverterConf
+    { verificationEmailConverterConfFromAddress :: Maybe EmailAddress
+    }
+  deriving (Show, Eq)
+
+instance FromJSON VerificationEmailConverterConf where
+  parseJSON = viaYamlSchema
+
+instance YamlSchema VerificationEmailConverterConf where
+  yamlSchema =
+    objectParser "VerificationEmailConverterConf" $
+    VerificationEmailConverterConf <$>
+    optionalField "From" "The from address for verification emails"
+
+data TriggeredEmailConverterConf =
+  TriggeredEmailConverterConf
+    { triggeredEmailConverterConfFromAddress :: Maybe EmailAddress
+    }
+  deriving (Show, Eq)
+
+instance FromJSON TriggeredEmailConverterConf where
+  parseJSON = viaYamlSchema
+
+instance YamlSchema TriggeredEmailConverterConf where
+  yamlSchema =
+    objectParser "TriggeredEmailConverterConf" $
+    TriggeredEmailConverterConf <$>
+    optionalField "From" "The from address for triggered item emails"
 
 data AdminNotificationEmailConverterConf =
   AdminNotificationEmailConverterConf
@@ -196,9 +275,14 @@ data AdminNotificationEmailConverterConf =
   deriving (Show, Eq)
 
 instance FromJSON AdminNotificationEmailConverterConf where
-  parseJSON =
-    withObject "AdminNotificationEmailConverterConf" $ \o ->
-      AdminNotificationEmailConverterConf <$> o .:? "from" <*> o .:? "to"
+  parseJSON = viaYamlSchema
+
+instance YamlSchema AdminNotificationEmailConverterConf where
+  yamlSchema =
+    objectParser "AdminNotificationEmailConverterConf" $
+    AdminNotificationEmailConverterConf <$>
+    optionalField "from" "The 'from' address for admin notification emails" <*>
+    optionalField "to" "The 'to' address for admin notification emails"
 
 data Environment =
   Environment

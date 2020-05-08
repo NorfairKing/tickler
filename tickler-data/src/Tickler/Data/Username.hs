@@ -20,6 +20,7 @@ import qualified Data.Char as Char
 import Data.Hashable
 import qualified Data.Text as T
 import Database.Persist.Sql
+import YamlParse.Applicative
 
 newtype Username =
   Username
@@ -54,7 +55,10 @@ instance FromJSONKey Username where
   fromJSONKey = FromJSONKeyTextParser parseUsername
 
 instance FromJSON Username where
-  parseJSON = withText "Username" parseUsername
+  parseJSON = viaYamlSchema
+
+instance YamlSchema Username where
+  yamlSchema = eitherParser parseUsernameWithError yamlSchema
 
 parseUsername :: MonadFail m => Text -> m Username
 parseUsername t =
@@ -64,13 +68,9 @@ parseUsername t =
 
 parseUsernameWithError :: Text -> Either String Username
 parseUsernameWithError t =
-  case checkValidity $ Username t of
+  case prettyValidate $ Username t of
     Right un -> Right un
-    Left chains -> Left $ unlines $ map go chains
-  where
-    go :: ValidationChain -> String
-    go (Violated invariant) = "Violated: " ++ show invariant
-    go (Location loc rest) = go rest ++ " in " ++ loc
+    Left err -> Left err
 
 instance ToJSON Username where
   toJSON = toJSON . usernameText

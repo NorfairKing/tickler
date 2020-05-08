@@ -1,22 +1,19 @@
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tickler.Data.Url
   ( BaseUrl(..)
   ) where
 
-import Import
-
+import Control.Exception
 import Data.Char as Char
 import qualified Data.Text as T
-
-import Servant.Client.Core
-
 import Database.Persist
 import Database.Persist.Sql
-
-import Control.Exception
+import Import
+import Servant.Client.Core
+import YamlParse.Applicative
 
 instance Validity Scheme
 
@@ -56,3 +53,6 @@ instance PersistField BaseUrl where
 
 instance PersistFieldSql BaseUrl where
   sqlType Proxy = SqlString
+
+instance YamlSchema BaseUrl where
+  yamlSchema = maybeParser parseBaseUrl yamlSchema

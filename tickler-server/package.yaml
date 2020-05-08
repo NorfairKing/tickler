@@ -85,6 +85,7 @@ library:
   - wai-extra
   - warp >=3.2
   - yaml
+  - yamlparse-applicative
 
 executables:
   tickler-server:

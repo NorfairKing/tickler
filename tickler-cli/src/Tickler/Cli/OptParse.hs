@@ -4,6 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Tickler.Cli.OptParse
   ( Instructions(..)
@@ -17,21 +18,16 @@ module Tickler.Cli.OptParse
   , CliM
   ) where
 
-import Import
-
-import qualified Data.ByteString as SB
 import qualified Data.Text as T
 import Data.Time
-import Data.Yaml as Yaml (decodeEither', prettyPrintParseException)
-import Text.Read (readMaybe)
-
+import Import
 import Options.Applicative
-import qualified System.Environment as System (getArgs, getEnvironment)
-
 import Servant.Client
-
+import qualified System.Environment as System (getArgs, getEnvironment)
+import Text.Read (readMaybe)
 import Tickler.Cli.OptParse.Types
 import Tickler.Data
+import YamlParse.Applicative (confDesc, readConfigFile, readFirstConfigFile)
 
 getInstructions :: IO Instructions
 getInstructions = do
@@ -158,43 +154,8 @@ getEnvironment = do
 getConfiguration :: Flags -> Environment -> IO (Maybe Configuration)
 getConfiguration Flags {..} Environment {..} =
   case flagConfigFile <|> envConfigFile of
-    Nothing -> defaultConfigFiles >>= getFirstConfigFile
-    Just cf -> do
-      p <- resolveFile' cf
-      mc <- forgivingAbsence $ SB.readFile $ fromAbsFile p
-      case mc of
-        Nothing -> die $ "Config file not found: " <> fromAbsFile p
-        Just contents ->
-          case Yaml.decodeEither' contents of
-            Left err ->
-              die $
-              unlines
-                [ "Failed to parse given config file"
-                , fromAbsFile p
-                , "with error:"
-                , Yaml.prettyPrintParseException err
-                ]
-            Right conf -> pure $ Just conf
-
-getFirstConfigFile :: [Path Abs File] -> IO (Maybe Configuration)
-getFirstConfigFile =
-  \case
-    [] -> pure Nothing
-    (p:ps) -> do
-      mc <- forgivingAbsence $ SB.readFile $ fromAbsFile p
-      case mc of
-        Nothing -> getFirstConfigFile ps
-        Just contents ->
-          case Yaml.decodeEither' contents of
-            Left err ->
-              die $
-              unlines
-                [ "Failed to parse default config file"
-                , fromAbsFile p
-                , "with error:"
-                , Yaml.prettyPrintParseException err
-                ]
-            Right conf -> pure $ Just conf
+    Nothing -> defaultConfigFiles >>= readFirstConfigFile
+    Just cf -> resolveFile' cf >>= readConfigFile
 
 defaultConfigFiles :: IO [Path Abs File]
 defaultConfigFiles =
@@ -229,7 +190,7 @@ prefs_ =
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_
   where
-    help_ = fullDesc <> progDesc description
+    help_ = fullDesc <> progDesc description <> confDesc @Configuration
     description = "tickler"
 
 parseArgs :: Parser Arguments

@@ -16,18 +16,17 @@ module Tickler.Data.EmailAddress
   , localPart
   ) where
 
-import Import
-
 import Data.Aeson as JSON
 import Data.ByteString (ByteString)
 import qualified Data.Char as Char
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Encoding.Error as TE (lenientDecode)
-import qualified Text.Email.Validate as Email
-
 import Database.Persist
 import Database.Persist.Sql
+import Import
+import qualified Text.Email.Validate as Email
+import YamlParse.Applicative
 
 newtype EmailAddress =
   EmailAddress
@@ -57,15 +56,14 @@ instance PersistFieldSql EmailAddress where
   sqlType :: Proxy EmailAddress -> SqlType
   sqlType Proxy = sqlType (Proxy :: Proxy Text)
 
-instance FromJSON EmailAddress where
-  parseJSON =
-    withText "EmailAddress" $ \t ->
-      case emailValidateFromText t of
-        Left err -> fail $ show err
-        Right ea -> pure ea
-
 instance ToJSON EmailAddress where
-  toJSON = JSON.String . emailAddressText
+  toJSON = toJSON . emailAddressText
+
+instance FromJSON EmailAddress where
+  parseJSON = viaYamlSchema
+
+instance YamlSchema EmailAddress where
+  yamlSchema = eitherParser emailValidateFromText yamlSchema
 
 normalizeEmail :: Text -> Text
 normalizeEmail = T.map Char.toLower
@@ -119,9 +117,12 @@ emailAddressFromString = emailAddressFromText . T.pack
 --
 -- >>> unsafeEmailAddress "foo" "gmail.com"
 -- "foo@gmail.com"
-unsafeEmailAddress ::
-     ByteString -- ^ Local part
-  -> ByteString -- ^ Domain part
+unsafeEmailAddress
+  -- | Local part
+ ::
+     ByteString
+  -- | Domain part
+  -> ByteString
   -> EmailAddress
 unsafeEmailAddress = (EmailAddress .) . Email.unsafeEmailAddress
 
