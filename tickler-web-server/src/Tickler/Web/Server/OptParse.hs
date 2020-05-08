@@ -158,7 +158,7 @@ parseCommandServe = info parser modifier
             , help "The contents of the google search console verification tag"
             ]) <*>
        API.parseServeFlags)
-    modifier = fullDesc <> progDesc "Serve."
+    modifier = fullDesc <> progDesc "Serve." <> confDesc @Configuration
 
 parseFlags :: Parser Flags
 parseFlags = Flags <$> API.parseFlags

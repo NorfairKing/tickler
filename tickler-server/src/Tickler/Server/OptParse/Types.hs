@@ -250,7 +250,7 @@ instance YamlSchema VerificationEmailConverterConf where
   yamlSchema =
     objectParser "VerificationEmailConverterConf" $
     VerificationEmailConverterConf <$>
-    optionalField "From" "The from address for verification emails"
+    optionalField "from" "The from address for verification emails"
 
 data TriggeredEmailConverterConf =
   TriggeredEmailConverterConf
@@ -265,7 +265,7 @@ instance YamlSchema TriggeredEmailConverterConf where
   yamlSchema =
     objectParser "TriggeredEmailConverterConf" $
     TriggeredEmailConverterConf <$>
-    optionalField "From" "The from address for triggered item emails"
+    optionalField "from" "The from address for triggered item emails"
 
 data AdminNotificationEmailConverterConf =
   AdminNotificationEmailConverterConf

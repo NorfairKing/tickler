@@ -157,7 +157,7 @@ combineToLoopersSettings webHost lf@LoopersFlags {..} le@LoopersEnvironment {..}
       (mc looperConfVerificationEmailConverterConf) $ \f e c -> do
       ea <-
         case f <|> e <|> (c >>= verificationEmailConverterConfFromAddress) of
-          Nothing -> die "No email configured for the email triggerer"
+          Nothing -> die "No email configured for the email verification"
           Just ea -> pure ea
       pure
         VerificationEmailConverterSettings
@@ -382,7 +382,7 @@ parseCommandServe :: ParserInfo Command
 parseCommandServe = info parser modifier
   where
     parser = CommandServe <$> parseServeFlags
-    modifier = fullDesc <> progDesc "Command example."
+    modifier = fullDesc <> progDesc "Command example." <> confDesc @Configuration
 
 parseServeFlags :: Parser ServeFlags
 parseServeFlags =
