@@ -265,7 +265,7 @@ instance YamlSchema TriggeredEmailConverterConf where
   yamlSchema =
     objectParser "TriggeredEmailConverterConf" $
     TriggeredEmailConverterConf <$>
-    optionalField "From" "The from address for triggered item emails"
+    optionalField "from" "The from address for triggered item emails"
 
 data AdminNotificationEmailConverterConf =
   AdminNotificationEmailConverterConf
