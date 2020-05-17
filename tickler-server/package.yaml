@@ -42,6 +42,7 @@ library:
   - lens
   - markdown
   - mergeful
+  - mergeful-persistent
   - monad-logger
   - mtl >=2.2
   - nonce

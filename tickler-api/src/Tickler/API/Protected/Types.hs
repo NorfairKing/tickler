@@ -15,29 +15,22 @@ module Tickler.API.Protected.Types
   , module Data.UUID.Typed
   ) where
 
-import Import
-
 import Data.Aeson as JSON
 import qualified Data.Aeson as JSON (Result(Error))
 import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Char8 as SB8
 import qualified Data.Mergeful as Mergeful
-import qualified Data.Mergeful.Timed as Mergeful
 import qualified Data.Text.Encoding as TE
 import Data.Time
 import Data.UUID.Typed
 import Data.Word
-
-import Servant.Docs
-import Web.HttpApiData
-
-import qualified Intray.Data as Intray
-
+import Import
 import Intray.API ()
-
-import Tickler.Data
-
+import qualified Intray.Data as Intray
+import Servant.Docs
 import Tickler.API.Types
+import Tickler.Data
+import Web.HttpApiData
 
 data ItemFilter
   = OnlyUntriggered
@@ -274,7 +267,7 @@ instance Functor TriggerInfo where
 
 data SyncRequest =
   SyncRequest
-    { syncRequestTickles :: !(Mergeful.SyncRequest ItemUUID (AddedItem TypedTickle))
+    { syncRequestTickles :: !(Mergeful.SyncRequest Mergeful.ClientId ItemUUID (AddedItem TypedTickle))
     }
   deriving (Show, Eq, Generic)
 
@@ -288,7 +281,7 @@ instance ToSample SyncRequest
 
 data SyncResponse =
   SyncResponse
-    { syncResponseTickles :: !(Mergeful.SyncResponse ItemUUID (AddedItem TypedTickle))
+    { syncResponseTickles :: !(Mergeful.SyncResponse Mergeful.ClientId ItemUUID (AddedItem TypedTickle))
     }
   deriving (Show, Eq, Generic)
 
@@ -300,11 +293,13 @@ instance ToJSON SyncResponse
 
 instance ToSample SyncResponse
 
-instance (Ord i, ToSample i, ToSample a) => ToSample (Mergeful.SyncRequest i a)
+instance (Ord ci, ToSample ci, Ord si, ToSample si, ToSample a) =>
+         ToSample (Mergeful.SyncRequest ci si a)
 
-instance (Ord i, ToSample i, ToSample a) => ToSample (Mergeful.SyncResponse i a)
+instance (Ord ci, ToSample ci, Ord si, ToSample si, ToSample a) =>
+         ToSample (Mergeful.SyncResponse ci si a)
 
-instance (Ord i, ToSample i) => ToSample (Mergeful.ClientAddition i)
+instance (Ord si, ToSample si) => ToSample (Mergeful.ClientAddition si)
 
 instance ToSample Mergeful.ServerTime
 

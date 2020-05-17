@@ -12,6 +12,7 @@
 
 module Tickler.Data.DB where
 
+import Data.Mergeful.Persistent ()
 import Data.Mergeful.Timed as Mergeful
 import Data.Time
 import Database.Persist.Sql
@@ -26,7 +27,6 @@ import Tickler.Data.HashedPassword
 import Tickler.Data.ItemType
 import Tickler.Data.ItemUUID
 import Tickler.Data.Recurrence
-import Tickler.Data.ServerTime ()
 import Tickler.Data.Stripe ()
 import Tickler.Data.Time ()
 import Tickler.Data.TriggerType

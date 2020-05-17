@@ -95,6 +95,15 @@ with final.haskell.lib;
           ticklerPkg =
             name:
               disableLibraryProfiling ( super.callCabal2nix name ( ./. + "/${name}" ) {} );
+          looperRepo =
+            final.fetchFromGitHub {
+              owner = "NorfairKing";
+              repo = "looper";
+              rev = "464f47c757b956019d5723590a09f85662513b24";
+              sha256 =
+                "sha256:1lfg5lgw0xqyxbi4425fjp4j4vafyh8pnqp4jxwcvqpygszx8rw6";
+            };
+          looperPkg = self.callCabal2nix "looper" ( looperRepo ) {};
           stripeHaskellRepo =
             final.fetchFromGitHub {
               owner = "NorfairKing";
@@ -116,6 +125,7 @@ with final.haskell.lib;
               amazonka-test = callHackage "amazonka-test" "1.6.1" {};
               amazonka-core = callHackage "amazonka-core" "1.6.1" {};
               amazonka-ses = callHackage "amazonka-ses" "1.6.1" {};
+              looper = looperPkg;
             } // final.lib.genAttrs [
               "stripe-core"
               "stripe-haskell"

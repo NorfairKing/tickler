@@ -4,16 +4,14 @@
 
 module Tickler.Client.Store where
 
-import Import
-
 import Data.Aeson
 import qualified Data.Mergeful as Mergeful
-
+import Import
 import Tickler.API
 
 data Store =
   Store
-    { storeTickles :: Mergeful.ClientStore ItemUUID (AddedItem TypedTickle)
+    { storeTickles :: Mergeful.ClientStore Mergeful.ClientId ItemUUID (AddedItem TypedTickle)
     }
   deriving (Show, Eq, Generic)
 

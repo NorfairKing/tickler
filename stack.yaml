@@ -16,6 +16,7 @@ extra-deps:
 - amazonka-ses-1.6.1
 - servant-auth-client-0.4.0.0@sha256:68879b7f44d87f73ef68c7bb21006167f5623c4cd6a2a3fce4d5ea3959a8c730,3426
 - servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
+- envparse-0.4.1@sha256:989902e6368532548f61de1fa245ad2b39176cddd8743b20071af519a709ce30,2842
 
 - github: NorfairKing/yesod-static-remote
   commit: 22c0a92c1d62f1b8d432003844ef0636a9131b08
@@ -29,7 +30,7 @@ extra-deps:
     - stripe-http-streams
 
 - github: NorfairKing/intray
-  commit: 38736b04d5923fb87c2d45e47b5b39685ce90acf
+  commit: 669053bd256d443d5742066e9f909935cca27773
   subdirs:
     - intray-data
     - intray-data-gen
@@ -40,39 +41,36 @@ extra-deps:
     - intray-server-gen
 
 - github: NorfairKing/mergeless
-  commit: 32fb75445723213ed78f678c20a2271a48e5dd41
+  commit: 079c9ba60aa87d0a1f2eb344c9fba94c97050e61
   subdirs:
     - mergeless
+    - mergeless-persistent
     - genvalidity-mergeless
 
 - github: NorfairKing/mergeful
-  commit: 4e3cf189c76d04daf9c26267a64523ec8bb071aa
+  commit: 7f6488b400c736511da1570d40edc6a9eeb1168d
   subdirs:
     - mergeful
     - genvalidity-mergeful
+    - mergeful-persistent
 
 - github: NorfairKing/validity
-  commit: ac28a5c0fc8559f96ffe7f9286ffff1b879a39f3
+  commit: 95ec39a2535b9c83b1163015fd2ca28317debf42
   subdirs:
-    - validity
-    - validity-aeson
-    - validity-bytestring
-    - validity-containers
-    - validity-path
-    - validity-scientific
-    - validity-text
-    - validity-time
-    - validity-unordered-containers
-    - validity-uuid
-    - validity-vector
     - genvalidity
     - genvalidity-aeson
     - genvalidity-bytestring
     - genvalidity-containers
+    - genvalidity-criterion
     - genvalidity-hspec
     - genvalidity-hspec-aeson
+    - genvalidity-hspec-binary
+    - genvalidity-hspec-cereal
+    - genvalidity-hspec-hashable
+    - genvalidity-hspec-optics
     - genvalidity-hspec-persistent
     - genvalidity-path
+    - genvalidity-persistent
     - genvalidity-property
     - genvalidity-scientific
     - genvalidity-text
@@ -80,6 +78,19 @@ extra-deps:
     - genvalidity-unordered-containers
     - genvalidity-uuid
     - genvalidity-vector
+    - validity
+    - validity-aeson
+    - validity-bytestring
+    - validity-containers
+    - validity-path
+    - validity-persistent
+    - validity-primitive
+    - validity-scientific
+    - validity-text
+    - validity-time
+    - validity-unordered-containers
+    - validity-uuid
+    - validity-vector
 
 - github: NorfairKing/typed-uuid
   commit: dbc8fd4b56b78b1f9cf00bc2890d43dc19b97c5c
@@ -90,9 +101,9 @@ extra-deps:
 - github: NorfairKing/pretty-relative-time
   commit: 4eb01d55ef8f0f37fa63093be3ec67e99df4962f
 - github: NorfairKing/looper
-  commit: 675ef7ef0b47b7021ea1bde1644e953a75d2c373
+  commit: 464f47c757b956019d5723590a09f85662513b24
 - github: NorfairKing/yamlparse-applicative
-  commit: 08369b1b3e1c0ebc0f4e2763e63db48227345081
+  commit: e3e54acdef43d435a3a01c9f6918a1ecf19cb190
   subdirs:
   - yamlparse-applicative
 

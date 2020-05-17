@@ -24,6 +24,7 @@ library:
   - hashable
   - intray-data
   - mergeful
+  - mergeful-persistent
   - persistent
   - persistent-template
   - random
