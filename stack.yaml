@@ -103,7 +103,7 @@ extra-deps:
 - github: NorfairKing/looper
   commit: 464f47c757b956019d5723590a09f85662513b24
 - github: NorfairKing/yamlparse-applicative
-  commit: e3e54acdef43d435a3a01c9f6918a1ecf19cb190
+  commit: 3775e2a9152214fdfcbc04032ee3eb28349b5abd
   subdirs:
   - yamlparse-applicative
 

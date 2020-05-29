@@ -1,6 +1,6 @@
 {
   owner = "NorfairKing";
   repo = "yamlparse-applicative";
-  rev = "e3e54acdef43d435a3a01c9f6918a1ecf19cb190";
-  sha256 = "sha256:0nkjkz787x3h7c564inb4lk71szm09lhvvbk65rw467kqzd316jh";
+  rev = "3775e2a9152214fdfcbc04032ee3eb28349b5abd";
+  sha256 = "sha256:049ymm913wrnhf7mx44arwj3x0slf8x17wiwwq6gr6dbdgzfvmgf";
 }
