@@ -69,6 +69,8 @@ instance Yesod App where
     withUrlRenderer $(hamletFile "templates/default-page.hamlet")
   yesodMiddleware = defaultCsrfMiddleware . defaultYesodMiddleware
   authRoute _ = Just $ AuthR LoginR
+  makeSessionBackend _ =
+    Just <$> defaultClientSessionBackend (60 * 24 * 365 * 10) "client_session_key.aes"
 
 instance PathPiece Username where
   fromPathPiece = parseUsername
