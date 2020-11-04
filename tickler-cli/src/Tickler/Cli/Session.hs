@@ -1,22 +1,19 @@
 module Tickler.Cli.Session
-  ( withToken
-  , loadToken
-  , loadSession
-  , saveSession
-  ) where
-
-import Import
+  ( withToken,
+    loadToken,
+    loadSession,
+    saveSession,
+  )
+where
 
 import qualified Data.ByteString as SB
 import qualified Data.ByteString.Builder as SBB
 import qualified Data.ByteString.Lazy as LB
-
-import Web.Cookie
-
+import Import
 import Servant.Auth.Client
-
 import Tickler.Cli.OptParse
 import Tickler.Cli.Path
+import Web.Cookie
 
 withToken :: (Token -> CliM a) -> CliM a
 withToken func = do

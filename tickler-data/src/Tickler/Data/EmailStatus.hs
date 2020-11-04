@@ -1,15 +1,14 @@
-{-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module Tickler.Data.EmailStatus where
 
-import Import
-
 import Database.Persist
 import Database.Persist.Sql
+import Import
 
 data EmailStatus
   = EmailUnsent

@@ -1,18 +1,17 @@
 module Tickler.Cli.Sync
-  ( withStoreAndSync
-  , modifyStoreAndSync
-  , syncAndGet
-  , syncAndReturn
-  ) where
+  ( withStoreAndSync,
+    modifyStoreAndSync,
+    syncAndGet,
+    syncAndReturn,
+  )
+where
 
 import Import
-
-import Tickler.Client
-
 import Tickler.Cli.Client
 import Tickler.Cli.OptParse
 import Tickler.Cli.Session
 import Tickler.Cli.Store
+import Tickler.Client
 
 withStoreAndSync :: (Store -> CliM Store) -> CliM ()
 withStoreAndSync func = do
@@ -30,8 +29,9 @@ withStoreAndSync func = do
       Just errOrStore ->
         case errOrStore of
           Left err -> do
-            liftIO $
-              putStrLn $ unlines ["Sync failed, but store still modified succesfully:", show err]
+            liftIO
+              $ putStrLn
+              $ unlines ["Sync failed, but store still modified succesfully:", show err]
             pure processed
           Right r -> do
             let after = mergeSyncResponse processed r
@@ -66,14 +66,14 @@ syncAndGet func = do
 
 anyUnsyncedWarning :: Store -> CliM ()
 anyUnsyncedWarning after =
-  when (anyUnsynced after) $
-  liftIO $
-  putStrLn $
-  unlines
-    [ "Not all added items were synchronized in the most recent synchronisation."
-    , "This may have occurred if you have not subscribed with your sync server."
-    , "If that is the case, please navigate to your sync server's web interface to subscribe."
-    ]
+  when (anyUnsynced after)
+    $ liftIO
+    $ putStrLn
+    $ unlines
+      [ "Not all added items were synchronized in the most recent synchronisation.",
+        "This may have occurred if you have not subscribed with your sync server.",
+        "If that is the case, please navigate to your sync server's web interface to subscribe."
+      ]
 
 syncAndReturn :: (Store -> a) -> CliM a
 syncAndReturn func = syncAndGet $ pure . func

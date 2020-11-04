@@ -1,15 +1,13 @@
 module Tickler.Web.Server.Handler.EmailTriggerResend
-  ( postEmailTriggerResendR
-  ) where
+  ( postEmailTriggerResendR,
+  )
+where
 
 import Import
-
-import Yesod
-
 import Tickler.API
 import Tickler.Client
-
 import Tickler.Web.Server.Foundation
+import Yesod
 
 postEmailTriggerResendR :: TriggerUUID -> Handler Html
 postEmailTriggerResendR tuuid =

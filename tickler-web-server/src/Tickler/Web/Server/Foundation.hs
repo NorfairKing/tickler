@@ -10,11 +10,12 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tickler.Web.Server.Foundation
-  ( module Tickler.Web.Server.Foundation
-  , module Tickler.Web.Server.Widget
-  , module Tickler.Web.Server.Static
-  , module Tickler.Web.Server.Constants
-  ) where
+  ( module Tickler.Web.Server.Foundation,
+    module Tickler.Web.Server.Widget,
+    module Tickler.Web.Server.Static,
+    module Tickler.Web.Server.Constants,
+  )
+where
 
 import Control.Concurrent
 import Control.Monad.Trans.Maybe
@@ -26,7 +27,7 @@ import Import
 import qualified Network.HTTP.Client as Http
 import qualified Network.HTTP.Types as Http
 import Servant.API
-import Servant.Auth.Client (Token(..))
+import Servant.Auth.Client (Token (..))
 import Servant.Client
 import Text.Hamlet
 import Tickler.Client
@@ -48,17 +49,17 @@ type TicklerHandler = HandlerFor App
 
 type TicklerAuthHandler a = AuthHandler App a
 
-data App =
-  App
-    { appHttpManager :: Http.Manager
-    , appStatic :: EmbeddedStatic
-    , appAPIBaseUrl :: BaseUrl
-    , appPersistLogins :: Bool
-    , appTracking :: Maybe Text
-    , appVerification :: Maybe Text
-    , appLoginTokens :: MVar (HashMap Username Token)
-    , appDefaultIntrayUrl :: Maybe BaseUrl
-    }
+data App
+  = App
+      { appHttpManager :: Http.Manager,
+        appStatic :: EmbeddedStatic,
+        appAPIBaseUrl :: BaseUrl,
+        appPersistLogins :: Bool,
+        appTracking :: Maybe Text,
+        appVerification :: Maybe Text,
+        appLoginTokens :: MVar (HashMap Username Token),
+        appDefaultIntrayUrl :: Maybe BaseUrl
+      }
 
 mkYesodData "App" $(parseRoutesFile "routes")
 
@@ -88,8 +89,8 @@ instance YesodAuth App where
   authenticate creds =
     if credsPlugin creds == ticklerAuthPluginName
       then case parseUsername $ credsIdent creds of
-             Nothing -> pure $ UserError Msg.InvalidLogin
-             Just un -> pure $ Authenticated un
+        Nothing -> pure $ UserError Msg.InvalidLogin
+        Just un -> pure $ Authenticated un
       else pure $ ServerError $ T.unwords ["Unknown authentication plugin:", credsPlugin creds]
   authPlugins _ = [ticklerAuthPlugin]
   maybeAuthId =
@@ -118,11 +119,11 @@ ticklerAuthPlugin = AuthPlugin ticklerAuthPluginName dispatch loginWidget
       setDescription "This is where you sign into your tickler account."
       $(widgetFile "auth/login")
 
-data LoginData =
-  LoginData
-    { loginUserkey :: Text
-    , loginPassword :: Text
-    }
+data LoginData
+  = LoginData
+      { loginUserkey :: Text,
+        loginPassword :: Text
+      }
   deriving (Show)
 
 loginFormPostTargetR :: AuthRoute
@@ -153,36 +154,39 @@ getNewAccountR :: TicklerAuthHandler Html
 getNewAccountR = do
   token <- genToken
   msgs <- getMessages
-  liftHandler $
-    defaultLayout $ do
+  liftHandler
+    $ defaultLayout
+    $ do
       setTitle "Tickler Login"
       setDescription "This is where you sign into your tickler account."
       $(widgetFile "auth/register")
 
-data NewAccount =
-  NewAccount
-    { newAccountUsername :: Username
-    , newAccountPassword1 :: Text
-    , newAccountPassword2 :: Text
-    }
+data NewAccount
+  = NewAccount
+      { newAccountUsername :: Username,
+        newAccountPassword1 :: Text,
+        newAccountPassword2 :: Text
+      }
   deriving (Show)
 
 postNewAccountR :: TicklerAuthHandler TypedContent
 postNewAccountR = do
   let newAccountInputForm =
-        NewAccount <$>
-        ireq
-          (checkMMap
-             (\t ->
-                pure $
-                case parseUsernameWithError t of
-                  Left err -> Left (T.pack $ unwords ["Invalid username:", show t ++ ";", err])
-                  Right un -> Right un)
-             usernameText
-             textField)
-          "username" <*>
-        ireq passwordField "passphrase" <*>
-        ireq passwordField "passphrase-confirm"
+        NewAccount
+          <$> ireq
+            ( checkMMap
+                ( \t ->
+                    pure $
+                      case parseUsernameWithError t of
+                        Left err -> Left (T.pack $ unwords ["Invalid username:", show t ++ ";", err])
+                        Right un -> Right un
+                )
+                usernameText
+                textField
+            )
+            "username"
+          <*> ireq passwordField "passphrase"
+          <*> ireq passwordField "passphrase-confirm"
   mr <- liftHandler getMessageRender
   result <- liftHandler $ runInputPostResult newAccountInputForm
   mdata <-
@@ -191,13 +195,14 @@ postNewAccountR = do
       FormFailure msgs -> pure $ Left msgs
       FormSuccess d ->
         pure $
-        if newAccountPassword1 d == newAccountPassword2 d
-          then Right
-                 Registration
-                   { registrationUsername = newAccountUsername d
-                   , registrationPassword = newAccountPassword1 d
-                   }
-          else Left [mr Msg.PassMismatch]
+          if newAccountPassword1 d == newAccountPassword2 d
+            then
+              Right
+                Registration
+                  { registrationUsername = newAccountUsername d,
+                    registrationPassword = newAccountPassword1 d
+                  }
+            else Left [mr Msg.PassMismatch]
   case mdata of
     Left errs -> do
       setMessage $ toHtml $ T.concat errs
@@ -212,20 +217,20 @@ postNewAccountR = do
                 409 -> addMessage "error" "An account with this username already exists"
                 c ->
                   addMessage "error" $
-                  "Failed to register for unknown reasons, got status code: " <> toHtml c
+                    "Failed to register for unknown reasons, got status code: " <> toHtml c
             ConnectionError t ->
               addMessage "error" $
-              "Failed to register for unknown reasons. with connection error:" <> toHtml (show t)
+                "Failed to register for unknown reasons. with connection error:" <> toHtml (show t)
             e ->
               addMessage "error" $
-              "Failed to register for unknown reasons. with error:" <> toHtml (show e)
+                "Failed to register for unknown reasons. with error:" <> toHtml (show e)
           liftHandler $ redirect $ AuthR registerR
         Right NoContent ->
           liftHandler $ do
             login
               LoginForm
-                { loginFormUsername = registrationUsername reg
-                , loginFormPassword = registrationPassword reg
+                { loginFormUsername = registrationUsername reg,
+                  loginFormPassword = registrationPassword reg
                 }
             setCredsRedirect $
               Creds ticklerAuthPluginName (usernameText $ registrationUsername reg) []
@@ -233,12 +238,12 @@ postNewAccountR = do
 changePasswordTargetR :: AuthRoute
 changePasswordTargetR = PluginR ticklerAuthPluginName ["change-password"]
 
-data ChangePassword =
-  ChangePassword
-    { changePasswordOldPassword :: Text
-    , changePasswordNewPassword1 :: Text
-    , changePasswordNewPassword2 :: Text
-    }
+data ChangePassword
+  = ChangePassword
+      { changePasswordOldPassword :: Text,
+        changePasswordNewPassword1 :: Text,
+        changePasswordNewPassword2 :: Text
+      }
   deriving (Show)
 
 getChangePasswordR :: TicklerAuthHandler Html
@@ -250,18 +255,19 @@ getChangePasswordR = do
 postChangePasswordR :: TicklerAuthHandler Html
 postChangePasswordR = do
   ChangePassword {..} <-
-    liftHandler $
-    runInputPost $
-    ChangePassword <$> ireq passwordField "old" <*> ireq passwordField "new1" <*>
-    ireq passwordField "new2"
+    liftHandler
+      $ runInputPost
+      $ ChangePassword <$> ireq passwordField "old" <*> ireq passwordField "new1"
+        <*> ireq passwordField "new2"
   unless (changePasswordNewPassword1 == changePasswordNewPassword2) $
     invalidArgs ["Passwords do not match."]
-  liftHandler $
-    withLogin $ \t -> do
+  liftHandler
+    $ withLogin
+    $ \t -> do
       let cpp =
             ChangePassphrase
-              { changePassphraseOld = changePasswordOldPassword
-              , changePassphraseNew = changePasswordNewPassword1
+              { changePassphraseOld = changePasswordOldPassword,
+                changePassphraseNew = changePasswordNewPassword1
               }
       NoContent <- runClientOrErr $ clientPostChangePassphrase t cpp
       redirect AccountR
@@ -348,7 +354,7 @@ login form = do
         Header session -> recordLoginToken (loginFormUsername form) session
         _ ->
           sendResponseStatus Http.status500 $
-          unwords ["The server responded but with an invalid header for login", show sessionHeader]
+            unwords ["The server responded but with an invalid header for login", show sessionHeader]
 
 withLogin :: (Token -> Handler a) -> Handler a
 withLogin func = do

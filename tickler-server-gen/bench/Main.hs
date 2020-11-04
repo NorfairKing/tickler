@@ -1,15 +1,15 @@
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Main
-  ( main
-  ) where
+  ( main,
+  )
+where
 
 import Criterion.Main
 import Servant.API
 import Servant.Client
-
 import Tickler.Client
 import Tickler.Server.TestUtils
 

@@ -1,10 +1,10 @@
 module Tickler.Cli
-  ( ticklerCli
-  , dispatch
-  ) where
+  ( ticklerCli,
+    dispatch,
+  )
+where
 
 import Import
-
 import Tickler.Cli.Commands.Add
 import Tickler.Cli.Commands.Login
 import Tickler.Cli.Commands.Logout

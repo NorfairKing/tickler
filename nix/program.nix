@@ -6,7 +6,8 @@ let
   cfg = config.programs.tickler;
 
 
-in {
+in
+{
   options =
     {
       programs.tickler =
@@ -62,19 +63,19 @@ in {
       ticklerPkgs = (import ../nix/pkgs.nix).ticklerPackages;
 
       nullOrOption =
-        name: opt: optionalString ( opt != null ) "${name}: ${opt}";
+        name: opt: optionalString (opt != null) "${name}: ${opt}";
       syncConfig =
-        optionalString ( cfg.sync != null ) ''
-        url: '${cfg.sync.url}'
-        username: '${cfg.sync.username}'
-        sync: NeverSync
-      '';
+        optionalString (cfg.sync != null) ''
+          url: '${cfg.sync.url}'
+          username: '${cfg.sync.username}'
+          sync: NeverSync
+        '';
       configFileContents =
         ''
-        ${nullOrOption "cache-dir" cfg.cache-dir}
-        ${nullOrOption "data-dir" cfg.data-dir}
-        ${syncConfig}
-      '';
+          ${nullOrOption "cache-dir" cfg.cache-dir}
+          ${nullOrOption "data-dir" cfg.data-dir}
+          ${syncConfig}
+        '';
 
       cli = ticklerPkgs.tickler-cli;
 
@@ -90,9 +91,9 @@ in {
             {
               ExecStart =
                 "${pkgs.writeShellScript "tickler-sync" ''
-            ${cli}/bin/tickler login --password "${cfg.sync.password}"
-            ${cli}/bin/tickler sync
-          ''}";
+                  ${cli}/bin/tickler login --password "${cfg.sync.password}"
+                  ${cli}/bin/tickler sync
+                ''}";
               Type = "oneshot";
             };
         };
@@ -116,11 +117,11 @@ in {
         };
       packages = optionals cfg.enable [ cli ];
       services =
-        optionalAttrs ( cfg.enable && cfg.sync.enable ) {
+        optionalAttrs (cfg.enable && cfg.sync.enable) {
           "${syncTicklerName}" = syncTicklerService;
         };
       timers =
-        optionalAttrs ( cfg.enable && cfg.sync.enable ) {
+        optionalAttrs (cfg.enable && cfg.sync.enable) {
           "${syncTicklerName}" = syncTicklerTimer;
         };
     in

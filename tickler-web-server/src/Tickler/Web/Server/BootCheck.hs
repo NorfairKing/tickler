@@ -2,11 +2,11 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tickler.Web.Server.BootCheck
-  ( bootCheck
-  ) where
+  ( bootCheck,
+  )
+where
 
 import Import
-
 import qualified Network.HTTP.Client as Http
 import qualified Network.HTTP.Client.TLS as Http
 import qualified Network.HTTP.Types as Http

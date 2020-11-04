@@ -7,8 +7,6 @@
 
 module Tickler.Data.Gen where
 
-import Import
-
 import Data.GenValidity
 import Data.GenValidity.ByteString ()
 import Data.GenValidity.Mergeful ()
@@ -17,12 +15,10 @@ import Data.GenValidity.Time ()
 import Data.GenValidity.UUID ()
 import Data.GenValidity.UUID.Typed ()
 import qualified Data.Text as T
-
 import Database.Persist.Sql
-import Servant.Client.Core
-
+import Import
 import Intray.API.Gen ()
-
+import Servant.Client.Core
 import Tickler.Data
 
 instance ToBackendKey SqlBackend a => GenUnchecked (Key a) where
@@ -39,8 +35,8 @@ instance GenValid Username where
       Nothing -> genValid
     where
       textGen =
-        T.pack <$>
-        ((:) <$> charGen <*> ((:) <$> charGen <*> ((:) <$> charGen <*> genListOf charGen)))
+        T.pack
+          <$> ((:) <$> charGen <*> ((:) <$> charGen <*> ((:) <$> charGen <*> genListOf charGen)))
       charGen = choose ('\NUL', '\255') `suchThat` validUsernameChar
   shrinkValid = shrinkValidStructurally
 

@@ -6,14 +6,15 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tickler.API
-  ( module Tickler.API
-  , module Tickler.API.Account.Types
-  , module Tickler.API.Admin
-  , module Tickler.API.Protected
-  , module Tickler.API.Types
-  , module Tickler.Data
-  , module Data.UUID.Typed
-  ) where
+  ( module Tickler.API,
+    module Tickler.API.Account.Types,
+    module Tickler.API.Admin,
+    module Tickler.API.Protected,
+    module Tickler.API.Types,
+    module Tickler.Data,
+    module Data.UUID.Typed,
+  )
+where
 
 import Data.UUID.Typed
 import Import
@@ -32,11 +33,11 @@ ticklerAPI = Proxy
 
 type TicklerAPI = ToServantApi TicklerSite
 
-data TicklerSite route =
-  TicklerSite
-    { openSite :: route :- ToServantApi TicklerOpenSite
-    , adminSite :: route :- "admin" :> ToServantApi TicklerAdminSite
-    }
+data TicklerSite route
+  = TicklerSite
+      { openSite :: route :- ToServantApi TicklerOpenSite,
+        adminSite :: route :- "admin" :> ToServantApi TicklerAdminSite
+      }
   deriving (Generic)
 
 ticklerOpenAPI :: Proxy TicklerOpenAPI
@@ -44,32 +45,32 @@ ticklerOpenAPI = Proxy
 
 type TicklerOpenAPI = ToServantApi TicklerOpenSite
 
-data TicklerOpenSite route =
-  TicklerOpenSite
-    { protectedSite :: route :- ToServantApi TicklerProtectedSite
-    , publicSite :: route :- ToServantApi TicklerPublicSite
-    }
+data TicklerOpenSite route
+  = TicklerOpenSite
+      { protectedSite :: route :- ToServantApi TicklerProtectedSite,
+        publicSite :: route :- ToServantApi TicklerPublicSite
+      }
   deriving (Generic)
 
 type TicklerPublicAPI = ToServantApi TicklerPublicSite
 
-data TicklerPublicSite route =
-  TicklerPublicSite
-    { postRegister :: route :- PostRegister
-    , postLogin :: route :- PostLogin
-    , getLoopersStatus :: route :- GetLoopersStatus
-    , getDocs :: route :- GetDocs
-    , getPricing :: route :- GetPricing
-    }
+data TicklerPublicSite route
+  = TicklerPublicSite
+      { postRegister :: route :- PostRegister,
+        postLogin :: route :- PostLogin,
+        getLoopersStatus :: route :- GetLoopersStatus,
+        getDocs :: route :- GetDocs,
+        getPricing :: route :- GetPricing
+      }
   deriving (Generic)
 
-type PostRegister = "register" :> ReqBody '[ JSON] Registration :> Post '[ JSON] NoContent
+type PostRegister = "register" :> ReqBody '[JSON] Registration :> Post '[JSON] NoContent
 
-type PostLogin
-   = "login" :> ReqBody '[ JSON] LoginForm :> PostNoContent '[ JSON] (Headers '[ Header "Set-Cookie" Text] NoContent)
+type PostLogin =
+  "login" :> ReqBody '[JSON] LoginForm :> PostNoContent '[JSON] (Headers '[Header "Set-Cookie" Text] NoContent)
 
-type GetLoopersStatus = "loopers" :> Get '[ JSON] LoopersInfo
+type GetLoopersStatus = "loopers" :> Get '[JSON] LoopersInfo
 
-type GetDocs = Get '[ HTML] GetDocsResponse
+type GetDocs = Get '[HTML] GetDocsResponse
 
-type GetPricing = "pricing" :> Get '[ JSON] (Maybe Pricing)
+type GetPricing = "pricing" :> Get '[JSON] (Maybe Pricing)

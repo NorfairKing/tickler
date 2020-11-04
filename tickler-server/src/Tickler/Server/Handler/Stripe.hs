@@ -3,12 +3,13 @@
 {-# LANGUAGE TypeFamilies #-}
 
 module Tickler.Server.Handler.Stripe
-  ( runStripeHandler
-  , runStripeHandlerOrError
-  , runStripeHandlerOrErrorWith
-  , PaidStatus(..)
-  , getUserPaidStatus
-  ) where
+  ( runStripeHandler,
+    runStripeHandlerOrError,
+    runStripeHandlerOrErrorWith,
+    PaidStatus (..),
+    getUserPaidStatus,
+  )
+where
 
 import Control.Exception
 import Data.Aeson
@@ -29,24 +30,24 @@ import qualified Web.Stripe.Subscription as Stripe
 import qualified Web.Stripe.Types as Stripe
 
 runStripeHandler ::
-     FromJSON (StripeReturn a)
-  => StripeRequest a
-  -> TicklerHandler (Maybe (Either StripeError (StripeReturn a)))
+  FromJSON (StripeReturn a) =>
+  StripeRequest a ->
+  TicklerHandler (Maybe (Either StripeError (StripeReturn a)))
 runStripeHandler request = do
   mStripeSets <- asks (fmap monetisationEnvStripeSettings . envMonetisation)
   forM mStripeSets $ \ms -> liftIO $ runStripeWith ms request
 
 runStripeHandlerOrError ::
-     FromJSON (StripeReturn a) => StripeRequest a -> TicklerHandler (Maybe (StripeReturn a))
+  FromJSON (StripeReturn a) => StripeRequest a -> TicklerHandler (Maybe (StripeReturn a))
 runStripeHandlerOrError request = do
   mStripeSets <- asks (fmap monetisationEnvStripeSettings . envMonetisation)
   forM mStripeSets $ \ms -> runStripeHandlerOrErrorWith ms request
 
 runStripeHandlerOrErrorWith ::
-     FromJSON (StripeReturn a)
-  => StripeSettings
-  -> StripeRequest a
-  -> TicklerHandler (StripeReturn a)
+  FromJSON (StripeReturn a) =>
+  StripeSettings ->
+  StripeRequest a ->
+  TicklerHandler (StripeReturn a)
 runStripeHandlerOrErrorWith ms request = do
   errOrRes <- liftIO $ runStripeWith ms request
   case errOrRes of
@@ -88,12 +89,14 @@ hasSubscribed ss uuid = do
         runStripeHandlerOrErrorWith ss (Stripe.getSubscriptionsByCustomerId customerStripeCustomer)
       let relevantSubs =
             filter
-              (\s ->
-                 Stripe.planId (Stripe.subscriptionPlan s) == stripeSetPlan ss &&
-                 (Stripe.subscriptionStatus s == Stripe.Active ||
-                  Stripe.subscriptionStatus s == Stripe.Trialing)) $
-            Stripe.list sl
+              ( \s ->
+                  Stripe.planId (Stripe.subscriptionPlan s) == stripeSetPlan ss
+                    && ( Stripe.subscriptionStatus s == Stripe.Active
+                           || Stripe.subscriptionStatus s == Stripe.Trialing
+                       )
+              )
+              $ Stripe.list sl
       pure $
         case sortOn Down $ map Stripe.subscriptionCurrentPeriodEnd relevantSubs of
           [] -> Nothing
-          (end:_) -> Just end
+          (end : _) -> Just end

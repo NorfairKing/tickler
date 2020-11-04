@@ -1,18 +1,16 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Server.Handler.SyncSpec
-  ( spec
-  ) where
-
-import TestImport
+  ( spec,
+  )
+where
 
 import qualified Data.Map as M
 import qualified Data.Mergeful as Mergeful
-
+import TestImport
 import Tickler.Client
-
 import Tickler.Client.Gen ()
 import Tickler.Server.TestUtils
 
@@ -34,8 +32,9 @@ spec =
             let secondStore = mergeSyncResponse firstStore sr2
             secondStore `shouldBe` firstStore
     let maxFree = 2
-    withTicklerServerPaid maxFree $
-      it "syncs at most two items if noly two items are free" $ \cenv ->
+    withTicklerServerPaid maxFree
+      $ it "syncs at most two items if noly two items are free"
+      $ \cenv ->
         forAllValid $ \(i1, i2, i3) ->
           withValidNewUser cenv $ \token -> do
             let s@(Store store) =

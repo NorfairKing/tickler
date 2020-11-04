@@ -2,22 +2,23 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Web.Server.TestUtils
-  ( ticklerTestServeSettings
-  , ticklerWebServerSpec
-  , withExampleAccount
-  , withExampleAccount_
-  , withExampleAccountAndLogin
-  , withExampleAccountAndLogin_
-  , withAdminAccount
-  , withAdminAccount_
-  , withAdminAccountAndLogin
-  , withAdminAccountAndLogin_
-  ) where
+  ( ticklerTestServeSettings,
+    ticklerWebServerSpec,
+    withExampleAccount,
+    withExampleAccount_,
+    withExampleAccountAndLogin,
+    withExampleAccountAndLogin_,
+    withAdminAccount,
+    withAdminAccount_,
+    withAdminAccountAndLogin,
+    withAdminAccountAndLogin_,
+  )
+where
 
 import Control.Lens
 import Database.Persist.Sqlite (mkSqliteConnectionInfo, walEnabled)
 import Network.HTTP.Types
-import Servant.Client (ClientEnv(..))
+import Servant.Client (ClientEnv (..))
 import TestImport
 import Tickler.Data
 import Tickler.Data.Gen ()
@@ -36,28 +37,28 @@ ticklerTestServeSettings = do
   let connInfo = mkSqliteConnectionInfo "tickler-test.db" & walEnabled .~ False
   pure
     ServeSettings
-      { serveSetPort = 8000
-      , serveSetPersistLogins = False
-      , serveSetDefaultIntrayUrl = Nothing
-      , serveSetTracking = Nothing
-      , serveSetVerification = Nothing
-      , serveSetAPISettings =
+      { serveSetPort = 8000,
+        serveSetPersistLogins = False,
+        serveSetDefaultIntrayUrl = Nothing,
+        serveSetTracking = Nothing,
+        serveSetVerification = Nothing,
+        serveSetAPISettings =
           API.ServeSettings
-            { API.serveSetPort = 8001
-            , API.serveSetConnectionInfo = connInfo
-            , API.serveSetAdmins = catMaybes [parseUsername "admin"]
-            , API.serveSetFreeloaders = catMaybes [parseUsername "freeloader"]
-            , API.serveSetMonetisationSettings = Nothing
-            , API.serveSetLoopersSettings =
+            { API.serveSetPort = 8001,
+              API.serveSetConnectionInfo = connInfo,
+              API.serveSetAdmins = catMaybes [parseUsername "admin"],
+              API.serveSetFreeloaders = catMaybes [parseUsername "freeloader"],
+              API.serveSetMonetisationSettings = Nothing,
+              API.serveSetLoopersSettings =
                 API.LoopersSettings
-                  { API.looperSetTriggererSets = API.LooperDisabled
-                  , API.looperSetEmailerSets = API.LooperDisabled
-                  , API.looperSetTriggeredIntrayItemSchedulerSets = API.LooperDisabled
-                  , API.looperSetTriggeredIntrayItemSenderSets = API.LooperDisabled
-                  , API.looperSetVerificationEmailConverterSets = API.LooperDisabled
-                  , API.looperSetTriggeredEmailSchedulerSets = API.LooperDisabled
-                  , API.looperSetTriggeredEmailConverterSets = API.LooperDisabled
-                  , API.looperSetAdminNotificationEmailConverterSets = API.LooperDisabled
+                  { API.looperSetTriggererSets = API.LooperDisabled,
+                    API.looperSetEmailerSets = API.LooperDisabled,
+                    API.looperSetTriggeredIntrayItemSchedulerSets = API.LooperDisabled,
+                    API.looperSetTriggeredIntrayItemSenderSets = API.LooperDisabled,
+                    API.looperSetVerificationEmailConverterSets = API.LooperDisabled,
+                    API.looperSetTriggeredEmailSchedulerSets = API.LooperDisabled,
+                    API.looperSetTriggeredEmailConverterSets = API.LooperDisabled,
+                    API.looperSetAdminNotificationEmailConverterSets = API.LooperDisabled
                   }
             }
       }
@@ -68,11 +69,12 @@ ticklerWebServerSpec = b . a
     a :: YesodSpec App -> SpecWith ClientEnv
     a =
       yesodSpecWithSiteGeneratorAndArgument
-        (\(ClientEnv _ burl _) -> do
-           sets_ <- ticklerTestServeSettings
-           let apiSets = (serveSetAPISettings sets_) {API.serveSetPort = baseUrlPort burl}
-           let sets' = sets_ {serveSetAPISettings = apiSets}
-           makeTicklerApp sets')
+        ( \(ClientEnv _ burl _) -> do
+            sets_ <- ticklerTestServeSettings
+            let apiSets = (serveSetAPISettings sets_) {API.serveSetPort = baseUrlPort burl}
+            let sets' = sets_ {serveSetAPISettings = apiSets}
+            makeTicklerApp sets'
+        )
     b :: SpecWith ClientEnv -> Spec
     b = API.withTicklerServer
 
@@ -91,7 +93,7 @@ loginTo username passphrase = do
   liftIO $ loc `shouldBe` Right AddR
 
 withFreshAccount ::
-     Username -> Text -> (Username -> Text -> YesodExample App a) -> YesodExample App a
+  Username -> Text -> (Username -> Text -> YesodExample App a) -> YesodExample App a
 withFreshAccount exampleUsername examplePassphrase func = do
   get $ AuthR registerR
   statusIs 200

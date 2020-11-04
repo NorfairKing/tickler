@@ -2,21 +2,17 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Handler.Protected.DeleteTrigger
-  ( serveDeleteTrigger
-  ) where
-
-import Import
+  ( serveDeleteTrigger,
+  )
+where
 
 import Database.Persist
-
+import Import
 import Servant
 import Servant.Auth.Server
-
 import Tickler.API
-
-import Tickler.Server.Types
-
 import Tickler.Server.Handler.Utils
+import Tickler.Server.Types
 
 serveDeleteTrigger :: AuthCookie -> TriggerUUID -> TicklerHandler NoContent
 serveDeleteTrigger AuthCookie {..} uuid = do

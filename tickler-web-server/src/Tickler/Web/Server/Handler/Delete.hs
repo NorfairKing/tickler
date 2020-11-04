@@ -1,18 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Web.Server.Handler.Delete
-  ( postDeleteTickleR
-  , postDeleteTriggeredR
-  ) where
+  ( postDeleteTickleR,
+    postDeleteTriggeredR,
+  )
+where
 
 import Import
-
-import Yesod
-
 import Tickler.API
 import Tickler.Client
-
 import Tickler.Web.Server.Foundation
+import Yesod
 
 deleteItemForm :: FormInput Handler ItemUUID
 deleteItemForm = ireq hiddenField "item"

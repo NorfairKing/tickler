@@ -1,24 +1,22 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Protected.GetItemUUIDs
-  ( serveGetItemUUIDs
-  ) where
-
-import Import
+  ( serveGetItemUUIDs,
+  )
+where
 
 import Database.Persist
-
+import Import
 import Tickler.API
-
-import Tickler.Server.Types
-
 import Tickler.Server.Handler.Utils
+import Tickler.Server.Types
 
 serveGetItemUUIDs :: AuthCookie -> TicklerHandler [ItemUUID]
 serveGetItemUUIDs AuthCookie {..} =
-  fmap (fmap $ ticklerItemIdentifier . entityVal) $
-  runDb $ selectList [TicklerItemUserId ==. authCookieUserUUID] [Asc TicklerItemCreated]
+  fmap (fmap $ ticklerItemIdentifier . entityVal)
+    $ runDb
+    $ selectList [TicklerItemUserId ==. authCookieUserUUID] [Asc TicklerItemCreated]

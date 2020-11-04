@@ -1,24 +1,20 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Protected.PostItem
-  ( servePostItem
-  ) where
-
-import Import
+  ( servePostItem,
+  )
+where
 
 import Database.Persist
-
+import Import
 import Servant
-
 import Tickler.API
-
-import Tickler.Server.Types
-
 import Tickler.Server.Handler.Utils
+import Tickler.Server.Types
 
 servePostItem :: AuthCookie -> ItemUUID -> Tickle TypedItem -> TicklerHandler NoContent
 servePostItem AuthCookie {..} uuid Tickle {..} = do
@@ -32,11 +28,11 @@ servePostItem AuthCookie {..} uuid Tickle {..} = do
           runDb $
             update
               i
-              [ TicklerItemType =. itemType
-              , TicklerItemContents =. itemData
-              , TicklerItemScheduledDay =. tickleScheduledDay
-              , TicklerItemScheduledTime =. tickleScheduledTime
-              , TicklerItemRecurrence =. tickleRecurrence
+              [ TicklerItemType =. itemType,
+                TicklerItemContents =. itemData,
+                TicklerItemScheduledDay =. tickleScheduledDay,
+                TicklerItemScheduledTime =. tickleScheduledTime,
+                TicklerItemRecurrence =. tickleRecurrence
               ]
           pure NoContent
         else throwError $ err401 {errBody = "You are not allowed to edit this item."}

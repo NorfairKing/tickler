@@ -4,8 +4,9 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Server.Looper.VerificationEmailConverter
-  ( runVerificationEmailConverter
-  ) where
+  ( runVerificationEmailConverter,
+  )
+where
 
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as LT
@@ -31,26 +32,26 @@ runVerificationEmailConverter vecs@VerificationEmailConverterSettings {..} = do
       update vid [VerificationEmailEmail =. Just eid]
 
 makeVerificationEmail ::
-     VerificationEmailConverterSettings -> VerificationEmail -> Render Text -> Looper Email
+  VerificationEmailConverterSettings -> VerificationEmail -> Render Text -> Looper Email
 makeVerificationEmail vecs@VerificationEmailConverterSettings {..} ve@VerificationEmail {..} render = do
   now <- liftIO getCurrentTime
   pure
     Email
-      { emailTo = verificationEmailTo
-      , emailFrom = verificationEmailConverterSetFromAddress
-      , emailFromName = verificationEmailConverterSetFromName
-      , emailSubject = "Please verify your email trigger"
-      , emailTextContent = verificationEmailTextContent vecs ve render
-      , emailHtmlContent = verificationEmailHtmlContent vecs ve render
-      , emailStatus = EmailUnsent
-      , emailSendError = Nothing
-      , emailSesId = Nothing
-      , emailScheduled = now
-      , emailSendAttempt = Nothing
+      { emailTo = verificationEmailTo,
+        emailFrom = verificationEmailConverterSetFromAddress,
+        emailFromName = verificationEmailConverterSetFromName,
+        emailSubject = "Please verify your email trigger",
+        emailTextContent = verificationEmailTextContent vecs ve render,
+        emailHtmlContent = verificationEmailHtmlContent vecs ve render,
+        emailStatus = EmailUnsent,
+        emailSendError = Nothing,
+        emailSesId = Nothing,
+        emailScheduled = now,
+        emailSendAttempt = Nothing
       }
 
 verificationEmailTextContent ::
-     VerificationEmailConverterSettings -> VerificationEmail -> Render Text -> Text
+  VerificationEmailConverterSettings -> VerificationEmail -> Render Text -> Text
 verificationEmailTextContent VerificationEmailConverterSettings {..} VerificationEmail {..} render =
   let verificationLink =
         makeVerificationLink
@@ -60,7 +61,7 @@ verificationEmailTextContent VerificationEmailConverterSettings {..} Verificatio
    in LT.toStrict $ LTB.toLazyText $ $(textFile "templates/email/verification-email.txt") render
 
 verificationEmailHtmlContent ::
-     VerificationEmailConverterSettings -> VerificationEmail -> Render Text -> Text
+  VerificationEmailConverterSettings -> VerificationEmail -> Render Text -> Text
 verificationEmailHtmlContent VerificationEmailConverterSettings {..} VerificationEmail {..} render =
   let verificationLink =
         makeVerificationLink

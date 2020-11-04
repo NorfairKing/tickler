@@ -2,8 +2,9 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Looper.Emailer
-  ( runEmailer
-  ) where
+  ( runEmailer,
+  )
+where
 
 import Control.Lens
 import Control.Monad.Trans.AWS

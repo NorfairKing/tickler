@@ -5,10 +5,9 @@
 
 module Tickler.Web.Server.Application where
 
-import Yesod
-import Yesod.Auth
-
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.Handler
+import Yesod
+import Yesod.Auth
 
 mkYesodDispatch "App" resourcesApp

@@ -1,19 +1,15 @@
 {-# LANGUAGE FlexibleInstances #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# OPTIONS_GHC -fno-warn-dodgy-exports #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tickler.API.Protected.Gen where
 
-import Import
-
 import qualified Data.Text.Encoding as TE
-
+import Import
 import Intray.Data.Gen ()
-
+import Tickler.API.Protected.Types
 import Tickler.Data
 import Tickler.Data.Gen ()
-
-import Tickler.API.Protected.Types
 
 instance GenValid ItemFilter where
   genValid = genValidStructurally

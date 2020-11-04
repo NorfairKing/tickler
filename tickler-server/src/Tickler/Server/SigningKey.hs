@@ -1,14 +1,13 @@
 module Tickler.Server.SigningKey
-  ( loadSigningKey
-  ) where
-
-import Import
+  ( loadSigningKey,
+  )
+where
 
 import Crypto.JOSE.JWK (JWK)
 import Data.Aeson as JSON
 import Data.Aeson.Encode.Pretty as JSON
 import qualified Data.ByteString.Lazy as LB
-
+import Import
 import Servant.Auth.Server as Auth
 
 signingKeyFile :: IO (Path Abs File)

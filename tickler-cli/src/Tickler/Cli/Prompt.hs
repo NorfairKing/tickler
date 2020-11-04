@@ -1,21 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Cli.Prompt
-  ( promptUsername
-  , promptPassword
-  , prompt
-  ) where
-
-import Import
-
-import qualified Data.Text.IO as T
+  ( promptUsername,
+    promptPassword,
+    prompt,
+  )
+where
 
 import Control.Exception
+import qualified Data.Text.IO as T
+import Import
 import System.IO
-
-import Tickler.Data
-
 import Tickler.Cli.OptParse
+import Tickler.Data
 
 promptUsername :: Maybe Username -> CliM Username
 promptUsername mun =
@@ -30,9 +27,9 @@ promptUsername mun =
 promptPassword :: Maybe Text -> CliM Text
 promptPassword mp =
   liftIO $
-  case mp of
-    Nothing -> promptSecret "password"
-    Just pw -> pure pw
+    case mp of
+      Nothing -> promptSecret "password"
+      Just pw -> pure pw
 
 promptUntil :: Text -> (Text -> Maybe a) -> IO a
 promptUntil p func = do

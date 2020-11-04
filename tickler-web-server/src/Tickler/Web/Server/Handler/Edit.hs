@@ -1,9 +1,10 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Web.Server.Handler.Edit
-  ( getEditR
-  , postEditR
-  ) where
+  ( getEditR,
+    postEditR,
+  )
+where
 
 import Import
 import Tickler.Client

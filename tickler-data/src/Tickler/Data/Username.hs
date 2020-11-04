@@ -1,18 +1,17 @@
-{-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module Tickler.Data.Username
-  ( Username()
-  , parseUsername
-  , parseUsernameWithError
-  , usernameText
-  , validUsernameChar
-  ) where
-
-import Import
+  ( Username (),
+    parseUsername,
+    parseUsernameWithError,
+    usernameText,
+    validUsernameChar,
+  )
+where
 
 import Data.Aeson as JSON
 import Data.Aeson.Types as JSON (toJSONKeyText)
@@ -20,22 +19,24 @@ import qualified Data.Char as Char
 import Data.Hashable
 import qualified Data.Text as T
 import Database.Persist.Sql
+import Import
 import YamlParse.Applicative
 
-newtype Username =
-  Username
-    { usernameText :: Text
-    }
+newtype Username
+  = Username
+      { usernameText :: Text
+      }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity Username where
   validate (Username t) =
     mconcat
-      [ check (not (T.null t)) "The username is not empty."
-      , check (T.length t >= 3) "The username is at least three characters long."
-      , mconcat $
-        flip map (zip [1 ..] $ map UsernameChar $ T.unpack t) $ \(ix, uc@(UsernameChar c)) ->
-          annotate uc $ unwords ["character number", show (ix :: Int), "of the username:", show c]
+      [ check (not (T.null t)) "The username is not empty.",
+        check (T.length t >= 3) "The username is at least three characters long.",
+        mconcat
+          $ flip map (zip [1 ..] $ map UsernameChar $ T.unpack t)
+          $ \(ix, uc@(UsernameChar c)) ->
+            annotate uc $ unwords ["character number", show (ix :: Int), "of the username:", show c]
       ]
 
 instance Hashable Username
@@ -78,17 +79,17 @@ instance ToJSON Username where
 instance ToJSONKey Username where
   toJSONKey = toJSONKeyText usernameText
 
-newtype UsernameChar =
-  UsernameChar Char
+newtype UsernameChar
+  = UsernameChar Char
 
 instance Validity UsernameChar where
   validate (UsernameChar '-') = mempty
   validate (UsernameChar '_') = mempty
   validate (UsernameChar c) =
     mconcat
-      [ check (not (Char.isControl c)) "The character is not a control character."
-      , check (Char.isAlphaNum c) "The character is alphanumeric."
-      , check (Char.isLatin1 c) "The character is part of Latin1."
+      [ check (not (Char.isControl c)) "The character is not a control character.",
+        check (Char.isAlphaNum c) "The character is alphanumeric.",
+        check (Char.isLatin1 c) "The character is part of Latin1."
       ]
 
 validUsernameChar :: Char -> Bool

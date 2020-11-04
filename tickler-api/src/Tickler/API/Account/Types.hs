@@ -8,33 +8,30 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Tickler.API.Account.Types
-  ( module Tickler.API.Account.Types
-  , module Data.UUID.Typed
-  ) where
-
-import Import
+  ( module Tickler.API.Account.Types,
+    module Data.UUID.Typed,
+  )
+where
 
 import Data.Aeson as JSON
 import Data.Time
 import Data.UUID.Typed
-
+import Import
 import Servant.Docs
-
+import Tickler.API.Types ()
 import Tickler.Data
 
-import Tickler.API.Types ()
-
-data AccountInfo =
-  AccountInfo
-    { accountInfoUUID :: AccountUUID
-    , accountInfoUsername :: Username
-    , accountInfoCreated :: UTCTime
-    , accountInfoLastLogin :: Maybe UTCTime
-    , accountInfoAdmin :: Bool
-    , accountInfoTicklerItemCount :: Int
-    , accountInfoTriggeredItemCount :: Int
-    , accountInfoStatus :: PaidStatus
-    }
+data AccountInfo
+  = AccountInfo
+      { accountInfoUUID :: AccountUUID,
+        accountInfoUsername :: Username,
+        accountInfoCreated :: UTCTime,
+        accountInfoLastLogin :: Maybe UTCTime,
+        accountInfoAdmin :: Bool,
+        accountInfoTicklerItemCount :: Int,
+        accountInfoTriggeredItemCount :: Int,
+        accountInfoStatus :: PaidStatus
+      }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity AccountInfo
@@ -42,23 +39,23 @@ instance Validity AccountInfo
 instance FromJSON AccountInfo where
   parseJSON =
     withObject "AccountInfo" $ \o ->
-      AccountInfo <$> o .: "uuid" <*> o .: "username" <*> o .: "created" <*> o .: "last-login" <*>
-      o .: "admin" <*>
-      o .: "tickler-item-count" <*>
-      o .: "triggered-item-count" <*>
-      o .: "status"
+      AccountInfo <$> o .: "uuid" <*> o .: "username" <*> o .: "created" <*> o .: "last-login"
+        <*> o .: "admin"
+        <*> o .: "tickler-item-count"
+        <*> o .: "triggered-item-count"
+        <*> o .: "status"
 
 instance ToJSON AccountInfo where
   toJSON AccountInfo {..} =
     object
-      [ "uuid" .= accountInfoUUID
-      , "username" .= accountInfoUsername
-      , "created" .= accountInfoCreated
-      , "last-login" .= accountInfoLastLogin
-      , "admin" .= accountInfoAdmin
-      , "tickler-item-count" .= accountInfoTicklerItemCount
-      , "triggered-item-count" .= accountInfoTriggeredItemCount
-      , "status" .= accountInfoStatus
+      [ "uuid" .= accountInfoUUID,
+        "username" .= accountInfoUsername,
+        "created" .= accountInfoCreated,
+        "last-login" .= accountInfoLastLogin,
+        "admin" .= accountInfoAdmin,
+        "tickler-item-count" .= accountInfoTicklerItemCount,
+        "triggered-item-count" .= accountInfoTriggeredItemCount,
+        "status" .= accountInfoStatus
       ]
 
 instance ToSample AccountInfo
@@ -91,10 +88,10 @@ instance ToJSON PaidStatus where
 
 instance ToSample PaidStatus
 
-newtype AccountSettings =
-  AccountSettings
-    { accountSettingsTimeZone :: TimeZone
-    }
+newtype AccountSettings
+  = AccountSettings
+      { accountSettingsTimeZone :: TimeZone
+      }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity AccountSettings where

@@ -2,22 +2,19 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Web.Server.Handler.Admin
-  ( getAdminR
-  , postAdminAccountDeleteR
-  ) where
-
-import Import
+  ( getAdminR,
+    postAdminAccountDeleteR,
+  )
+where
 
 import Data.Time
+import Import
 import Text.Time.Pretty
-
-import Yesod
-
 import Tickler.API
 import Tickler.Client
-
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.Time
+import Yesod
 
 getAdminR :: Handler Html
 getAdminR =

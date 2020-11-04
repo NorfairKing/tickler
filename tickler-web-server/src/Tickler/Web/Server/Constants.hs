@@ -1,12 +1,18 @@
-{-# LANGUAGE CPP #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Web.Server.Constants where
 
 import Import
+import Language.Haskell.TH
+import System.Environment
 
 development :: Bool
-#ifdef DEVELOPMENT
-development = True
-#else
-development = False
-#endif
+development =
+  $( do
+       md <- runIO $ lookupEnv "DEVELOPMENT"
+       fmap ConE $ case md of
+         Nothing -> pure 'False
+         Just _ -> do
+           runIO $ putStrLn "WARNING: BUILDING SMOS_WEB_SERVER IN DEVELOPMENT MODE"
+           pure 'True
+   )

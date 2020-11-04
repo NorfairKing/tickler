@@ -1,8 +1,9 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Handler.Public.GetLoopersStatus
-  ( serveGetLoopersStatus
-  ) where
+  ( serveGetLoopersStatus,
+  )
+where
 
 import qualified Control.Concurrent.Async as Async
 import qualified Data.Text as T
@@ -36,10 +37,10 @@ mkLooperInfo :: LooperHandle -> IO LooperInfo
 mkLooperInfo LooperHandleDisabled =
   pure
     LooperInfo
-      { looperInfoStatus = LooperStatusDisabled
-      , looperInfoPeriod = Nothing
-      , looperInfoRetryDelay = Nothing
-      , looperInfoRetryAmount = Nothing
+      { looperInfoStatus = LooperStatusDisabled,
+        looperInfoPeriod = Nothing,
+        looperInfoRetryDelay = Nothing,
+        looperInfoRetryAmount = Nothing
       }
 mkLooperInfo (LooperHandleEnabled a LooperStaticConfig {..}) = do
   merr <- Async.poll a
@@ -51,8 +52,8 @@ mkLooperInfo (LooperHandleEnabled a LooperStaticConfig {..}) = do
   let LooperRetryPolicy {..} = looperStaticConfigRetryPolicy
   pure $
     LooperInfo
-      { looperInfoStatus = status
-      , looperInfoPeriod = Just looperStaticConfigPeriod
-      , looperInfoRetryDelay = Just looperRetryPolicyDelay
-      , looperInfoRetryAmount = Just looperRetryPolicyAmount
+      { looperInfoStatus = status,
+        looperInfoPeriod = Just looperStaticConfigPeriod,
+        looperInfoRetryDelay = Just looperRetryPolicyDelay,
+        looperInfoRetryAmount = Just looperRetryPolicyAmount
       }

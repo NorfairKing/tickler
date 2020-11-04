@@ -2,9 +2,10 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Web.Server
-  ( ticklerWebServer
-  , makeTicklerApp
-  ) where
+  ( ticklerWebServer,
+    makeTicklerApp,
+  )
+where
 
 import Control.Concurrent
 import Control.Concurrent.Async (concurrently_)
@@ -41,14 +42,14 @@ makeTicklerApp ServeSettings {..} = do
   tokens <- newMVar HM.empty
   pure
     App
-      { appHttpManager = man
-      , appStatic = myStatic
-      , appLoginTokens = tokens
-      , appAPIBaseUrl = burl
-      , appTracking = serveSetTracking
-      , appVerification = serveSetVerification
-      , appPersistLogins = serveSetPersistLogins
-      , appDefaultIntrayUrl = serveSetDefaultIntrayUrl
+      { appHttpManager = man,
+        appStatic = myStatic,
+        appLoginTokens = tokens,
+        appAPIBaseUrl = burl,
+        appTracking = serveSetTracking,
+        appVerification = serveSetVerification,
+        appPersistLogins = serveSetPersistLogins,
+        appDefaultIntrayUrl = serveSetDefaultIntrayUrl
       }
 
 runTicklerAPIServer :: ServeSettings -> IO ()

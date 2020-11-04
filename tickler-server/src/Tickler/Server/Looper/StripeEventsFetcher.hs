@@ -52,12 +52,12 @@ handleEvent :: Stripe.Event -> Looper StripeEvent
 handleEvent Stripe.Event {..} =
   let err t = do
         logErr t
-        runDb $
-          insert_ $
-          AdminNotificationEmail
+        runDb
+          $ insert_
+          $ AdminNotificationEmail
             { adminNotificationEmailContents =
-                T.unlines ["The following problem occurred during Stripe event handling: ", t]
-            , adminNotificationEmailEmail = Nothing
+                T.unlines ["The following problem occurred during Stripe event handling: ", t],
+              adminNotificationEmailEmail = Nothing
             }
         pure $ StripeEvent {stripeEventEvent = eventId, stripeEventError = Just t}
    in case eventType of
@@ -71,9 +71,9 @@ handleEvent Stripe.Event {..} =
                       case parseUUID (Stripe.getClientReferenceId crid) of
                         Just au ->
                           completePayment eventId au $
-                          case eCus of
-                            Stripe.Id cid -> cid
-                            Stripe.Expanded c -> Stripe.customerId c
+                            case eCus of
+                              Stripe.Id cid -> cid
+                              Stripe.Expanded c -> Stripe.customerId c
                         Nothing -> err "Client reference id didn't look like an AccountUUID"
                     Nothing -> err "No client reference id"
                 _ -> err "Unknown session mode"
@@ -82,9 +82,9 @@ handleEvent Stripe.Event {..} =
 
 completePayment :: Stripe.EventId -> AccountUUID -> Stripe.CustomerId -> Looper StripeEvent
 completePayment eventId account cid = do
-  void $
-    runDb $
-    upsertBy
+  void
+    $ runDb
+    $ upsertBy
       (UniqueCustomerUser account)
       (Customer {customerUser = account, customerStripeCustomer = cid})
       [CustomerStripeCustomer =. cid]

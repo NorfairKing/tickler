@@ -4,14 +4,11 @@
 
 module Tickler.Data.Time where
 
-import Import
-
 import Data.Aeson
 import Data.Time
-
-import Text.Printf
-
 import Database.Persist.Sql
+import Import
+import Text.Printf
 
 instance ToJSON TimeZone where
   toJSON TimeZone {..} =
@@ -31,10 +28,11 @@ instance PersistField TimeZone where
 timeZoneChoices :: [TimeZone]
 timeZoneChoices =
   map
-    (\i ->
-       TimeZone
-         { timeZoneMinutes = 60 * i
-         , timeZoneSummerOnly = False
-         , timeZoneName = concat $ "UTC" : [printf "%+d" i | i /= 0]
-         })
+    ( \i ->
+        TimeZone
+          { timeZoneMinutes = 60 * i,
+            timeZoneSummerOnly = False,
+            timeZoneName = concat $ "UTC" : [printf "%+d" i | i /= 0]
+          }
+    )
     [-12 .. 12]

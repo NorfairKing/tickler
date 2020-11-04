@@ -1,41 +1,40 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Server.Handler.PostItemSpec
-  ( spec
-  ) where
-
-import TestImport
+  ( spec,
+  )
+where
 
 import Network.HTTP.Types as Http
-
-import Tickler.Client
-
+import TestImport
 import Tickler.API.Gen ()
+import Tickler.Client
 import Tickler.Server.TestUtils
 
 spec :: Spec
 spec =
-  describe "PostItem" $
-  withTicklerServer $ do
-    it "edits an item without crashing" $ \cenv ->
-      forAllValid $ \t ->
-        forAllValid $ \tt ->
-          withValidNewUser cenv $ \token -> do
-            NoContent <-
-              runClientOrError cenv $ do
-                uuid <- clientPostAddItem token t
-                clientPostItem token uuid tt
-            pure ()
-    it "doesn't allow you to edit an item that didn't exist yet" $ \cenv ->
-      forAllValid $ \uuid ->
-        forAllValid $ \tt ->
-          withValidNewUser cenv $ \token -> do
-            errOrNoContent <- runClient cenv $ clientPostItem token uuid tt
-            case errOrNoContent of
-              Right NoContent -> expectationFailure "Should have failed."
-              Left err ->
-                case err of
-                  FailureResponse _ resp -> responseStatusCode resp `shouldBe` Http.notFound404
-                  _ -> expectationFailure $ show err
+  describe "PostItem"
+    $ withTicklerServer
+    $ do
+      it "edits an item without crashing" $ \cenv ->
+        forAllValid $ \t ->
+          forAllValid $ \tt ->
+            withValidNewUser cenv $ \token -> do
+              NoContent <-
+                runClientOrError cenv $ do
+                  uuid <- clientPostAddItem token t
+                  clientPostItem token uuid tt
+              pure ()
+      it "doesn't allow you to edit an item that didn't exist yet" $ \cenv ->
+        forAllValid $ \uuid ->
+          forAllValid $ \tt ->
+            withValidNewUser cenv $ \token -> do
+              errOrNoContent <- runClient cenv $ clientPostItem token uuid tt
+              case errOrNoContent of
+                Right NoContent -> expectationFailure "Should have failed."
+                Left err ->
+                  case err of
+                    FailureResponse _ resp -> responseStatusCode resp `shouldBe` Http.notFound404
+                    _ -> expectationFailure $ show err

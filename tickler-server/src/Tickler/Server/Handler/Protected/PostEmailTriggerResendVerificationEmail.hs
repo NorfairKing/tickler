@@ -1,39 +1,35 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Protected.PostEmailTriggerResendVerificationEmail
-  ( servePostEmailTriggerResendVerificationEmail
-  ) where
-
-import Import
+  ( servePostEmailTriggerResendVerificationEmail,
+  )
+where
 
 import Data.Time
 import Database.Persist
-
+import Import
 import Servant hiding (BadPassword, NoSuchUser)
 import Servant.Auth.Server as Auth
-
 import Tickler.API
-
+import Tickler.Server.Handler.Utils
 import Tickler.Server.Types
 
-import Tickler.Server.Handler.Utils
-
 servePostEmailTriggerResendVerificationEmail ::
-     AuthCookie -> TriggerUUID -> TicklerHandler NoContent
+  AuthCookie -> TriggerUUID -> TicklerHandler NoContent
 servePostEmailTriggerResendVerificationEmail AuthCookie {..} tuuid = do
   mt <-
     runDb $
-    selectFirst
-      [ UserTriggerUserId ==. authCookieUserUUID
-      , UserTriggerTriggerType ==. EmailTriggerType
-      , UserTriggerTriggerId ==. tuuid
-      ]
-      []
+      selectFirst
+        [ UserTriggerUserId ==. authCookieUserUUID,
+          UserTriggerTriggerType ==. EmailTriggerType,
+          UserTriggerTriggerId ==. tuuid
+        ]
+        []
   case mt of
     Nothing -> throwAll err404 {errBody = "Trigger not found."}
     Just (Entity _ UserTrigger {..}) -> do
@@ -48,10 +44,10 @@ servePostEmailTriggerResendVerificationEmail AuthCookie {..} tuuid = do
               runDb $
                 insert_
                   VerificationEmail
-                    { verificationEmailTo = emailTriggerAddress
-                    , verificationEmailKey = emailTriggerVerificationKey
-                    , verificationEmailTrigger = emailTriggerIdentifier
-                    , verificationEmailScheduled = now
-                    , verificationEmailEmail = Nothing
+                    { verificationEmailTo = emailTriggerAddress,
+                      verificationEmailKey = emailTriggerVerificationKey,
+                      verificationEmailTrigger = emailTriggerIdentifier,
+                      verificationEmailScheduled = now,
+                      verificationEmailEmail = Nothing
                     }
               pure NoContent

@@ -5,8 +5,9 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Public.PostLogin
-  ( servePostLogin
-  ) where
+  ( servePostLogin,
+  )
+where
 
 import Control.Monad.Except
 import qualified Data.Text.Encoding as TE
@@ -19,7 +20,7 @@ import Tickler.API
 import Tickler.Server.Handler.Utils
 import Tickler.Server.Types
 
-servePostLogin :: LoginForm -> TicklerHandler (Headers '[ Header "Set-Cookie" Text] NoContent)
+servePostLogin :: LoginForm -> TicklerHandler (Headers '[Header "Set-Cookie" Text] NoContent)
 servePostLogin LoginForm {..} = do
   me <- runDb $ getBy $ UniqueUsername loginFormUsername
   case me of

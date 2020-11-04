@@ -2,11 +2,10 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tickler.Web.Server.Persistence
-  ( readLogins
-  , writeLogins
-  ) where
-
-import Import
+  ( readLogins,
+    writeLogins,
+  )
+where
 
 import Data.Aeson as JSON
 import Data.Aeson.Encode.Pretty as JSON
@@ -14,9 +13,8 @@ import qualified Data.ByteString.Base16 as Base16
 import qualified Data.ByteString.Lazy as LB
 import Data.HashMap.Strict (HashMap)
 import qualified Data.Text.Encoding as TE
-
-import Servant.Auth.Client (Token(..))
-
+import Import
+import Servant.Auth.Client (Token (..))
 import Tickler.Client
 
 loginsFile :: IO (Path Abs File)

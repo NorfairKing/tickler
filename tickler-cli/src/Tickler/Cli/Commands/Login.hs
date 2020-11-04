@@ -5,24 +5,21 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Cli.Commands.Login
-  ( login
-  ) where
-
-import Import
+  ( login,
+  )
+where
 
 import qualified Data.Text as T
 import Data.Text.Encoding (encodeUtf8)
+import Import
 import Servant
-import Web.Cookie
-
 import Tickler.API
-
-import Tickler.Client
-
 import Tickler.Cli.Client
 import Tickler.Cli.OptParse
 import Tickler.Cli.Prompt
 import Tickler.Cli.Session
+import Tickler.Client
+import Web.Cookie
 
 login :: LoginSettings -> CliM ()
 login LoginSettings {..} = do
@@ -31,9 +28,9 @@ login LoginSettings {..} = do
     runSingleClientOrErr $ do
       loginForm <-
         liftIO $
-        runReaderT
-          (LoginForm <$> promptUsername loginSetUsername <*> promptPassword loginSetPassword)
-          sets
+          runReaderT
+            (LoginForm <$> promptUsername loginSetUsername <*> promptPassword loginSetPassword)
+            sets
       clientPostLogin loginForm
   case mRes of
     Nothing -> liftIO $ die "No server configured."

@@ -6,8 +6,9 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Protected.PostChangePassphrase
-  ( servePostChangePassphrase
-  ) where
+  ( servePostChangePassphrase,
+  )
+where
 
 import Database.Persist
 import Import

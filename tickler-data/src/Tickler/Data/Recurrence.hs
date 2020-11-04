@@ -19,40 +19,42 @@ data Recurrence
 instance Validity Recurrence where
   validate (EveryDaysAtTime ds mtod) =
     decorate "EveryDaysAtTime" $
-    mconcat
-      [ delve "Word" ds
-      , delve "Maybe TimeOfDay" mtod
-      , declare "The number of days is strictly positive" $ ds >= 1
-      ]
+      mconcat
+        [ delve "Word" ds,
+          delve "Maybe TimeOfDay" mtod,
+          declare "The number of days is strictly positive" $ ds >= 1
+        ]
   validate (EveryMonthsOnDay ms md mtod) =
     decorate "EveryMonthsOnDay" $
-    mconcat
-      [ delve "Word" ms
-      , delve "Maybe Word8" md
-      , delve "Maybe TimeOfDay" mtod
-      , declare "The number of months is strictly positive" $ ms >= 1
-      , declare "The day of the month is strictly positive" $ maybe True (>= 1) md
-      , declare "The day of the month is less than or equal to 31" $ maybe True (<= 31) md
-      ]
+      mconcat
+        [ delve "Word" ms,
+          delve "Maybe Word8" md,
+          delve "Maybe TimeOfDay" mtod,
+          declare "The number of months is strictly positive" $ ms >= 1,
+          declare "The day of the month is strictly positive" $ maybe True (>= 1) md,
+          declare "The day of the month is less than or equal to 31" $ maybe True (<= 31) md
+        ]
 
 instance FromJSON Recurrence where
   parseJSON v =
     withObject
       "Recurrence"
-      (\o ->
-         o .: "every-x-days" >>=
-         withObject
-           "EveryDaysAtTime"
-           (\o' -> EveryDaysAtTime <$> o' .: "days" <*> o' .: "time-of-day"))
-      v <|>
-    withObject
-      "Recurrence"
-      (\o ->
-         o .: "every-x-months" >>=
-         withObject
-           "EveryMonthsOnDay"
-           (\o' -> EveryMonthsOnDay <$> o' .: "months" <*> o' .:? "day" <*> o' .:? "time-of-day"))
+      ( \o ->
+          o .: "every-x-days"
+            >>= withObject
+              "EveryDaysAtTime"
+              (\o' -> EveryDaysAtTime <$> o' .: "days" <*> o' .: "time-of-day")
+      )
       v
+      <|> withObject
+        "Recurrence"
+        ( \o ->
+            o .: "every-x-months"
+              >>= withObject
+                "EveryMonthsOnDay"
+                (\o' -> EveryMonthsOnDay <$> o' .: "months" <*> o' .:? "day" <*> o' .:? "time-of-day")
+        )
+        v
 
 instance ToJSON Recurrence where
   toJSON (EveryDaysAtTime ds tod) =

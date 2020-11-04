@@ -4,18 +4,16 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Cli.Commands.Register
-  ( register
-  ) where
+  ( register,
+  )
+where
 
 import Import
-
 import Tickler.API
-
-import Tickler.Client
-
 import Tickler.Cli.Client
 import Tickler.Cli.OptParse
 import Tickler.Cli.Prompt
+import Tickler.Client
 
 register :: RegisterSettings -> CliM ()
 register RegisterSettings {..} = do

@@ -3,12 +3,13 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Tickler.Web.Server.OptParse
-  ( getInstructions
-  , Instructions
-  , Dispatch(..)
-  , Settings(..)
-  , ServeSettings(..)
-  ) where
+  ( getInstructions,
+    Instructions,
+    Dispatch (..),
+    Settings (..),
+    ServeSettings (..),
+  )
+where
 
 import qualified Data.Text as T
 import Import
@@ -38,23 +39,24 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..}
       envAPIEnvironment
       (confAPIConf <$> mConf)
   let webPort = fromMaybe 8000 $ serveFlagPort <|> envPort <|> mc confPort
-  when (API.serveSetPort apiServeSets == webPort) $
-    die $
-    unlines
+  when (API.serveSetPort apiServeSets == webPort)
+    $ die
+    $ unlines
       ["Web server port and API port must not be the same.", "They are both: " ++ show webPort]
   pure
     ( DispatchServe
         ServeSettings
-          { serveSetPort = webPort
-          , serveSetPersistLogins =
-              fromMaybe False $ serveFlagPersistLogins <|> envPersistLogins <|> mc confPersistLogins
-          , serveSetDefaultIntrayUrl =
-              serveFlagDefaultIntrayUrl <|> envDefaultIntrayUrl <|> mc confDefaultIntrayUrl
-          , serveSetTracking = serveFlagTracking <|> envTracking <|> mc confTracking
-          , serveSetVerification = serveFlagVerification <|> envVerification <|> mc confVerification
-          , serveSetAPISettings = apiServeSets
-          }
-    , Settings)
+          { serveSetPort = webPort,
+            serveSetPersistLogins =
+              fromMaybe False $ serveFlagPersistLogins <|> envPersistLogins <|> mc confPersistLogins,
+            serveSetDefaultIntrayUrl =
+              serveFlagDefaultIntrayUrl <|> envDefaultIntrayUrl <|> mc confDefaultIntrayUrl,
+            serveSetTracking = serveFlagTracking <|> envTracking <|> mc confTracking,
+            serveSetVerification = serveFlagVerification <|> envVerification <|> mc confVerification,
+            serveSetAPISettings = apiServeSets
+          },
+      Settings
+    )
 
 getConfiguration :: Flags -> Environment -> IO (Maybe Configuration)
 getConfiguration Flags {..} Environment {..} = do
@@ -73,7 +75,7 @@ getEnvironment = do
           case func s of
             Left e ->
               die $
-              unwords ["Unable to read ENV Var:", k, "which has value:", show s, "with error:", e]
+                unwords ["Unable to read ENV Var:", k, "which has value:", show s, "with error:", e]
             Right v -> pure v
       mrf k func =
         mre k $ \s ->
@@ -116,48 +118,54 @@ parseCommandServe :: ParserInfo Command
 parseCommandServe = info parser modifier
   where
     parser =
-      CommandServe <$>
-      (ServeFlags <$>
-       option
-         (Just <$> auto)
-         (mconcat
-            [ long "web-port"
-            , metavar "PORT"
-            , value Nothing
-            , help "the port to serve the web interface on"
-            ]) <*>
-       flag
-         Nothing
-         (Just True)
-         (mconcat
-            [ long "persist-logins"
-            , help
-                "Whether to persist logins accross restarts. This should not be used in production."
-            ]) <*>
-       option
-         (Just <$> eitherReader (left show . parseBaseUrl))
-         (mconcat
-            [ long "default-intray-url"
-            , value Nothing
-            , help "The default intray url to suggest when adding an intray trigger."
-            ]) <*>
-       option
-         (Just . T.pack <$> str)
-         (mconcat
-            [ long "analytics-tracking-id"
-            , value Nothing
-            , metavar "TRACKING_ID"
-            , help "The google analytics tracking ID"
-            ]) <*>
-       option
-         (Just . T.pack <$> str)
-         (mconcat
-            [ long "search-console-verification"
-            , value Nothing
-            , metavar "VERIFICATION_TAG"
-            , help "The contents of the google search console verification tag"
-            ]) <*>
-       API.parseServeFlags)
+      CommandServe
+        <$> ( ServeFlags
+                <$> option
+                  (Just <$> auto)
+                  ( mconcat
+                      [ long "web-port",
+                        metavar "PORT",
+                        value Nothing,
+                        help "the port to serve the web interface on"
+                      ]
+                  )
+                <*> flag
+                  Nothing
+                  (Just True)
+                  ( mconcat
+                      [ long "persist-logins",
+                        help
+                          "Whether to persist logins accross restarts. This should not be used in production."
+                      ]
+                  )
+                <*> option
+                  (Just <$> eitherReader (left show . parseBaseUrl))
+                  ( mconcat
+                      [ long "default-intray-url",
+                        value Nothing,
+                        help "The default intray url to suggest when adding an intray trigger."
+                      ]
+                  )
+                <*> option
+                  (Just . T.pack <$> str)
+                  ( mconcat
+                      [ long "analytics-tracking-id",
+                        value Nothing,
+                        metavar "TRACKING_ID",
+                        help "The google analytics tracking ID"
+                      ]
+                  )
+                <*> option
+                  (Just . T.pack <$> str)
+                  ( mconcat
+                      [ long "search-console-verification",
+                        value Nothing,
+                        metavar "VERIFICATION_TAG",
+                        help "The contents of the google search console verification tag"
+                      ]
+                  )
+                <*> API.parseServeFlags
+            )
     modifier = fullDesc <> progDesc "Serve." <> confDesc @Configuration
 
 parseFlags :: Parser Flags

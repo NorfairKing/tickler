@@ -5,26 +5,21 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Web.Server.Handler.Triggers
-  ( getTriggersR
-  , postAddIntrayTriggerR
-  , postAddEmailTriggerR
-  , postDeleteTriggerR
-  ) where
-
-import Import
+  ( getTriggersR,
+    postAddIntrayTriggerR,
+    postAddEmailTriggerR,
+    postDeleteTriggerR,
+  )
+where
 
 import qualified Data.Text as T
-
-import Servant.Client.Core
-
-import Yesod
-
+import Import
 import qualified Intray.Data as Intray
-
+import Servant.Client.Core
 import Tickler.API
 import Tickler.Client
-
 import Tickler.Web.Server.Foundation
+import Yesod
 
 getTriggersR :: Handler Html
 getTriggersR =
@@ -64,19 +59,20 @@ makeAddIntrayTriggerWidget =
   withLogin $ \t -> do
     LoopersInfo {..} <- runClientOrErr clientGetLoopersInfo
     if any
-         ((== LooperStatusDisabled) . looperInfoStatus)
-         [ triggeredIntrayItemSenderLooperInfo
-         , triggeredIntrayItemSchedulerLooperInfo
-         , triggererLooperInfo
-         ]
+      ((== LooperStatusDisabled) . looperInfoStatus)
+      [ triggeredIntrayItemSenderLooperInfo,
+        triggeredIntrayItemSchedulerLooperInfo,
+        triggererLooperInfo
+      ]
       then pure mempty
       else do
         defaultIntrayUrl <- getsYesod appDefaultIntrayUrl
         mun <-
-          do errOrAi <- runClient $ clientGetAccountInfo t
-             case errOrAi of
-               Left _ -> pure Nothing
-               Right AccountInfo {..} -> pure $ Just accountInfoUsername
+          do
+            errOrAi <- runClient $ clientGetAccountInfo t
+            case errOrAi of
+              Left _ -> pure Nothing
+              Right AccountInfo {..} -> pure $ Just accountInfoUsername
         token <- genToken
         pure $(widgetFile "add-intray-trigger")
 
@@ -84,12 +80,12 @@ makeAddEmailTriggerWidget :: Handler Widget
 makeAddEmailTriggerWidget = do
   LoopersInfo {..} <- runClientOrErr clientGetLoopersInfo
   if any
-       ((== LooperStatusDisabled) . looperInfoStatus)
-       [ verificationEmailConverterLooperInfo
-       , triggeredEmailSchedulerLooperInfo
-       , triggeredEmailConverterLooperInfo
-       , emailerLooperInfo
-       ]
+    ((== LooperStatusDisabled) . looperInfoStatus)
+    [ verificationEmailConverterLooperInfo,
+      triggeredEmailSchedulerLooperInfo,
+      triggeredEmailConverterLooperInfo,
+      emailerLooperInfo
+    ]
     then pure mempty
     else do
       token <- genToken
@@ -97,37 +93,47 @@ makeAddEmailTriggerWidget = do
 
 addIntrayTriggerForm :: FormInput Handler AddIntrayTrigger
 addIntrayTriggerForm =
-  AddIntrayTrigger <$>
-  ireq
-    (checkMMap
-       (pure .
-        (\case
-           Nothing -> Left ("Invalid URL" :: Text)
-           Just u -> pure u) .
-        parseBaseUrl . T.unpack)
-       (T.pack . showBaseUrl)
-       textField)
-    "url" <*>
-  ireq
-    (checkMMap
-       (pure .
-        (\t ->
-           case Intray.parseUsername t of
-             Nothing -> Left ("Invalid Intray Username" :: Text)
-             Just un -> pure un))
-       Intray.usernameText
-       textField)
-    "username" <*>
-  ireq
-    (checkMMap
-       (pure .
-        (\t ->
-           case Intray.parseAccessKeySecretText t of
-             Nothing -> Left ("Invalid access key" :: Text)
-             Just aks -> pure aks))
-       Intray.accessKeySecretText
-       textField)
-    "access-key"
+  AddIntrayTrigger
+    <$> ireq
+      ( checkMMap
+          ( pure
+              . ( \case
+                    Nothing -> Left ("Invalid URL" :: Text)
+                    Just u -> pure u
+                )
+              . parseBaseUrl
+              . T.unpack
+          )
+          (T.pack . showBaseUrl)
+          textField
+      )
+      "url"
+    <*> ireq
+      ( checkMMap
+          ( pure
+              . ( \t ->
+                    case Intray.parseUsername t of
+                      Nothing -> Left ("Invalid Intray Username" :: Text)
+                      Just un -> pure un
+                )
+          )
+          Intray.usernameText
+          textField
+      )
+      "username"
+    <*> ireq
+      ( checkMMap
+          ( pure
+              . ( \t ->
+                    case Intray.parseAccessKeySecretText t of
+                      Nothing -> Left ("Invalid access key" :: Text)
+                      Just aks -> pure aks
+                )
+          )
+          Intray.accessKeySecretText
+          textField
+      )
+      "access-key"
 
 postAddIntrayTriggerR :: Handler Html
 postAddIntrayTriggerR =
@@ -151,8 +157,8 @@ postAddIntrayTriggerR =
 
 addEmailTriggerForm :: FormInput Handler AddEmailTrigger
 addEmailTriggerForm =
-  AddEmailTrigger <$>
-  ireq (checkMMap (pure . left T.pack . emailValidateFromText) emailAddressText textField) "email"
+  AddEmailTrigger
+    <$> ireq (checkMMap (pure . left T.pack . emailValidateFromText) emailAddressText textField) "email"
 
 postAddEmailTriggerR :: Handler Html
 postAddEmailTriggerR =

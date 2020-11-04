@@ -4,8 +4,9 @@ with lib;
 
 let
   cfg = config.services.tickler."${envname}";
-  concatAttrs = attrList: fold ( x: y: x // y ) {} attrList;
-in {
+  concatAttrs = attrList: fold (x: y: x // y) {} attrList;
+in
+{
   options.services.tickler."${envname}" =
     {
       enable = mkEnableOption "Tickler Service";
@@ -51,14 +52,14 @@ in {
         };
       default-looper-enabled =
         mkOption {
-          type = types.nullOr ( types.bool );
+          type = types.nullOr (types.bool);
           default = null;
           example = true;
           description = "Whether loopers are on by default";
         };
       default-looper-period =
         mkOption {
-          type = types.nullOr ( types.int );
+          type = types.nullOr (types.int);
           default = null;
           example = 600;
           description =
@@ -66,7 +67,7 @@ in {
         };
       default-looper-retry-delay =
         mkOption {
-          type = types.nullOr ( types.int );
+          type = types.nullOr (types.int);
           default = null;
           example = 1000000;
           description =
@@ -74,7 +75,7 @@ in {
         };
       default-looper-retry-amount =
         mkOption {
-          type = types.nullOr ( types.int );
+          type = types.nullOr (types.int);
           default = null;
           example = 5;
           description = "The default number of times to retry a looper";
@@ -95,7 +96,7 @@ in {
         };
       admins =
         mkOption {
-          type = types.nullOr ( types.listOf types.string );
+          type = types.nullOr (types.listOf types.string);
           default = null;
           example = [ "syd" ];
           description =
@@ -103,7 +104,7 @@ in {
         };
       freeloaders =
         mkOption {
-          type = types.nullOr ( types.listOf types.string );
+          type = types.nullOr (types.listOf types.string);
           default = null;
           example = [ "freeloaders" ];
           description =
@@ -186,7 +187,7 @@ in {
                                   enabled = mkEnableOption "Looper";
                                   period =
                                     mkOption {
-                                      type = types.nullOr ( types.int );
+                                      type = types.nullOr (types.int);
                                       default = null;
                                       example = 60;
                                       description =
@@ -194,7 +195,7 @@ in {
                                     };
                                   retry-delay =
                                     mkOption {
-                                      type = types.nullOr ( types.int );
+                                      type = types.nullOr (types.int);
                                       default = null;
                                       example = 1000000;
                                       description =
@@ -202,7 +203,7 @@ in {
                                     };
                                   retry-amount =
                                     mkOption {
-                                      type = types.nullOr ( types.int );
+                                      type = types.nullOr (types.int);
                                       default = null;
                                       example = 5;
                                       description =
@@ -213,16 +214,17 @@ in {
                           );
                         default = null;
                       };
-                  in {
-                    triggerer = looperOption;
-                    emailer = looperOption;
-                    triggered-intray-item-scheduler = looperOption;
-                    triggered-intray-item-sender = looperOption;
-                    verification-email-converter = looperOption;
-                    triggered-email-scheduler = looperOption;
-                    triggered-email-converter = looperOption;
-                    admin-notification-email-converter = looperOption;
-                  };
+                  in
+                    {
+                      triggerer = looperOption;
+                      emailer = looperOption;
+                      triggered-intray-item-scheduler = looperOption;
+                      triggered-intray-item-sender = looperOption;
+                      verification-email-converter = looperOption;
+                      triggered-email-scheduler = looperOption;
+                      triggered-email-converter = looperOption;
+                      admin-notification-email-converter = looperOption;
+                    };
               }
             );
           default = null;
@@ -252,7 +254,7 @@ in {
                   admins = cfg.admins;
                   freeloaders = cfg.freeloaders;
                   monetisation =
-                    optionalAttrs ( !builtins.isNull cfg.monetisation ) {
+                    optionalAttrs (!builtins.isNull cfg.monetisation) {
                       stripe-plan = cfg.monetisation.stripe-plan;
                       stripe-secret-key = cfg.monetisation.stripe-secret-key;
                       stripe-publishable-key =
@@ -262,7 +264,7 @@ in {
                     let
                       looperConf =
                         subcfg:
-                          optionalAttrs ( !builtins.isNull subcfg ) {
+                          optionalAttrs (!builtins.isNull subcfg) {
                             enable = subcfg.enabled or null;
                             period = subcfg.period;
                             retry-policy =
@@ -275,7 +277,7 @@ in {
                         name: val: extra:
                           {
                             "${name}" =
-                              optionalAttrs ( !builtins.isNull cfg.loopers ) (looperConf val) // { conf = extra; };
+                              optionalAttrs (!builtins.isNull cfg.loopers) (looperConf val) // { conf = extra; };
                           };
                     in
                       concatAttrs [
@@ -290,7 +292,7 @@ in {
                         (
                           looperConfSet "triggerer" cfg.loopers.triggerer null
                         )
-                        ( looperConfSet "emailer" cfg.loopers.emailer null )
+                        (looperConfSet "emailer" cfg.loopers.emailer null)
                         (
                           looperConfSet "triggered-intray-item-scheduler" cfg.loopers.triggered-intray-item-scheduler null
                         )
@@ -316,29 +318,30 @@ in {
                       ];
                 };
             in
-              pkgs.writeText "tickler-config" ( builtins.toJSON config );
-          unlessNull = o: optionalAttrs ( !builtins.isNull o );
-        in {
-          description = "Tickler ${envname} Service";
-          wantedBy = [ "multi-user.target" ];
-          script =
-            ''
-              mkdir -p "${workingDir}"
-              cd "${workingDir}"
-              ${tickler-pkgs.tickler-web-server}/bin/tickler-web-server serve --config-file ${configFile}
-            '';
-          serviceConfig =
-            {
-              Restart = "always";
-              RestartSec = 1;
-              Nice = 15;
-            };
-          unitConfig =
-            {
-              StartLimitIntervalSec = 0;
-              # ensure Restart=always is always honoured
-            };
-        };
+              pkgs.writeText "tickler-config" (builtins.toJSON config);
+          unlessNull = o: optionalAttrs (!builtins.isNull o);
+        in
+          {
+            description = "Tickler ${envname} Service";
+            wantedBy = [ "multi-user.target" ];
+            script =
+              ''
+                mkdir -p "${workingDir}"
+                cd "${workingDir}"
+                ${tickler-pkgs.tickler-web-server}/bin/tickler-web-server serve --config-file ${configFile}
+              '';
+            serviceConfig =
+              {
+                Restart = "always";
+                RestartSec = 1;
+                Nice = 15;
+              };
+            unitConfig =
+              {
+                StartLimitIntervalSec = 0;
+                # ensure Restart=always is always honoured
+              };
+          };
     in
       mkIf cfg.enable {
         systemd.services =

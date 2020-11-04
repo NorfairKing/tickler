@@ -1,31 +1,28 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Cli.SyncSpec
-  ( spec
-  ) where
-
-import TestImport
+  ( spec,
+  )
+where
 
 import qualified Data.Map as M
-import qualified Data.Text as T
-
 import Data.Mergeful
-
+import qualified Data.Text as T
 import Servant.API
 import Servant.Client
-
-import Tickler.Client
-import Tickler.Server.TestUtils
-
+import TestImport
 import Tickler.Cli.OptParse
 import Tickler.Cli.Session (loadToken)
 import Tickler.Cli.Store
 import Tickler.Cli.TestUtils
+import Tickler.Client
+import Tickler.Server.TestUtils
 
 spec :: Spec
 spec = do
-  withTicklerServer $
-    it "correctly deletes the local LastSeen after a sync if the item has dissappeared remotely" $ \cenv ->
+  withTicklerServer
+    $ it "correctly deletes the local LastSeen after a sync if the item has dissappeared remotely"
+    $ \cenv ->
       forAllValid $ \ti ->
         withSystemTempDir "tickler-cli-test-cache" $ \cacheDir ->
           withSystemTempDir "tickler-cli-test-data" $ \dataDir ->
@@ -41,11 +38,11 @@ spec = do
               tickler ["login"]
               let sets =
                     Settings
-                      { setBaseUrl = Just burl
-                      , setUsername = Just un
-                      , setCacheDir = cacheDir
-                      , setDataDir = dataDir
-                      , setSyncStrategy = NeverSync
+                      { setBaseUrl = Just burl,
+                        setUsername = Just un,
+                        setCacheDir = cacheDir,
+                        setDataDir = dataDir,
+                        setSyncStrategy = NeverSync
                       }
               mToken <- runReaderT loadToken sets
               token <-
@@ -62,8 +59,9 @@ spec = do
               s2 <- runReaderT readStoreOrEmpty sets
               clientStoreSize (storeTickles s1) `shouldBe` clientStoreSize (storeTickles s2) + 1
   let maxFree = 2
-  withTicklerServerPaid maxFree $
-    it "Can add items past the maximum allowed number of free items locally but not remotely" $ \cenv ->
+  withTicklerServerPaid maxFree
+    $ it "Can add items past the maximum allowed number of free items locally but not remotely"
+    $ \cenv ->
       withValidNewUserAndData cenv $ \un pw _ ->
         withSystemTempDir "tickler-cli-test-data" $ \dataDir ->
           withSystemTempDir "tickler-cli-test-cache" $ \cacheDir -> do
@@ -77,11 +75,11 @@ spec = do
             tickler ["login"]
             let sets =
                   Settings
-                    { setUsername = Nothing
-                    , setBaseUrl = Just burl
-                    , setCacheDir = cacheDir
-                    , setDataDir = dataDir
-                    , setSyncStrategy = AlwaysSync
+                    { setUsername = Nothing,
+                      setBaseUrl = Just burl,
+                      setCacheDir = cacheDir,
+                      setDataDir = dataDir,
+                      setSyncStrategy = AlwaysSync
                     }
             let size =
                   flip runReaderT sets $ do

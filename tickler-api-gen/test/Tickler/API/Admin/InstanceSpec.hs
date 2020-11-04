@@ -1,16 +1,14 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Tickler.API.Admin.InstanceSpec
-  ( spec
-  ) where
-
-import TestImport
+  ( spec,
+  )
+where
 
 import Test.Validity.Aeson
-
-import Tickler.API.Admin.Types
-
+import TestImport
 import Tickler.API.Admin.Gen ()
+import Tickler.API.Admin.Types
 
 spec :: Spec
 spec = do

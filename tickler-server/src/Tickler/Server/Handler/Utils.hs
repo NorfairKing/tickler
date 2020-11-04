@@ -4,11 +4,12 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Handler.Utils
-  ( runDb
-  , withAdminCreds
-  , sendAdminNotification
-  , deleteAccountFully
-  ) where
+  ( runDb,
+    withAdminCreds,
+    sendAdminNotification,
+    deleteAccountFully,
+  )
+where
 
 import qualified Database.Esqueleto as E
 import Database.Esqueleto ((^.))
@@ -40,7 +41,9 @@ sendAdminNotification :: MonadIO m => Text -> SqlPersistT m ()
 sendAdminNotification contents =
   insert_
     AdminNotificationEmail
-      {adminNotificationEmailContents = contents, adminNotificationEmailEmail = Nothing}
+      { adminNotificationEmailContents = contents,
+        adminNotificationEmailEmail = Nothing
+      }
 
 deleteAccountFully :: AccountUUID -> TicklerHandler ()
 deleteAccountFully uuid = do
@@ -51,48 +54,61 @@ deleteAccountFully uuid = do
       runDb $ do
         deleteWhere [TicklerItemUserId ==. uuid]
         deleteWhere [TriggeredItemUserId ==. uuid]
-        E.delete $
-          E.from $ \intrayTrigger ->
-            E.where_ $
-            E.exists $
-            E.from $ \userTrigger ->
-              E.where_ $
-              (userTrigger ^. UserTriggerUserId E.==. E.val uuid) E.&&.
-              (userTrigger ^. UserTriggerTriggerId E.==. intrayTrigger ^. IntrayTriggerIdentifier)
-        E.delete $
-          E.from $ \emailTrigger ->
-            E.where_ $
-            E.exists $
-            E.from $ \userTrigger ->
-              E.where_ $
-              (userTrigger ^. UserTriggerUserId E.==. E.val uuid) E.&&.
-              (userTrigger ^. UserTriggerTriggerId E.==. emailTrigger ^. EmailTriggerIdentifier)
-        E.delete $
-          E.from $ \verificationEmailTrigger ->
-            E.where_ $
-            E.exists $
-            E.from $ \userTrigger ->
-              E.where_ $
-              (userTrigger ^. UserTriggerUserId E.==. E.val uuid) E.&&.
-              (userTrigger ^. UserTriggerTriggerId E.==. verificationEmailTrigger ^.
-               VerificationEmailTrigger)
-        E.delete $
-          E.from $ \triggeredIntrayItemTrigger ->
-            E.where_ $
-            E.exists $
-            E.from $ \userTrigger ->
-              E.where_ $
-              (userTrigger ^. UserTriggerUserId E.==. E.val uuid) E.&&.
-              (userTrigger ^. UserTriggerTriggerId E.==. triggeredIntrayItemTrigger ^.
-               TriggeredIntrayItemTrigger)
-        E.delete $
-          E.from $ \triggeredEmailTrigger ->
-            E.where_ $
-            E.exists $
-            E.from $ \userTrigger ->
-              E.where_ $
-              (userTrigger ^. UserTriggerUserId E.==. E.val uuid) E.&&.
-              (userTrigger ^. UserTriggerTriggerId E.==. triggeredEmailTrigger ^.
-               TriggeredEmailTrigger)
+        E.delete
+          $ E.from
+          $ \intrayTrigger ->
+            E.where_
+              $ E.exists
+              $ E.from
+              $ \userTrigger ->
+                E.where_ $
+                  (userTrigger ^. UserTriggerUserId E.==. E.val uuid)
+                    E.&&. (userTrigger ^. UserTriggerTriggerId E.==. intrayTrigger ^. IntrayTriggerIdentifier)
+        E.delete
+          $ E.from
+          $ \emailTrigger ->
+            E.where_
+              $ E.exists
+              $ E.from
+              $ \userTrigger ->
+                E.where_ $
+                  (userTrigger ^. UserTriggerUserId E.==. E.val uuid)
+                    E.&&. (userTrigger ^. UserTriggerTriggerId E.==. emailTrigger ^. EmailTriggerIdentifier)
+        E.delete
+          $ E.from
+          $ \verificationEmailTrigger ->
+            E.where_
+              $ E.exists
+              $ E.from
+              $ \userTrigger ->
+                E.where_ $
+                  (userTrigger ^. UserTriggerUserId E.==. E.val uuid)
+                    E.&&. ( userTrigger ^. UserTriggerTriggerId E.==. verificationEmailTrigger
+                              ^. VerificationEmailTrigger
+                          )
+        E.delete
+          $ E.from
+          $ \triggeredIntrayItemTrigger ->
+            E.where_
+              $ E.exists
+              $ E.from
+              $ \userTrigger ->
+                E.where_ $
+                  (userTrigger ^. UserTriggerUserId E.==. E.val uuid)
+                    E.&&. ( userTrigger ^. UserTriggerTriggerId E.==. triggeredIntrayItemTrigger
+                              ^. TriggeredIntrayItemTrigger
+                          )
+        E.delete
+          $ E.from
+          $ \triggeredEmailTrigger ->
+            E.where_
+              $ E.exists
+              $ E.from
+              $ \userTrigger ->
+                E.where_ $
+                  (userTrigger ^. UserTriggerUserId E.==. E.val uuid)
+                    E.&&. ( userTrigger ^. UserTriggerTriggerId E.==. triggeredEmailTrigger
+                              ^. TriggeredEmailTrigger
+                          )
         deleteWhere [UserTriggerUserId ==. uuid]
         delete uid

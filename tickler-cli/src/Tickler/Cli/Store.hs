@@ -1,22 +1,20 @@
 module Tickler.Cli.Store
-  ( Store(..)
-  , readStore
-  , readStoreOrEmpty
-  , readStoreSize
-  , anyUnsynced
-  , writeStore
-  ) where
-
-import Import
+  ( Store (..),
+    readStore,
+    readStoreOrEmpty,
+    readStoreSize,
+    anyUnsynced,
+    writeStore,
+  )
+where
 
 import qualified Data.Map as M
 import Data.Mergeful (clientStoreAddedItems, clientStoreSize)
-
-import Tickler.Client
-
+import Import
 import Tickler.Cli.JSON
 import Tickler.Cli.OptParse
 import Tickler.Cli.Path
+import Tickler.Client
 
 {-# ANN module "HLint: ignore Use &&" #-}
 

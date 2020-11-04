@@ -28,51 +28,53 @@ handleEditItemForm = do
               Just r -> (r, editItemScheduledTime)
       pure
         Tickle
-          { tickleContent = textTypedItem $ unTextarea editItemText
-          , tickleScheduledDay = d
-          , tickleScheduledTime = mtod
-          , tickleRecurrence = recurrence
+          { tickleContent = textTypedItem $ unTextarea editItemText,
+            tickleScheduledDay = d,
+            tickleScheduledTime = mtod,
+            tickleRecurrence = recurrence
           }
 
-data EditItem =
-  EditItem
-    { editItemText :: Textarea
-    , editItemScheduledDay :: !(Maybe Day)
-    , editItemScheduledTime :: !(Maybe TimeOfDay)
-    , editItemRecurrenceData :: RecurrenceData
-    }
+data EditItem
+  = EditItem
+      { editItemText :: Textarea,
+        editItemScheduledDay :: !(Maybe Day),
+        editItemScheduledTime :: !(Maybe TimeOfDay),
+        editItemRecurrenceData :: RecurrenceData
+      }
 
-data RecurrenceData =
-  RecurrenceData
-    { recurrenceDataOption :: RecurrenceOption
-    , recurrenceDataDays :: !(Maybe Word)
-    , recurrenceDataDayTimeOfDay :: !(Maybe TimeOfDay)
-    , recurrenceDataMonths :: !(Maybe Word)
-    , recurrenceDataMonthDay :: !(Maybe Word8)
-    , recurrenceDataMonthTimeOfDay :: !(Maybe TimeOfDay)
-    }
+data RecurrenceData
+  = RecurrenceData
+      { recurrenceDataOption :: RecurrenceOption,
+        recurrenceDataDays :: !(Maybe Word),
+        recurrenceDataDayTimeOfDay :: !(Maybe TimeOfDay),
+        recurrenceDataMonths :: !(Maybe Word),
+        recurrenceDataMonthDay :: !(Maybe Word8),
+        recurrenceDataMonthTimeOfDay :: !(Maybe TimeOfDay)
+      }
 
 editItemForm :: FormInput Handler EditItem
 editItemForm =
-  EditItem <$> ireq textareaField "contents" <*> iopt dayField "scheduled-day" <*>
-  iopt timeField "scheduled-time" <*>
-  recurrenceDataForm
+  EditItem <$> ireq textareaField "contents" <*> iopt dayField "scheduled-day"
+    <*> iopt timeField "scheduled-time"
+    <*> recurrenceDataForm
 
 recurrenceDataForm :: FormInput Handler RecurrenceData
 recurrenceDataForm =
-  RecurrenceData <$>
-  ireq
-    (radioField $
-     pure $
-     mkOptionList $ map (\v -> Option (T.pack $ show v) v (T.pack $ show v)) [minBound .. maxBound])
-    "recurrence" <*>
-  iopt (checkMMap (pure . (pure :: a -> Either Text a) . fromInteger) fromIntegral intField) "days" <*>
-  iopt timeField "day-time-of-day" <*>
-  iopt
-    (checkMMap (pure . (pure :: a -> Either Text a) . fromInteger) fromIntegral intField)
-    "months" <*>
-  iopt (checkMMap (pure . (pure :: a -> Either Text a) . fromInteger) fromIntegral intField) "day" <*>
-  iopt timeField "month-time-of-day"
+  RecurrenceData
+    <$> ireq
+      ( radioField
+          $ pure
+          $ mkOptionList
+          $ map (\v -> Option (T.pack $ show v) v (T.pack $ show v)) [minBound .. maxBound]
+      )
+      "recurrence"
+    <*> iopt (checkMMap (pure . (pure :: a -> Either Text a) . fromInteger) fromIntegral intField) "days"
+    <*> iopt timeField "day-time-of-day"
+    <*> iopt
+      (checkMMap (pure . (pure :: a -> Either Text a) . fromInteger) fromIntegral intField)
+      "months"
+    <*> iopt (checkMMap (pure . (pure :: a -> Either Text a) . fromInteger) fromIntegral intField) "day"
+    <*> iopt timeField "month-time-of-day"
 
 data RecurrenceOption
   = NoRecurrence
@@ -97,9 +99,9 @@ mkRecurrence RecurrenceData {..} =
         Just r -> Just $ Just r
     Months ->
       case everyMonthsOnDayAtTime
-             (fromMaybe 1 recurrenceDataMonths)
-             recurrenceDataMonthDay
-             recurrenceDataMonthTimeOfDay of
+        (fromMaybe 1 recurrenceDataMonths)
+        recurrenceDataMonthDay
+        recurrenceDataMonthTimeOfDay of
         Nothing -> Nothing
         Just r -> Just $ Just r
 

@@ -1,26 +1,22 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Protected.GetAccountInfo
-  ( serveGetAccountInfo
-  ) where
-
-import Import
+  ( serveGetAccountInfo,
+  )
+where
 
 import Database.Persist
-
+import Import
 import Servant
-
 import Tickler.API
-
-import Tickler.Server.Types
-
 import Tickler.Server.Handler.Account
 import Tickler.Server.Handler.Utils
+import Tickler.Server.Types
 
 serveGetAccountInfo :: AuthCookie -> TicklerHandler AccountInfo
 serveGetAccountInfo AuthCookie {..} = do

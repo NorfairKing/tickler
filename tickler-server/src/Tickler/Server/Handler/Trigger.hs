@@ -1,28 +1,27 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Trigger
-  ( makeIntrayTriggerInfo
-  , makeEmailTriggerInfo
-  ) where
-
-import Import
+  ( makeIntrayTriggerInfo,
+    makeEmailTriggerInfo,
+  )
+where
 
 import Data.Aeson as JSON
-
+import Import
 import Tickler.API
 
 makeIntrayTriggerInfo :: IntrayTrigger -> TriggerInfo TypedTriggerInfo
 makeIntrayTriggerInfo IntrayTrigger {..} =
   TriggerInfo
-    { triggerInfoIdentifier = intrayTriggerIdentifier
-    , triggerInfo =
+    { triggerInfoIdentifier = intrayTriggerIdentifier,
+      triggerInfo =
         TypedTriggerInfo
-          { typedTriggerInfoType = IntrayTriggerType
-          , typedTriggerInfoValue =
+          { typedTriggerInfoType = IntrayTriggerType,
+            typedTriggerInfoValue =
               toJSON $ IntrayTriggerInfo {intrayTriggerInfoUrl = intrayTriggerUrl}
           }
     }
@@ -30,15 +29,15 @@ makeIntrayTriggerInfo IntrayTrigger {..} =
 makeEmailTriggerInfo :: EmailTrigger -> TriggerInfo TypedTriggerInfo
 makeEmailTriggerInfo EmailTrigger {..} =
   TriggerInfo
-    { triggerInfoIdentifier = emailTriggerIdentifier
-    , triggerInfo =
+    { triggerInfoIdentifier = emailTriggerIdentifier,
+      triggerInfo =
         TypedTriggerInfo
-          { typedTriggerInfoType = EmailTriggerType
-          , typedTriggerInfoValue =
+          { typedTriggerInfoType = EmailTriggerType,
+            typedTriggerInfoValue =
               toJSON $
-              EmailTriggerInfo
-                { emailTriggerInfoEmailAddress = emailTriggerAddress
-                , emailTriggerInfoVerified = emailTriggerVerified
-                }
+                EmailTriggerInfo
+                  { emailTriggerInfoEmailAddress = emailTriggerAddress,
+                    emailTriggerInfoVerified = emailTriggerVerified
+                  }
           }
     }

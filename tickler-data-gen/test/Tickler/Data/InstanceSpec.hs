@@ -1,19 +1,16 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Tickler.Data.InstanceSpec
-  ( spec
-  ) where
-
-import TestImport
+  ( spec,
+  )
+where
 
 import Data.Mergeful.Timed as Mergeful
+import qualified Intray.Data as Intray
 import Test.Validity.Aeson
 import Test.Validity.Persist
-
-import qualified Intray.Data as Intray
-
+import TestImport
 import Tickler.Data
-
 import Tickler.Data.Gen ()
 
 spec :: Spec
@@ -38,8 +35,9 @@ spec = do
   persistSpecOnValid @Recurrence
   describe "Recurrence" $ do
     describe "everyDaysAtTime" $ it "produces valid recurrences" $ producesValid2 everyDaysAtTime
-    describe "everyMonthsOnDayAtTime" $
-      it "produces valid recurrences" $ producesValid3 everyMonthsOnDayAtTime
+    describe "everyMonthsOnDayAtTime"
+      $ it "produces valid recurrences"
+      $ producesValid3 everyMonthsOnDayAtTime
   genValidSpec @TicklerItem
   -- persistSpecOnValid @TicklerItem
   persistSpecOnValid @Mergeful.ServerTime
@@ -62,9 +60,10 @@ spec = do
   genValidSpec @EmailVerificationKey
   showReadSpecOnValid @EmailVerificationKey
   persistSpecOnValid @EmailVerificationKey
-  describe "Encode and Decode EmailVerificationKey" $
-    it "are inverses" $
-    forAllValid $ \evk ->
+  describe "Encode and Decode EmailVerificationKey"
+    $ it "are inverses"
+    $ forAllValid
+    $ \evk ->
       parseEmailVerificationKeyText (emailVerificationKeyText evk) `shouldBe` Just evk
   genValidSpec @EmailTrigger
   persistSpecOnValid @EmailTrigger

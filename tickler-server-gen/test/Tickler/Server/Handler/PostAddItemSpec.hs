@@ -1,31 +1,31 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Server.Handler.PostAddItemSpec
-  ( spec
-  ) where
-
-import TestImport
+  ( spec,
+  )
+where
 
 import Network.HTTP.Types
-
-import Tickler.Client
-
+import TestImport
 import Tickler.API.Gen ()
+import Tickler.Client
 import Tickler.Server.TestUtils
 
 spec :: Spec
 spec =
   describe "PostAddItem" $ do
-    withTicklerServerFree $
-      it "adds an item without crashing" $ \cenv ->
+    withTicklerServerFree
+      $ it "adds an item without crashing"
+      $ \cenv ->
         forAllValid $ \t ->
           withValidNewUser cenv $ \token -> do
             uuid <- runClientOrError cenv $ clientPostAddItem token t
             shouldBeValid uuid
-    withTicklerServerPaid 2 $
-      it "fail to add an item if the user has not paid" $ \cenv ->
+    withTicklerServerPaid 2
+      $ it "fail to add an item if the user has not paid"
+      $ \cenv ->
         forAllValid $ \t1 ->
           forAllValid $ \t2 ->
             forAllValid $ \t3 ->

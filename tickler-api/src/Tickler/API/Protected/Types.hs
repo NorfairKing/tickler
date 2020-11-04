@@ -9,11 +9,12 @@
 {-# OPTIONS_GHC -fno-warn-overlapping-patterns #-}
 
 module Tickler.API.Protected.Types
-  ( module Tickler.API.Protected.Types
-  , module Tickler.API.Types
-  , module Tickler.Data
-  , module Data.UUID.Typed
-  ) where
+  ( module Tickler.API.Protected.Types,
+    module Tickler.API.Types,
+    module Tickler.Data,
+    module Data.UUID.Typed,
+  )
+where
 
 import Data.Aeson as JSON
 import qualified Data.ByteString.Base64 as Base64
@@ -44,11 +45,11 @@ instance ToHttpApiData ItemFilter where
 instance FromHttpApiData ItemFilter where
   parseQueryParam = parseBoundedTextData
 
-data TypedItem =
-  TypedItem
-    { itemType :: !ItemType
-    , itemData :: !ByteString
-    }
+data TypedItem
+  = TypedItem
+      { itemType :: !ItemType,
+        itemData :: !ByteString
+      }
   deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity TypedItem
@@ -57,11 +58,13 @@ instance FromJSON TypedItem where
   parseJSON v =
     case v of
       Object o ->
-        TypedItem <$> o .: "type" <*>
-        (do d <- o .: "data"
-            case Base64.decode $ SB8.pack d of
-              Left err -> fail $ unwords ["Failed to decode base64-encoded typed item data:", err]
-              Right r -> pure r)
+        TypedItem <$> o .: "type"
+          <*> ( do
+                  d <- o .: "data"
+                  case Base64.decode $ SB8.pack d of
+                    Left err -> fail $ unwords ["Failed to decode base64-encoded typed item data:", err]
+                    Right r -> pure r
+              )
       String t -> pure $ TypedItem {itemType = TextItem, itemData = TE.encodeUtf8 t}
       _ -> fail "Invalid json object for 'TypedItem'"
 
@@ -85,15 +88,15 @@ typedItemCase TypedItem {..} =
   case itemType of
     TextItem -> left show $ CaseTextItem <$> TE.decodeUtf8' itemData
 
-newtype TypedItemCase =
-  CaseTextItem Text
+newtype TypedItemCase
+  = CaseTextItem Text
   deriving (Show, Read, Eq, Ord, Generic)
 
-data AddedItem a =
-  AddedItem
-    { addedItemContents :: a
-    , addedItemCreated :: UTCTime
-    }
+data AddedItem a
+  = AddedItem
+      { addedItemContents :: a,
+        addedItemCreated :: UTCTime
+      }
   deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity a => Validity (AddedItem a)
@@ -106,13 +109,13 @@ instance FromJSON a => FromJSON (AddedItem a) where
 
 instance (ToSample a) => ToSample (AddedItem a)
 
-data Tickle a =
-  Tickle
-    { tickleContent :: !a
-    , tickleScheduledDay :: !Day
-    , tickleScheduledTime :: !(Maybe TimeOfDay)
-    , tickleRecurrence :: !(Maybe Recurrence)
-    }
+data Tickle a
+  = Tickle
+      { tickleContent :: !a,
+        tickleScheduledDay :: !Day,
+        tickleScheduledTime :: !(Maybe TimeOfDay),
+        tickleRecurrence :: !(Maybe Recurrence)
+      }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity a => Validity (Tickle a)
@@ -120,16 +123,17 @@ instance Validity a => Validity (Tickle a)
 instance FromJSON a => FromJSON (Tickle a) where
   parseJSON =
     withObject "Tickle" $ \o ->
-      Tickle <$> o .: "content" <*> o .: "scheduled-day" <*> o .: "scheduled-time" <*>
-      o .:? "recurrence"
+      Tickle <$> o .: "content" <*> o .: "scheduled-day" <*> o .: "scheduled-time"
+        <*> o
+        .:? "recurrence"
 
 instance ToJSON a => ToJSON (Tickle a) where
   toJSON Tickle {..} =
     object
-      [ "content" .= tickleContent
-      , "scheduled-day" .= tickleScheduledDay
-      , "scheduled-time" .= tickleScheduledTime
-      , "recurrence" .= tickleRecurrence
+      [ "content" .= tickleContent,
+        "scheduled-day" .= tickleScheduledDay,
+        "scheduled-time" .= tickleScheduledTime,
+        "recurrence" .= tickleRecurrence
       ]
 
 instance ToSample a => ToSample (Tickle a)
@@ -144,19 +148,19 @@ instance ToSample Recurrence where
   toSamples Proxy =
     mapMaybe
       (\(a, b) -> (,) a <$> b)
-      [ ("Every Day", everyDaysAtTime 1 Nothing)
-      , ("Every Month", everyMonthsOnDayAtTime 1 Nothing Nothing)
+      [ ("Every Day", everyDaysAtTime 1 Nothing),
+        ("Every Month", everyMonthsOnDayAtTime 1 Nothing Nothing)
       ]
 
 type TypedTickle = Tickle TypedItem
 
-data ItemInfo a =
-  ItemInfo
-    { itemInfoIdentifier :: !ItemUUID
-    , itemInfoContents :: !(Tickle a)
-    , itemInfoCreated :: !UTCTime
-    , itemInfoTriggered :: !(Maybe TriggeredInfo)
-    }
+data ItemInfo a
+  = ItemInfo
+      { itemInfoIdentifier :: !ItemUUID,
+        itemInfoContents :: !(Tickle a),
+        itemInfoCreated :: !UTCTime,
+        itemInfoTriggered :: !(Maybe TriggeredInfo)
+      }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity a => Validity (ItemInfo a)
@@ -164,10 +168,10 @@ instance Validity a => Validity (ItemInfo a)
 instance ToJSON a => ToJSON (ItemInfo a) where
   toJSON ItemInfo {..} =
     object
-      [ "id" .= itemInfoIdentifier
-      , "contents" .= itemInfoContents
-      , "created" .= itemInfoCreated
-      , "triggered" .= itemInfoTriggered
+      [ "id" .= itemInfoIdentifier,
+        "contents" .= itemInfoContents,
+        "created" .= itemInfoCreated,
+        "triggered" .= itemInfoTriggered
       ]
 
 instance FromJSON a => FromJSON (ItemInfo a) where
@@ -179,11 +183,11 @@ instance ToSample a => ToSample (ItemInfo a)
 
 type TypedItemInfo = ItemInfo TypedItem
 
-data TriggeredInfo =
-  TriggeredInfo
-    { triggeredInfoTriggered :: !UTCTime
-    , triggeredInfoTriggerTriggerAttempts :: ![TriggerAttempt]
-    }
+data TriggeredInfo
+  = TriggeredInfo
+      { triggeredInfoTriggered :: !UTCTime,
+        triggeredInfoTriggerTriggerAttempts :: ![TriggerAttempt]
+      }
   deriving (Show, Read, Eq, Ord, Generic)
 
 instance Validity TriggeredInfo
@@ -244,11 +248,11 @@ instance ToSample IntrayTriggerResult
 
 type AddItem = TypedTickle
 
-data TriggerInfo a =
-  TriggerInfo
-    { triggerInfoIdentifier :: !TriggerUUID
-    , triggerInfo :: !a
-    }
+data TriggerInfo a
+  = TriggerInfo
+      { triggerInfoIdentifier :: !TriggerUUID,
+        triggerInfo :: !a
+      }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity a => Validity (TriggerInfo a)
@@ -264,10 +268,10 @@ instance ToSample a => ToSample (TriggerInfo a)
 instance Functor TriggerInfo where
   fmap f ti = ti {triggerInfo = f $ triggerInfo ti}
 
-data SyncRequest =
-  SyncRequest
-    { syncRequestTickles :: !(Mergeful.SyncRequest Mergeful.ClientId ItemUUID (AddedItem TypedTickle))
-    }
+data SyncRequest
+  = SyncRequest
+      { syncRequestTickles :: !(Mergeful.SyncRequest Mergeful.ClientId ItemUUID (AddedItem TypedTickle))
+      }
   deriving (Show, Eq, Generic)
 
 instance Validity SyncRequest
@@ -278,10 +282,10 @@ instance ToJSON SyncRequest
 
 instance ToSample SyncRequest
 
-data SyncResponse =
-  SyncResponse
-    { syncResponseTickles :: !(Mergeful.SyncResponse Mergeful.ClientId ItemUUID (AddedItem TypedTickle))
-    }
+data SyncResponse
+  = SyncResponse
+      { syncResponseTickles :: !(Mergeful.SyncResponse Mergeful.ClientId ItemUUID (AddedItem TypedTickle))
+      }
   deriving (Show, Eq, Generic)
 
 instance Validity SyncResponse
@@ -292,11 +296,13 @@ instance ToJSON SyncResponse
 
 instance ToSample SyncResponse
 
-instance (Ord ci, ToSample ci, Ord si, ToSample si, ToSample a) =>
-         ToSample (Mergeful.SyncRequest ci si a)
+instance
+  (Ord ci, ToSample ci, Ord si, ToSample si, ToSample a) =>
+  ToSample (Mergeful.SyncRequest ci si a)
 
-instance (Ord ci, ToSample ci, Ord si, ToSample si, ToSample a) =>
-         ToSample (Mergeful.SyncResponse ci si a)
+instance
+  (Ord ci, ToSample ci, Ord si, ToSample si, ToSample a) =>
+  ToSample (Mergeful.SyncResponse ci si a)
 
 instance (Ord si, ToSample si) => ToSample (Mergeful.ClientAddition si)
 
@@ -310,7 +316,7 @@ instance ToSample Word64 where
   toSamples Proxy = singleSample 0
 
 decodeTriggerInfo ::
-     FromJSON a => TriggerType -> TriggerInfo TypedTriggerInfo -> Maybe (TriggerInfo a)
+  FromJSON a => TriggerType -> TriggerInfo TypedTriggerInfo -> Maybe (TriggerInfo a)
 decodeTriggerInfo tt ti = unwrap $ decodeTypedTriggerInfo tt <$> ti
   where
     unwrap :: TriggerInfo (Maybe a) -> Maybe (TriggerInfo a)
@@ -320,11 +326,11 @@ decodeTriggerInfo tt ti = unwrap $ decodeTypedTriggerInfo tt <$> ti
         Just i ->
           Just $ TriggerInfo {triggerInfoIdentifier = triggerInfoIdentifier tmi, triggerInfo = i}
 
-data TypedTriggerInfo =
-  TypedTriggerInfo
-    { typedTriggerInfoType :: !TriggerType
-    , typedTriggerInfoValue :: !JSON.Value
-    }
+data TypedTriggerInfo
+  = TypedTriggerInfo
+      { typedTriggerInfoType :: !TriggerType,
+        typedTriggerInfoValue :: !JSON.Value
+      }
   deriving (Show, Eq, Generic)
 
 instance Validity TypedTriggerInfo
@@ -339,14 +345,14 @@ decodeTypedTriggerInfo :: FromJSON a => TriggerType -> TypedTriggerInfo -> Maybe
 decodeTypedTriggerInfo expectedType TypedTriggerInfo {..} =
   if typedTriggerInfoType == expectedType
     then case fromJSON typedTriggerInfoValue of
-           JSON.Error _ -> Nothing
-           Success ti -> Just ti
+      JSON.Error _ -> Nothing
+      Success ti -> Just ti
     else Nothing
 
-data IntrayTriggerInfo =
-  IntrayTriggerInfo
-    { intrayTriggerInfoUrl :: !BaseUrl
-    }
+data IntrayTriggerInfo
+  = IntrayTriggerInfo
+      { intrayTriggerInfoUrl :: !BaseUrl
+      }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity IntrayTriggerInfo
@@ -357,11 +363,11 @@ instance ToJSON IntrayTriggerInfo
 
 instance ToSample IntrayTriggerInfo
 
-data EmailTriggerInfo =
-  EmailTriggerInfo
-    { emailTriggerInfoEmailAddress :: !EmailAddress
-    , emailTriggerInfoVerified :: !Bool
-    }
+data EmailTriggerInfo
+  = EmailTriggerInfo
+      { emailTriggerInfoEmailAddress :: !EmailAddress,
+        emailTriggerInfoVerified :: !Bool
+      }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity EmailTriggerInfo
@@ -372,12 +378,12 @@ instance ToJSON EmailTriggerInfo
 
 instance ToSample EmailTriggerInfo
 
-data AddIntrayTrigger =
-  AddIntrayTrigger
-    { addIntrayTriggerUrl :: !BaseUrl
-    , addIntrayTriggerUsername :: !Intray.Username
-    , addIntrayTriggerAccessKey :: !Intray.AccessKeySecret
-    }
+data AddIntrayTrigger
+  = AddIntrayTrigger
+      { addIntrayTriggerUrl :: !BaseUrl,
+        addIntrayTriggerUsername :: !Intray.Username,
+        addIntrayTriggerAccessKey :: !Intray.AccessKeySecret
+      }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity AddIntrayTrigger
@@ -388,10 +394,10 @@ instance ToJSON AddIntrayTrigger
 
 instance ToSample AddIntrayTrigger
 
-data AddEmailTrigger =
-  AddEmailTrigger
-    { addEmailTrigger :: !EmailAddress
-    }
+data AddEmailTrigger
+  = AddEmailTrigger
+      { addEmailTrigger :: !EmailAddress
+      }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity AddEmailTrigger

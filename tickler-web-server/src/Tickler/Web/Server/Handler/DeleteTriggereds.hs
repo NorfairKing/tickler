@@ -1,14 +1,12 @@
 module Tickler.Web.Server.Handler.DeleteTriggereds
-  ( postDeleteTriggeredsR
-  ) where
+  ( postDeleteTriggeredsR,
+  )
+where
 
 import Import
-
-import Yesod
-
 import Tickler.Client
-
 import Tickler.Web.Server.Foundation
+import Yesod
 
 postDeleteTriggeredsR :: Handler Html
 postDeleteTriggeredsR =

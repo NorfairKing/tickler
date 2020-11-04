@@ -1,21 +1,18 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Cli.Commands.Sync
-  ( sync
-  ) where
-
-import Import
+  ( sync,
+  )
+where
 
 import qualified Data.Mergeful as Mergeful
-
+import Import
 import Tickler.API
-
-import Tickler.Client
-
 import Tickler.Cli.Client
 import Tickler.Cli.OptParse
 import Tickler.Cli.Session
 import Tickler.Cli.Store
+import Tickler.Client
 
 sync :: CliM ()
 sync = do
@@ -37,19 +34,19 @@ showMergeStats :: SyncRequest -> SyncResponse -> String
 showMergeStats SyncRequest {..} SyncResponse {..} =
   unlines
     [ unwords
-        [ show $ length $ Mergeful.syncResponseServerAdded syncResponseTickles
-        , "tickles added   locally"
-        ]
-    , unwords
-        [ show $ length $ Mergeful.syncResponseServerDeleted syncResponseTickles
-        , "tickles deleted locally"
-        ]
-    , unwords
-        [ show $ length $ Mergeful.syncResponseClientAdded syncResponseTickles
-        , "tickles added   remotely"
-        ]
-    , unwords
-        [ show $ length $ Mergeful.syncResponseClientDeleted syncResponseTickles
-        , "tickles deleted remotely"
+        [ show $ length $ Mergeful.syncResponseServerAdded syncResponseTickles,
+          "tickles added   locally"
+        ],
+      unwords
+        [ show $ length $ Mergeful.syncResponseServerDeleted syncResponseTickles,
+          "tickles deleted locally"
+        ],
+      unwords
+        [ show $ length $ Mergeful.syncResponseClientAdded syncResponseTickles,
+          "tickles added   remotely"
+        ],
+      unwords
+        [ show $ length $ Mergeful.syncResponseClientDeleted syncResponseTickles,
+          "tickles deleted remotely"
         ]
     ]

@@ -1,26 +1,22 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Protected.GetItem
-  ( serveGetItem
-  ) where
-
-import Import
+  ( serveGetItem,
+  )
+where
 
 import Database.Persist
-
+import Import
 import Servant
-
 import Tickler.API
-
+import Tickler.Server.Handler.Utils
 import Tickler.Server.Item
 import Tickler.Server.Types
-
-import Tickler.Server.Handler.Utils
 
 serveGetItem :: AuthCookie -> ItemUUID -> TicklerHandler TypedItemInfo
 serveGetItem AuthCookie {..} id_ = do
@@ -33,7 +29,7 @@ serveGetItem AuthCookie {..} id_ = do
         Just item -> do
           triggeredItemEns <-
             runDb $
-            selectList [TriggeredIntrayItemItem ==. triggeredItemIdentifier (entityVal item)] []
+              selectList [TriggeredIntrayItemItem ==. triggeredItemIdentifier (entityVal item)] []
           triggeredEmailEns <-
             runDb $ selectList [TriggeredEmailItem ==. triggeredItemIdentifier (entityVal item)] []
           pure $

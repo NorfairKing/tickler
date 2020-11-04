@@ -2,6 +2,7 @@
 -- {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 -- {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Tickler.Data.Stripe where
+
 -- These are already in intray
 -- import Web.Stripe.Types as Stripe
 --

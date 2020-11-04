@@ -1,9 +1,9 @@
 module Tickler.Cli.Commands.Logout
-  ( logout
-  ) where
+  ( logout,
+  )
+where
 
 import Import
-
 import Tickler.Cli.OptParse
 import Tickler.Cli.Path
 

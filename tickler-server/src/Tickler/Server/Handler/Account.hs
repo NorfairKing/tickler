@@ -1,23 +1,20 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Account
-  ( getUserAccountInfo
-  ) where
-
-import Import
+  ( getUserAccountInfo,
+  )
+where
 
 import Database.Persist
-
+import Import
 import Tickler.API
-
-import Tickler.Server.Types
-
 import Tickler.Server.Handler.Stripe
 import Tickler.Server.Handler.Utils
+import Tickler.Server.Types
 
 getUserAccountInfo :: User -> TicklerHandler AccountInfo
 getUserAccountInfo User {..} = do
@@ -27,12 +24,12 @@ getUserAccountInfo User {..} = do
   ups <- getUserPaidStatus userIdentifier
   pure
     AccountInfo
-      { accountInfoUUID = userIdentifier
-      , accountInfoUsername = userUsername
-      , accountInfoCreated = userCreated
-      , accountInfoLastLogin = userLastLogin
-      , accountInfoAdmin = userUsername `elem` admins
-      , accountInfoTicklerItemCount = ticklerItemCount
-      , accountInfoTriggeredItemCount = triggeredItemCount
-      , accountInfoStatus = ups
+      { accountInfoUUID = userIdentifier,
+        accountInfoUsername = userUsername,
+        accountInfoCreated = userCreated,
+        accountInfoLastLogin = userLastLogin,
+        accountInfoAdmin = userUsername `elem` admins,
+        accountInfoTicklerItemCount = ticklerItemCount,
+        accountInfoTriggeredItemCount = triggeredItemCount,
+        accountInfoStatus = ups
       }

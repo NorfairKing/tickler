@@ -13,11 +13,11 @@ import Servant.Client
 import Tickler.Data
 import YamlParse.Applicative
 
-data Arguments =
-  Arguments Command Flags
+data Arguments
+  = Arguments Command Flags
 
-data Instructions =
-  Instructions Dispatch Settings
+data Instructions
+  = Instructions Dispatch Settings
 
 data Command
   = CommandRegister RegisterArgs
@@ -27,27 +27,27 @@ data Command
   | CommandSync
   deriving (Show, Eq, Generic)
 
-data RegisterArgs =
-  RegisterArgs
-    { registerArgUsername :: Maybe String
-    , registerArgPassword :: Maybe String
-    }
+data RegisterArgs
+  = RegisterArgs
+      { registerArgUsername :: Maybe String,
+        registerArgPassword :: Maybe String
+      }
   deriving (Show, Eq, Generic)
 
-data LoginArgs =
-  LoginArgs
-    { loginArgUsername :: Maybe String
-    , loginArgPassword :: Maybe String
-    }
+data LoginArgs
+  = LoginArgs
+      { loginArgUsername :: Maybe String,
+        loginArgPassword :: Maybe String
+      }
   deriving (Show, Eq, Generic)
 
-data AddArgs =
-  AddArgs
-    { addArgContent :: String
-    , addArgTickleDate :: String
-    , addArgTickleTime :: Maybe String
-    , addArgRecurrence :: Maybe RecurrenceArgs
-    }
+data AddArgs
+  = AddArgs
+      { addArgContent :: String,
+        addArgTickleDate :: String,
+        addArgTickleTime :: Maybe String,
+        addArgRecurrence :: Maybe RecurrenceArgs
+      }
   deriving (Show, Eq, Generic)
 
 data RecurrenceArgs
@@ -57,37 +57,37 @@ data RecurrenceArgs
   | RecurrenceArgEveryMonthsOnAt Word (Maybe Word8) (Maybe String)
   deriving (Show, Eq, Generic)
 
-data Flags =
-  Flags
-    { flagConfigFile :: Maybe FilePath
-    , flagUrl :: Maybe String
-    , flagCacheDir :: Maybe FilePath
-    , flagDataDir :: Maybe FilePath
-    , flagSyncStrategy :: Maybe SyncStrategy
-    }
+data Flags
+  = Flags
+      { flagConfigFile :: Maybe FilePath,
+        flagUrl :: Maybe String,
+        flagCacheDir :: Maybe FilePath,
+        flagDataDir :: Maybe FilePath,
+        flagSyncStrategy :: Maybe SyncStrategy
+      }
   deriving (Show, Eq, Generic)
 
-data Environment =
-  Environment
-    { envConfigFile :: Maybe FilePath
-    , envUrl :: Maybe String
-    , envUsername :: Maybe String
-    , envPassword :: Maybe String
-    , envCacheDir :: Maybe FilePath
-    , envDataDir :: Maybe FilePath
-    , envSyncStrategy :: Maybe SyncStrategy
-    }
+data Environment
+  = Environment
+      { envConfigFile :: Maybe FilePath,
+        envUrl :: Maybe String,
+        envUsername :: Maybe String,
+        envPassword :: Maybe String,
+        envCacheDir :: Maybe FilePath,
+        envDataDir :: Maybe FilePath,
+        envSyncStrategy :: Maybe SyncStrategy
+      }
   deriving (Show, Eq, Generic)
 
-data Configuration =
-  Configuration
-    { configUrl :: Maybe String
-    , configUsername :: Maybe String
-    , configPassword :: Maybe String
-    , configCacheDir :: Maybe FilePath
-    , configDataDir :: Maybe FilePath
-    , configSyncStrategy :: Maybe SyncStrategy
-    }
+data Configuration
+  = Configuration
+      { configUrl :: Maybe String,
+        configUsername :: Maybe String,
+        configPassword :: Maybe String,
+        configCacheDir :: Maybe FilePath,
+        configDataDir :: Maybe FilePath,
+        configSyncStrategy :: Maybe SyncStrategy
+      }
   deriving (Show, Eq, Generic)
 
 instance FromJSON Configuration where
@@ -96,28 +96,28 @@ instance FromJSON Configuration where
 instance YamlSchema Configuration where
   yamlSchema =
     objectParser "Configuration" $
-    Configuration <$>
-    optionalField "url" "The api url of the tickler server. Example: api.tickler.cs-syd.eu" <*>
-    optionalField "username" "The username to log in with" <*>
-    optionalField
-      "password"
-      "The password to log in with. Note that leaving your password in plaintext in a config file is not safe. Only use this for automation." <*>
-    optionalField
-      "cache-dir"
-      "The directory to store cache information. You can remove this directory as necessary." <*>
-    optionalField
-      "data-dir"
-      "The directory to store data information. Removing this directory could lead to data loss." <*>
-    optionalField "sync" "The sync strategy for non-sync commands."
+      Configuration
+        <$> optionalField "url" "The api url of the tickler server. Example: api.tickler.cs-syd.eu"
+        <*> optionalField "username" "The username to log in with"
+        <*> optionalField
+          "password"
+          "The password to log in with. Note that leaving your password in plaintext in a config file is not safe. Only use this for automation."
+        <*> optionalField
+          "cache-dir"
+          "The directory to store cache information. You can remove this directory as necessary."
+        <*> optionalField
+          "data-dir"
+          "The directory to store data information. Removing this directory could lead to data loss."
+        <*> optionalField "sync" "The sync strategy for non-sync commands."
 
-data Settings =
-  Settings
-    { setBaseUrl :: Maybe BaseUrl
-    , setUsername :: Maybe Username
-    , setCacheDir :: Path Abs Dir
-    , setDataDir :: Path Abs Dir
-    , setSyncStrategy :: SyncStrategy
-    }
+data Settings
+  = Settings
+      { setBaseUrl :: Maybe BaseUrl,
+        setUsername :: Maybe Username,
+        setCacheDir :: Path Abs Dir,
+        setDataDir :: Path Abs Dir,
+        setSyncStrategy :: SyncStrategy
+      }
   deriving (Show, Eq, Generic)
 
 data SyncStrategy
@@ -133,14 +133,14 @@ instance ToJSON SyncStrategy
 instance YamlSchema SyncStrategy where
   yamlSchema =
     alternatives
-      [ literalValue NeverSync <??>
-        [ "Only sync when manually running 'intray sync'."
-        , "When using this option, you essentially promise that you will take care of ensuring that syncing happens regularly."
-        ]
-      , literalValue AlwaysSync <??>
-        [ "Sync on every change to the local state."
-        , "Commands will still succeed even if the sync fails because of internet connect problems for example."
-        ]
+      [ literalValue NeverSync
+          <??> [ "Only sync when manually running 'intray sync'.",
+                 "When using this option, you essentially promise that you will take care of ensuring that syncing happens regularly."
+               ],
+        literalValue AlwaysSync
+          <??> [ "Sync on every change to the local state.",
+                 "Commands will still succeed even if the sync fails because of internet connect problems for example."
+               ]
       ]
 
 data Dispatch
@@ -151,27 +151,27 @@ data Dispatch
   | DispatchSync
   deriving (Show, Eq, Generic)
 
-data RegisterSettings =
-  RegisterSettings
-    { registerSetUsername :: Maybe Username
-    , registerSetPassword :: Maybe Text
-    }
+data RegisterSettings
+  = RegisterSettings
+      { registerSetUsername :: Maybe Username,
+        registerSetPassword :: Maybe Text
+      }
   deriving (Show, Eq, Generic)
 
-data LoginSettings =
-  LoginSettings
-    { loginSetUsername :: Maybe Username
-    , loginSetPassword :: Maybe Text
-    }
+data LoginSettings
+  = LoginSettings
+      { loginSetUsername :: Maybe Username,
+        loginSetPassword :: Maybe Text
+      }
   deriving (Show, Eq, Generic)
 
-data AddSettings =
-  AddSettings
-    { addSetTickleContent :: Text
-    , addSetTickleDate :: Day
-    , addSetTickleTime :: Maybe TimeOfDay
-    , addSetTickleRecurrence :: Maybe Recurrence
-    }
+data AddSettings
+  = AddSettings
+      { addSetTickleContent :: Text,
+        addSetTickleDate :: Day,
+        addSetTickleTime :: Maybe TimeOfDay,
+        addSetTickleRecurrence :: Maybe Recurrence
+      }
   deriving (Show, Eq, Generic)
 
 type CliM = ReaderT Settings IO

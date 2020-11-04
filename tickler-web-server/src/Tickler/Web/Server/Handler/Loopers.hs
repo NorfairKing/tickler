@@ -3,17 +3,15 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Web.Server.Handler.Loopers
-  ( getLoopersR
-  ) where
+  ( getLoopersR,
+  )
+where
 
 import Import
-
-import Yesod
-
 import Tickler.API
 import Tickler.Client
-
 import Tickler.Web.Server.Foundation
+import Yesod
 
 getLoopersR :: Handler Html
 getLoopersR = do

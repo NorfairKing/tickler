@@ -1,15 +1,13 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Tickler.API.Account.InstanceSpec
-  ( spec
-  ) where
-
-import TestImport
+  ( spec,
+  )
+where
 
 import System.IO
-
 import Test.Validity.Aeson
-
+import TestImport
 import Tickler.API.Account.Gen ()
 import Tickler.API.Account.Types
 

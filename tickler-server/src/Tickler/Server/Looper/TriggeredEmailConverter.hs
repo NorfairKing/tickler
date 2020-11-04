@@ -4,8 +4,9 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Server.Looper.TriggeredEmailConverter
-  ( runTriggeredEmailConverter
-  ) where
+  ( runTriggeredEmailConverter,
+  )
+where
 
 import Data.Char as Char
 import qualified Data.Text as T
@@ -27,43 +28,44 @@ runTriggeredEmailConverter :: TriggeredEmailConverterSettings -> Looper ()
 runTriggeredEmailConverter tess = do
   tes <- runDb $ selectList [TriggeredEmailEmail ==. Nothing] []
   tups <-
-    fmap catMaybes $
-    forM tes $ \(Entity tid TriggeredEmail {..}) -> do
-      meti <- runDb $ getBy $ UniqueTriggeredItemIdentifier triggeredEmailItem
-      meet <- runDb $ getBy $ UniqueEmailTrigger triggeredEmailTrigger
-      case (,) <$> meti <*> meet of
-        Nothing -> pure Nothing
-        Just (Entity _ ti, Entity _ et) ->
-          Just . (,) tid <$> makeTriggeredEmail tess et ti undefined
-  runDb $
-    forM_ tups $ \(tid, e) -> do
+    fmap catMaybes
+      $ forM tes
+      $ \(Entity tid TriggeredEmail {..}) -> do
+        meti <- runDb $ getBy $ UniqueTriggeredItemIdentifier triggeredEmailItem
+        meet <- runDb $ getBy $ UniqueEmailTrigger triggeredEmailTrigger
+        case (,) <$> meti <*> meet of
+          Nothing -> pure Nothing
+          Just (Entity _ ti, Entity _ et) ->
+            Just . (,) tid <$> makeTriggeredEmail tess et ti undefined
+  runDb
+    $ forM_ tups
+    $ \(tid, e) -> do
       eid <- insert e
       -- FIXME This should be a transaction.
       update tid [TriggeredEmailEmail =. Just eid]
 
 makeTriggeredEmail ::
-     TriggeredEmailConverterSettings -> EmailTrigger -> TriggeredItem -> Render Text -> Looper Email
+  TriggeredEmailConverterSettings -> EmailTrigger -> TriggeredItem -> Render Text -> Looper Email
 makeTriggeredEmail tecs@TriggeredEmailConverterSettings {..} EmailTrigger {..} ti@TriggeredItem {..} render = do
   now <- liftIO getCurrentTime
   pure
     Email
-      { emailTo = emailTriggerAddress
-      , emailFrom = triggeredEmailConverterSetFromAddress
-      , emailFromName = triggeredEmailConverterSetFromName
-      , emailSubject =
-          "[Tickler]: " <>
-          case triggeredItemType of
+      { emailTo = emailTriggerAddress,
+        emailFrom = triggeredEmailConverterSetFromAddress,
+        emailFromName = triggeredEmailConverterSetFromName,
+        emailSubject = "[Tickler]: "
+          <> case triggeredItemType of
             TextItem ->
               let textContents = TE.decodeUtf8 triggeredItemContents
                in T.take 50 $
-                  T.filter (\c -> not (Char.isControl c) && c /= '\n' && c /= '\r') textContents
-      , emailTextContent = triggeredEmailTextContent tecs ti render
-      , emailHtmlContent = triggeredEmailHtmlContent tecs ti render
-      , emailStatus = EmailUnsent
-      , emailSendError = Nothing
-      , emailSesId = Nothing
-      , emailScheduled = now
-      , emailSendAttempt = Nothing
+                    T.filter (\c -> not (Char.isControl c) && c /= '\n' && c /= '\r') textContents,
+        emailTextContent = triggeredEmailTextContent tecs ti render,
+        emailHtmlContent = triggeredEmailHtmlContent tecs ti render,
+        emailStatus = EmailUnsent,
+        emailSendError = Nothing,
+        emailSesId = Nothing,
+        emailScheduled = now,
+        emailSendAttempt = Nothing
       }
 
 triggeredEmailTextContent :: TriggeredEmailConverterSettings -> TriggeredItem -> Render Text -> Text

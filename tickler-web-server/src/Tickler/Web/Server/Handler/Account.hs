@@ -4,31 +4,26 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Web.Server.Handler.Account
-  ( getAccountR
-  , postAccountSettingsR
-  , postAccountDeleteR
-  ) where
-
-import Import
+  ( getAccountR,
+    postAccountSettingsR,
+    postAccountDeleteR,
+  )
+where
 
 import qualified Data.Text as T
 import Data.Time
-
-import Yesod
-import Yesod.Auth
-
+import Import
 import Text.Julius
-
-import Web.Stripe.Plan as Stripe
-
 import Tickler.Client
-
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.Handler.Pricing
 import Tickler.Web.Server.Time
+import Web.Stripe.Plan as Stripe
+import Yesod
+import Yesod.Auth
 
 accountSettingsForm ::
-     Maybe AccountSettings -> Html -> MForm Handler (FormResult AccountSettings, Widget)
+  Maybe AccountSettings -> Html -> MForm Handler (FormResult AccountSettings, Widget)
 accountSettingsForm mas extra = do
   (timeZoneRes, timeZoneView) <-
     mreq
@@ -87,8 +82,8 @@ accountInfoSegment mai mp =
             $maybe _ <- mp
               <p>
                 Status: ^{subbedWidget}
-          |]
-          , case accountInfoStatus of
+          |],
+            case accountInfoStatus of
               HasNotPaid _ -> maybe mempty (pricingStripeForm ai) mp
               HasPaid _ -> mempty -- already bubscribed
               NoPaymentNecessary -> mempty

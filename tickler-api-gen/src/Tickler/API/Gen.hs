@@ -3,11 +3,12 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tickler.API.Gen
-  ( module Tickler.API.Gen
-  , module Tickler.API.Account.Gen
-  , module Tickler.API.Admin.Gen
-  , module Tickler.API.Protected.Gen
-  ) where
+  ( module Tickler.API.Gen,
+    module Tickler.API.Account.Gen,
+    module Tickler.API.Admin.Gen,
+    module Tickler.API.Protected.Gen,
+  )
+where
 
 import Import
 import Tickler.API

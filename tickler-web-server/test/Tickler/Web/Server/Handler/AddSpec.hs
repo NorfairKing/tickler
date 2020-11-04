@@ -13,57 +13,61 @@ import Yesod.Test
 spec :: Spec
 spec = do
   describe "mkRecurrence" $ do
-    it "works for multiple days" $
-      forAllValid $ \(days, todd) ->
+    it "works for multiple days"
+      $ forAllValid
+      $ \(days, todd) ->
         forAllValid $ \(months, day, todm) ->
           case everyDaysAtTime days todd of
             Nothing -> pure ()
             Just _ ->
               mkRecurrence
                 RecurrenceData
-                  { recurrenceDataOption = Days
-                  , recurrenceDataDays = Just days
-                  , recurrenceDataDayTimeOfDay = todd
-                  , recurrenceDataMonths = months
-                  , recurrenceDataMonthDay = day
-                  , recurrenceDataMonthTimeOfDay = todm
-                  } `shouldBe`
-              Just (Just (EveryDaysAtTime days todd))
-    it "works for multiple months" $
-      forAllValid $ \(months, day, todm) ->
+                  { recurrenceDataOption = Days,
+                    recurrenceDataDays = Just days,
+                    recurrenceDataDayTimeOfDay = todd,
+                    recurrenceDataMonths = months,
+                    recurrenceDataMonthDay = day,
+                    recurrenceDataMonthTimeOfDay = todm
+                  }
+                `shouldBe` Just (Just (EveryDaysAtTime days todd))
+    it "works for multiple months"
+      $ forAllValid
+      $ \(months, day, todm) ->
         forAllValid $ \(days, todd) ->
           case everyMonthsOnDayAtTime months day todm of
             Nothing -> pure ()
             Just _ ->
               mkRecurrence
                 RecurrenceData
-                  { recurrenceDataOption = Months
-                  , recurrenceDataDays = days
-                  , recurrenceDataDayTimeOfDay = todd
-                  , recurrenceDataMonths = Just months
-                  , recurrenceDataMonthDay = day
-                  , recurrenceDataMonthTimeOfDay = todm
-                  } `shouldBe`
-              Just (Just (EveryMonthsOnDay months day todm))
+                  { recurrenceDataOption = Months,
+                    recurrenceDataDays = days,
+                    recurrenceDataDayTimeOfDay = todd,
+                    recurrenceDataMonths = Just months,
+                    recurrenceDataMonthDay = day,
+                    recurrenceDataMonthTimeOfDay = todm
+                  }
+                `shouldBe` Just (Just (EveryMonthsOnDay months day todm))
     it "works for this example of multiple months" $
       mkRecurrence
         RecurrenceData
-          { recurrenceDataOption = Months
-          , recurrenceDataDays = Nothing
-          , recurrenceDataDayTimeOfDay = Nothing
-          , recurrenceDataMonths = Just 8
-          , recurrenceDataMonthDay = Nothing
-          , recurrenceDataMonthTimeOfDay = Nothing
-          } `shouldBe`
-      Just (Just (EveryMonthsOnDay 8 Nothing Nothing))
-  ticklerWebServerSpec $
-    ydescribe "Add" $
+          { recurrenceDataOption = Months,
+            recurrenceDataDays = Nothing,
+            recurrenceDataDayTimeOfDay = Nothing,
+            recurrenceDataMonths = Just 8,
+            recurrenceDataMonthDay = Nothing,
+            recurrenceDataMonthTimeOfDay = Nothing
+          }
+        `shouldBe` Just (Just (EveryMonthsOnDay 8 Nothing Nothing))
+  ticklerWebServerSpec
+    $ ydescribe "Add"
+    $
     --  yit "gets a 200 for a logged-in user" $ do
     --      withExampleAccountAndLogin_ $ do
     --          get AddR
     --          statusIs 200
-    yit "can post an example item" $
-    withExampleAccountAndLogin_ $ do
+    yit "can post an example item"
+    $ withExampleAccountAndLogin_
+    $ do
       get AddR
       statusIs 200
       request $ do

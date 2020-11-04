@@ -1,20 +1,18 @@
-{-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module Tickler.Data.ItemType where
 
-import Import
-
 import Data.Aeson
-
 import Database.Persist
 import Database.Persist.Sql
+import Import
 
-data ItemType =
-  TextItem
+data ItemType
+  = TextItem
   deriving (Show, Read, Eq, Ord, Bounded, Enum, Generic)
 
 instance Validity ItemType

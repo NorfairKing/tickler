@@ -1,8 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Web.Server.Handler.APIDocs
-  ( getAPIDocsR
-  ) where
+  ( getAPIDocsR,
+  )
+where
 
 import Import
 import Tickler.API

@@ -1,24 +1,20 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Protected.PostRetryTriggered
-  ( servePostRetryTriggered
-  ) where
-
-import Import
+  ( servePostRetryTriggered,
+  )
+where
 
 import Database.Persist
-
+import Import
 import Servant
-
 import Tickler.API
-
-import Tickler.Server.Types
-
 import Tickler.Server.Handler.Utils
+import Tickler.Server.Types
 
 servePostRetryTriggered :: AuthCookie -> [ItemUUID] -> TicklerHandler NoContent
 servePostRetryTriggered AuthCookie {..} ids = do

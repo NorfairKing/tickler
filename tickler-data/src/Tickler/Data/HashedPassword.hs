@@ -2,18 +2,19 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Tickler.Data.HashedPassword
-  ( passwordHash
-  , HashedPassword()
-  , validatePassword
-  ) where
+  ( passwordHash,
+    HashedPassword (),
+    validatePassword,
+  )
+where
 
 import qualified Crypto.BCrypt as BCrypt
 import qualified Data.Text.Encoding as TE
 import Database.Persist.Sql
 import Import
 
-newtype HashedPassword =
-  HashedPassword ByteString
+newtype HashedPassword
+  = HashedPassword ByteString
   deriving (Show, Eq, Ord, Read, Generic, PersistField, PersistFieldSql)
 
 instance Validity HashedPassword

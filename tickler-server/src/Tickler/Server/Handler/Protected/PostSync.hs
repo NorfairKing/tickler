@@ -2,8 +2,9 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Handler.Protected.PostSync
-  ( servePostSync
-  ) where
+  ( servePostSync,
+  )
+where
 
 import qualified Data.Map as M
 import qualified Data.Mergeful as Mergeful
@@ -22,30 +23,31 @@ servePostSync AuthCookie {..} req = do
   ups <- getUserPaidStatus authCookieUserUUID
   syncResponseTickles <-
     runDb $
-    Mergeful.serverProcessSyncWithCustomIdQuery
-      TicklerItemIdentifier
-      nextRandomUUID
-      TicklerItemServerTime
-      [TicklerItemUserId ==. authCookieUserUUID]
-      makeTicklerAdded
-      (\_ uuid AddedItem {..} ->
-         makeTicklerItem
-           authCookieUserUUID
-           uuid
-           addedItemCreated
-           Mergeful.initialServerTime
-           addedItemContents)
-      updates
-      (syncRequestTickles $ insertModFunc ups req)
+      Mergeful.serverProcessSyncWithCustomIdQuery
+        TicklerItemIdentifier
+        nextRandomUUID
+        TicklerItemServerTime
+        [TicklerItemUserId ==. authCookieUserUUID]
+        makeTicklerAdded
+        ( \_ uuid AddedItem {..} ->
+            makeTicklerItem
+              authCookieUserUUID
+              uuid
+              addedItemCreated
+              Mergeful.initialServerTime
+              addedItemContents
+        )
+        updates
+        (syncRequestTickles $ insertModFunc ups req)
   pure SyncResponse {..}
   where
     updates AddedItem {..} =
       let Tickle {..} = addedItemContents
-       in [ TicklerItemType =. itemType tickleContent
-          , TicklerItemContents =. itemData tickleContent
-          , TicklerItemScheduledDay =. tickleScheduledDay
-          , TicklerItemScheduledTime =. tickleScheduledTime
-          , TicklerItemRecurrence =. tickleRecurrence
+       in [ TicklerItemType =. itemType tickleContent,
+            TicklerItemContents =. itemData tickleContent,
+            TicklerItemScheduledDay =. tickleScheduledDay,
+            TicklerItemScheduledTime =. tickleScheduledTime,
+            TicklerItemRecurrence =. tickleRecurrence
           ]
 
 insertModFunc :: PaidStatus -> SyncRequest -> SyncRequest

@@ -1,13 +1,10 @@
 module Tickler.Web.Server.Widget where
 
-import Import
-
 import Data.Default
+import Import
 import Language.Haskell.TH.Syntax (Exp, Q)
-
-import Yesod.Default.Util (WidgetFileSettings, widgetFileNoReload, widgetFileReload)
-
 import Tickler.Web.Server.Constants
+import Yesod.Default.Util (WidgetFileSettings, widgetFileNoReload, widgetFileReload)
 
 widgetFile :: String -> Q Exp
 widgetFile =

@@ -1,16 +1,15 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Web.Server.Handler.Pricing
-  ( pricingShowAmountPerMonth
-  , showAmountForPricing
-  ) where
+  ( pricingShowAmountPerMonth,
+    showAmountForPricing,
+  )
+where
 
 import Import
-
+import Tickler.Client
 import Web.Stripe as Stripe
 import Web.Stripe.Types as Stripe
-
-import Tickler.Client
 
 pricingShowAmountPerMonth :: Pricing -> String
 pricingShowAmountPerMonth Pricing {..} =

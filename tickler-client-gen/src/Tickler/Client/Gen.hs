@@ -4,10 +4,8 @@
 module Tickler.Client.Gen where
 
 import Import
-
-import Tickler.Client.Store
-
 import Tickler.API.Gen ()
+import Tickler.Client.Store
 
 instance GenValid Store where
   genValid = genValidStructurallyWithoutExtraChecking

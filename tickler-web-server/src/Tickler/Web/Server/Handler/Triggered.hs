@@ -1,23 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE QuasiQuotes #-}
 
 module Tickler.Web.Server.Handler.Triggered
-  ( getTriggeredsR
-  ) where
-
-import Import
+  ( getTriggeredsR,
+  )
+where
 
 import Data.Time
-
-import Yesod
-
+import Import
 import Tickler.API
 import Tickler.Client
-
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.Time
+import Yesod
 
 getTriggeredsR :: Handler Html
 getTriggeredsR =
@@ -37,15 +34,16 @@ makeItemInfosWidget items =
     AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
     token <- genToken
     now <- liftIO getCurrentTime
-    fmap mconcat $
-      forM items $ \ItemInfo {..} -> do
+    fmap mconcat
+      $ forM items
+      $ \ItemInfo {..} -> do
         let createdWidget = makeTimestampWidget now itemInfoCreated
         let scheduledWidget =
-              makeTimestampWidget now $
-              localTimeToUTC accountSettingsTimeZone $
-              LocalTime
-                (tickleScheduledDay itemInfoContents)
-                (fromMaybe midnight $ tickleScheduledTime itemInfoContents)
+              makeTimestampWidget now
+                $ localTimeToUTC accountSettingsTimeZone
+                $ LocalTime
+                  (tickleScheduledDay itemInfoContents)
+                  (fromMaybe midnight $ tickleScheduledTime itemInfoContents)
         let mTriggeredWidget =
               case itemInfoTriggered of
                 Nothing -> Nothing

@@ -1,17 +1,15 @@
-{-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module Tickler.Data.TriggerType where
 
-import Import
-
 import Data.Aeson
-
 import Database.Persist
 import Database.Persist.Sql
+import Import
 
 data TriggerType
   = EmailTriggerType

@@ -3,18 +3,19 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Data.EmailAddress
-  ( EmailAddress
-  , normalizeEmail
-  , unsafeEmailAddress
-  , emailValidateFromText
-  , emailValidateFromString
-  , emailAddressFromText
-  , emailAddressFromString
-  , emailAddressText
-  , emailAddressByteString
-  , domainPart
-  , localPart
-  ) where
+  ( EmailAddress,
+    normalizeEmail,
+    unsafeEmailAddress,
+    emailValidateFromText,
+    emailValidateFromString,
+    emailAddressFromText,
+    emailAddressFromString,
+    emailAddressText,
+    emailAddressByteString,
+    domainPart,
+    localPart,
+  )
+where
 
 import Data.Aeson as JSON
 import qualified Data.Char as Char
@@ -27,20 +28,20 @@ import Import
 import qualified Text.Email.Validate as Email
 import YamlParse.Applicative
 
-newtype EmailAddress =
-  EmailAddress
-    { unEmailAddress :: Email.EmailAddress
-    }
+newtype EmailAddress
+  = EmailAddress
+      { unEmailAddress :: Email.EmailAddress
+      }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity EmailAddress where
   validate eaa =
     mconcat
-      [ annotate (emailAddressText eaa) "emailAddressText"
-      , check
+      [ annotate (emailAddressText eaa) "emailAddressText",
+        check
           (normalizeEmail (emailAddressText eaa) == emailAddressText eaa)
-          "The contained email address is normalised."
-      , check
+          "The contained email address is normalised.",
+        check
           (emailValidateFromText (emailAddressText eaa) == Right eaa)
           "The contained email address validates to the same email address."
       ]
@@ -116,13 +117,12 @@ emailAddressFromString = emailAddressFromText . T.pack
 --
 -- >>> unsafeEmailAddress "foo" "gmail.com"
 -- "foo@gmail.com"
-unsafeEmailAddress
+unsafeEmailAddress ::
   -- | Local part
- ::
-     ByteString
+  ByteString ->
   -- | Domain part
-  -> ByteString
-  -> EmailAddress
+  ByteString ->
+  EmailAddress
 unsafeEmailAddress = (EmailAddress .) . Email.unsafeEmailAddress
 
 -- | Wrapper around 'EmailValidate.localPart'.

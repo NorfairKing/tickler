@@ -7,16 +7,17 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Tickler.Cli.OptParse
-  ( Instructions(..)
-  , getInstructions
-  , Settings(..)
-  , SyncStrategy(..)
-  , Dispatch(..)
-  , RegisterSettings(..)
-  , LoginSettings(..)
-  , AddSettings(..)
-  , CliM
-  ) where
+  ( Instructions (..),
+    getInstructions,
+    Settings (..),
+    SyncStrategy (..),
+    Dispatch (..),
+    RegisterSettings (..),
+    LoginSettings (..),
+    AddSettings (..),
+    CliM,
+  )
+where
 
 import qualified Data.Text as T
 import Data.Time
@@ -57,10 +58,11 @@ combineToInstructions (Arguments cmd Flags {..}) Environment {..} mConf =
           Just d -> resolveDir' d
       let setSyncStrategy =
             fromMaybe
-              (case setBaseUrl of
-                 Nothing -> NeverSync
-                 Just _ -> AlwaysSync) $
-            flagSyncStrategy <|> envSyncStrategy <|> mc configSyncStrategy
+              ( case setBaseUrl of
+                  Nothing -> NeverSync
+                  Just _ -> AlwaysSync
+              )
+              $ flagSyncStrategy <|> envSyncStrategy <|> mc configSyncStrategy
       setUsername <-
         case envUsername <|> mc configUsername of
           Nothing -> pure Nothing
@@ -73,24 +75,24 @@ combineToInstructions (Arguments cmd Flags {..}) Environment {..} mConf =
       case cmd of
         CommandRegister RegisterArgs {..} ->
           pure $
-          DispatchRegister
-            RegisterSettings
-              { registerSetUsername =
-                  (T.pack <$> (registerArgUsername <|> envUsername <|> mc configUsername)) >>=
-                  parseUsername
-              , registerSetPassword =
-                  T.pack <$> (registerArgPassword <|> envPassword <|> mc configPassword)
-              }
+            DispatchRegister
+              RegisterSettings
+                { registerSetUsername =
+                    (T.pack <$> (registerArgUsername <|> envUsername <|> mc configUsername))
+                      >>= parseUsername,
+                  registerSetPassword =
+                    T.pack <$> (registerArgPassword <|> envPassword <|> mc configPassword)
+                }
         CommandLogin LoginArgs {..} ->
           pure $
-          DispatchLogin
-            LoginSettings
-              { loginSetUsername =
-                  (T.pack <$> (loginArgUsername <|> envUsername <|> mc configUsername)) >>=
-                  parseUsername
-              , loginSetPassword =
-                  T.pack <$> (loginArgPassword <|> envPassword <|> mc configPassword)
-              }
+            DispatchLogin
+              LoginSettings
+                { loginSetUsername =
+                    (T.pack <$> (loginArgUsername <|> envUsername <|> mc configUsername))
+                      >>= parseUsername,
+                  loginSetPassword =
+                    T.pack <$> (loginArgPassword <|> envPassword <|> mc configPassword)
+                }
         CommandAdd AddArgs {..} -> do
           date <- parseTimeM True defaultTimeLocale "%Y-%-m-%-d" addArgTickleDate
           mTime <- mkTimeOfDay addArgTickleTime
@@ -101,10 +103,10 @@ combineToInstructions (Arguments cmd Flags {..}) Environment {..} mConf =
           pure $
             DispatchAdd
               AddSettings
-                { addSetTickleContent = T.pack addArgContent
-                , addSetTickleDate = date
-                , addSetTickleTime = mTime
-                , addSetTickleRecurrence = r
+                { addSetTickleContent = T.pack addArgContent,
+                  addSetTickleDate = date,
+                  addSetTickleTime = mTime,
+                  addSetTickleRecurrence = r
                 }
         CommandLogout -> pure DispatchLogout
         CommandSync -> pure DispatchSync
@@ -112,19 +114,19 @@ combineToInstructions (Arguments cmd Flags {..}) Environment {..} mConf =
 mkRecurrence :: RecurrenceArgs -> IO Recurrence
 mkRecurrence ra =
   (mkValidRecurrence =<<) $
-  case ra of
-    RecurrenceArgEveryDayAt mtod -> everyDaysAtTime 1 <$> mkTimeOfDay mtod
-    RecurrenceArgEveryDaysAt ds mtod -> everyDaysAtTime ds <$> mkTimeOfDay mtod
-    RecurrenceArgEveryMonthOnAt md mtod -> everyMonthsOnDayAtTime 1 md <$> mkTimeOfDay mtod
-    RecurrenceArgEveryMonthsOnAt ms md mtod -> everyMonthsOnDayAtTime ms md <$> mkTimeOfDay mtod
+    case ra of
+      RecurrenceArgEveryDayAt mtod -> everyDaysAtTime 1 <$> mkTimeOfDay mtod
+      RecurrenceArgEveryDaysAt ds mtod -> everyDaysAtTime ds <$> mkTimeOfDay mtod
+      RecurrenceArgEveryMonthOnAt md mtod -> everyMonthsOnDayAtTime 1 md <$> mkTimeOfDay mtod
+      RecurrenceArgEveryMonthsOnAt ms md mtod -> everyMonthsOnDayAtTime ms md <$> mkTimeOfDay mtod
 
 mkTimeOfDay :: Maybe String -> IO (Maybe TimeOfDay)
 mkTimeOfDay Nothing = pure Nothing
 mkTimeOfDay (Just a) =
   fmap Just $
-  case parseTimeM True defaultTimeLocale "%H:%M" a of
-    Nothing -> die $ unwords ["Invalid time of day:", a]
-    Just tod -> pure tod
+    case parseTimeM True defaultTimeLocale "%H:%M" a of
+      Nothing -> die $ unwords ["Invalid time of day:", a]
+      Just tod -> pure tod
 
 mkValidRecurrence :: Maybe Recurrence -> IO Recurrence
 mkValidRecurrence Nothing = die "Recurrence invalid:"
@@ -160,11 +162,13 @@ getConfiguration Flags {..} Environment {..} =
 defaultConfigFiles :: IO [Path Abs File]
 defaultConfigFiles =
   sequence
-    [ do xdgConfigDir <- getXdgDir XdgConfig (Just [reldir|tickler|])
-         resolveFile xdgConfigDir "config.yaml"
-    , do homeDir <- getHomeDir
-         ticklerDir <- resolveDir homeDir ".tickler"
-         resolveFile ticklerDir "config.yaml"
+    [ do
+        xdgConfigDir <- getXdgDir XdgConfig (Just [reldir|tickler|])
+        resolveFile xdgConfigDir "config.yaml",
+      do
+        homeDir <- getHomeDir
+        ticklerDir <- resolveDir homeDir ".tickler"
+        resolveFile ticklerDir "config.yaml"
     ]
 
 getArguments :: IO Arguments
@@ -191,62 +195,69 @@ parseArgs = Arguments <$> parseCommand <*> parseFlags
 parseCommand :: Parser Command
 parseCommand =
   hsubparser $
-  mconcat
-    [ command "register" parseCommandRegister
-    , command "login" parseCommandLogin
-    , command "add" parseCommandAdd
-    , command "logout" parseCommandLogout
-    , command "sync" parseCommandSync
-    ]
+    mconcat
+      [ command "register" parseCommandRegister,
+        command "login" parseCommandLogin,
+        command "add" parseCommandAdd,
+        command "logout" parseCommandLogout,
+        command "sync" parseCommandSync
+      ]
 
 parseCommandRegister :: ParserInfo Command
 parseCommandRegister = info parser modifier
   where
     modifier = fullDesc <> progDesc "Register user"
     parser =
-      CommandRegister <$>
-      (RegisterArgs <$>
-       option
-         (Just <$> str)
-         (mconcat
-            [long "username", help "The username to register", value Nothing, metavar "USERNAME"]) <*>
-       option
-         (Just <$> str)
-         (mconcat
-            [ long "password"
-            , help "The password to register with"
-            , value Nothing
-            , metavar "PASSWORD"
-            ]))
+      CommandRegister
+        <$> ( RegisterArgs
+                <$> option
+                  (Just <$> str)
+                  ( mconcat
+                      [long "username", help "The username to register", value Nothing, metavar "USERNAME"]
+                  )
+                <*> option
+                  (Just <$> str)
+                  ( mconcat
+                      [ long "password",
+                        help "The password to register with",
+                        value Nothing,
+                        metavar "PASSWORD"
+                      ]
+                  )
+            )
 
 parseCommandLogin :: ParserInfo Command
 parseCommandLogin = info parser modifier
   where
     modifier = fullDesc <> progDesc "Login user"
     parser =
-      CommandLogin <$>
-      (LoginArgs <$>
-       option
-         (Just <$> str)
-         (mconcat [long "username", help "The username to login", value Nothing, metavar "USERNAME"]) <*>
-       option
-         (Just <$> str)
-         (mconcat
-            [long "password", help "The password to login with", value Nothing, metavar "PASSWORD"]))
+      CommandLogin
+        <$> ( LoginArgs
+                <$> option
+                  (Just <$> str)
+                  (mconcat [long "username", help "The username to login", value Nothing, metavar "USERNAME"])
+                <*> option
+                  (Just <$> str)
+                  ( mconcat
+                      [long "password", help "The password to login with", value Nothing, metavar "PASSWORD"]
+                  )
+            )
 
 parseCommandAdd :: ParserInfo Command
 parseCommandAdd = info parser modifier
   where
     modifier = fullDesc <> progDesc "Add a tickle"
     parser =
-      CommandAdd <$>
-      (AddArgs <$> strArgument (mconcat [metavar "CONTENT", help "The content of the tickle"]) <*>
-       strArgument (mconcat [metavar "DATE", help "The scheduled date of the tickle"]) <*>
-       option
-         (Just <$> str)
-         (mconcat
-            [long "time", help "The scheduled time of the tickle", value Nothing, metavar "TIME"]) <*>
-       optional parseRecurrence)
+      CommandAdd
+        <$> ( AddArgs <$> strArgument (mconcat [metavar "CONTENT", help "The content of the tickle"])
+                <*> strArgument (mconcat [metavar "DATE", help "The scheduled date of the tickle"])
+                <*> option
+                  (Just <$> str)
+                  ( mconcat
+                      [long "time", help "The scheduled time of the tickle", value Nothing, metavar "TIME"]
+                  )
+                <*> optional parseRecurrence
+            )
 
 parseRecurrence :: Parser RecurrenceArgs
 parseRecurrence = parseDaysAtTime <|> parseMonthsOnDay
@@ -255,38 +266,38 @@ parseRecurrence = parseDaysAtTime <|> parseMonthsOnDay
     parseDaysAtTime = parseEveryDay <|> parseEveryXDays
     parseEveryDay :: Parser RecurrenceArgs
     parseEveryDay =
-      flag' RecurrenceArgEveryDayAt (mconcat [long "every-day", help "Every day"]) <*>
-      option
-        (Just <$> str)
-        (mconcat [long "at", help "at a given time", value Nothing, metavar "TIME"])
+      flag' RecurrenceArgEveryDayAt (mconcat [long "every-day", help "Every day"])
+        <*> option
+          (Just <$> str)
+          (mconcat [long "at", help "at a given time", value Nothing, metavar "TIME"])
     parseEveryXDays :: Parser RecurrenceArgs
     parseEveryXDays =
-      RecurrenceArgEveryDaysAt <$>
-      option auto (mconcat [long "every-x-days", metavar "X", help "Every X days"]) <*>
-      option
-        (Just <$> str)
-        (mconcat [long "at", help "at a given time", value Nothing, metavar "TIME"])
+      RecurrenceArgEveryDaysAt
+        <$> option auto (mconcat [long "every-x-days", metavar "X", help "Every X days"])
+        <*> option
+          (Just <$> str)
+          (mconcat [long "at", help "at a given time", value Nothing, metavar "TIME"])
     parseMonthsOnDay :: Parser RecurrenceArgs
     parseMonthsOnDay = parseEveryMonthOnAt <|> parseEveryXMonthsOnAt
     parseEveryMonthOnAt :: Parser RecurrenceArgs
     parseEveryMonthOnAt =
-      flag' RecurrenceArgEveryMonthOnAt (mconcat [long "every-month", help "Every month"]) <*>
-      option
-        (Just <$> auto)
-        (mconcat [long "on", help "on a given day of the month", value Nothing, metavar "DAY"]) <*>
-      option
-        (Just <$> str)
-        (mconcat [long "at", help "at a given time", value Nothing, metavar "TIME"])
+      flag' RecurrenceArgEveryMonthOnAt (mconcat [long "every-month", help "Every month"])
+        <*> option
+          (Just <$> auto)
+          (mconcat [long "on", help "on a given day of the month", value Nothing, metavar "DAY"])
+        <*> option
+          (Just <$> str)
+          (mconcat [long "at", help "at a given time", value Nothing, metavar "TIME"])
     parseEveryXMonthsOnAt :: Parser RecurrenceArgs
     parseEveryXMonthsOnAt =
-      RecurrenceArgEveryMonthsOnAt <$>
-      option auto (mconcat [long "every-x-months", metavar "X", help "Every X months"]) <*>
-      option
-        (Just <$> auto)
-        (mconcat [long "on", help "on a given day of the month", value Nothing, metavar "DAY"]) <*>
-      option
-        (Just <$> str)
-        (mconcat [long "at", help "at a given time", value Nothing, metavar "TIME"])
+      RecurrenceArgEveryMonthsOnAt
+        <$> option auto (mconcat [long "every-x-months", metavar "X", help "Every X months"])
+        <*> option
+          (Just <$> auto)
+          (mconcat [long "on", help "on a given day of the month", value Nothing, metavar "DAY"])
+        <*> option
+          (Just <$> str)
+          (mconcat [long "at", help "at a given time", value Nothing, metavar "TIME"])
 
 parseCommandLogout :: ParserInfo Command
 parseCommandLogout = info parser modifier
@@ -302,28 +313,30 @@ parseCommandSync = info parser modifier
 
 parseFlags :: Parser Flags
 parseFlags =
-  Flags <$>
-  option
-    (Just <$> str)
-    (mconcat
-       [ long "config-file"
-       , help "Give the path to an altenative config file"
-       , value Nothing
-       , metavar "FILEPATH"
-       ]) <*>
-  option
-    (Just <$> str)
-    (mconcat [long "url", help "The url of the server.", value Nothing, metavar "URL"]) <*>
-  option
-    (Just <$> str)
-    (mconcat
-       [long "cache-dir", help "The directory to use for caching", value Nothing, metavar "DIR"]) <*>
-  option
-    (Just <$> str)
-    (mconcat [long "data-dir", help "The directory to use for state", value Nothing, metavar "DIR"]) <*>
-  syncStrategyOpt
+  Flags
+    <$> option
+      (Just <$> str)
+      ( mconcat
+          [ long "config-file",
+            help "Give the path to an altenative config file",
+            value Nothing,
+            metavar "FILEPATH"
+          ]
+      )
+    <*> option
+      (Just <$> str)
+      (mconcat [long "url", help "The url of the server.", value Nothing, metavar "URL"])
+    <*> option
+      (Just <$> str)
+      ( mconcat
+          [long "cache-dir", help "The directory to use for caching", value Nothing, metavar "DIR"]
+      )
+    <*> option
+      (Just <$> str)
+      (mconcat [long "data-dir", help "The directory to use for state", value Nothing, metavar "DIR"])
+    <*> syncStrategyOpt
 
 syncStrategyOpt :: Parser (Maybe SyncStrategy)
 syncStrategyOpt =
-  flag Nothing (Just NeverSync) (mconcat [long "no-sync", help "Do not try to sync."]) <|>
-  flag Nothing (Just AlwaysSync) (mconcat [long "sync", help "Definitely try to sync."])
+  flag Nothing (Just NeverSync) (mconcat [long "no-sync", help "Do not try to sync."])
+    <|> flag Nothing (Just AlwaysSync) (mconcat [long "sync", help "Definitely try to sync."])

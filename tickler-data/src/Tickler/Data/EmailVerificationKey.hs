@@ -7,19 +7,17 @@
 
 module Tickler.Data.EmailVerificationKey where
 
-import Import
-
 import qualified Data.ByteString as SB
 import qualified Data.ByteString.Base16 as SB16
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import System.Random
-
 import Database.Persist
 import Database.Persist.Sql
+import Import
+import System.Random
 
-newtype EmailVerificationKey =
-  EmailVerificationKey ByteString
+newtype EmailVerificationKey
+  = EmailVerificationKey ByteString
   deriving (Eq, Ord, Generic, PersistField, PersistFieldSql)
 
 instance Validity EmailVerificationKey

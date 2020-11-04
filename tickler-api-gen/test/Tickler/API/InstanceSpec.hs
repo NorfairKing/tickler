@@ -1,8 +1,9 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Tickler.API.InstanceSpec
-  ( spec
-  ) where
+  ( spec,
+  )
+where
 
 import Test.Validity.Aeson
 import TestImport

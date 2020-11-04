@@ -4,7 +4,6 @@
 module Tickler.API.Admin.Gen where
 
 import Import
-
 import Tickler.API
 import Tickler.Data.Gen ()
 

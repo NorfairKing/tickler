@@ -1,22 +1,19 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Protected.DeleteAccount
-  ( serveDeleteAccount
-  ) where
+  ( serveDeleteAccount,
+  )
+where
 
 import Import
-
 import Servant hiding (BadPassword, NoSuchUser)
-
 import Tickler.API
-
-import Tickler.Server.Types
-
 import Tickler.Server.Handler.Utils
+import Tickler.Server.Types
 
 serveDeleteAccount :: AuthCookie -> TicklerHandler NoContent
 serveDeleteAccount AuthCookie {..} = do

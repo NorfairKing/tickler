@@ -1,13 +1,12 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Tickler.API.Protected.InstanceSpec
-  ( spec
-  ) where
-
-import TestImport
+  ( spec,
+  )
+where
 
 import Test.Validity.Aeson
-
+import TestImport
 import Tickler.API.Protected.Gen ()
 import Tickler.API.Protected.Types
 

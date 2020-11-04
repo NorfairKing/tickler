@@ -3,10 +3,11 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Tickler.Server.Looper
-  ( LoopersHandle(..)
-  , LooperHandle(..)
-  , startLoopers
-  ) where
+  ( LoopersHandle (..),
+    LooperHandle (..),
+    startLoopers,
+  )
+where
 
 import Control.Concurrent
 import Control.Concurrent.Async
@@ -33,19 +34,19 @@ import Tickler.Server.Looper.Types
 import Tickler.Server.Looper.VerificationEmailConverter
 import Tickler.Server.OptParse.Types
 
-data LoopersHandle =
-  LoopersHandle
-    { emailerLooperHandle :: LooperHandle
-    , triggererLooperHandle :: LooperHandle
-    , verificationEmailConverterLooperHandle :: LooperHandle
-    , triggeredIntrayItemSchedulerLooperHandle :: LooperHandle
-    , triggeredIntrayItemSenderLooperHandle :: LooperHandle
-    , triggeredEmailSchedulerLooperHandle :: LooperHandle
-    , triggeredEmailConverterLooperHandle :: LooperHandle
-    , adminNotificationEmailConverterLooperHandle :: LooperHandle
-    , stripeEventsFetcherLooperHandle :: LooperHandle
-    , stripeEventsRetrierLooperHandle :: LooperHandle
-    }
+data LoopersHandle
+  = LoopersHandle
+      { emailerLooperHandle :: LooperHandle,
+        triggererLooperHandle :: LooperHandle,
+        verificationEmailConverterLooperHandle :: LooperHandle,
+        triggeredIntrayItemSchedulerLooperHandle :: LooperHandle,
+        triggeredIntrayItemSenderLooperHandle :: LooperHandle,
+        triggeredEmailSchedulerLooperHandle :: LooperHandle,
+        triggeredEmailConverterLooperHandle :: LooperHandle,
+        adminNotificationEmailConverterLooperHandle :: LooperHandle,
+        stripeEventsFetcherLooperHandle :: LooperHandle,
+        stripeEventsRetrierLooperHandle :: LooperHandle
+      }
 
 startLoopers :: Pool SqlBackend -> LoopersSettings -> Maybe MonetisationSettings -> IO LoopersHandle
 startLoopers pool LoopersSettings {..} mms = do
@@ -80,9 +81,10 @@ startLoopers pool LoopersSettings {..} mms = do
   stripeEventsFetcherLooperHandle <-
     maybe
       (pure LooperHandleDisabled)
-      (\ms ->
-         start "StripeEventsFetcher" (monetisationSetStripeEventsFetcher ms) $ \() ->
-           runStripeEventsFetcher (monetisationSetStripeSettings ms))
+      ( \ms ->
+          start "StripeEventsFetcher" (monetisationSetStripeEventsFetcher ms) $ \() ->
+            runStripeEventsFetcher (monetisationSetStripeSettings ms)
+      )
       mms
   stripeEventsRetrierLooperHandle <-
     maybe
@@ -92,41 +94,44 @@ startLoopers pool LoopersSettings {..} mms = do
   pure LoopersHandle {..}
 
 startLooperWithSets ::
-     Pool SqlBackend
-  -> Maybe StripeSettings
-  -> String
-  -> LooperSetsWith a
-  -> (a -> Looper b)
-  -> IO LooperHandle
+  Pool SqlBackend ->
+  Maybe StripeSettings ->
+  String ->
+  LooperSetsWith a ->
+  (a -> Looper b) ->
+  IO LooperHandle
 startLooperWithSets pool mss name lsw func =
   case lsw of
     LooperDisabled -> pure LooperHandleDisabled
     LooperEnabled lsc@LooperStaticConfig {..} sets ->
       let env = LooperEnv {looperEnvPool = pool, looperEnvStripeSettings = mss}
-       in do a <-
-               async $
-               runLooper
-                 (retryLooperWith name looperStaticConfigRetryPolicy $
-                  runLooperContinuously name looperStaticConfigPeriod $ func sets)
-                 env
-             pure $ LooperHandleEnabled a lsc
+       in do
+            a <-
+              async $
+                runLooper
+                  ( retryLooperWith name looperStaticConfigRetryPolicy
+                      $ runLooperContinuously name looperStaticConfigPeriod
+                      $ func sets
+                  )
+                  env
+            pure $ LooperHandleEnabled a lsc
 
 retryLooperWith :: String -> LooperRetryPolicy -> Looper b -> Looper b
 retryLooperWith name LooperRetryPolicy {..} looperFunc =
   let policy = constantDelay looperRetryPolicyDelay <> limitRetries looperRetryPolicyAmount
    in recoverWithAdminNotification name policy $ \RetryStatus {..} -> do
-        unless (rsIterNumber == 0) $
-          logWarnNS (T.pack name <> "Looper") $
-          T.unwords
-            [ "Retry number"
-            , T.pack $ show rsIterNumber
-            , "after a total delay of"
-            , T.pack $ show rsCumulativeDelay
+        unless (rsIterNumber == 0)
+          $ logWarnNS (T.pack name <> "Looper")
+          $ T.unwords
+            [ "Retry number",
+              T.pack $ show rsIterNumber,
+              "after a total delay of",
+              T.pack $ show rsCumulativeDelay
             ]
         looperFunc
 
 recoverWithAdminNotification ::
-     String -> RetryPolicyM Looper -> (RetryStatus -> Looper a) -> Looper a
+  String -> RetryPolicyM Looper -> (RetryStatus -> Looper a) -> Looper a
 recoverWithAdminNotification name set = recovering set handlers
   where
     handlers = skipAsyncExceptions ++ [h]
@@ -136,13 +141,13 @@ recoverWithAdminNotification name set = recovering set handlers
         runDb $
           insert_
             AdminNotificationEmail
-              { adminNotificationEmailEmail = Nothing
-              , adminNotificationEmailContents =
+              { adminNotificationEmailEmail = Nothing,
+                adminNotificationEmailContents =
                   T.pack $
-                  unlines
-                    [ unwords ["The following exception occurred in the", name, "looper:"]
-                    , displayException e
-                    ]
+                    unlines
+                      [ unwords ["The following exception occurred in the", name, "looper:"],
+                        displayException e
+                      ]
               }
         return True
 
@@ -156,8 +161,8 @@ runLooperContinuously name period func = go
       end <- liftIO getCurrentTime
       let diff = diffUTCTime end start
       logInfoNS (T.pack name <> "Looper") $ T.unwords ["Finished, took", T.pack $ show diff]
-      liftIO $
-        threadDelay $
-        period * 1000 * 1000 -
-        fromInteger (diffTimeToPicoseconds (realToFrac diff :: DiffTime) `div` (1000 * 1000))
+      liftIO
+        $ threadDelay
+        $ period * 1000 * 1000
+          - fromInteger (diffTimeToPicoseconds (realToFrac diff :: DiffTime) `div` (1000 * 1000))
       go

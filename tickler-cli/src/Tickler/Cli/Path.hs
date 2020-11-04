@@ -1,10 +1,10 @@
 module Tickler.Cli.Path
-  ( sessionPath
-  , storePath
-  ) where
+  ( sessionPath,
+    storePath,
+  )
+where
 
 import Import
-
 import Tickler.Cli.OptParse
 
 sessionPath :: CliM (Path Abs File)

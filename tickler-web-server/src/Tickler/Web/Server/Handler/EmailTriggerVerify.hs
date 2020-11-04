@@ -1,15 +1,13 @@
 module Tickler.Web.Server.Handler.EmailTriggerVerify
-  ( getEmailTriggerVerifyR
-  ) where
+  ( getEmailTriggerVerifyR,
+  )
+where
 
 import Import
-
-import Yesod
-
 import Tickler.API
 import Tickler.Client
-
 import Tickler.Web.Server.Foundation
+import Yesod
 
 getEmailTriggerVerifyR :: TriggerUUID -> EmailVerificationKey -> Handler Html
 getEmailTriggerVerifyR tuuid evk =

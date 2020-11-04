@@ -1,11 +1,10 @@
 module Tickler.Server.Looper.DB
-  ( runDb
-  ) where
-
-import Import
+  ( runDb,
+  )
+where
 
 import Database.Persist.Sqlite
-
+import Import
 import Tickler.Server.Looper.Types
 
 runDb :: SqlPersistT IO b -> Looper b
