@@ -85,37 +85,6 @@ with final.haskell.lib;
             cp ${icons-woff} static/semantic/themes/default/assets/fonts/icons.woff
             cp ${icons-woff2} static/semantic/themes/default/assets/fonts/icons.woff2
           '';
-                postInstall =
-                  let
-                    linkcheck =
-                      (
-                          import (
-                            builtins.fetchGit {
-                              url = "https://github.com/NorfairKing/linkcheck";
-                              rev = "dc65f22965d92e6145814cdc674d160f3c422559";
-                              ref = "master";
-                            }
-                          )
-                        ).linkcheck;
-                    seocheck =
-                      (
-                          import (
-                            builtins.fetchGit {
-                              url = "https://github.com/NorfairKing/seocheck";
-                              rev = "5a0314f103a2146ed5f3798e5a5821ab44e27c99";
-                              ref = "master";
-                            }
-                          )
-                        ).seocheck;
-                  in
-                    ''
-                        $out/bin/tickler-web-server serve &
-                        sleep 0.5
-                        ${linkcheck}/bin/linkcheck http://localhost:8000
-                        ${seocheck}/bin/seocheck http://localhost:8000
-                        ${final.killall}/bin/killall tickler-web-server
-                      '';
-
               }
           );
     };
