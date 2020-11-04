@@ -8,7 +8,6 @@ import qualified Data.Text.Encoding as TE
 import Import
 import Intray.Data.Gen ()
 import Tickler.API.Protected.Types
-import Tickler.Data
 import Tickler.Data.Gen ()
 
 instance GenValid ItemFilter where
