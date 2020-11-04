@@ -72,6 +72,16 @@ instance Yesod App where
   authRoute _ = Just $ AuthR LoginR
   makeSessionBackend _ =
     Just <$> defaultClientSessionBackend (60 * 24 * 365 * 10) "client_session_key.aes"
+  errorHandler NotFound =
+    fmap toTypedContent
+      $ withNavBar
+      $ do
+        setTitle "Page not found"
+        [whamlet|
+      <h1>
+        Page not found
+      |]
+  errorHandler other = defaultErrorHandler other
 
 instance PathPiece Username where
   fromPathPiece = parseUsername
