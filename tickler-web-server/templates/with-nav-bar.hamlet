@@ -1,5 +1,5 @@
 <!-- Following menu -->
-<div class="ui large top menu">
+<div class="ui large stackable top menu">
   <div class="ui container">
     <a .item href=@{HomeR}>
       Home
