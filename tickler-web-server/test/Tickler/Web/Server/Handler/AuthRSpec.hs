@@ -27,7 +27,8 @@ spec =
         liftIO $ loc `shouldBe` Right AddR
         statusIs 200
       yit "fails to register and shows an error if an account with the same username exists" $ do
-        registerFlow "example" "example"
+        registerFlow "example" "example1"
+        registerFlow "example" "example2"
         statusIs 303
         loc <- getLocation
         liftIO $ loc `shouldBe` Right (AuthR registerR)

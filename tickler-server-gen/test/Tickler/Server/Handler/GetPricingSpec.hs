@@ -15,14 +15,14 @@ import Tickler.Server.TestUtils
 spec :: Spec
 spec = do
   describe "Free"
-    $ withTicklerServerFree
+    $ withFreeTicklerServer
     $ describe "GetPricing"
     $ it "gets an empty pricing"
     $ \cenv -> do
       p <- runClientOrError cenv clientGetPricing
       p `shouldBe` Nothing
   describe "Paid"
-    $ withTicklerServerPaid_
+    $ withPaidTicklerServer_
     $ describe "GetPricing"
     $ it "gets a pricing"
     $ \cenv -> do

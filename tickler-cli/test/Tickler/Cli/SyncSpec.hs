@@ -59,7 +59,7 @@ spec = do
               s2 <- runReaderT readStoreOrEmpty sets
               clientStoreSize (storeTickles s1) `shouldBe` clientStoreSize (storeTickles s2) + 1
   let maxFree = 2
-  withTicklerServerPaid maxFree
+  withPaidTicklerServer maxFree
     $ it "Can add items past the maximum allowed number of free items locally but not remotely"
     $ \cenv ->
       withValidNewUserAndData cenv $ \un pw _ ->

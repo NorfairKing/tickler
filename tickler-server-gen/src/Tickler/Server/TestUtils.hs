@@ -6,15 +6,12 @@
 
 module Tickler.Server.TestUtils
   ( withTicklerServer,
-    withTicklerServerFree,
-    withTicklerServerPaid_,
-    withTicklerServerPaid,
-    setupTicklerTestConn,
-    setupTestHttpManager,
-    setupPaidTicklerTestApp,
-    setupFreeTicklerTestApp,
-    withTicklerApp,
-    cleanupTicklerTestServer,
+    withFreeTicklerServer,
+    withPaidTicklerServer,
+    withPaidTicklerServer_,
+    withFreeTicklerTestApp,
+    withPaidTicklerTestApp,
+    withTicklerTestApp,
     withBothTicklerAndIntrayServer,
     runClient,
     runClientOrError,
@@ -37,17 +34,14 @@ import Data.Time
 import Data.UUID.Typed
 import Database.Persist.Sqlite
 import Import
-import Intray.Server.TestUtils (withFreeIntrayTestApp)
+import Intray.Server.TestUtils (setupTestHttpManager, withFreeIntrayTestApp)
 import Lens.Micro
-import qualified Network.HTTP.Client as HTTP
 import qualified Network.HTTP.Types as HTTP
-import Network.Wai as Wai
 import Network.Wai.Handler.Warp (testWithApplication)
 import Servant
 import Servant.Auth.Client
 import Servant.Auth.Server as Auth
 import Servant.Client
--- import Tickler.API
 import Tickler.API.Gen ()
 import Tickler.Client
 import Tickler.Server
@@ -59,57 +53,38 @@ import Web.Stripe.Plan as Stripe
 
 withTicklerServer :: SpecWith ClientEnv -> Spec
 withTicklerServer specFunc = do
-  describe "Free" $ withTicklerServerFree specFunc
-  describe "Paid" $ withTicklerServerPaid_ specFunc
+  describe "Free" $ withPaidTicklerServer_ specFunc
+  describe "Paid" $ withFreeTicklerServer specFunc
 
-withTicklerServerFree :: SpecWith ClientEnv -> Spec
-withTicklerServerFree specFunc =
-  afterAll_ cleanupTicklerTestServer
-    $ beforeAll ((,) <$> setupTestHttpManager <*> setupFreeTicklerTestApp)
-    $ aroundWith withTicklerApp
-    $ modifyMaxSuccess (`div` 20)
-    $ modifyMaxShrinks (const 0) specFunc
+withPaidTicklerServer_ :: SpecWith ClientEnv -> Spec
+withPaidTicklerServer_ = withPaidTicklerServer 5
 
-withTicklerServerPaid_ :: SpecWith ClientEnv -> Spec
-withTicklerServerPaid_ = withTicklerServerPaid 5
+withPaidTicklerServer :: Int -> SpecWith ClientEnv -> Spec
+withPaidTicklerServer maxFree specFunc =
+  around (withPaidTicklerTestApp maxFree)
+    $ modifyMaxShrinks (const 0)
+    $ modifyMaxSuccess (`div` 20) specFunc
 
-withTicklerServerPaid :: Int -> SpecWith ClientEnv -> Spec
-withTicklerServerPaid maxFree specFunc =
-  afterAll_ cleanupTicklerTestServer
-    $ beforeAll ((,) <$> setupTestHttpManager <*> setupPaidTicklerTestApp maxFree)
-    $ aroundWith withTicklerApp
-    $ modifyMaxSuccess (`div` 20)
-    $ modifyMaxShrinks (const 0) specFunc
+withFreeTicklerServer :: SpecWith ClientEnv -> Spec
+withFreeTicklerServer specFunc =
+  around withFreeTicklerTestApp
+    $ modifyMaxShrinks (const 0)
+    $ modifyMaxSuccess (`div` 20) specFunc
 
 withBothTicklerAndIntrayServer :: SpecWith (ClientEnv, ClientEnv) -> Spec
 withBothTicklerAndIntrayServer specFunc =
-  afterAll_ cleanupTicklerTestServer
-    $ beforeAll ((,) <$> setupTestHttpManager <*> setupFreeTicklerTestApp)
-    $ aroundWith withBoth
+  aroundWith withBoth
+    $ modifyMaxShrinks (const 0)
     $ modifyMaxSuccess (`div` 20) specFunc
   where
-    withBoth :: ActionWith (ClientEnv, ClientEnv) -> ActionWith (HTTP.Manager, Application)
-    withBoth func (man, tapp) =
+    withBoth :: ActionWith (ClientEnv, ClientEnv) -> ActionWith ()
+    withBoth func () =
       withFreeIntrayTestApp $ \icenv ->
-        testWithApplication (pure tapp) $ \tport ->
-          func (ClientEnv man (BaseUrl Http "127.0.0.1" tport "") Nothing, icenv)
+        withFreeTicklerTestApp $ \tcenv ->
+          func (tcenv, icenv)
 
-testdbFile :: String
-testdbFile = "tickler-test.db"
-
-setupTicklerTestConn :: IO ConnectionPool
-setupTicklerTestConn = do
-  let connInfo = mkSqliteConnectionInfo (T.pack testdbFile) & walEnabled .~ False
-  runNoLoggingT $ do
-    p <- createSqlitePoolFromInfo connInfo 4
-    void $ runResourceT $ flip runSqlPool p $ runMigrationSilent migrateAll
-    pure p
-
-setupTestHttpManager :: IO HTTP.Manager
-setupTestHttpManager = HTTP.newManager HTTP.defaultManagerSettings
-
-setupPaidTicklerTestApp :: Int -> IO Wai.Application
-setupPaidTicklerTestApp maxFree = do
+withPaidTicklerTestApp :: Int -> (ClientEnv -> IO a) -> IO a
+withPaidTicklerTestApp maxFree func = do
   now <- getCurrentTime
   let planName = PlanId "dummyPlan"
       dummyPlan =
@@ -136,14 +111,14 @@ setupPaidTicklerTestApp maxFree = do
             stripeSetPublishableKey = "Example, should not be used."
           }
   let monetisationEnvMaxItemsFree = maxFree
-  setupTicklerTestApp $ Just MonetisationEnv {..}
+  withTicklerTestApp (Just MonetisationEnv {..}) func
 
-setupFreeTicklerTestApp :: IO Wai.Application
-setupFreeTicklerTestApp = setupTicklerTestApp Nothing
+withFreeTicklerTestApp :: (ClientEnv -> IO a) -> IO a
+withFreeTicklerTestApp = withTicklerTestApp Nothing
 
-setupTicklerTestApp :: Maybe MonetisationEnv -> IO Wai.Application
-setupTicklerTestApp menv = do
-  pool <- setupTicklerTestConn
+withTicklerTestApp :: Maybe MonetisationEnv -> (ClientEnv -> IO a) -> IO a
+withTicklerTestApp menv func = withTicklerTestConn $ \pool -> do
+  man <- setupTestHttpManager
   jwtCfg <- defaultJWTSettings <$> Auth.generateKey
   let cookieCfg = defaultCookieSettings
   let ticklerEnv =
@@ -168,17 +143,22 @@ setupTicklerTestApp menv = do
                   stripeEventsRetrierLooperHandle = LooperHandleDisabled
                 }
           }
-  pure $ serveWithContext ticklerAPI (ticklerAppContext ticklerEnv) (makeTicklerServer ticklerEnv)
-
-withTicklerApp :: (ClientEnv -> IO ()) -> (HTTP.Manager, Wai.Application) -> IO ()
-withTicklerApp func (man, app) =
+  let app = serveWithContext ticklerAPI (ticklerAppContext ticklerEnv) (makeTicklerServer ticklerEnv)
   testWithApplication (pure app) $ \port ->
     func $ ClientEnv man (BaseUrl Http "127.0.0.1" port "") Nothing
 
-cleanupTicklerTestServer :: IO ()
-cleanupTicklerTestServer = do
-  f <- resolveFile' testdbFile
-  ignoringAbsence $ removeFile f
+testdbFile :: String
+testdbFile = "tickler-test.db"
+
+withTicklerTestConn :: (ConnectionPool -> IO a) -> IO a
+withTicklerTestConn func =
+  withSystemTempDir "intray-server" $ \tdir -> do
+    dbPath <- resolveFile tdir testdbFile
+    let connInfo = mkSqliteConnectionInfo (T.pack (fromAbsFile dbPath)) & walEnabled .~ False
+    runNoLoggingT $ do
+      p <- createSqlitePoolFromInfo connInfo 1
+      void $ runResourceT $ flip runSqlPool p $ runMigrationQuiet migrateAll
+      liftIO $ func p
 
 runClient :: ClientEnv -> ClientM a -> IO (Either ClientError a)
 runClient = flip runClientM

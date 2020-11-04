@@ -32,7 +32,7 @@ spec =
             let secondStore = mergeSyncResponse firstStore sr2
             secondStore `shouldBe` firstStore
     let maxFree = 2
-    withTicklerServerPaid maxFree
+    withPaidTicklerServer 2
       $ it "syncs at most two items if noly two items are free"
       $ \cenv ->
         forAllValid $ \(i1, i2, i3) ->
