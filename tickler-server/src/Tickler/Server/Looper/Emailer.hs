@@ -7,7 +7,6 @@ module Tickler.Server.Looper.Emailer
 
 import Control.Lens
 import Control.Monad.Trans.AWS
-import Control.Monad.Trans.Resource (runResourceT)
 import qualified Data.Text as T
 import Data.Time
 import Database.Persist.Sqlite

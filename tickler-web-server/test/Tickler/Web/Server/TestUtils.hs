@@ -15,10 +15,9 @@ module Tickler.Web.Server.TestUtils
   ) where
 
 import Control.Lens
-import Data.Text (Text)
 import Database.Persist.Sqlite (mkSqliteConnectionInfo, walEnabled)
 import Network.HTTP.Types
-import Servant.Client (BaseUrl(..), ClientEnv(..))
+import Servant.Client (ClientEnv(..))
 import TestImport
 import Tickler.Data
 import Tickler.Data.Gen ()

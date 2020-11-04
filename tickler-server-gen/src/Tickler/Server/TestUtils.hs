@@ -36,7 +36,7 @@ import Data.Time
 import Data.UUID.Typed
 import Database.Persist.Sqlite
 import Import
-import Intray.Server.TestUtils (cleanupIntrayTestServer, setupIntrayTestApp)
+import Intray.Server.TestUtils (withFreeIntrayTestApp)
 import Lens.Micro
 import qualified Network.HTTP.Client as HTTP
 import qualified Network.HTTP.Types as HTTP
@@ -80,18 +80,14 @@ withTicklerServerPaid maxFree specFunc =
 withBothTicklerAndIntrayServer :: SpecWith (ClientEnv, ClientEnv) -> Spec
 withBothTicklerAndIntrayServer specFunc =
   afterAll_ cleanupTicklerTestServer $
-  afterAll_ cleanupIntrayTestServer $
-  beforeAll ((,) <$> setupFreeTicklerTestApp <*> setupIntrayTestApp Nothing) $
+  beforeAll ((,) <$> setupTestHttpManager <*> setupFreeTicklerTestApp) $
   aroundWith withBoth $ modifyMaxSuccess (`div` 20) specFunc
   where
-    withBoth ::
-         ActionWith (ClientEnv, ClientEnv) -> ActionWith (Application, (HTTP.Manager, Application))
-    withBoth func (tapp, (man, iapp)) =
-      testWithApplication (pure tapp) $ \tport ->
-        testWithApplication (pure iapp) $ \iport ->
-          func
-            ( ClientEnv man (BaseUrl Http "127.0.0.1" tport "") Nothing
-            , ClientEnv man (BaseUrl Http "127.0.0.1" iport "") Nothing)
+    withBoth :: ActionWith (ClientEnv, ClientEnv) -> ActionWith (HTTP.Manager, Application)
+    withBoth func (man, tapp) =
+      withFreeIntrayTestApp $ \icenv ->
+        testWithApplication (pure tapp) $ \tport ->
+          func (ClientEnv man (BaseUrl Http "127.0.0.1" tport "") Nothing, icenv)
 
 testdbFile :: String
 testdbFile = "tickler-test.db"

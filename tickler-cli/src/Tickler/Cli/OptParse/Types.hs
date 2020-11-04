@@ -5,17 +5,13 @@
 
 module Tickler.Cli.OptParse.Types where
 
-import Import
-
-import Data.Text (Text)
 import Data.Time
 import Data.Word
 import Data.Yaml as Yaml
-import YamlParse.Applicative
-
+import Import
 import Servant.Client
-
 import Tickler.Data
+import YamlParse.Applicative
 
 data Arguments =
   Arguments Command Flags

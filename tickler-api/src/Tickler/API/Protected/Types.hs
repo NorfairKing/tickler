@@ -16,7 +16,6 @@ module Tickler.API.Protected.Types
   ) where
 
 import Data.Aeson as JSON
-import qualified Data.Aeson as JSON (Result(Error))
 import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Char8 as SB8
 import qualified Data.Mergeful as Mergeful

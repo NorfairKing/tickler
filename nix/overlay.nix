@@ -99,23 +99,56 @@ with final.haskell.lib;
             final.fetchFromGitHub {
               owner = "NorfairKing";
               repo = "looper";
-              rev = "464f47c757b956019d5723590a09f85662513b24";
+              rev = "8d6e69e99c5eb8f5f01b6bc36a2112962cb8d343";
               sha256 =
-                "sha256:1lfg5lgw0xqyxbi4425fjp4j4vafyh8pnqp4jxwcvqpygszx8rw6";
+                "sha256:1sx5gc41vrmvcgrbh7g83zhrpqwz339g4fq0m1c15hhlz4480lh8";
             };
           looperPkg = self.callCabal2nix "looper" ( looperRepo ) {};
+          servantAuthRepo =
+            final.fetchFromGitHub {
+              owner = "haskell-servant";
+              repo = "servant-auth";
+              rev = "23971e889f8cbe8790305bda8915f00aa8be5ad9";
+              sha256 =
+                "sha256:0q1n0s126ywqw3g9xiiaw59s9jn2543v7p4zgxw99p68pihdlysv";
+            };
+          persistentRepo =
+            final.fetchFromGitHub {
+              owner = "yesodweb";
+              repo = "persistent";
+              rev = "333be4996eb6eea2dc37d3a14858b668f0b9e381";
+              sha256 =
+                "sha256:1j76s7666vadm4q1ma73crkrks6q6nskzb3jqaf6rp2qmw1phfpr";
+            };
+
           stripeHaskellRepo =
             final.fetchFromGitHub {
               owner = "NorfairKing";
               repo = "stripe";
-              rev = "7ced8cef1e932d3fb222dfb3c79c25595cdc82ab";
+              rev = "008e992cae9c9bdb025bcf575c1bdf1037632a8a";
               sha256 =
-                "sha256:04dsfx568hmmrr7zg5gbqwipdiy7lvpckfk2ayln6gh6zf9jxl13";
+                "sha256:1sxp8phdw1ahndy6h9q4ad0hdfraxyy5qnjd7w80v6m83py419gk";
             };
           stripeHaskellPkg =
             name:
               dontCheck (
                 self.callCabal2nix name ( stripeHaskellRepo + "/${name}" ) {}
+              );
+          servantAuthPkg =
+            name:
+              doJailbreak (
+                self.callCabal2nix name ( servantAuthRepo + "/${name}" ) {}
+              );
+          persistentPkg =
+            name:
+              overrideCabal (
+                # Because there is some nastiness that makes nix think we need the haskell sqlite library.
+                self.callCabal2nix name ( persistentRepo + "/${name}" ) {}
+              ) (
+                old:
+                  {
+                    librarySystemDepends = [ final.sqlite ];
+                  }
               );
         in
           with final.haskellPackages;
@@ -131,6 +164,16 @@ with final.haskell.lib;
               "stripe-haskell"
               "stripe-http-client"
               "stripe-http-streams"
-            ] stripeHaskellPkg // final.ticklerPackages
+            ] stripeHaskellPkg // final.lib.genAttrs [
+                    "servant-auth"
+                    "servant-auth-client"
+                    "servant-auth-docs"
+                    "servant-auth-swagger"
+                    "servant-auth-server"
+                  ] servantAuthPkg // final.lib.genAttrs [
+                    "persistent"
+                    "persistent-sqlite"
+                    "persistent-template"
+                  ] persistentPkg // final.ticklerPackages
     );
 }

@@ -28,7 +28,7 @@ servePostSync AuthCookie {..} req = do
       TicklerItemServerTime
       [TicklerItemUserId ==. authCookieUserUUID]
       makeTicklerAdded
-      (\uuid AddedItem {..} ->
+      (\_ uuid AddedItem {..} ->
          makeTicklerItem
            authCookieUserUUID
            uuid

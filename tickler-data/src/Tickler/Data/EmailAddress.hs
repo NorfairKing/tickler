@@ -17,7 +17,6 @@ module Tickler.Data.EmailAddress
   ) where
 
 import Data.Aeson as JSON
-import Data.ByteString (ByteString)
 import qualified Data.Char as Char
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE

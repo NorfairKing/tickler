@@ -1,4 +1,4 @@
-resolver: lts-14.23
+resolver: lts-15.15
 packages:
 - tickler-api
 - tickler-api-gen
@@ -14,15 +14,22 @@ extra-deps:
 - amazonka-1.6.1
 - amazonka-core-1.6.1
 - amazonka-ses-1.6.1
-- servant-auth-client-0.4.0.0@sha256:68879b7f44d87f73ef68c7bb21006167f5623c4cd6a2a3fce4d5ea3959a8c730,3426
 - servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
 - envparse-0.4.1@sha256:989902e6368532548f61de1fa245ad2b39176cddd8743b20071af519a709ce30,2842
+
+- github: haskell-servant/servant-auth
+  commit: 23971e889f8cbe8790305bda8915f00aa8be5ad9
+  subdirs:
+    - servant-auth-client
+    - servant-auth-docs
+    - servant-auth-swagger
+    - servant-auth-server
 
 - github: NorfairKing/yesod-static-remote
   commit: 22c0a92c1d62f1b8d432003844ef0636a9131b08
 
 - github: NorfairKing/stripe
-  commit: 7ced8cef1e932d3fb222dfb3c79c25595cdc82ab
+  commit: 008e992cae9c9bdb025bcf575c1bdf1037632a8a
   subdirs:
     - stripe-core
     - stripe-haskell
@@ -30,7 +37,7 @@ extra-deps:
     - stripe-http-streams
 
 - github: NorfairKing/intray
-  commit: 669053bd256d443d5742066e9f909935cca27773
+  commit: b77169829f1f24a3943d169f9dba21c20ee82da2
   subdirs:
     - intray-data
     - intray-data-gen
@@ -39,16 +46,16 @@ extra-deps:
     - intray-client
     - intray-server
     - intray-server-gen
-
+      
 - github: NorfairKing/mergeless
-  commit: 079c9ba60aa87d0a1f2eb344c9fba94c97050e61
+  commit: 39191fea2885ccd6dc4aa5deeb578be179e9659f
   subdirs:
     - mergeless
     - mergeless-persistent
     - genvalidity-mergeless
 
 - github: NorfairKing/mergeful
-  commit: 7f6488b400c736511da1570d40edc6a9eeb1168d
+  commit: 539ea04691309fb3f74461344ebdf389dc535a55
   subdirs:
     - mergeful
     - genvalidity-mergeful
@@ -101,7 +108,7 @@ extra-deps:
 - github: NorfairKing/pretty-relative-time
   commit: 4eb01d55ef8f0f37fa63093be3ec67e99df4962f
 - github: NorfairKing/looper
-  commit: 464f47c757b956019d5723590a09f85662513b24
+  commit: 8d6e69e99c5eb8f5f01b6bc36a2112962cb8d343
 - github: NorfairKing/yamlparse-applicative
   commit: 3775e2a9152214fdfcbc04032ee3eb28349b5abd
   subdirs:
@@ -109,7 +116,7 @@ extra-deps:
 
 
 nix:
-  path: [ "nixpkgs=https://github.com/NixOS/nixpkgs/archive/323fe92057bb38475a446ff5e18d3b388c2e4403.tar.gz" ]
+  path: [ "nixpkgs=https://github.com/NixOS/nixpkgs/archive/e3a2247046d4de66b9b193a6ab3ff040fa3da86d.tar.gz" ]
   add-gc-roots: true
   pure: true
   packages:
