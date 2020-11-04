@@ -114,6 +114,8 @@ ticklerAuthPlugin = AuthPlugin ticklerAuthPluginName dispatch loginWidget
     loginWidget _ = do
       token <- genToken
       msgs <- getMessages
+      setTitle "Tickler Login"
+      setDescription "This is where you sign into your tickler account."
       $(widgetFile "auth/login")
 
 data LoginData =
@@ -151,7 +153,11 @@ getNewAccountR :: TicklerAuthHandler Html
 getNewAccountR = do
   token <- genToken
   msgs <- getMessages
-  liftHandler $ defaultLayout $(widgetFile "auth/register")
+  liftHandler $
+    defaultLayout $ do
+      setTitle "Tickler Login"
+      setDescription "This is where you sign into your tickler account."
+      $(widgetFile "auth/register")
 
 data NewAccount =
   NewAccount

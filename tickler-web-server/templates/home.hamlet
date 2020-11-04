@@ -190,6 +190,7 @@ $maybe p <- mPricing
             Tickler was built specifically to act as the first part in a GTD process.
             Use it as the "tickler file" in the following flowchart.
         <img .ui .large .centered .image
+          alt="Getting Things Done Flowchart"
           src=@{StaticR static_gtd_flowchart_jpg}>
 
 
