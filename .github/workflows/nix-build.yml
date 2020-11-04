@@ -2,24 +2,19 @@ name: "Nix Build"
 on:
   pull_request:
   push:
+    branches:
+      - development
+      - master
 jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - uses: cachix/install-nix-action@v6
-    - name: free disk space
-      run: |
-        sudo rm -rf /opt
-    - uses: cachix/cachix-action@releases/v3
-      with:
-        name: validity
-        skipNixBuild: true
-    - uses: cachix/cachix-action@releases/v3
-      with:
-        name: mergeful
-        skipNixBuild: true
-    - uses: cachix/cachix-action@releases/v3
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v11
+    - uses: cachix/cachix-action@ffed6b919f842f223dbee6fde9d3d1cdf23a118e
       with:
         name: tickler
+        extraPullNames: validity,mergeless,mergeful,yamlparse,intray
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+    - run: nix-build ci.nix
+
