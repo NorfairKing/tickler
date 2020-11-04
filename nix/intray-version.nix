@@ -1,6 +1,6 @@
 {
   owner = "NorfairKing";
   repo = "intray";
-  rev = "b77169829f1f24a3943d169f9dba21c20ee82da2";
-  sha256 = "sha256:0p4adrdfrj2yl91y9dwwdyjlvr72vzfpl7xf563m9yjf3i3x4wdq";
+  rev = "3b0e2e30960324c6f0b5f3e895fe29b31e168d2c";
+  sha256 = "sha256:1qxdcpcv0vy3012dsm8cxv45p9p3pp1xbwx1gyram2ycdwcsck58";
 }
