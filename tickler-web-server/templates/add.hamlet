@@ -1,8 +1,7 @@
-<div .ui .segment>
-  <h1> Add Item
+<h1> Add Item
 
-  $if canAdd
-    ^{w}
-  $else
-    <p>
-      You have reached the limit of the free plan, subscribe to be able to add more items. Click 'Account' to get started.
+$if canAdd
+  ^{w}
+$else
+  <p>
+    You have reached the limit of the free plan, subscribe to be able to add more items. Click 'Account' to get started.
