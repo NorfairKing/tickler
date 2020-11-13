@@ -37,17 +37,13 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..}
   let mc :: (Configuration -> Maybe a) -> Maybe a
       mc func = mConf >>= func
   let serveSetPort = fromMaybe 8001 $ serveFlagPort <|> envPort <|> mc confPort
-  webHost <-
-    case serveFlagWebHost <|> envWebHost <|> mc confWebHost of
-      Nothing -> die "No web host configured."
-      Just wh -> pure $ T.pack wh
-  let serveSetConnectionInfo =
-        mkSqliteConnectionInfo $ fromMaybe "tickler.db" $ serveFlagDb <|> envDb <|> mc confDb
+  let mWebHost = serveFlagWebHost <|> envWebHost <|> mc confWebHost
+  let serveSetConnectionInfo = mkSqliteConnectionInfo $ fromMaybe "tickler.db" $ serveFlagDb <|> envDb <|> mc confDb
   let serveSetAdmins = serveFlagAdmins ++ fromMaybe [] (mc confAdmins)
   let serveSetFreeloaders = serveFlagFreeloaders ++ fromMaybe [] (mc confFreeloaders)
   serveSetLoopersSettings <-
     combineToLoopersSettings
-      webHost
+      mWebHost
       serveFlagsLooperFlags
       envLoopersEnvironment
       (mc confLoopersConfiguration)
@@ -133,8 +129,8 @@ defaultLooperSettings LoopersFlags {..} LoopersEnvironment {..} mConf =
    in (defEnabled, defStaticConfig)
 
 combineToLoopersSettings ::
-  Text -> LoopersFlags -> LoopersEnvironment -> Maybe LoopersConfiguration -> IO LoopersSettings
-combineToLoopersSettings webHost lf@LoopersFlags {..} le@LoopersEnvironment {..} mConf = do
+  Maybe Text -> LoopersFlags -> LoopersEnvironment -> Maybe LoopersConfiguration -> IO LoopersSettings
+combineToLoopersSettings mWebHost lf@LoopersFlags {..} le@LoopersEnvironment {..} mConf = do
   let mc :: (LoopersConfiguration -> Maybe a) -> Maybe a
       mc func = mConf >>= func
       (defEnabled, defStaticConfig) = defaultLooperSettings lf le mConf
@@ -147,7 +143,7 @@ combineToLoopersSettings webHost lf@LoopersFlags {..} le@LoopersEnvironment {..}
       looperFlagEmailerFlags
       looperEnvEmailerEnv
       (mc looperConfEmailerConf)
-      (\_ _ _ -> pure $ EmailerSettings AWS.Discover)
+      (\_ _ _ -> pure $ Just $ EmailerSettings AWS.Discover)
   looperSetTriggeredIntrayItemSchedulerSets <-
     comb'
       looperFlagTriggeredIntrayItemSchedulerFlags
@@ -164,16 +160,16 @@ combineToLoopersSettings webHost lf@LoopersFlags {..} le@LoopersEnvironment {..}
       looperEnvVerificationEmailConverterEnv
       (mc looperConfVerificationEmailConverterConf)
       $ \f e c -> do
-        ea <-
-          case f <|> e <|> (c >>= verificationEmailConverterConfFromAddress) of
-            Nothing -> die "No email configured for the email verification"
-            Just ea -> pure ea
-        pure
-          VerificationEmailConverterSettings
-            { verificationEmailConverterSetFromAddress = ea,
-              verificationEmailConverterSetFromName = "Tickler Verification",
-              verificationEmailConverterSetWebHost = webHost
-            }
+        let mea = f <|> e <|> (c >>= verificationEmailConverterConfFromAddress)
+        pure $ do
+          ea <- mea
+          webHost <- mWebHost
+          pure
+            VerificationEmailConverterSettings
+              { verificationEmailConverterSetFromAddress = ea,
+                verificationEmailConverterSetFromName = "Tickler Verification",
+                verificationEmailConverterSetWebHost = webHost
+              }
   looperSetTriggeredEmailSchedulerSets <-
     comb'
       looperFlagTriggeredEmailSchedulerFlags
@@ -185,16 +181,16 @@ combineToLoopersSettings webHost lf@LoopersFlags {..} le@LoopersEnvironment {..}
       looperEnvTriggeredEmailConverterEnv
       (mc looperConfTriggeredEmailConverterConf)
       $ \f e c -> do
-        ea <-
-          case f <|> e <|> (c >>= triggeredEmailConverterConfFromAddress) of
-            Nothing -> die "No email configured for the email triggerer"
-            Just ea -> pure ea
-        pure
-          TriggeredEmailConverterSettings
-            { triggeredEmailConverterSetFromAddress = ea,
-              triggeredEmailConverterSetFromName = "Tickler Triggerer",
-              triggeredEmailConverterSetWebHost = webHost
-            }
+        let mea = f <|> e <|> (c >>= triggeredEmailConverterConfFromAddress)
+        pure $ do
+          ea <- mea
+          webHost <- mWebHost
+          pure
+            TriggeredEmailConverterSettings
+              { triggeredEmailConverterSetFromAddress = ea,
+                triggeredEmailConverterSetFromName = "Tickler Triggerer",
+                triggeredEmailConverterSetWebHost = webHost
+              }
   looperSetAdminNotificationEmailConverterSets <-
     comb
       looperFlagAdminNotificationEmailConverterFlags
@@ -203,26 +199,20 @@ combineToLoopersSettings webHost lf@LoopersFlags {..} le@LoopersEnvironment {..}
       $ \AdminNotificationEmailConverterFlags {..} AdminNotificationEmailConverterEnvironment {..} mANECConf -> do
         let malc :: (AdminNotificationEmailConverterConf -> Maybe a) -> Maybe a
             malc f = mANECConf >>= f
-        fromAddress <-
-          case adminNotificationEmailConverterFlagFromAddress
-            <|> adminNotificationEmailConverterEnvFromAddress
-            <|> malc adminNotificationEmailConverterConfFromAddress of
-            Nothing -> die "No 'from' email configured for the admin notification emails"
-            Just ea -> pure ea
-        toAddress <-
-          case adminNotificationEmailConverterFlagToAddress
-            <|> adminNotificationEmailConverterEnvFromAddress
-            <|> malc adminNotificationEmailConverterConfFromAddress of
-            Nothing -> die "No 'to' email configured for the admin notification emails"
-            Just ea -> pure ea
-        pure
-          AdminNotificationEmailConverterSettings
-            { adminNotificationEmailConverterSetFromAddress = fromAddress,
-              adminNotificationEmailConverterSetFromName = "Tickler Admin Notification",
-              adminNotificationEmailConverterSetToAddress = toAddress,
-              adminNotificationEmailConverterSetToName = "Tickler Admin",
-              adminNotificationEmailConverterSetWebHost = webHost
-            }
+        let mFromAddress = adminNotificationEmailConverterFlagFromAddress <|> adminNotificationEmailConverterEnvFromAddress <|> malc adminNotificationEmailConverterConfFromAddress
+        let mToAddress = adminNotificationEmailConverterFlagToAddress <|> adminNotificationEmailConverterEnvFromAddress <|> malc adminNotificationEmailConverterConfFromAddress
+        pure $ do
+          fromAddress <- mFromAddress
+          toAddress <- mToAddress
+          webHost <- mWebHost
+          pure
+            AdminNotificationEmailConverterSettings
+              { adminNotificationEmailConverterSetFromAddress = fromAddress,
+                adminNotificationEmailConverterSetFromName = "Tickler Admin Notification",
+                adminNotificationEmailConverterSetToAddress = toAddress,
+                adminNotificationEmailConverterSetToName = "Tickler Admin",
+                adminNotificationEmailConverterSetWebHost = webHost
+              }
   pure LoopersSettings {..}
 
 combineToLooperSettings' ::
@@ -233,7 +223,7 @@ combineToLooperSettings' ::
   Maybe (LooperConfWith ()) ->
   IO (LooperSetsWith ())
 combineToLooperSettings' defEnabled defStatic flags env conf =
-  combineToLooperSettings defEnabled defStatic flags env conf $ \() () _ -> pure ()
+  combineToLooperSettings defEnabled defStatic flags env conf $ \() () _ -> pure (Just ())
 
 combineToLooperSettings ::
   forall a b c d.
@@ -242,37 +232,41 @@ combineToLooperSettings ::
   LooperFlagsWith a ->
   LooperEnvWith b ->
   Maybe (LooperConfWith c) ->
-  (a -> b -> Maybe c -> IO d) ->
+  (a -> b -> Maybe c -> IO (Maybe d)) ->
   IO (LooperSetsWith d)
 combineToLooperSettings defEnabled defStatic LooperFlagsWith {..} LooperEnvWith {..} mLooperConf func = do
   let mlc :: (LooperConfWith c -> Maybe e) -> Maybe e
       mlc f = mLooperConf >>= f
   let enabled = fromMaybe defEnabled $ looperFlagEnable <|> looperEnvEnable <|> mlc looperConfEnable
-  if enabled
-    then do
-      let LooperFlagsRetryPolicy {..} = looperFlagsRetryPolicy
-      let LooperEnvRetryPolicy {..} = looperEnvRetryPolicy
-          mlrpc :: (LooperConfRetryPolicy -> Maybe e) -> Maybe e
-          mlrpc f = mlc looperConfRetryPolicy >>= f
-      let static =
-            LooperStaticConfig
-              { looperStaticConfigPeriod =
-                  fromMaybe (looperStaticConfigPeriod defStatic) $
-                    looperFlagsPeriod <|> looperEnvPeriod <|> mlc looperConfPeriod,
-                looperStaticConfigRetryPolicy =
-                  LooperRetryPolicy
-                    { looperRetryPolicyDelay =
-                        fromMaybe (looperRetryPolicyDelay $ looperStaticConfigRetryPolicy defStatic) $
-                          looperFlagsRetryDelay <|> looperEnvRetryDelay <|> mlrpc looperConfRetryDelay,
-                      looperRetryPolicyAmount =
-                        fromMaybe
-                          (looperRetryPolicyAmount $ looperStaticConfigRetryPolicy defStatic)
-                          $ looperFlagsRetryAmount <|> looperEnvRetryAmount
-                            <|> mlrpc looperConfRetryAmount
-                    }
-              }
-      LooperEnabled static <$> func looperFlags looperEnv (mlc looperConf)
-    else pure LooperDisabled
+  mSets <- func looperFlags looperEnv (mlc looperConf)
+  case mSets of
+    Nothing -> pure LooperDisabled
+    Just sets ->
+      if enabled
+        then do
+          let LooperFlagsRetryPolicy {..} = looperFlagsRetryPolicy
+          let LooperEnvRetryPolicy {..} = looperEnvRetryPolicy
+              mlrpc :: (LooperConfRetryPolicy -> Maybe e) -> Maybe e
+              mlrpc f = mlc looperConfRetryPolicy >>= f
+          let static =
+                LooperStaticConfig
+                  { looperStaticConfigPeriod =
+                      fromMaybe (looperStaticConfigPeriod defStatic) $
+                        looperFlagsPeriod <|> looperEnvPeriod <|> mlc looperConfPeriod,
+                    looperStaticConfigRetryPolicy =
+                      LooperRetryPolicy
+                        { looperRetryPolicyDelay =
+                            fromMaybe (looperRetryPolicyDelay $ looperStaticConfigRetryPolicy defStatic) $
+                              looperFlagsRetryDelay <|> looperEnvRetryDelay <|> mlrpc looperConfRetryDelay,
+                          looperRetryPolicyAmount =
+                            fromMaybe
+                              (looperRetryPolicyAmount $ looperStaticConfigRetryPolicy defStatic)
+                              $ looperFlagsRetryAmount <|> looperEnvRetryAmount
+                                <|> mlrpc looperConfRetryAmount
+                        }
+                  }
+          pure $ LooperEnabled static sets
+        else pure LooperDisabled
 
 getConfiguration :: Flags -> Environment -> IO (Maybe Configuration)
 getConfiguration Flags {..} Environment {..} = do
@@ -292,7 +286,7 @@ getEnvironment = do
   env <- System.getEnvironment
   let envConfigFile = getEnv env "CONFIG_FILE"
   let envDb = T.pack <$> getEnv env "DATABASE"
-  let envWebHost = getEnv env "WEB_HOST"
+  let envWebHost = T.pack <$> getEnv env "WEB_HOST"
   envPort <- readEnv env "PORT"
   envMonetisationEnvironment <- getMonetisationEnv env
   envLoopersEnvironment <- getLoopersEnv env

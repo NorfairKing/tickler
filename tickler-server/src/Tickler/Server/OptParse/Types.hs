@@ -24,7 +24,7 @@ newtype Command
 data ServeFlags
   = ServeFlags
       { serveFlagPort :: Maybe Int,
-        serveFlagWebHost :: Maybe String,
+        serveFlagWebHost :: Maybe Text,
         serveFlagDb :: Maybe Text,
         serveFlagAdmins :: [Username],
         serveFlagFreeloaders :: [Username],
@@ -93,7 +93,7 @@ data Flags
 data Configuration
   = Configuration
       { confDb :: !(Maybe Text),
-        confWebHost :: !(Maybe String),
+        confWebHost :: !(Maybe Text),
         confPort :: !(Maybe Int),
         confAdmins :: !(Maybe [Username]),
         confFreeloaders :: !(Maybe [Username]),
@@ -286,9 +286,9 @@ instance YamlSchema AdminNotificationEmailConverterConf where
 
 data Environment
   = Environment
-      { envConfigFile :: Maybe String,
+      { envConfigFile :: Maybe FilePath,
         envDb :: Maybe Text,
-        envWebHost :: Maybe String,
+        envWebHost :: Maybe Text,
         envPort :: Maybe Int,
         envMonetisationEnvironment :: MonetisationEnvironment,
         envLoopersEnvironment :: LoopersEnvironment

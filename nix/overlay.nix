@@ -89,6 +89,13 @@ with final.haskell.lib;
                 }
             );
       };
+
+  ticklerRelease =
+    final.symlinkJoin {
+      name = "tickler-release";
+      paths = final.lib.attrValues final.ticklerPackages;
+    };
+
   haskellPackages =
     previous.haskellPackages.extend (
       self: super:

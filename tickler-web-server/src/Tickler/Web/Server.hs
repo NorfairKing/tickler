@@ -26,7 +26,7 @@ ticklerWebServer :: IO ()
 ticklerWebServer = do
   (DispatchServe ss, Settings) <- getInstructions
   putStrLn $ unlines ["Running tickler-web-server with these settings:", ppShow ss]
-  bootCheck
+  bootCheck (serveSetDefaultIntrayUrl ss)
   concurrently_ (runTicklerWebServer ss) (runTicklerAPIServer ss)
 
 runTicklerWebServer :: ServeSettings -> IO ()

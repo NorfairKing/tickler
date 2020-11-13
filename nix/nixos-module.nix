@@ -17,16 +17,18 @@ in
           example = "production";
           description = "The name of the environment";
         };
-      web-host =
+      web-hosts =
         mkOption {
-          type = types.string;
-          example = "tickler.cs-syd.eu";
+          type = types.listOf types.string;
+          default = [];
+          example = [ "tickler.cs-syd.eu" ];
           description = "The host to serve web requests on";
         };
-      api-host =
+      api-hosts =
         mkOption {
-          type = types.string;
-          example = "api.tickler.cs-syd.eu";
+          type = types.listOf types.string;
+          default = [];
+          example = [ "api.tickler.cs-syd.eu" ];
           description = "The host to serve API requests on";
         };
       web-port =
@@ -45,8 +47,8 @@ in
         };
       default-intray-url =
         mkOption {
-          type = types.string;
-          default = "https://api.intray.cs-syd.eu";
+          type = types.nullOr types.string;
+          default = null;
           example = "https://api.intray.cs-syd.eu";
           description = "The default intray url to use for triggers";
         };
@@ -244,11 +246,15 @@ in
           configFile =
             let
               config =
-                {
+                optionalAttrs (cfg.api-hosts != []) {
+                  api-host = head cfg.api-hosts;
+                } // optionalAttrs (cfg.web-hosts != []) {
+                  web-host = head cfg.web-hosts;
+                } // optionalAttrs (!(builtins.isNull cfg.default-intray-url)) {
+                  default-intray-url = cfg.default-intray-url;
+                } // {
                   api-port = cfg.api-port;
                   web-port = cfg.web-port;
-                  web-host = cfg.web-host;
-                  default-intray-url = cfg.default-intray-url;
                   tracking = cfg.tracking-id;
                   verification = cfg.verification-tag;
                   admins = cfg.admins;
@@ -342,6 +348,26 @@ in
                 # ensure Restart=always is always honoured
               };
           };
+      api-host = optionalAttrs (cfg.api-hosts != []) {
+        "${head (cfg.api-hosts)}" =
+          {
+            enableACME = true;
+            forceSSL = true;
+            locations."/".proxyPass =
+              "http://localhost:${builtins.toString (cfg.api-port)}";
+            serverAliases = tail cfg.api-hosts;
+          };
+      };
+      web-host = optionalAttrs (cfg.web-hosts != []) {
+        "${head (cfg.web-hosts)}" =
+          {
+            enableACME = true;
+            forceSSL = true;
+            locations."/".proxyPass =
+              "http://localhost:${builtins.toString (cfg.web-port)}";
+            serverAliases = tail cfg.web-hosts;
+          };
+      };
     in
       mkIf cfg.enable {
         systemd.services =
@@ -349,22 +375,6 @@ in
             "tickler-${envname}" = tickler-service;
           };
         networking.firewall.allowedTCPPorts = [ cfg.web-port cfg.api-port ];
-        services.nginx.virtualHosts =
-          {
-            "${cfg.web-host}" =
-              {
-                enableACME = true;
-                forceSSL = true;
-                locations."/".proxyPass =
-                  "http://localhost:${builtins.toString (cfg.web-port)}";
-              };
-            "${cfg.api-host}" =
-              {
-                enableACME = true;
-                forceSSL = true;
-                locations."/".proxyPass =
-                  "http://localhost:${builtins.toString (cfg.api-port)}";
-              };
-          };
+        services.nginx.virtualHosts = api-host // web-host;
       };
 }

@@ -3,6 +3,8 @@ let
   pre-commit-hooks = import ./nix/pre-commit.nix;
 
 in
-pkgs.ticklerPackages // {
+{
+  release = pkgs.ticklerRelease;
+  nixos-module-test = import ./nix/nixos-module-test.nix { inherit pkgs; };
   pre-commit-check = pre-commit-hooks.run;
 }
