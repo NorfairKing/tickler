@@ -42,10 +42,6 @@
     Every interaction with Tickler is available via
     <a href=@{APIDocsR}>the tickler API.
     The API allows to integrate tickler seamlessly with complex systems to optimise your workflow.
-    From a "Getting things done"-style tickler system
-    which drops items into your tickler whenever you want
-    to automated item generation upon receiving emails
-    from certain people, everything is possible.
 
 
   <h2 .ui .header> CLI-Second
