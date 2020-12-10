@@ -12,21 +12,21 @@ in
       enable = mkEnableOption "Tickler Service";
       envname =
         mkOption {
-          type = types.string;
+          type = types.str;
           default = "production";
           example = "production";
           description = "The name of the environment";
         };
       web-hosts =
         mkOption {
-          type = types.listOf types.string;
+          type = types.listOf types.str;
           default = [];
           example = [ "tickler.cs-syd.eu" ];
           description = "The host to serve web requests on";
         };
       api-hosts =
         mkOption {
-          type = types.listOf types.string;
+          type = types.listOf types.str;
           default = [];
           example = [ "api.tickler.cs-syd.eu" ];
           description = "The host to serve API requests on";
@@ -47,21 +47,21 @@ in
         };
       default-intray-url =
         mkOption {
-          type = types.nullOr types.string;
+          type = types.nullOr types.str;
           default = null;
           example = "https://api.intray.cs-syd.eu";
           description = "The default intray url to use for triggers";
         };
       default-looper-enabled =
         mkOption {
-          type = types.nullOr (types.bool);
+          type = types.nullOr types.bool;
           default = null;
           example = true;
           description = "Whether loopers are on by default";
         };
       default-looper-period =
         mkOption {
-          type = types.nullOr (types.int);
+          type = types.nullOr types.int;
           default = null;
           example = 600;
           description =
@@ -69,7 +69,7 @@ in
         };
       default-looper-retry-delay =
         mkOption {
-          type = types.nullOr (types.int);
+          type = types.nullOr types.int;
           default = null;
           example = 1000000;
           description =
@@ -77,28 +77,28 @@ in
         };
       default-looper-retry-amount =
         mkOption {
-          type = types.nullOr (types.int);
+          type = types.nullOr types.int;
           default = null;
           example = 5;
           description = "The default number of times to retry a looper";
         };
       tracking-id =
         mkOption {
-          type = types.nullOr types.string;
+          type = types.nullOr types.str;
           example = "UA-53296133-1";
           default = null;
           description = "The tracking id for google analytics";
         };
       verification-tag =
         mkOption {
-          type = types.nullOr types.string;
+          type = types.nullOr types.str;
           example = "ADkAx2F-JQO9KJBBdLfAGuJ_OMqPOsX5MdGDsfd0Ggw";
           default = null;
           description = "The verification tag for google search console";
         };
       admins =
         mkOption {
-          type = types.nullOr (types.listOf types.string);
+          type = types.nullOr (types.listOf types.str);
           default = null;
           example = [ "syd" ];
           description =
@@ -106,7 +106,7 @@ in
         };
       freeloaders =
         mkOption {
-          type = types.nullOr (types.listOf types.string);
+          type = types.nullOr (types.listOf types.str);
           default = null;
           example = [ "freeloaders" ];
           description =
@@ -114,21 +114,21 @@ in
         };
       email-verification-address =
         mkOption {
-          type = types.nullOr types.string;
+          type = types.nullOr types.str;
           example = "verification@tickler.cs-syd.eu";
           default = null;
           description = "The email address to use for email verification";
         };
       email-triggered-address =
         mkOption {
-          type = types.nullOr types.string;
+          type = types.nullOr types.str;
           example = "triggered@tickler.cs-syd.eu";
           default = null;
           description = "The email address to use for email triggering";
         };
       email-admin-notification-from-address =
         mkOption {
-          type = types.nullOr types.string;
+          type = types.nullOr types.str;
           example = "admin-notification@tickler.cs-syd.eu";
           default = null;
           description =
@@ -136,7 +136,7 @@ in
         };
       email-admin-notification-to-address =
         mkOption {
-          type = types.nullOr types.string;
+          type = types.nullOr types.str;
           example = "syd@example.com";
           default = null;
           description =
@@ -152,19 +152,19 @@ in
                   {
                     stripe-plan =
                       mkOption {
-                        type = types.string;
+                        type = types.str;
                         example = "plan_XXXXXXXXXXXXXX";
                         description = "Stripe plan for subscriptions.";
                       };
                     stripe-secret-key =
                       mkOption {
-                        type = types.string;
+                        type = types.str;
                         example = "sk_test_XXXXXXXXXXXXXXXXXXXXXXXX";
                         description = "Stripe secret key.";
                       };
                     stripe-publishable-key =
                       mkOption {
-                        type = types.string;
+                        type = types.str;
                         example = "pk_test_XXXXXXXXXXXXXXXXXXXXXXXX";
                         description = "Stripe publishable key.";
                       };
@@ -189,7 +189,7 @@ in
                                   enabled = mkEnableOption "Looper";
                                   period =
                                     mkOption {
-                                      type = types.nullOr (types.int);
+                                      type = types.nullOr types.int;
                                       default = null;
                                       example = 60;
                                       description =
@@ -197,7 +197,7 @@ in
                                     };
                                   retry-delay =
                                     mkOption {
-                                      type = types.nullOr (types.int);
+                                      type = types.nullOr types.int;
                                       default = null;
                                       example = 1000000;
                                       description =
@@ -205,7 +205,7 @@ in
                                     };
                                   retry-amount =
                                     mkOption {
-                                      type = types.nullOr (types.int);
+                                      type = types.nullOr types.int;
                                       default = null;
                                       example = 5;
                                       description =
