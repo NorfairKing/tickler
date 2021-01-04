@@ -1,5 +1,5 @@
 <p>
-  The folowing tickle item got triggered:
+  The following tickle item got triggered:
 
 <p>
   #{textContents}
