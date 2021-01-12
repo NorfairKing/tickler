@@ -193,14 +193,14 @@ let
     url = "https://github.com/NorfairKing/tickler";
     ref = "master";
     rev = "0000000000000000000000000000000000000000"; # Add a recent version here.
-  } + "/nix/program.nix");
+  } + "/nix/home-manager-module.nix");
 in
 {
   imports = [
     ticklerModule
     # [...]
   ];
-  tickler = {
+  programs.tickler = {
     enable = true;
     sync = {
       enable = true;
