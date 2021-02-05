@@ -11,7 +11,8 @@ module Tickler.Server.OptParse
 where
 
 import Control.Applicative
-import Control.Monad.Trans.AWS as AWS
+import Control.Monad.Logger
+import qualified Control.Monad.Trans.AWS as AWS
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Database.Persist.Sqlite
@@ -37,6 +38,7 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..}
   let mc :: (Configuration -> Maybe a) -> Maybe a
       mc func = mConf >>= func
   let serveSetPort = fromMaybe 8001 $ serveFlagPort <|> envPort <|> mc confPort
+  let serveSetLogLevel = fromMaybe LevelInfo $ serveFlagLogLevel <|> envLogLevel <|> mc confLogLevel
   let mWebHost = serveFlagWebHost <|> envWebHost <|> mc confWebHost
   let serveSetConnectionInfo = mkSqliteConnectionInfo $ fromMaybe "tickler.db" $ serveFlagDb <|> envDb <|> mc confDb
   let serveSetAdmins = serveFlagAdmins ++ fromMaybe [] (mc confAdmins)
@@ -288,6 +290,7 @@ getEnvironment = do
   let envDb = T.pack <$> getEnv env "DATABASE"
   let envWebHost = T.pack <$> getEnv env "WEB_HOST"
   envPort <- readEnv env "PORT"
+  envLogLevel <- readEnv env "LOG_LEVEL"
   envMonetisationEnvironment <- getMonetisationEnv env
   envLoopersEnvironment <- getLoopersEnv env
   pure Environment {..}
@@ -400,6 +403,9 @@ parseServeFlags =
     <*> option
       (Just <$> auto)
       (mconcat [long "api-port", value Nothing, metavar "PORT", help "the port to serve the API on"])
+    <*> option
+      (Just <$> auto)
+      (mconcat [long "log-level", value Nothing, metavar "LOG_LEVEL", help "the minimal sevirity of log levels"])
     <*> option
       (Just <$> str)
       ( mconcat

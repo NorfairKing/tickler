@@ -74,6 +74,7 @@ library:
   - tickler-data
   - time
   - typed-uuid
+  - unliftio
   - validity
   - validity-bytestring
   - validity-containers

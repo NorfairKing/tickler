@@ -33,13 +33,14 @@ import Tickler.Server.Types
 runTicklerServer :: ServeSettings -> IO ()
 runTicklerServer ServeSettings {..} =
   runStderrLoggingT
+    $ filterLogger (\_ ll -> ll >= serveSetLogLevel)
     $ withSqlitePoolInfo serveSetConnectionInfo 1
     $ \pool -> do
       runResourceT $ flip runSqlPool pool $ runMigration migrateAll
       signingKey <- liftIO loadSigningKey
       let jwtCfg = defaultJWTSettings signingKey
       let cookieCfg = defaultCookieSettings
-      loopersHandle <- liftIO $ startLoopers pool serveSetLoopersSettings serveSetMonetisationSettings
+      loopersHandle <- startLoopers pool serveSetLoopersSettings serveSetMonetisationSettings
       mMonetisationEnv <-
         forM serveSetMonetisationSettings $ \MonetisationSettings {..} -> do
           planCache <- liftIO $ newCache Nothing

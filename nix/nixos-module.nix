@@ -45,6 +45,13 @@ in
           example = 8101;
           description = "The port to serve API requests on";
         };
+      log-level =
+        mkOption {
+          type = types.nullOr types.str;
+          default = null;
+          example = "LevelInfo";
+          description = "The minimal severity of log messages";
+        };
       default-intray-url =
         mkOption {
           type = types.nullOr types.str;
@@ -250,6 +257,7 @@ in
                 } // {
                   api-port = cfg.api-port;
                   web-port = cfg.web-port;
+                  log-level = cfg.log-level;
                   tracking = cfg.tracking-id;
                   verification = cfg.verification-tag;
                   admins = cfg.admins;

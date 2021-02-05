@@ -23,6 +23,7 @@ pkgs.nixosTest (
         enable = true;
         inherit api-port;
         inherit web-port;
+        log-level = "LevelDebug";
       };
       users.users.testuser.isNormalUser = true;
       home-manager.users.testuser = { pkgs, ... }: {
