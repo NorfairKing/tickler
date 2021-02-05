@@ -2,7 +2,8 @@
 
 module Tickler.Server.OptParse.Types where
 
-import Control.Monad.Trans.AWS as AWS
+import Control.Monad.Logger
+import qualified Control.Monad.Trans.AWS as AWS
 import Data.Aeson
 import Database.Persist.Sqlite
 import Import
@@ -25,6 +26,7 @@ data ServeFlags
   = ServeFlags
       { serveFlagPort :: Maybe Int,
         serveFlagWebHost :: Maybe Text,
+        serveFlagLogLevel :: Maybe LogLevel,
         serveFlagDb :: Maybe Text,
         serveFlagAdmins :: [Username],
         serveFlagFreeloaders :: [Username],
@@ -95,6 +97,7 @@ data Configuration
       { confDb :: !(Maybe Text),
         confWebHost :: !(Maybe Text),
         confPort :: !(Maybe Int),
+        confLogLevel :: !(Maybe LogLevel),
         confAdmins :: !(Maybe [Username]),
         confFreeloaders :: !(Maybe [Username]),
         confMonetisationConfiguration :: !(Maybe MonetisationConfiguration),
@@ -113,6 +116,7 @@ instance YamlSchema Configuration where
           "web-host"
           "The host to serve the web-server on, this is used to to send emails with links to the web interface"
         <*> optionalField "api-port" "The port to serve the api-server on"
+        <*> optionalFieldWith "log-level" "The minimal sevirity of log messages" viaRead
         <*> optionalField "admins" "The list of usernames that will be considered administrators"
         <*> optionalField "freeloaders" "The list of usernames that won't have to pay"
         <*> optionalField
@@ -290,6 +294,7 @@ data Environment
         envDb :: Maybe Text,
         envWebHost :: Maybe Text,
         envPort :: Maybe Int,
+        envLogLevel :: Maybe LogLevel,
         envMonetisationEnvironment :: MonetisationEnvironment,
         envLoopersEnvironment :: LoopersEnvironment
       }
@@ -357,6 +362,7 @@ data Settings
 data ServeSettings
   = ServeSettings
       { serveSetPort :: !Int,
+        serveSetLogLevel :: !LogLevel,
         serveSetConnectionInfo :: !SqliteConnectionInfo,
         serveSetAdmins :: ![Username],
         serveSetFreeloaders :: ![Username],

@@ -38,8 +38,8 @@ newtype Looper a
       MonadMask
     )
 
-runLooper :: Looper a -> LooperEnv -> IO a
-runLooper (Looper func) = runStderrLoggingT . runReaderT func
+runLooper :: Looper a -> LooperEnv -> LoggingT IO a
+runLooper (Looper func) = runReaderT func
 
 data LooperHandle
   = LooperHandleDisabled

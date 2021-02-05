@@ -86,6 +86,7 @@ tests:
     - hspec-core
     - http-types
     - lens
+    - monad-logger
     - mtl
     - path
     - path-io

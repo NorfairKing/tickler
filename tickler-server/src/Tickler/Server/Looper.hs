@@ -10,7 +10,6 @@ module Tickler.Server.Looper
 where
 
 import Control.Concurrent
-import Control.Concurrent.Async
 import Control.Exception
 import Control.Monad.Catch as Exception
 import Control.Monad.Logger
@@ -33,6 +32,7 @@ import Tickler.Server.Looper.Triggerer
 import Tickler.Server.Looper.Types
 import Tickler.Server.Looper.VerificationEmailConverter
 import Tickler.Server.OptParse.Types
+import UnliftIO
 
 data LoopersHandle
   = LoopersHandle
@@ -48,9 +48,9 @@ data LoopersHandle
         stripeEventsRetrierLooperHandle :: LooperHandle
       }
 
-startLoopers :: Pool SqlBackend -> LoopersSettings -> Maybe MonetisationSettings -> IO LoopersHandle
+startLoopers :: Pool SqlBackend -> LoopersSettings -> Maybe MonetisationSettings -> LoggingT IO LoopersHandle
 startLoopers pool LoopersSettings {..} mms = do
-  let start :: String -> LooperSetsWith a -> (a -> Looper b) -> IO LooperHandle
+  let start :: String -> LooperSetsWith a -> (a -> Looper b) -> LoggingT IO LooperHandle
       start = startLooperWithSets pool (monetisationSetStripeSettings <$> mms)
   emailerLooperHandle <- start "Emailer" looperSetEmailerSets runEmailer
   triggererLooperHandle <- start "Triggerer" looperSetTriggererSets runTriggerer
@@ -99,7 +99,7 @@ startLooperWithSets ::
   String ->
   LooperSetsWith a ->
   (a -> Looper b) ->
-  IO LooperHandle
+  LoggingT IO LooperHandle
 startLooperWithSets pool mss name lsw func =
   case lsw of
     LooperDisabled -> pure LooperHandleDisabled
