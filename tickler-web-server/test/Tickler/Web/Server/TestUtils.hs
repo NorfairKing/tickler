@@ -16,6 +16,7 @@ module Tickler.Web.Server.TestUtils
 where
 
 import Control.Lens
+import Control.Monad.Logger
 import Database.Persist.Sqlite (mkSqliteConnectionInfo, walEnabled)
 import Network.HTTP.Types
 import Servant.Client (ClientEnv (..))
@@ -45,6 +46,7 @@ ticklerTestServeSettings = do
         serveSetAPISettings =
           API.ServeSettings
             { API.serveSetPort = 8001,
+              API.serveSetLogLevel = LevelWarn,
               API.serveSetConnectionInfo = connInfo,
               API.serveSetAdmins = catMaybes [parseUsername "admin"],
               API.serveSetFreeloaders = catMaybes [parseUsername "freeloader"],
