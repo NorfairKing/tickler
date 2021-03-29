@@ -1,209 +1,262 @@
-<div .ui .very .padded .segment>
-  <div .hidden .divider>
-  <h1 .ui .center .aligned .icon .header>
-    <i .bell .icon>
-  <h1 .ui .center .aligned .header>
-    <div class="content">
-      Tickler
-      <div .sub .header>
-        Trust your future self
-
-<div .ui .huge .padded .segment>
-  <h2 .ui .header> Make decisions with the right context
-  <p>
-    Sometimes you do not have all the answers right this moment.
-    Tickler lets you postpone making the decision and re-evaluate at a later date.
-
-  <p>
-    <div .ui .ordered .list>
-      <div .item>
-        <div .header>
-          Schedule a Tickle
-      <div .item>
-        <div .header>
-          Select a trigger: 
-          <a href="https://intray.cs-syd.eu">
-            Intray
-          or email
-      <div .item>
-        <div .header>
-          Trust your future self to deal with it
 
 
-<div .ui .huge .padded .segment>
-  <h2 .ui .header> Open-source
-  <p>
-    Tickler is entirely open-source.
-    <a href="https://github.com/NorfairKing/tickler">
-      The source can be found on Github.
 
-  <h2 .ui .header> API-First
-  <p>
-    Every interaction with Tickler is available via
-    <a href=@{APIDocsR}>the tickler API.
-    The API allows to integrate tickler seamlessly with complex systems to optimise your workflow.
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
 
 
-  <h2 .ui .header> CLI-Second
-  <p>
-    Tickler is available via
-    <a href="https://github.com/NorfairKing/tickler/tree/master/tickler-cli">the official Tickler command-line client
-    .
-    In addition to the features on the web interface, the command-line client works offline with easy synchronisation.
 
-$maybe p <- mPricing
-  <div .ui .huge .padded .segment>
-    <h2 .ui .header> Pricing
-    <div .ui .cards .centered>
-      <div .ui .card>
-        <div .ui .content>
-          <div .ui .centered .header>
-            Trial
-          <div class="ui segments">
-              <div class="ui center aligned secondary segment">
-                 <div class="ui statistic">
-                    <div class="value">
-                      Free
-                    <div class="label">
-                      Forever
-              <div class="ui center aligned segment">
-                 <p> Maximum #{pricingMaxItemsFree p} items
-              <div class="ui center aligned segment">
-                 <p> Full API access
-              <div class="ui center aligned segment">
-                 <p> A Free command-line application
-           <a class="ui primary fluid button" href=@{AuthR registerR}>
-            Get Started
-      <div .ui .card>
-        <div .ui .content>
-          <div .ui .centered .header>
-            Subscription
-          <div class="ui segments">
-              <div class="ui center aligned secondary segment">
-                 <div class="ui statistic">
-                    <div class="value">
-                      #{pricingShowAmountPerMonth p}
-                    <div class="label">
-                       per month
-              <div class="ui center aligned segment">
-                 <p> Unlimited items
-              <div class="ui center aligned segment">
-                 <p> Full API access
-              <div class="ui center aligned segment">
-                 <p> A Free command-line application
-              <div class="ui center aligned segment">
-                 <p> Unlimited synchronisation accross devices
-              $maybe tp <- pricingTrialPeriod p
-                <div class="ui center aligned segment">
-                   <p> #{show tp} day Trial period
-              <div class="ui center aligned segment">
-                 <p> Billed anually
-           <a class="ui primary fluid button" href=@{AuthR registerR}>
-            Get Started
+<h1 class="ui center aligned icon header">
+  <i class="bell icon">
 
-<div .ui .huge .padded .segment>
-  <h2 .ui .header> FAQ
-  <div .ui .list>
-    <div .item>
-      <i .question .icon>
-      <div .content>
-        <div .header>
-          <p>
-            How is this better than getting notifications for events on my calendar?
-        <div .description>
-          <p>
-            Tickles are fundamentally different from events.
-            Events must happen on a certain date at a certain time.
-            On the other hand, when a tickle is triggered, there is no reason why you should deal with it immediately.
-            Instead, the items get sent to an inbox for processing at the appropriate moment.
-            Tickler also does not clutter your calendar, such that you can trust your calendar to only have events.
+<h1 class="ui center aligned header">
+  Tickler
 
-    <div .item>
-      <i .question .icon>
-      <div .content>
-        <div .header>
-          <p>
-            How is this better than my phone's reminders?
-        <div .description>
-          <p>
-            There is no reason to be immediately notified of triggered tickles.
-            Tickler sends your items to an inbox so that you can deal with them when it is most convenient to you.
+<h2 class="ui center aligned header">
+  The tool to remind your future self of stuff so your present self doesn't have to (remember?)
 
-    <div .item>
-      <i .question .icon>
-      <div .content>
-        <div .header>
-          <p>
-            What happens to my data?
-        <div .description>
-          <p>
-            All data submitted via Tickler is secured while it is being submitted and while it is being stored.
-            Users will never be tracked and their data will never be exposed to third parties.
+<div class="ui center aligned one column grid">
+  <div class="column">
+    <a class="ui primary huge button" href=@{AuthR registerR}>
+      Get Tickler
 
 
-    <div .item>
-      <i .question .icon>
-      <div .content>
-        <div .header>
-          <p>
-            Will there ever be ads?
-        <div .description>
-          <p>
-            There will never be ads on Tickler.
 
-    <div .item>
-      <i .question .icon>
-      <div .content>
-        <div .header>
-          <p>
-            I don't trust you with my data, can I still use Tickler?
-        <div .description>
-          <p>
-            Yes, tickler is free software, so anyone can host an Tickler server themselves.
-            The code and instructions are available
-            <a href="https://github.com/NorfairKing/tickler">
-              on Github.
-
-    <div .item>
-      <i .question .icon>
-      <div .content>
-        <div .header>
-          <p>
-            Is there an Android or Iphone application?
-        <div .description>
-          <p>
-            Tickler is currently not available on Android or Iphone.
-            This may change in the future if there is enough demand.
-
-    <div .item>
-      <i .question .icon>
-      <div .content>
-        <div .header>
-          <p>
-            How do I use Tickler for "Getting Things Done" (GTD)?
-        <div .description>
-          <p>
-            Tickler was built specifically to act as the first part in a GTD process.
-            Use it as the "tickler file" in the following flowchart.
-        <img .ui .large .centered .image
-          alt="Getting Things Done Flowchart"
-          src=@{StaticR static_gtd_flowchart_jpg}>
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
 
 
-<div .ui .huge .padded .segment>
-  <p>
-    Tickler is a 
-    <a href="https://cs-syd.eu">
-      CS SYD
-    Product.
-  <p>
-    Self-management training which includes Tickler is available 
-    <a href="https://cs-syd.eu/self-management">
-      via CS SYD
-    . 
-  <p>
-    For questions and feedback, feel free to
-    <a href="mailto:tickler@cs-syd.eu">
-      contact us
-    .
 
+<div class="ui middle aligned two column grid">
+  <div class="column">
+    <h2 .ui .header .centered>
+      Make decisions with the right context.
+
+    <p .ui>
+      Sometimes you do not have all the answers right this moment.
+      Tickler lets you postpone making decisions and re-evaluate at a later date.
+
+    <ol>
+      <li> Schedule a Tickle
+      <li> Select a trigger: 
+        <a href="https://intray.eu">
+          Intray
+        or email
+      <li> Trust your future self to deal with it
+
+  <div class="column">
+    <img .ui .large .centered .image
+      alt="Getting Things Done Flowchart"
+      src=@{StaticR static_tom_sydney_kerckhove_tasks_svg}>
+
+
+
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+
+
+
+<div class="ui middle aligned three column grid">
+  <div class="column">
+    <ul>
+      <li> Faster, cleaner and leaner than its alternatives
+      <li> No-nonsense web interface
+      <li> Minimal design, maximum efficient
+      <li> In browser or terminal
+
+  <div class="column">
+    <ul>
+      <li> Application programming interface
+      <li> Command line interface options included
+      <li> Open source
+      <li> Auto syncing
+
+  <div class="column">
+    <ul>
+      <li> Ad-free forever
+      <li> Anywhere, anytime
+      <li> Reliable
+      <li> Optimized for power users
+
+
+
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+
+
+<div .ui .cards .centered>
+  <div .ui .card>
+    <div .ui .content>
+      <div .ui .centered .header>
+        Trial
+      <div class="ui segments">
+          <div class="ui center aligned secondary segment">
+            <div class="ui statistic">
+                <div class="value">
+                  Free
+                <div class="label">
+                  Forever
+          <div class="ui center aligned segment">
+            <p>
+              Maximum 5 items
+
+      <a class="ui primary fluid button" href=@{AuthR registerR}>
+        Get Started
+
+  <div .ui .card>
+    <div .ui .content>
+      <div .ui .centered .header>
+        Subscription
+      <div class="ui segments">
+          <div class="ui center aligned secondary segment">
+            <div class="ui statistic">
+                <div class="value">
+                  12CHF
+                <div class="label">
+                  per year
+          <div class="ui center aligned segment">
+            <p>
+              Unlimited items
+
+      <a class="ui primary fluid button" href=@{AuthR registerR}>
+        Get Started
+
+
+
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+
+
+
+<div class="ui middle aligned two column grid">
+  <div class="column">
+    <div class="ui accordion">
+      <div class="title">
+        <i class="dropdown icon">
+        Why is this better than getting notifications for events on my calendar?
+      <div class="content">
+        <p class="transition hidden">
+          Tickles are fundamentally different from events.
+          Events must happen on a certain date at a certain time.
+          On the other hand, when a tickle is triggered, there is nog reason why you should deal with it immediately.
+          Instead, the items get sent to an inbox, such as
+          <a href="https://intray.eu">
+            Intray,
+          for processing at the appropriate moment.
+          Tickler also does not clutter your calendar, such that you can trust your calendar to only have events.
+
+      <div class="title">
+        <i class="dropdown icon">
+        Why is this better than my phone's reminders?
+      <div class="content">
+        <p class="transition hidden">
+          There is no reason to be immediately notified of tickles.
+          Tickler sends your items to an inbox, such as
+          <a href="https://intray.eu">
+            Intray,
+          so that you can deal with them when it is most convenient to you.
+          Tickler has been designed explicitly for your ease of mind and efficiency.      
+          I could talk at length about the problems with notifications, current technology, and social media, which is what I do at my talk on
+          <a href="https://cs-syd.eu/speaking">
+            ethical design of user interface.
+
+      <div class="title">
+        <i class="dropdown icon">
+        How do I use Tickler with the Self-management coaching?
+      <div class="content">
+        <p>
+          Tickler was built specifically to act as the first part in a "Getting Things Done" (GTD) process.
+          Use it as the 'Tickler file' in the following flowchart.
+          Feel free to check out the 
+          <a href="https://cs-syd.eu/self-management">
+            Self-management coaching.
+        <p>
+          <img .ui .large .centered .image
+            alt="Getting Things Done Flowchart"
+            src=@{StaticR static_tom_sydney_kerckhove_flowchart_gtd_svg}>
+
+      <div class="title">
+        <i class="dropdown icon">
+        I don't trust you with my data, can I still use Tickler?
+      <div class="content">
+        <p>
+          Yes.
+          All data submitted via Tickler is secured while it is being submitted and while it is being stored.
+          Users will never be tracked and their data will never be exposed to third parties.
+          Moreover, Tickler is free software, so anyone can host a Tickler server themselves.
+          The code is available 
+          <a href="https://github.com/NorfairKing/tickler">
+            on Github.
+
+      <div class="title">
+        <i class="dropdown icon">
+        Will there ever be ads?
+      <div class="content">
+        <p>
+          There will never be ads on Tickler.
+          Tickler is designed for power users and maximum effiency.
+          Any distraction will decrease productivity.
+
+      <div class="title">
+        <i class="dropdown icon">
+        Is there an Android or iPhone application?
+      <div class="content">
+        <p>
+          Tickler is currently not available on Android or iPhone.
+          You can, however, use Tickler via the browser on your phone.
+          If you are interested in writing an Android of iPhone application, please 
+            <a href="mailto:tickler@cs-syd.eu">
+              contact us.
+
+
+
+  <div class="column">
+    <img .ui .large .centered .image
+      alt="Getting Things Done Flowchart"
+      src=@{StaticR static_tom_sydney_kerckhove_faq_svg}>
+
+
+
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+
+
+
+<h2 .ui .header .centered>
+  Start using Tickler
+
+<div class="ui center aligned one column grid">
+  <div class="column">
+    <p>
+      We suggest getting Tickler together with our self-management coaching sessions.
+
+<div class="ui center aligned two column grid">
+  <div class="column">
+    <a class="ui primary huge button" href=@{AuthR registerR}>
+      Get Tickler
+    <a class="ui primary huge basic button" href="https://cs-syd.eu/self-management">
+      Self-management
+
+
+
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">

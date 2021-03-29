@@ -18,6 +18,9 @@ mkEmbeddedStatic
   "myStatic"
   [ embedFile "static/gtd_flowchart.jpg",
     embedFile "static/favicon.ico",
+    embedFile "static/tom-sydney-kerckhove_tasks.svg",
+    embedFile "static/tom-sydney-kerckhove_flowchart-gtd.svg",
+    embedFile "static/tom-sydney-kerckhove_faq.svg",
     embedRemoteFileAt
       "static/semantic/themes/default/assets/fonts/icons.ttf"
       "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.ttf",
