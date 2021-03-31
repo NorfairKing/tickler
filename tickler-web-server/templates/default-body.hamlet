@@ -1,1 +1,60 @@
 ^{widget}
+
+
+
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+
+
+
+<div class="ui vertical footer">
+  <div class="ui center aligned container">
+    <div>
+      &copy;
+      <span id="copyright">
+        <script>
+          document.getElementById('copyright').appendChild(document.createTextNode(new Date().getFullYear()))
+        CS SYD. Tom Sydney Kerckhove | Technical Leader | Speaker | Coach.
+
+
+
+    <div class="ui hidden divider">
+
+
+
+    <div>
+      <a href="https://twitter.com/kerckhove_ts">
+        <img src=@{StaticR static_tom_sydney_kerckhove_twitter_icon_svg} alt="Tom Sydney Kerckhove Twitter" style="height: 25px">
+
+      <a href="https://github.com/NorfairKing">
+        <img src=@{StaticR static_tom_sydney_kerckhove_github_icon_svg} alt="Tom Sydney Kerckhove Github" style="height: 25px">
+
+      <a href="https://www.linkedin.com/in/tomsydneykerckhove/">
+        <img src=@{StaticR static_tom_sydney_kerckhove_linkedin_icon_svg} alt="Tom Sydney Kerckhove LinkedIn" style="height: 25px">
+
+      <a href="https://www.youtube.com/channel/UCUt66vU5-JTsJwMj_2mL_xQ/videos?view=0">
+        <img src=@{StaticR static_tom_sydney_kerckhove_youtube_icon_svg} alt="Tom Sydney Kerckhove YouTube" style="height: 25px">
+
+      <a href="https://www.tiktok.com/@cssyd.eu">
+        <img src=@{StaticR static_tom_sydney_kerckhove_tiktok_icon_svg} alt="Tom Sydney Kerckhove Tiktok" style="height: 25px">
+
+
+
+    <div class="ui hidden divider">
+
+
+
+    <div>
+      <span>
+        <p>
+          syd<span style="display:none">muhaha</span>@cs-syd.eu
+
+
+
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">
+<div class="ui hidden divider">

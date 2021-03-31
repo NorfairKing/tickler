@@ -21,6 +21,11 @@ mkEmbeddedStatic
     embedFile "static/tom-sydney-kerckhove_tasks.svg",
     embedFile "static/tom-sydney-kerckhove_flowchart-gtd.svg",
     embedFile "static/tom-sydney-kerckhove_faq.svg",
+    embedFile "static/tom-sydney-kerckhove_github-icon.svg",
+    embedFile "static/tom-sydney-kerckhove_linkedin-icon.svg",
+    embedFile "static/tom-sydney-kerckhove_tiktok-icon.svg",
+    embedFile "static/tom-sydney-kerckhove_twitter-icon.svg",
+    embedFile "static/tom-sydney-kerckhove_youtube-icon.svg",
     embedRemoteFileAt
       "static/semantic/themes/default/assets/fonts/icons.ttf"
       "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.ttf",
