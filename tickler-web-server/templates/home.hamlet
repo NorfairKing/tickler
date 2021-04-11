@@ -250,8 +250,6 @@
   <div class="column">
     <a class="ui primary huge button" href=@{AuthR registerR}>
       Get Tickler
-    <a class="ui primary huge basic button" href="https://cs-syd.eu/self-management">
-      Self-management
 
 
 
