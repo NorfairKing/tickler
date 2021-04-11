@@ -93,43 +93,43 @@
 <div class="ui hidden divider">
 <div class="ui hidden divider">
 
+$maybe p <- mPricing
+  <div .ui .cards .centered>
+    <div .ui .card>
+      <div .ui .content>
+        <div .ui .centered .header>
+          Trial
+        <div class="ui segments">
+            <div class="ui center aligned secondary segment">
+              <div class="ui statistic">
+                  <div class="value">
+                    Free
+                  <div class="label">
+                    Forever
+            <div class="ui center aligned segment">
+              <p>
+                Maximum #{pricingMaxItemsFree p} items
 
-<div .ui .cards .centered>
-  <div .ui .card>
-    <div .ui .content>
-      <div .ui .centered .header>
-        Trial
-      <div class="ui segments">
-          <div class="ui center aligned secondary segment">
-            <div class="ui statistic">
-                <div class="value">
-                  Free
-                <div class="label">
-                  Forever
-          <div class="ui center aligned segment">
-            <p>
-              Maximum 5 items
+        <a class="ui primary fluid button" href=@{AuthR registerR}>
+          Get Started
 
-      <a class="ui primary fluid button" href=@{AuthR registerR}>
-        Get Started
+    <div .ui .card>
+      <div .ui .content>
+        <div .ui .centered .header>
+          Subscription
+        <div class="ui segments">
+            <div class="ui center aligned secondary segment">
+              <div class="ui statistic">
+                  <div class="value">
+                    #{pricingShowAmountPerMonth p}
+                  <div class="label">
+                    per year
+            <div class="ui center aligned segment">
+              <p>
+                Unlimited items
 
-  <div .ui .card>
-    <div .ui .content>
-      <div .ui .centered .header>
-        Subscription
-      <div class="ui segments">
-          <div class="ui center aligned secondary segment">
-            <div class="ui statistic">
-                <div class="value">
-                  12CHF
-                <div class="label">
-                  per year
-          <div class="ui center aligned segment">
-            <p>
-              Unlimited items
-
-      <a class="ui primary fluid button" href=@{AuthR registerR}>
-        Get Started
+        <a class="ui primary fluid button" href=@{AuthR registerR}>
+          Get Started
 
 
 
