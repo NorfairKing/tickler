@@ -1,7 +1,0 @@
-body {
-  font-size: 16px;
-}
-
-.primary {
-  background-color: rgb(0, 110, 125) !important;
-}

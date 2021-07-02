@@ -305,6 +305,7 @@ withFormFailureNavBar :: [Text] -> Widget -> Handler Html
 withFormFailureNavBar errs body = do
   mauth <- maybeAuthId
   msgs <- fmap (map ((,) "error" . toHtml) errs ++) getMessages
+  currentRoute <- getCurrentRoute
   defaultLayout $(widgetFile "with-nav-bar")
 
 genToken :: MonadHandler m => m Html
