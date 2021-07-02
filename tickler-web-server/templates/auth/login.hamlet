@@ -1,39 +1,53 @@
-<div .ui .middle .aligned .center .aligned .grid>
-  <div .column>
-    <h2 .ui .primary .image .header>
-      <div .content>
-        Tickler Login
-    <form .ui .large .form 
-      method="post"
-      action=@{AuthR loginFormPostTargetR}>
-      <div .ui .stacked .segment>
-        <div .field>
-          <div .ui .left .icon .input>
-            <i .user .icon></i>
-            <input
-              name="userkey"
-              placeholder="Username or Email"
-              required=""
-              value=""
-              type="text">
-        <div .field>
-          <div .ui .left .icon .input>
-            <i .lock .icon></i>
-            <input
-              name="passphrase"
-              placeholder="Passphrase"
-              required=""
-              value=""
-              type="password">
-        ^{token}
-        <button .ui .fluid .large .primary .submit .button>
-          Login
+<section .hero .is-light .is-fullheight>
+  <div .hero-body>
+    <div .container>
+      <div .columns .is-centered>
+        <div .column .is-7-tablet .is-6-desktop .is-5-widescreen>
+          <form .box
+            method="post"
+            action=@{AuthR loginFormPostTargetR}>
+            <div .field>
+              <label for="user" .label>
+                Username
+              <div .control>
+                <input .input
+                  name="userkey"
+                  placeholder="Username"
+                  required=""
+                  value=""
+                  autofocus="autofocus"
+                  type="text">
 
-    <div .ui .stacked .segment>
-      <a .ui .fluid .large .default .button 
-        href=@{AuthR registerR}>
-        Sign Up
 
-    $forall (_, msg) <- msgs
-      <div .ui .error .message>
-        #{msg}
+
+            <div .field>
+              <label for="passhprase" .label>
+                Passphrase
+              <div .control>
+                <input .input
+                  name="passphrase"
+                  placeholder="*****************************"
+                  required=""
+                  value=""
+                  type="password">
+
+
+            ^{token}
+            
+            $if not (null msgs)
+              <div .field>
+                $forall (_, msg) <- msgs
+                  <p .help .is-danger>
+                    #{msg}
+                  
+
+                    
+            <div .field .is-grouped>
+              <div .control>
+                <button .button .is-light type="submit">
+                  Login
+              
+
+              <div .control>
+                <a .button .is-text href=@{AuthR registerR}>
+                  Register
