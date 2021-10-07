@@ -31,6 +31,8 @@
 
 /api/docs                                                 APIDocsR             GET
 
+/reload                                                   ReloadR              GET
+
 -- Subsites
 /auth                                                     AuthR   Auth            getAuth
 /static                                                   StaticR EmbeddedStatic  appStatic

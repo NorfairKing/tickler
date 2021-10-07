@@ -113,12 +113,14 @@ extra-deps:
   commit: 3775e2a9152214fdfcbc04032ee3eb28349b5abd
   subdirs:
   - yamlparse-applicative
+- github: NorfairKing/yesod-autoreload
+  commit: 7135e864c0d4a48efeae473ee2761f5168946e58
 
 
 nix:
   path: [ "nixpkgs=https://github.com/NixOS/nixpkgs/archive/e3a2247046d4de66b9b193a6ab3ff040fa3da86d.tar.gz" ]
   add-gc-roots: true
-  pure: true
+  pure: false
   packages:
   - zlib
   - unzip

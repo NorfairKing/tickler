@@ -39,6 +39,7 @@ import Web.Cookie
 import Yesod hiding (Header)
 import Yesod.Auth
 import qualified Yesod.Auth.Message as Msg
+import Yesod.AutoReload
 import Yesod.EmbeddedStatic
 
 type TicklerWidget = TicklerWidget' ()
@@ -68,7 +69,8 @@ instance Yesod App where
     app_ <- getYesod
     pc <- widgetToPageContent $ do
       toWidgetHead [hamlet|<link rel="icon" href=@{StaticR static_favicon_ico} sizes="16x16 24x24 32x32 48x48 64x64" type="image/x-icon">|]
-      $(widgetFile "default-body")
+      let withAutoreload = if development then (<> autoReloadWidgetFor ReloadR) else id
+      withAutoreload $(widgetFile "default-body")
     withUrlRenderer $(hamletFile "templates/default-page.hamlet")
   yesodMiddleware = defaultCsrfMiddleware . defaultYesodMiddleware
   authRoute _ = Just $ AuthR LoginR

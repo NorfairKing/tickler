@@ -52,6 +52,7 @@ library:
   - yamlparse-applicative
   - yesod
   - yesod-auth
+  - yesod-autoreload
   - yesod-core
   - yesod-form
   - yesod-static

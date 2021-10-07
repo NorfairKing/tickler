@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -x
 
-cd $HOME
+cd tickler-web-server
 
 pkill -f 'tickler-web-server serve'
 
