@@ -2,38 +2,40 @@
   <h1 .title .is-2 .has-text-centered>
     Triggered tickles
 
-<div .columns .is-centered>
-  <div .column .is-two-thirds-tablet .is-half-desktop .content>
+  <div .columns .is-centered>
+    <div .column .is-two-thirds-tablet .is-half-desktop .content>
 
-    $maybe itemsWidget <- mItemWidget
-      <p .is-normal .has-text-centered>
-        #{nrItems} tickles triggered
+      $maybe itemsWidget <- mItemWidget
+        <p .is-normal .has-text-centered>
+          #{nrItems} tickles triggered
 
-      ^{itemsWidget}
-    $nothing
-      <p .is-normal .has-text-centered>
-        No tickles triggered.
-
-
+        ^{itemsWidget}
+      $nothing
+        <p .is-normal .has-text-centered>
+          No tickles triggered.
 
 
 
 
-    <div .field .is-grouped>
-      <div .control>
-        <form .form
-          method="post"
-          action=@{RetryTriggeredsR}>
-          ^{token}
-          <button .button type="submit"
-            onclick="return confirm('Are you sure you want to retry all items that failed to be triggered? This cannot be undone.');">
-            Retry Triggering
 
-      <div .control>
-        <form .form
-          method="post"
-          action=@{DeleteTriggeredsR}>
-          ^{token}
-          <button .button type="submit" .is-danger
-            onclick="return confirm('Are you sure you want to delete all triggered items? This cannot be undone.');">
-            Delete all triggered items
+<section .section>
+  <div .columns .is-centered>
+    <div .column .is-half>
+      <div .field .is-grouped>
+        <div .control>
+          <form .form
+            method="post"
+            action=@{RetryTriggeredsR}>
+            ^{token}
+            <button .button type="submit"
+              onclick="return confirm('Are you sure you want to retry all items that failed to be triggered? This cannot be undone.');">
+              Retry Triggering
+
+        <div .control>
+          <form .form
+            method="post"
+            action=@{DeleteTriggeredsR}>
+            ^{token}
+            <button .button type="submit" .is-danger
+              onclick="return confirm('Are you sure you want to delete all triggered items? This cannot be undone.');">
+              Delete all triggered items
