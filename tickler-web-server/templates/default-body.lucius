@@ -1,0 +1,8 @@
+body {
+  font-size: 16px;
+}
+
+.is-primary {
+  background-color: rgb(0, 110, 125) !important;
+}
+
