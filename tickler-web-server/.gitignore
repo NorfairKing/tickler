@@ -19,4 +19,4 @@ cabal.sandbox.config
 *.keter
 *~
 \#*
-wolf-web-server.cabal
+signing-key.json

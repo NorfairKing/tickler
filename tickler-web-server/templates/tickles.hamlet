@@ -1,7 +1,15 @@
-$maybe itemsWidget <- mItemsWidget
-  <div .ui .segment>
-    <h1> #{nrItems} tickles scheduled
-    ^{itemsWidget}
-$nothing
-  <div .ui .segment>
-    <h1> No more tickles scheduled
+<section .section>
+  <h1 .title .is-2 .has-text-centered>
+    Tickles
+
+<div .columns .is-centered>
+  <div .column .is-two-thirds-tablet .is-half-desktop .content>
+
+    $maybe itemsWidget <- mItemsWidget
+      <p .is-normal .has-text-centered>
+        #{nrItems} tickles scheduled
+        ^{itemsWidget}
+
+    $nothing
+      <p .is-normal .has-text-centered>
+        No more tickles scheduled.

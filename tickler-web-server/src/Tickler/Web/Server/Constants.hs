@@ -13,6 +13,6 @@ development =
        fmap ConE $ case md of
          Nothing -> pure 'False
          Just _ -> do
-           runIO $ putStrLn "WARNING: BUILDING SMOS_WEB_SERVER IN DEVELOPMENT MODE"
+           runIO $ putStrLn "WARNING: BUILDING TICKLER_WEB_SERVER IN DEVELOPMENT MODE"
            pure 'True
    )

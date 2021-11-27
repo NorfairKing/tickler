@@ -1,7 +1,5 @@
 /                                                         HomeR                GET
 
-/loopers                                                  LoopersR             GET
-
 /add                                                      AddR                 POST GET
 /edit/#ItemUUID                                           EditR                POST GET
 /tickles                                                  TicklesR             GET
@@ -32,6 +30,8 @@
 /error/api-down/#Text                                     ErrorAPIDownR        GET
 
 /api/docs                                                 APIDocsR             GET
+
+/reload                                                   ReloadR              GET
 
 -- Subsites
 /auth                                                     AuthR   Auth            getAuth

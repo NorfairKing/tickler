@@ -1,38 +1,59 @@
-<!-- Following menu -->
-<div class="ui large stackable top menu">
-  <div class="ui container">
-    <a .item href=@{HomeR}>
-      Home
-    $maybe _ <- mauth
-      <a .item href=@{AddR}>
-        Add item
-      <a .item href=@{TicklesR}>
-        Tickles
-      <a .item href=@{TriggeredsR}>
-        Triggered Tickles
-      <a .item href=@{TriggersR}>
-        Triggers
-      <a .item href=@{AccountR}>
-        Account
-    <div .right .menu>
+<nav .navbar role="navigation" aria-label="main navigation">
+  <div .navbar-brand>
+    <a .navbar-item href=@{HomeR}>
+      <img src=@{StaticR static_tom_sydney_kerckhove_logo_tickler_svg} alt="Logo Tickler" width="100px">
+
+    <a role="button" .navbar-burger .burger aria-label="menu" aria-expanded="false" data-target="myNavbar">
+      <span aria-hidden="true">
+      <span aria-hidden="true">
+      <span aria-hidden="true">
+
+
+  <div id="myNavbar" .navbar-menu>
+    <div .navbar-start>
+
+      $if currentRoute /= Just HomeR
+        <a .navbar-item href=@{HomeR}>
+          Home
       $maybe _ <- mauth
-        <div .item>
-          <a .ui .button href=@{AuthR LogoutR}>
+        <a .navbar-item href=@{AddR}>
+          Add item
+
+        <a .navbar-item href=@{TicklesR}>
+          Tickles
+
+        <a .navbar-item href=@{TriggeredsR}>
+          Triggered Tickles
+
+        <a .navbar-item href=@{TriggersR}>
+          Triggers
+
+        <a .navbar-item href=@{AccountR}>
+          Account
+
+    <div .navbar-end>
+      $maybe _ <- mauth
+
+        <div .navbar-item>
+          <a .button href=@{AuthR LogoutR}>
             Logout
       $nothing
-        <div .item>
-          <a .ui .button href=@{AuthR LoginR}>
+
+        <div .navbar-item>
+          <a .button href=@{AuthR LoginR}>
             Login
-        <div .item>
-          <a .ui .primary .button href=@{AuthR registerR}>
+        
+        <div .navbar-item>
+          <a .button href=@{AuthR registerR}>
             Register
 
-
 <!-- Messages -->
-$forall (status, msg) <- msgs
-  <div .ui .bottom .attached .#{status} .message>
-    ^{msg}
+$forall (msgtype, msg) <- msgs
+  <div .is-#{msgtype} .message>
+    <div .message-body>
+      ^{msg}
 
 
-<div .ui .main .container>
+
+<div .container>
   ^{body}
