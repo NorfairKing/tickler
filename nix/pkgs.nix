@@ -1,40 +1,20 @@
-let
-  pkgsv = import (import ./nixpkgs.nix);
-  pkgs = pkgsv {};
-  intray-version = import ./intray-version.nix;
-  intray-repo = pkgs.fetchFromGitHub intray-version;
-  intray-overlay = import (intray-repo + "/nix/overlay.nix");
-  validity-version = import ./validity-version.nix;
-  validity-overlay =
-    import (pkgs.fetchFromGitHub validity-version + "/nix/overlay.nix");
-  mergeless-version = import ./mergeless-version.nix;
-  mergeless-overlay =
-    import (pkgs.fetchFromGitHub mergeless-version + "/nix/overlay.nix");
-  mergeful-version = import ./mergeful-version.nix;
-  mergeful-overlay =
-    import (pkgs.fetchFromGitHub mergeful-version + "/nix/overlay.nix");
-  pretty-relative-time-version = import ./pretty-relative-time-version.nix;
-  pretty-relative-time-overlay =
-    import (
-      pkgs.fetchFromGitHub (import ./pretty-relative-time-version.nix) + "/nix/overlay.nix"
-    );
-  yamlparse-applicative-version = import ./yamlparse-applicative-version.nix;
-  yamlparse-applicative-overlay =
-    import (
-      pkgs.fetchFromGitHub yamlparse-applicative-version + "/nix/overlay.nix"
-    );
-
-in
-pkgsv {
+{ sources ? import ./sources.nix
+}:
+import sources.nixpkgs {
   overlays =
     [
-      validity-overlay
-      intray-overlay
-      pretty-relative-time-overlay
-      mergeless-overlay
-      mergeful-overlay
-      yamlparse-applicative-overlay
-      (import ./gitignore-src.nix)
+      (import (sources.autodocodec + "/nix/overlay.nix"))
+      (import (sources.intray + "/nix/overlay.nix"))
+      (import (sources.looper + "/nix/overlay.nix"))
+      (import (sources.mergeful + "/nix/overlay.nix"))
+      (import (sources.mergeless + "/nix/overlay.nix"))
+      (import (sources.mergeless + "/nix/overlay.nix"))
+      (import (sources.pretty-relative-time + "/nix/overlay.nix"))
+      (import (sources.safe-coloured-text + "/nix/overlay.nix"))
+      (import (sources.sydtest + "/nix/overlay.nix"))
+      (import (sources.typed-uuid + "/nix/overlay.nix"))
+      (import (sources.validity + "/nix/overlay.nix"))
+      (final: previous: { inherit (import sources.gitignore { inherit (final) lib; }) gitignoreSource; })
       (import ./overlay.nix)
     ];
   config.allowUnfree = true;

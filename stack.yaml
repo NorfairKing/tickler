@@ -1,4 +1,4 @@
-resolver: lts-15.15
+resolver: lts-16.12
 packages:
 - tickler-api
 - tickler-api-gen
@@ -11,11 +11,11 @@ packages:
 - tickler-server-gen
 - tickler-web-server
 extra-deps:
-- amazonka-1.6.1
-- amazonka-core-1.6.1
-- amazonka-ses-1.6.1
-- servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
-- envparse-0.4.1@sha256:989902e6368532548f61de1fa245ad2b39176cddd8743b20071af519a709ce30,2842
+  # - amazonka-1.6.1
+  # - amazonka-core-1.6.1
+  # - amazonka-ses-1.6.1
+  # - servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
+  # - envparse-0.4.1@sha256:989902e6368532548f61de1fa245ad2b39176cddd8743b20071af519a709ce30,2842
 
 - github: haskell-servant/servant-auth
   commit: 23971e889f8cbe8790305bda8915f00aa8be5ad9
@@ -55,14 +55,14 @@ extra-deps:
     - genvalidity-mergeless
 
 - github: NorfairKing/mergeful
-  commit: 539ea04691309fb3f74461344ebdf389dc535a55
+  commit: 5a81800ab75c08c5cf2781accf74944cfee30762
   subdirs:
     - mergeful
     - genvalidity-mergeful
     - mergeful-persistent
 
 - github: NorfairKing/validity
-  commit: 83c45a62637fb3be7eb17edbee99141705250f65
+  commit: e1750f9d29c64705a4b9ccddf9f5afd5275e7d75
   subdirs:
     - genvalidity
     - genvalidity-aeson
@@ -100,15 +100,15 @@ extra-deps:
     - validity-vector
 
 - github: NorfairKing/typed-uuid
-  commit: dbc8fd4b56b78b1f9cf00bc2890d43dc19b97c5c
+  commit: 00fbc7e0380ab2ff72e8fd02323e76f13b7d5b59
   subdirs:
     - typed-uuid
     - genvalidity-typed-uuid
 
 - github: NorfairKing/pretty-relative-time
-  commit: 4eb01d55ef8f0f37fa63093be3ec67e99df4962f
+  commit: a634358ff274380a12360f7814c3aea46ea35b1b
 - github: NorfairKing/looper
-  commit: 8d6e69e99c5eb8f5f01b6bc36a2112962cb8d343
+  commit: e01054970b47d9eaab8b9314a1400c231ac4a960
 - github: NorfairKing/yamlparse-applicative
   commit: 3775e2a9152214fdfcbc04032ee3eb28349b5abd
   subdirs:
@@ -116,12 +116,4 @@ extra-deps:
 
 
 nix:
-  path: [ "nixpkgs=https://github.com/NixOS/nixpkgs/archive/e3a2247046d4de66b9b193a6ab3ff040fa3da86d.tar.gz" ]
-  add-gc-roots: true
-  pure: true
-  packages:
-  - zlib
-  - unzip
-  - haskellPackages.autoexporter
-  - procps
-  - killall
+  shell-file: shell.nix
