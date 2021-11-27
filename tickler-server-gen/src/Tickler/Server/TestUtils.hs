@@ -34,7 +34,7 @@ import Data.Time
 import Data.UUID.Typed
 import Database.Persist.Sqlite
 import Import
-import Intray.Server.TestUtils (setupTestHttpManager, withFreeIntrayTestApp)
+import Intray.Server.TestUtils ()
 import Lens.Micro
 import qualified Network.HTTP.Types as HTTP
 import Network.Wai.Handler.Warp (testWithApplication)
@@ -152,7 +152,7 @@ testdbFile = "tickler-test.db"
 
 withTicklerTestConn :: (ConnectionPool -> IO a) -> IO a
 withTicklerTestConn func =
-  withSystemTempDir "intray-server" $ \tdir -> do
+  withSystemTempDir "tickler-server" $ \tdir -> do
     dbPath <- resolveFile tdir testdbFile
     let connInfo = mkSqliteConnectionInfo (T.pack (fromAbsFile dbPath)) & walEnabled .~ False
     runNoLoggingT $ do

@@ -18,5 +18,6 @@ import Path as X
 import Path.IO as X
 import System.Exit as X
 import Test.QuickCheck as X
+import Test.Syd as X
 import Test.Syd.Validity as X
 import Prelude as X
