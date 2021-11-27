@@ -28,10 +28,9 @@ import Import
 import qualified Text.Email.Validate as Email
 import YamlParse.Applicative
 
-newtype EmailAddress
-  = EmailAddress
-      { unEmailAddress :: Email.EmailAddress
-      }
+newtype EmailAddress = EmailAddress
+  { unEmailAddress :: Email.EmailAddress
+  }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity EmailAddress where

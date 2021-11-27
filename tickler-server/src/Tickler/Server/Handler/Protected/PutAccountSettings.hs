@@ -2,7 +2,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Protected.PutAccountSettings
   ( servePutAccountSettings,
@@ -18,12 +17,12 @@ import Tickler.Server.Types
 
 servePutAccountSettings :: AuthCookie -> AccountSettings -> TicklerHandler NoContent
 servePutAccountSettings AuthCookie {..} AccountSettings {..} = do
-  void
-    $ runDb
-    $ upsert
-      UserSettings
-        { userSettingsUserId = authCookieUserUUID,
-          userSettingsTimeZone = accountSettingsTimeZone
-        }
-      [UserSettingsUserId =. authCookieUserUUID, UserSettingsTimeZone =. accountSettingsTimeZone]
+  void $
+    runDb $
+      upsert
+        UserSettings
+          { userSettingsUserId = authCookieUserUUID,
+            userSettingsTimeZone = accountSettingsTimeZone
+          }
+        [UserSettingsUserId =. authCookieUserUUID, UserSettingsTimeZone =. accountSettingsTimeZone]
   pure NoContent

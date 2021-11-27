@@ -3,7 +3,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server
   ( runTicklerServer,
@@ -32,35 +31,35 @@ import Tickler.Server.Types
 
 runTicklerServer :: ServeSettings -> IO ()
 runTicklerServer ServeSettings {..} =
-  runStderrLoggingT
-    $ filterLogger (\_ ll -> ll >= serveSetLogLevel)
-    $ withSqlitePoolInfo serveSetConnectionInfo 1
-    $ \pool -> do
-      runResourceT $ flip runSqlPool pool $ runMigration migrateAll
-      signingKey <- liftIO loadSigningKey
-      let jwtCfg = defaultJWTSettings signingKey
-      let cookieCfg = defaultCookieSettings
-      loopersHandle <- startLoopers pool serveSetLoopersSettings serveSetMonetisationSettings
-      mMonetisationEnv <-
-        forM serveSetMonetisationSettings $ \MonetisationSettings {..} -> do
-          planCache <- liftIO $ newCache Nothing
-          pure
-            MonetisationEnv
-              { monetisationEnvStripeSettings = monetisationSetStripeSettings,
-                monetisationEnvMaxItemsFree = monetisationSetMaxItemsFree,
-                monetisationEnvPlanCache = planCache
-              }
-      let ticklerEnv =
-            TicklerServerEnv
-              { envConnectionPool = pool,
-                envCookieSettings = cookieCfg,
-                envJWTSettings = jwtCfg,
-                envAdmins = serveSetAdmins,
-                envFreeloaders = serveSetFreeloaders,
-                envMonetisation = mMonetisationEnv,
-                envLoopersHandle = loopersHandle
-              }
-      liftIO $ Warp.run serveSetPort $ ticklerApp ticklerEnv
+  runStderrLoggingT $
+    filterLogger (\_ ll -> ll >= serveSetLogLevel) $
+      withSqlitePoolInfo serveSetConnectionInfo 1 $
+        \pool -> do
+          runResourceT $ flip runSqlPool pool $ runMigration migrateAll
+          signingKey <- liftIO loadSigningKey
+          let jwtCfg = defaultJWTSettings signingKey
+          let cookieCfg = defaultCookieSettings
+          loopersHandle <- startLoopers pool serveSetLoopersSettings serveSetMonetisationSettings
+          mMonetisationEnv <-
+            forM serveSetMonetisationSettings $ \MonetisationSettings {..} -> do
+              planCache <- liftIO $ newCache Nothing
+              pure
+                MonetisationEnv
+                  { monetisationEnvStripeSettings = monetisationSetStripeSettings,
+                    monetisationEnvMaxItemsFree = monetisationSetMaxItemsFree,
+                    monetisationEnvPlanCache = planCache
+                  }
+          let ticklerEnv =
+                TicklerServerEnv
+                  { envConnectionPool = pool,
+                    envCookieSettings = cookieCfg,
+                    envJWTSettings = jwtCfg,
+                    envAdmins = serveSetAdmins,
+                    envFreeloaders = serveSetFreeloaders,
+                    envMonetisation = mMonetisationEnv,
+                    envLoopersHandle = loopersHandle
+                  }
+          liftIO $ Warp.run serveSetPort $ ticklerApp ticklerEnv
 
 ticklerApp :: TicklerServerEnv -> Wai.Application
 ticklerApp se =
@@ -133,7 +132,6 @@ ticklerPublicServer =
     { postRegister = servePostRegister,
       postLogin = servePostLogin,
       getLoopersStatus = serveGetLoopersStatus,
-      getDocs = serveGetDocs,
       getPricing = serveGetPricing
     }
 

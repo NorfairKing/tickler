@@ -78,8 +78,8 @@ combineToInstructions (Arguments cmd Flags {..}) Environment {..} mConf =
             DispatchRegister
               RegisterSettings
                 { registerSetUsername =
-                    (T.pack <$> (registerArgUsername <|> envUsername <|> mc configUsername))
-                      >>= parseUsername,
+                    (registerArgUsername <|> envUsername <|> mc configUsername)
+                      >>= parseUsername . T.pack,
                   registerSetPassword =
                     T.pack <$> (registerArgPassword <|> envPassword <|> mc configPassword)
                 }
@@ -88,8 +88,8 @@ combineToInstructions (Arguments cmd Flags {..}) Environment {..} mConf =
             DispatchLogin
               LoginSettings
                 { loginSetUsername =
-                    (T.pack <$> (loginArgUsername <|> envUsername <|> mc configUsername))
-                      >>= parseUsername,
+                    (loginArgUsername <|> envUsername <|> mc configUsername)
+                      >>= parseUsername . T.pack,
                   loginSetPassword =
                     T.pack <$> (loginArgPassword <|> envPassword <|> mc configPassword)
                 }

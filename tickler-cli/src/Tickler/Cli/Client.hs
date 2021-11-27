@@ -23,9 +23,9 @@ runSingleClient func = do
   case mburl of
     Nothing -> pure Nothing
     Just burl ->
-      fmap Just
-        $ liftIO
-        $ do
-          man <- Http.newManager Http.tlsManagerSettings
-          let env = ClientEnv man burl Nothing
-          runClientM func env
+      fmap Just $
+        liftIO $
+          do
+            man <- Http.newManager Http.tlsManagerSettings
+            let env = ClientEnv man burl Nothing
+            runClientM func env

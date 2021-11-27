@@ -125,14 +125,14 @@ in
           "${syncTicklerName}" = syncTicklerTimer;
         };
     in
-      mkIf cfg.enable {
-        xdg.configFile."tickler/config.yaml".text = configFileContents;
-        systemd.user =
-          {
-            startServices = true;
-            services = services;
-            timers = timers;
-          };
-        home.packages = packages;
-      };
+    mkIf cfg.enable {
+      xdg.configFile."tickler/config.yaml".text = configFileContents;
+      systemd.user =
+        {
+          startServices = true;
+          services = services;
+          timers = timers;
+        };
+      home.packages = packages;
+    };
 }

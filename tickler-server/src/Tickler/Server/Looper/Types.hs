@@ -16,16 +16,14 @@ import Database.Persist.Sqlite
 import Import
 import Tickler.Server.OptParse.Types
 
-data LooperEnv
-  = LooperEnv
-      { looperEnvPool :: Pool SqlBackend,
-        looperEnvStripeSettings :: Maybe StripeSettings
-      }
+data LooperEnv = LooperEnv
+  { looperEnvPool :: Pool SqlBackend,
+    looperEnvStripeSettings :: Maybe StripeSettings
+  }
 
-newtype Looper a
-  = Looper
-      { unLooper :: ReaderT LooperEnv (LoggingT IO) a
-      }
+newtype Looper a = Looper
+  { unLooper :: ReaderT LooperEnv (LoggingT IO) a
+  }
   deriving
     ( Functor,
       Applicative,

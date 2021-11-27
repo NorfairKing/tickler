@@ -34,18 +34,18 @@ makeItemInfosWidget items =
     AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
     token <- genToken
     now <- liftIO getCurrentTime
-    fmap mconcat
-      $ forM items
-      $ \ItemInfo {..} -> do
-        let createdWidget = makeTimestampWidget now itemInfoCreated
-        let scheduledWidget =
-              makeTimestampWidget now
-                $ localTimeToUTC accountSettingsTimeZone
-                $ LocalTime
-                  (tickleScheduledDay itemInfoContents)
-                  (fromMaybe midnight $ tickleScheduledTime itemInfoContents)
-        let mTriggeredWidget =
-              case itemInfoTriggered of
-                Nothing -> Nothing
-                Just iit -> Just $ makeTimestampWidget now (triggeredInfoTriggered iit)
-        pure $(widgetFile "triggered")
+    fmap mconcat $
+      forM items $
+        \ItemInfo {..} -> do
+          let createdWidget = makeTimestampWidget now itemInfoCreated
+          let scheduledWidget =
+                makeTimestampWidget now $
+                  localTimeToUTC accountSettingsTimeZone $
+                    LocalTime
+                      (tickleScheduledDay itemInfoContents)
+                      (fromMaybe midnight $ tickleScheduledTime itemInfoContents)
+          let mTriggeredWidget =
+                case itemInfoTriggered of
+                  Nothing -> Nothing
+                  Just iit -> Just $ makeTimestampWidget now (triggeredInfoTriggered iit)
+          pure $(widgetFile "triggered")

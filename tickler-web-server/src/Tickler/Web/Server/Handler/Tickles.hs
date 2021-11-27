@@ -34,21 +34,21 @@ makeItemInfoWidget items =
     AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
     token <- genToken
     now <- liftIO getCurrentTime
-    fmap mconcat
-      $ forM (sortByScheduled items)
-      $ \ItemInfo {..} -> do
-        let createdWidget = makeTimestampWidget now itemInfoCreated
-        let scheduledWidget =
-              makeTimestampWidget now
-                $ localTimeToUTC accountSettingsTimeZone
-                $ LocalTime
-                  (tickleScheduledDay itemInfoContents)
-                  (fromMaybe midnight $ tickleScheduledTime itemInfoContents)
-        let mTriggeredWidget =
-              case itemInfoTriggered of
-                Nothing -> Nothing
-                Just iit -> Just $ makeTimestampWidget now (triggeredInfoTriggered iit)
-        pure $(widgetFile "tickle")
+    fmap mconcat $
+      forM (sortByScheduled items) $
+        \ItemInfo {..} -> do
+          let createdWidget = makeTimestampWidget now itemInfoCreated
+          let scheduledWidget =
+                makeTimestampWidget now $
+                  localTimeToUTC accountSettingsTimeZone $
+                    LocalTime
+                      (tickleScheduledDay itemInfoContents)
+                      (fromMaybe midnight $ tickleScheduledTime itemInfoContents)
+          let mTriggeredWidget =
+                case itemInfoTriggered of
+                  Nothing -> Nothing
+                  Just iit -> Just $ makeTimestampWidget now (triggeredInfoTriggered iit)
+          pure $(widgetFile "tickle")
 
 sortByScheduled :: [ItemInfo a] -> [ItemInfo a]
 sortByScheduled =

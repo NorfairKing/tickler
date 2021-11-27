@@ -34,19 +34,18 @@ import Tickler.Server.Looper.VerificationEmailConverter
 import Tickler.Server.OptParse.Types
 import UnliftIO
 
-data LoopersHandle
-  = LoopersHandle
-      { emailerLooperHandle :: LooperHandle,
-        triggererLooperHandle :: LooperHandle,
-        verificationEmailConverterLooperHandle :: LooperHandle,
-        triggeredIntrayItemSchedulerLooperHandle :: LooperHandle,
-        triggeredIntrayItemSenderLooperHandle :: LooperHandle,
-        triggeredEmailSchedulerLooperHandle :: LooperHandle,
-        triggeredEmailConverterLooperHandle :: LooperHandle,
-        adminNotificationEmailConverterLooperHandle :: LooperHandle,
-        stripeEventsFetcherLooperHandle :: LooperHandle,
-        stripeEventsRetrierLooperHandle :: LooperHandle
-      }
+data LoopersHandle = LoopersHandle
+  { emailerLooperHandle :: LooperHandle,
+    triggererLooperHandle :: LooperHandle,
+    verificationEmailConverterLooperHandle :: LooperHandle,
+    triggeredIntrayItemSchedulerLooperHandle :: LooperHandle,
+    triggeredIntrayItemSenderLooperHandle :: LooperHandle,
+    triggeredEmailSchedulerLooperHandle :: LooperHandle,
+    triggeredEmailConverterLooperHandle :: LooperHandle,
+    adminNotificationEmailConverterLooperHandle :: LooperHandle,
+    stripeEventsFetcherLooperHandle :: LooperHandle,
+    stripeEventsRetrierLooperHandle :: LooperHandle
+  }
 
 startLoopers :: Pool SqlBackend -> LoopersSettings -> Maybe MonetisationSettings -> LoggingT IO LoopersHandle
 startLoopers pool LoopersSettings {..} mms = do
@@ -109,9 +108,9 @@ startLooperWithSets pool mss name lsw func =
             a <-
               async $
                 runLooper
-                  ( retryLooperWith name looperStaticConfigRetryPolicy
-                      $ runLooperContinuously name looperStaticConfigPeriod
-                      $ func sets
+                  ( retryLooperWith name looperStaticConfigRetryPolicy $
+                      runLooperContinuously name looperStaticConfigPeriod $
+                        func sets
                   )
                   env
             pure $ LooperHandleEnabled a lsc
@@ -120,14 +119,14 @@ retryLooperWith :: String -> LooperRetryPolicy -> Looper b -> Looper b
 retryLooperWith name LooperRetryPolicy {..} looperFunc =
   let policy = constantDelay looperRetryPolicyDelay <> limitRetries looperRetryPolicyAmount
    in recoverWithAdminNotification name policy $ \RetryStatus {..} -> do
-        unless (rsIterNumber == 0)
-          $ logWarnNS (T.pack name <> "Looper")
-          $ T.unwords
-            [ "Retry number",
-              T.pack $ show rsIterNumber,
-              "after a total delay of",
-              T.pack $ show rsCumulativeDelay
-            ]
+        unless (rsIterNumber == 0) $
+          logWarnNS (T.pack name <> "Looper") $
+            T.unwords
+              [ "Retry number",
+                T.pack $ show rsIterNumber,
+                "after a total delay of",
+                T.pack $ show rsCumulativeDelay
+              ]
         looperFunc
 
 recoverWithAdminNotification ::
@@ -161,8 +160,8 @@ runLooperContinuously name period func = go
       end <- liftIO getCurrentTime
       let diff = diffUTCTime end start
       logInfoNS (T.pack name <> "Looper") $ T.unwords ["Finished, took", T.pack $ show diff]
-      liftIO
-        $ threadDelay
-        $ period * 1000 * 1000
-          - fromInteger (diffTimeToPicoseconds (realToFrac diff :: DiffTime) `div` (1000 * 1000))
+      liftIO $
+        threadDelay $
+          period * 1000 * 1000
+            - fromInteger (diffTimeToPicoseconds (realToFrac diff :: DiffTime) `div` (1000 * 1000))
       go

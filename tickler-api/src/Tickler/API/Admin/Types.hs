@@ -4,23 +4,20 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Tickler.API.Admin.Types where
 
 import Data.Aeson as JSON
 import Import
-import Servant.Docs
 import Tickler.API.Types ()
 
-data AdminStats
-  = AdminStats
-      { adminStatsNbUsers :: Word,
-        adminStatsNbSubscribers :: Word,
-        adminStatsNbTicklerItems :: Word,
-        adminStatsNbTriggeredItems :: Word,
-        adminStatsActiveUsers :: !ActiveUsers
-      }
+data AdminStats = AdminStats
+  { adminStatsNbUsers :: Word,
+    adminStatsNbSubscribers :: Word,
+    adminStatsNbTicklerItems :: Word,
+    adminStatsNbTriggeredItems :: Word,
+    adminStatsActiveUsers :: !ActiveUsers
+  }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity AdminStats
@@ -42,15 +39,12 @@ instance ToJSON AdminStats where
         "active-users" .= adminStatsActiveUsers
       ]
 
-instance ToSample AdminStats
-
-data ActiveUsers
-  = ActiveUsers
-      { activeUsersDaily :: !Word,
-        activeUsersWeekly :: !Word,
-        activeUsersMonthly :: !Word,
-        activeUsersYearly :: !Word
-      }
+data ActiveUsers = ActiveUsers
+  { activeUsersDaily :: !Word,
+    activeUsersWeekly :: !Word,
+    activeUsersMonthly :: !Word,
+    activeUsersYearly :: !Word
+  }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity ActiveUsers
@@ -68,5 +62,3 @@ instance ToJSON ActiveUsers where
         "monthly" .= activeUsersMonthly,
         "yearly" .= activeUsersYearly
       ]
-
-instance ToSample ActiveUsers

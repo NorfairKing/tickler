@@ -13,10 +13,9 @@ import Tickler.Client
 import Tickler.Web.Server.Foundation
 import Yesod
 
-newtype RetryItem
-  = RetryItem
-      { retryItemUUID :: ItemUUID
-      }
+newtype RetryItem = RetryItem
+  { retryItemUUID :: ItemUUID
+  }
 
 retryItemForm :: FormInput Handler RetryItem
 retryItemForm = RetryItem <$> ireq hiddenField "item"

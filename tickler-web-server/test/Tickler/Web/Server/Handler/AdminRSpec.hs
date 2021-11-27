@@ -11,16 +11,16 @@ import Yesod.Test
 
 spec :: Spec
 spec =
-  ticklerWebServerSpec
-    $ ydescribe "AdminR"
-    $ do
-      yit "gets a 200 when logged in as admin"
-        $ withAdminAccount_
-        $ do
-          get AdminR
-          statusIs 200
-      yit "gets a 404 when not logged in as admin"
-        $ withExampleAccount_
-        $ do
-          get AdminR
-          statusIs 404
+  ticklerWebServerSpec $
+    ydescribe "AdminR" $
+      do
+        yit "gets a 200 when logged in as admin" $
+          withAdminAccount_ $
+            do
+              get AdminR
+              statusIs 200
+        yit "gets a 404 when not logged in as admin" $
+          withExampleAccount_ $
+            do
+              get AdminR
+              statusIs 404

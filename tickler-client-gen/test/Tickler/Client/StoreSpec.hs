@@ -12,10 +12,10 @@ import Tickler.Client.Store
 spec :: Spec
 spec = do
   genValidSpec @Store
-  jsonSpecOnValid @Store
-  describe "makeSyncRequest"
-    $ it "produces valid sync requests"
-    $ producesValidsOnValids makeSyncRequest
-  describe "mergeSyncResponse"
-    $ it "produces valid sync requests"
-    $ producesValidsOnValids2 mergeSyncResponse
+  jsonSpec @Store
+  describe "makeSyncRequest" $
+    it "produces valid sync requests" $
+      producesValid makeSyncRequest
+  describe "mergeSyncResponse" $
+    it "produces valid sync requests" $
+      producesValid2 mergeSyncResponse

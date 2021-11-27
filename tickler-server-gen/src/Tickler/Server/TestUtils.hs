@@ -61,21 +61,21 @@ withPaidTicklerServer_ = withPaidTicklerServer 5
 
 withPaidTicklerServer :: Int -> SpecWith ClientEnv -> Spec
 withPaidTicklerServer maxFree specFunc =
-  around (withPaidTicklerTestApp maxFree)
-    $ modifyMaxShrinks (const 0)
-    $ modifyMaxSuccess (`div` 20) specFunc
+  around (withPaidTicklerTestApp maxFree) $
+    modifyMaxShrinks (const 0) $
+      modifyMaxSuccess (`div` 20) specFunc
 
 withFreeTicklerServer :: SpecWith ClientEnv -> Spec
 withFreeTicklerServer specFunc =
-  around withFreeTicklerTestApp
-    $ modifyMaxShrinks (const 0)
-    $ modifyMaxSuccess (`div` 20) specFunc
+  around withFreeTicklerTestApp $
+    modifyMaxShrinks (const 0) $
+      modifyMaxSuccess (`div` 20) specFunc
 
 withBothTicklerAndIntrayServer :: SpecWith (ClientEnv, ClientEnv) -> Spec
 withBothTicklerAndIntrayServer specFunc =
-  aroundWith withBoth
-    $ modifyMaxShrinks (const 0)
-    $ modifyMaxSuccess (`div` 20) specFunc
+  aroundWith withBoth $
+    modifyMaxShrinks (const 0) $
+      modifyMaxSuccess (`div` 20) specFunc
   where
     withBoth :: ActionWith (ClientEnv, ClientEnv) -> ActionWith ()
     withBoth func () =

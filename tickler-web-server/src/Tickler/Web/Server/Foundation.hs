@@ -49,17 +49,16 @@ type TicklerHandler = HandlerFor App
 
 type TicklerAuthHandler a = AuthHandler App a
 
-data App
-  = App
-      { appHttpManager :: Http.Manager,
-        appStatic :: EmbeddedStatic,
-        appAPIBaseUrl :: BaseUrl,
-        appPersistLogins :: Bool,
-        appTracking :: Maybe Text,
-        appVerification :: Maybe Text,
-        appLoginTokens :: MVar (HashMap Username Token),
-        appDefaultIntrayUrl :: Maybe BaseUrl
-      }
+data App = App
+  { appHttpManager :: Http.Manager,
+    appStatic :: EmbeddedStatic,
+    appAPIBaseUrl :: BaseUrl,
+    appPersistLogins :: Bool,
+    appTracking :: Maybe Text,
+    appVerification :: Maybe Text,
+    appLoginTokens :: MVar (HashMap Username Token),
+    appDefaultIntrayUrl :: Maybe BaseUrl
+  }
 
 mkYesodData "App" $(parseRoutesFile "routes")
 
@@ -75,11 +74,11 @@ instance Yesod App where
   makeSessionBackend _ =
     Just <$> defaultClientSessionBackend (60 * 24 * 365 * 10) "client_session_key.aes"
   errorHandler NotFound =
-    fmap toTypedContent
-      $ withNavBar
-      $ do
-        setTitle "Page not found"
-        [whamlet|
+    fmap toTypedContent $
+      withNavBar $
+        do
+          setTitle "Page not found"
+          [whamlet|
       <h1>
         Page not found
       |]
@@ -131,11 +130,10 @@ ticklerAuthPlugin = AuthPlugin ticklerAuthPluginName dispatch loginWidget
       setDescription "This is where you sign into your tickler account."
       $(widgetFile "auth/login")
 
-data LoginData
-  = LoginData
-      { loginUserkey :: Text,
-        loginPassword :: Text
-      }
+data LoginData = LoginData
+  { loginUserkey :: Text,
+    loginPassword :: Text
+  }
   deriving (Show)
 
 loginFormPostTargetR :: AuthRoute
@@ -166,19 +164,18 @@ getNewAccountR :: TicklerAuthHandler Html
 getNewAccountR = do
   token <- genToken
   msgs <- getMessages
-  liftHandler
-    $ defaultLayout
-    $ do
-      setTitle "Tickler Login"
-      setDescription "This is where you sign into your tickler account."
-      $(widgetFile "auth/register")
+  liftHandler $
+    defaultLayout $
+      do
+        setTitle "Tickler Login"
+        setDescription "This is where you sign into your tickler account."
+        $(widgetFile "auth/register")
 
-data NewAccount
-  = NewAccount
-      { newAccountUsername :: Username,
-        newAccountPassword1 :: Text,
-        newAccountPassword2 :: Text
-      }
+data NewAccount = NewAccount
+  { newAccountUsername :: Username,
+    newAccountPassword1 :: Text,
+    newAccountPassword2 :: Text
+  }
   deriving (Show)
 
 postNewAccountR :: TicklerAuthHandler TypedContent
@@ -250,12 +247,11 @@ postNewAccountR = do
 changePasswordTargetR :: AuthRoute
 changePasswordTargetR = PluginR ticklerAuthPluginName ["change-password"]
 
-data ChangePassword
-  = ChangePassword
-      { changePasswordOldPassword :: Text,
-        changePasswordNewPassword1 :: Text,
-        changePasswordNewPassword2 :: Text
-      }
+data ChangePassword = ChangePassword
+  { changePasswordOldPassword :: Text,
+    changePasswordNewPassword1 :: Text,
+    changePasswordNewPassword2 :: Text
+  }
   deriving (Show)
 
 getChangePasswordR :: TicklerAuthHandler Html
@@ -267,22 +263,22 @@ getChangePasswordR = do
 postChangePasswordR :: TicklerAuthHandler Html
 postChangePasswordR = do
   ChangePassword {..} <-
-    liftHandler
-      $ runInputPost
-      $ ChangePassword <$> ireq passwordField "old" <*> ireq passwordField "new1"
-        <*> ireq passwordField "new2"
+    liftHandler $
+      runInputPost $
+        ChangePassword <$> ireq passwordField "old" <*> ireq passwordField "new1"
+          <*> ireq passwordField "new2"
   unless (changePasswordNewPassword1 == changePasswordNewPassword2) $
     invalidArgs ["Passwords do not match."]
-  liftHandler
-    $ withLogin
-    $ \t -> do
-      let cpp =
-            ChangePassphrase
-              { changePassphraseOld = changePasswordOldPassword,
-                changePassphraseNew = changePasswordNewPassword1
-              }
-      NoContent <- runClientOrErr $ clientPostChangePassphrase t cpp
-      redirect AccountR
+  liftHandler $
+    withLogin $
+      \t -> do
+        let cpp =
+              ChangePassphrase
+                { changePassphraseOld = changePasswordOldPassword,
+                  changePassphraseNew = changePasswordNewPassword1
+                }
+        NoContent <- runClientOrErr $ clientPostChangePassphrase t cpp
+        redirect AccountR
 
 instance RenderMessage App FormMessage where
   renderMessage _ _ = defaultFormMessage

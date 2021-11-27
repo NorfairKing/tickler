@@ -20,7 +20,6 @@ import Data.UUID.Typed
 import Import
 import Servant.API
 import Servant.API.Generic
-import Servant.Auth.Docs ()
 import Servant.HTML.Blaze
 import Tickler.API.Account.Types
 import Tickler.API.Admin
@@ -33,11 +32,10 @@ ticklerAPI = Proxy
 
 type TicklerAPI = ToServantApi TicklerSite
 
-data TicklerSite route
-  = TicklerSite
-      { openSite :: route :- ToServantApi TicklerOpenSite,
-        adminSite :: route :- "admin" :> ToServantApi TicklerAdminSite
-      }
+data TicklerSite route = TicklerSite
+  { openSite :: route :- ToServantApi TicklerOpenSite,
+    adminSite :: route :- "admin" :> ToServantApi TicklerAdminSite
+  }
   deriving (Generic)
 
 ticklerOpenAPI :: Proxy TicklerOpenAPI
@@ -45,23 +43,20 @@ ticklerOpenAPI = Proxy
 
 type TicklerOpenAPI = ToServantApi TicklerOpenSite
 
-data TicklerOpenSite route
-  = TicklerOpenSite
-      { protectedSite :: route :- ToServantApi TicklerProtectedSite,
-        publicSite :: route :- ToServantApi TicklerPublicSite
-      }
+data TicklerOpenSite route = TicklerOpenSite
+  { protectedSite :: route :- ToServantApi TicklerProtectedSite,
+    publicSite :: route :- ToServantApi TicklerPublicSite
+  }
   deriving (Generic)
 
 type TicklerPublicAPI = ToServantApi TicklerPublicSite
 
-data TicklerPublicSite route
-  = TicklerPublicSite
-      { postRegister :: route :- PostRegister,
-        postLogin :: route :- PostLogin,
-        getLoopersStatus :: route :- GetLoopersStatus,
-        getDocs :: route :- GetDocs,
-        getPricing :: route :- GetPricing
-      }
+data TicklerPublicSite route = TicklerPublicSite
+  { postRegister :: route :- PostRegister,
+    postLogin :: route :- PostLogin,
+    getLoopersStatus :: route :- GetLoopersStatus,
+    getPricing :: route :- GetPricing
+  }
   deriving (Generic)
 
 type PostRegister = "register" :> ReqBody '[JSON] Registration :> Post '[JSON] NoContent

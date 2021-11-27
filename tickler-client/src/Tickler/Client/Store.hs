@@ -9,10 +9,9 @@ import qualified Data.Mergeful as Mergeful
 import Import
 import Tickler.API
 
-data Store
-  = Store
-      { storeTickles :: Mergeful.ClientStore Mergeful.ClientId ItemUUID (AddedItem TypedTickle)
-      }
+data Store = Store
+  { storeTickles :: Mergeful.ClientStore Mergeful.ClientId ItemUUID (AddedItem TypedTickle)
+  }
   deriving (Show, Eq, Generic)
 
 instance Validity Store

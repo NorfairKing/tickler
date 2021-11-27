@@ -23,6 +23,7 @@ library:
   - genvalidity
   - genvalidity-bytestring
   - genvalidity-mergeful
+  - genvalidity-persistent
   - genvalidity-text
   - genvalidity-time
   - genvalidity-typed-uuid

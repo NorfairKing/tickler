@@ -14,27 +14,27 @@ spec :: Spec
 spec = do
   genValidSpec @(ItemInfo ByteString)
   genValidSpec @TypedItem
-  jsonSpecOnValid @TypedItem
-  jsonSpecOnValid @TypedItem
+  jsonSpec @TypedItem
+  jsonSpec @TypedItem
   genValidSpec @(Tickle TypedItem)
-  jsonSpecOnValid @(Tickle TypedItem)
+  jsonSpec @(Tickle TypedItem)
   genValidSpec @(ItemInfo TypedItem)
-  jsonSpecOnValid @(ItemInfo TypedItem)
+  jsonSpec @(ItemInfo TypedItem)
   genValidSpec @AddItem
-  jsonSpecOnValid @AddItem
+  jsonSpec @AddItem
   genValidSpec @TypedTriggerInfo
-  jsonSpecOnValid @TypedTriggerInfo
+  jsonSpec @TypedTriggerInfo
   genValidSpec @(TriggerInfo TypedTriggerInfo)
-  jsonSpecOnValid @(TriggerInfo TypedTriggerInfo)
+  jsonSpec @(TriggerInfo TypedTriggerInfo)
   genValidSpec @IntrayTriggerInfo
-  jsonSpecOnValid @IntrayTriggerInfo
+  jsonSpec @IntrayTriggerInfo
   genValidSpec @EmailTriggerInfo
-  jsonSpecOnValid @EmailTriggerInfo
+  jsonSpec @EmailTriggerInfo
   genValidSpec @AddIntrayTrigger
-  jsonSpecOnValid @AddIntrayTrigger
+  jsonSpec @AddIntrayTrigger
   genValidSpec @AddEmailTrigger
-  jsonSpecOnValid @AddEmailTrigger
+  jsonSpec @AddEmailTrigger
   genValidSpec @SyncRequest
-  jsonSpecOnValid @SyncRequest
+  jsonSpec @SyncRequest
   genValidSpec @SyncResponse
-  jsonSpecOnValid @SyncResponse
+  jsonSpec @SyncResponse

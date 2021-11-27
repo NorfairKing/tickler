@@ -10,22 +10,16 @@ module Tickler.Data.Gen where
 import Data.GenValidity
 import Data.GenValidity.ByteString ()
 import Data.GenValidity.Mergeful ()
+import Data.GenValidity.Persist ()
 import Data.GenValidity.Text ()
 import Data.GenValidity.Time ()
 import Data.GenValidity.UUID ()
 import Data.GenValidity.UUID.Typed ()
 import qualified Data.Text as T
-import Database.Persist.Sql
 import Import
 import Intray.API.Gen ()
 import Servant.Client.Core
 import Tickler.Data
-
-instance ToBackendKey SqlBackend a => GenUnchecked (Key a) where
-  genUnchecked = toSqlKey <$> genUnchecked
-  shrinkUnchecked = map toSqlKey . shrinkUnchecked . fromSqlKey
-
-instance ToBackendKey SqlBackend a => GenValid (Key a)
 
 instance GenValid Username where
   genValid = do
@@ -48,11 +42,7 @@ instance GenValid User where
   genValid = genValidStructurally
   shrinkValid = shrinkValidStructurally
 
-instance GenUnchecked UserSettings
-
 instance GenValid UserSettings
-
-instance GenUnchecked ItemType
 
 instance GenValid ItemType
 
@@ -64,17 +54,11 @@ instance GenValid TriggeredItem where
   genValid = genValidStructurally
   shrinkValid = shrinkValidStructurally
 
-instance GenUnchecked TriggerType
-
 instance GenValid TriggerType
-
-instance GenUnchecked UserTrigger
 
 instance GenValid UserTrigger where
   genValid = genValidStructurally
   shrinkValid = shrinkValidStructurally
-
-instance GenUnchecked Scheme
 
 instance GenValid Scheme
 

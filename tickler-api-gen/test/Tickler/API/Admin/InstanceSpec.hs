@@ -13,6 +13,6 @@ import Tickler.API.Admin.Types
 spec :: Spec
 spec = do
   genValidSpec @AdminStats
-  jsonSpecOnValid @AdminStats
+  jsonSpec @AdminStats
   genValidSpec @ActiveUsers
-  jsonSpecOnValid @ActiveUsers
+  jsonSpec @ActiveUsers

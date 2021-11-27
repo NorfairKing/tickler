@@ -15,8 +15,8 @@ spec :: Spec
 spec = do
   runIO $ hSetBuffering stdout NoBuffering
   genValidSpec @AccountInfo
-  jsonSpecOnValid @AccountInfo
+  jsonSpec @AccountInfo
   genValidSpec @AccountSettings
-  jsonSpecOnValid @AccountSettings
+  jsonSpec @AccountSettings
   genValidSpec @PaidStatus
-  jsonSpecOnValid @PaidStatus
+  jsonSpec @PaidStatus

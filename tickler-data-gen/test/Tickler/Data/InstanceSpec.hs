@@ -16,60 +16,60 @@ import Tickler.Data.Gen ()
 spec :: Spec
 spec = do
   genValidSpec @(UUID Int)
-  jsonSpecOnValid @(UUID Int)
+  jsonSpec @(UUID Int)
   genValidSpec @Username
-  jsonSpecOnValid @Username
-  persistSpecOnValid @Username
+  jsonSpec @Username
+  persistSpec @Username
   genValidSpec @HashedPassword
-  persistSpecOnValid @HashedPassword
+  persistSpec @HashedPassword
   genValidSpec @User
-  persistSpecOnValid @User
+  persistSpec @User
   genValidSpec @UserSettings
-  jsonSpecOnValid @ItemType
+  jsonSpec @ItemType
   genValidSpec @ItemType
-  persistSpecOnValid @ItemType
+  persistSpec @ItemType
   genValidSpec @TriggerType
-  persistSpecOnValid @TriggerType
+  persistSpec @TriggerType
   genValidSpec @Recurrence
-  jsonSpecOnValid @Recurrence
-  persistSpecOnValid @Recurrence
+  jsonSpec @Recurrence
+  persistSpec @Recurrence
   describe "Recurrence" $ do
     describe "everyDaysAtTime" $ it "produces valid recurrences" $ producesValid2 everyDaysAtTime
-    describe "everyMonthsOnDayAtTime"
-      $ it "produces valid recurrences"
-      $ producesValid3 everyMonthsOnDayAtTime
+    describe "everyMonthsOnDayAtTime" $
+      it "produces valid recurrences" $
+        producesValid3 everyMonthsOnDayAtTime
   genValidSpec @TicklerItem
-  -- persistSpecOnValid @TicklerItem
-  persistSpecOnValid @Mergeful.ServerTime
+  -- persistSpec @TicklerItem
+  persistSpec @Mergeful.ServerTime
   genValidSpec @TriggeredItem
-  persistSpecOnValid @TriggeredItem
+  persistSpec @TriggeredItem
   genValidSpec @UserTrigger
-  persistSpecOnValid @UserTrigger
+  persistSpec @UserTrigger
   genValidSpec @BaseUrl
-  jsonSpecOnValid @BaseUrl
-  persistSpecOnValid @BaseUrl
+  jsonSpec @BaseUrl
+  persistSpec @BaseUrl
   genValidSpec @Intray.Username
-  jsonSpecOnValid @Intray.Username
+  jsonSpec @Intray.Username
   genValidSpec @Intray.AccessKeySecret
-  jsonSpecOnValid @Intray.AccessKeySecret
+  jsonSpec @Intray.AccessKeySecret
   genValidSpec @IntrayTrigger
-  persistSpecOnValid @IntrayTrigger
+  persistSpec @IntrayTrigger
   genValidSpec @EmailAddress
-  jsonSpecOnValid @EmailAddress
-  persistSpecOnValid @EmailAddress
+  jsonSpec @EmailAddress
+  persistSpec @EmailAddress
   genValidSpec @EmailVerificationKey
-  showReadSpecOnValid @EmailVerificationKey
-  persistSpecOnValid @EmailVerificationKey
-  describe "Encode and Decode EmailVerificationKey"
-    $ it "are inverses"
-    $ forAllValid
-    $ \evk ->
-      parseEmailVerificationKeyText (emailVerificationKeyText evk) `shouldBe` Just evk
+  showReadSpec @EmailVerificationKey
+  persistSpec @EmailVerificationKey
+  describe "Encode and Decode EmailVerificationKey" $
+    it "are inverses" $
+      forAllValid $
+        \evk ->
+          parseEmailVerificationKeyText (emailVerificationKeyText evk) `shouldBe` Just evk
   genValidSpec @EmailTrigger
-  persistSpecOnValid @EmailTrigger
+  persistSpec @EmailTrigger
   genValidSpec @VerificationEmail
-  persistSpecOnValid @VerificationEmail
+  persistSpec @VerificationEmail
   genValidSpec @EmailStatus
-  persistSpecOnValid @EmailStatus
+  persistSpec @EmailStatus
   genValidSpec @Email
-  persistSpecOnValid @Email
+  persistSpec @Email

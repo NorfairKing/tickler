@@ -8,7 +8,6 @@ import sources.nixpkgs {
       (import (sources.looper + "/nix/overlay.nix"))
       (import (sources.mergeful + "/nix/overlay.nix"))
       (import (sources.mergeless + "/nix/overlay.nix"))
-      (import (sources.mergeless + "/nix/overlay.nix"))
       (import (sources.pretty-relative-time + "/nix/overlay.nix"))
       (import (sources.safe-coloured-text + "/nix/overlay.nix"))
       (import (sources.sydtest + "/nix/overlay.nix"))

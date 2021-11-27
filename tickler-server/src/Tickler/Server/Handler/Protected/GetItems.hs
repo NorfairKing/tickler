@@ -2,12 +2,11 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Protected.GetItems where
 
-import qualified Database.Esqueleto as E
 import Database.Esqueleto ((^.))
+import qualified Database.Esqueleto as E
 import Database.Persist
 import Import
 import Tickler.API
@@ -26,25 +25,25 @@ serveGetItems AuthCookie {..} mif =
           itemsEnts <-
             selectList [TriggeredItemUserId ==. authCookieUserUUID] [Asc TriggeredItemCreated]
           triggeredItemEns <-
-            E.select
-              $ E.from
-              $ \(triggeredItem `E.InnerJoin` triggeredIntrayItem) -> do
-                E.on
-                  ( triggeredIntrayItem ^. TriggeredIntrayItemItem E.==. triggeredItem
-                      ^. TriggeredItemIdentifier
-                  )
-                E.where_ (triggeredItem ^. TriggeredItemUserId E.==. E.val authCookieUserUUID)
-                pure triggeredIntrayItem
+            E.select $
+              E.from $
+                \(triggeredItem `E.InnerJoin` triggeredIntrayItem) -> do
+                  E.on
+                    ( triggeredIntrayItem ^. TriggeredIntrayItemItem E.==. triggeredItem
+                        ^. TriggeredItemIdentifier
+                    )
+                  E.where_ (triggeredItem ^. TriggeredItemUserId E.==. E.val authCookieUserUUID)
+                  pure triggeredIntrayItem
           triggeredEmailEns <-
-            E.select
-              $ E.from
-              $ \(triggeredItem `E.InnerJoin` triggeredEmailItem) -> do
-                E.on
-                  ( triggeredEmailItem ^. TriggeredEmailItem E.==. triggeredItem
-                      ^. TriggeredItemIdentifier
-                  )
-                E.where_ (triggeredItem ^. TriggeredItemUserId E.==. E.val authCookieUserUUID)
-                pure triggeredEmailItem
+            E.select $
+              E.from $
+                \(triggeredItem `E.InnerJoin` triggeredEmailItem) -> do
+                  E.on
+                    ( triggeredEmailItem ^. TriggeredEmailItem E.==. triggeredItem
+                        ^. TriggeredItemIdentifier
+                    )
+                  E.where_ (triggeredItem ^. TriggeredItemUserId E.==. E.val authCookieUserUUID)
+                  pure triggeredEmailItem
           pure $
             map
               ( \ie ->

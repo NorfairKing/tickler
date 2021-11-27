@@ -15,15 +15,15 @@ import Tickler.Server.TestUtils
 
 spec :: Spec
 spec =
-  withTicklerServer
-    $ describe "GetTrigger and PostAddEmailTrigger"
-    $ it "gets the trigger that was just added"
-    $ \cenv ->
-      forAllValid $ \t ->
-        withValidNewUser cenv $ \token -> do
-          (uuid, ti) <-
-            runClientOrError cenv $ do
-              uuid <- clientPostAddEmailTrigger token t
-              ti <- clientGetTrigger token uuid
-              pure (uuid, ti)
-          triggerInfoIdentifier ti `shouldBe` uuid
+  withTicklerServer $
+    describe "GetTrigger and PostAddEmailTrigger" $
+      it "gets the trigger that was just added" $
+        \cenv ->
+          forAllValid $ \t ->
+            withValidNewUser cenv $ \token -> do
+              (uuid, ti) <-
+                runClientOrError cenv $ do
+                  uuid <- clientPostAddEmailTrigger token t
+                  ti <- clientGetTrigger token uuid
+                  pure (uuid, ti)
+              triggerInfoIdentifier ti `shouldBe` uuid

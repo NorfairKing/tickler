@@ -39,10 +39,10 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..}
       envAPIEnvironment
       (confAPIConf <$> mConf)
   let webPort = fromMaybe 8000 $ serveFlagPort <|> envPort <|> mc confPort
-  when (API.serveSetPort apiServeSets == webPort)
-    $ die
-    $ unlines
-      ["Web server port and API port must not be the same.", "They are both: " ++ show webPort]
+  when (API.serveSetPort apiServeSets == webPort) $
+    die $
+      unlines
+        ["Web server port and API port must not be the same.", "They are both: " ++ show webPort]
   pure
     ( DispatchServe
         ServeSettings

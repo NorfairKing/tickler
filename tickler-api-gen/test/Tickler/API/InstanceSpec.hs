@@ -13,10 +13,10 @@ import Tickler.API.Types
 spec :: Spec
 spec = do
   genValidSpec @Registration
-  jsonSpecOnValid @Registration
+  jsonSpec @Registration
   genValidSpec @LoginForm
-  jsonSpecOnValid @LoginForm
+  jsonSpec @LoginForm
   genValidSpec @ChangePassphrase
-  jsonSpecOnValid @ChangePassphrase
+  jsonSpec @ChangePassphrase
   genValidSpec @Pricing
-  jsonSpecOnValid @Pricing
+  jsonSpec @Pricing

@@ -7,10 +7,10 @@ import Yesod.Test
 
 spec :: Spec
 spec =
-  ticklerWebServerSpec
-    $ ydescribe "Tickles"
-    $ yit "gets a 200 for a logged-in user"
-    $ withExampleAccountAndLogin_
-    $ do
-      get TicklesR
-      statusIs 200
+  ticklerWebServerSpec $
+    ydescribe "Tickles" $
+      yit "gets a 200 for a logged-in user" $
+        withExampleAccountAndLogin_ $
+          do
+            get TicklesR
+            statusIs 200

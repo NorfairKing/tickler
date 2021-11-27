@@ -4,7 +4,7 @@ with lib;
 
 let
   cfg = config.services.tickler."${envname}";
-  concatAttrs = attrList: fold (x: y: x // y) {} attrList;
+  concatAttrs = attrList: fold (x: y: x // y) { } attrList;
 in
 {
   options.services.tickler."${envname}" =
@@ -20,14 +20,14 @@ in
       web-hosts =
         mkOption {
           type = types.listOf types.str;
-          default = [];
+          default = [ ];
           example = [ "tickler.cs-syd.eu" ];
           description = "The host to serve web requests on";
         };
       api-hosts =
         mkOption {
           type = types.listOf types.str;
-          default = [];
+          default = [ ];
           example = [ "api.tickler.cs-syd.eu" ];
           description = "The host to serve API requests on";
         };
@@ -224,16 +224,16 @@ in
                         default = null;
                       };
                   in
-                    {
-                      triggerer = looperOption;
-                      emailer = looperOption;
-                      triggered-intray-item-scheduler = looperOption;
-                      triggered-intray-item-sender = looperOption;
-                      verification-email-converter = looperOption;
-                      triggered-email-scheduler = looperOption;
-                      triggered-email-converter = looperOption;
-                      admin-notification-email-converter = looperOption;
-                    };
+                  {
+                    triggerer = looperOption;
+                    emailer = looperOption;
+                    triggered-intray-item-scheduler = looperOption;
+                    triggered-intray-item-sender = looperOption;
+                    verification-email-converter = looperOption;
+                    triggered-email-scheduler = looperOption;
+                    triggered-email-converter = looperOption;
+                    admin-notification-email-converter = looperOption;
+                  };
               }
             );
           default = null;
@@ -248,9 +248,10 @@ in
           configFile =
             let
               config =
-                optionalAttrs (cfg.api-hosts != []) {
-                  api-host = head cfg.api-hosts;
-                } // optionalAttrs (cfg.web-hosts != []) {
+                optionalAttrs (cfg.api-hosts != [ ])
+                  {
+                    api-host = head cfg.api-hosts;
+                  } // optionalAttrs (cfg.web-hosts != [ ]) {
                   web-host = head cfg.web-hosts;
                 } // optionalAttrs (!(builtins.isNull cfg.default-intray-url)) {
                   default-intray-url = cfg.default-intray-url;
@@ -273,85 +274,85 @@ in
                     let
                       looperConf =
                         subcfg:
-                          optionalAttrs (!builtins.isNull subcfg) {
-                            enable = subcfg.enabled or null;
-                            period = subcfg.period;
-                            retry-policy =
-                              {
-                                delay = subcfg.retry-delay;
-                                amount = subcfg.retry-amount;
-                              };
-                          };
+                        optionalAttrs (!builtins.isNull subcfg) {
+                          enable = subcfg.enabled or null;
+                          period = subcfg.period;
+                          retry-policy =
+                            {
+                              delay = subcfg.retry-delay;
+                              amount = subcfg.retry-amount;
+                            };
+                        };
                       looperConfSet =
                         name: val: extra:
-                          {
-                            "${name}" =
-                              optionalAttrs (!builtins.isNull cfg.loopers) (looperConf val) // { conf = extra; };
-                          };
-                    in
-                      concatAttrs [
                         {
-                          "default-enabled" = cfg.default-looper-enabled;
-                          "default-period" = cfg.default-looper-period;
-                          "default-retry-delay" =
-                            cfg.default-looper-retry-delay;
-                          "default-retry-amount" =
-                            cfg.default-looper-retry-amount;
+                          "${name}" =
+                            optionalAttrs (!builtins.isNull cfg.loopers) (looperConf val) // { conf = extra; };
+                        };
+                    in
+                    concatAttrs [
+                      {
+                        "default-enabled" = cfg.default-looper-enabled;
+                        "default-period" = cfg.default-looper-period;
+                        "default-retry-delay" =
+                          cfg.default-looper-retry-delay;
+                        "default-retry-amount" =
+                          cfg.default-looper-retry-amount;
+                      }
+                      (
+                        looperConfSet "triggerer" cfg.loopers.triggerer null
+                      )
+                      (looperConfSet "emailer" cfg.loopers.emailer null)
+                      (
+                        looperConfSet "triggered-intray-item-scheduler" cfg.loopers.triggered-intray-item-scheduler null
+                      )
+                      (
+                        looperConfSet "triggered-intray-item-sender" cfg.loopers.triggered-intray-item-sender null
+                      )
+                      (
+                        looperConfSet "verification-email-converter" cfg.loopers.verification-email-converter { "from" = cfg.email-verification-address; }
+                      )
+                      (
+                        looperConfSet "triggered-email-scheduler" cfg.loopers.triggered-email-scheduler null
+                      )
+                      (
+                        looperConfSet "triggered-email-converter" cfg.loopers.triggered-email-converter { "from" = cfg.email-triggered-address; }
+                      )
+                      (
+                        looperConfSet "admin-notification-email-converter" cfg.loopers.admin-notification-email-converter {
+                          "from" =
+                            cfg.email-admin-notification-from-address;
+                          "to" = cfg.email-admin-notification-to-address;
                         }
-                        (
-                          looperConfSet "triggerer" cfg.loopers.triggerer null
-                        )
-                        (looperConfSet "emailer" cfg.loopers.emailer null)
-                        (
-                          looperConfSet "triggered-intray-item-scheduler" cfg.loopers.triggered-intray-item-scheduler null
-                        )
-                        (
-                          looperConfSet "triggered-intray-item-sender" cfg.loopers.triggered-intray-item-sender null
-                        )
-                        (
-                          looperConfSet "verification-email-converter" cfg.loopers.verification-email-converter { "from" = cfg.email-verification-address; }
-                        )
-                        (
-                          looperConfSet "triggered-email-scheduler" cfg.loopers.triggered-email-scheduler null
-                        )
-                        (
-                          looperConfSet "triggered-email-converter" cfg.loopers.triggered-email-converter { "from" = cfg.email-triggered-address; }
-                        )
-                        (
-                          looperConfSet "admin-notification-email-converter" cfg.loopers.admin-notification-email-converter {
-                            "from" =
-                              cfg.email-admin-notification-from-address;
-                            "to" = cfg.email-admin-notification-to-address;
-                          }
-                        )
-                      ];
+                      )
+                    ];
                 };
             in
-              pkgs.writeText "tickler-config" (builtins.toJSON config);
+            pkgs.writeText "tickler-config" (builtins.toJSON config);
           unlessNull = o: optionalAttrs (!builtins.isNull o);
         in
-          {
-            description = "Tickler ${envname} Service";
-            wantedBy = [ "multi-user.target" ];
-            script =
-              ''
-                mkdir -p "${workingDir}"
-                cd "${workingDir}"
-                ${tickler-pkgs.tickler-web-server}/bin/tickler-web-server serve --config-file ${configFile}
-              '';
-            serviceConfig =
-              {
-                Restart = "always";
-                RestartSec = 1;
-                Nice = 15;
-              };
-            unitConfig =
-              {
-                StartLimitIntervalSec = 0;
-                # ensure Restart=always is always honoured
-              };
-          };
-      api-host = optionalAttrs (cfg.api-hosts != []) {
+        {
+          description = "Tickler ${envname} Service";
+          wantedBy = [ "multi-user.target" ];
+          script =
+            ''
+              mkdir -p "${workingDir}"
+              cd "${workingDir}"
+              ${tickler-pkgs.tickler-web-server}/bin/tickler-web-server serve --config-file ${configFile}
+            '';
+          serviceConfig =
+            {
+              Restart = "always";
+              RestartSec = 1;
+              Nice = 15;
+            };
+          unitConfig =
+            {
+              StartLimitIntervalSec = 0;
+              # ensure Restart=always is always honoured
+            };
+        };
+      api-host = optionalAttrs (cfg.api-hosts != [ ]) {
         "${head (cfg.api-hosts)}" =
           {
             enableACME = true;
@@ -361,7 +362,7 @@ in
             serverAliases = tail cfg.api-hosts;
           };
       };
-      web-host = optionalAttrs (cfg.web-hosts != []) {
+      web-host = optionalAttrs (cfg.web-hosts != [ ]) {
         "${head (cfg.web-hosts)}" =
           {
             enableACME = true;
@@ -372,12 +373,12 @@ in
           };
       };
     in
-      mkIf cfg.enable {
-        systemd.services =
-          {
-            "tickler-${envname}" = tickler-service;
-          };
-        networking.firewall.allowedTCPPorts = [ cfg.web-port cfg.api-port ];
-        services.nginx.virtualHosts = api-host // web-host;
-      };
+    mkIf cfg.enable {
+      systemd.services =
+        {
+          "tickler-${envname}" = tickler-service;
+        };
+      networking.firewall.allowedTCPPorts = [ cfg.web-port cfg.api-port ];
+      services.nginx.virtualHosts = api-host // web-host;
+    };
 }

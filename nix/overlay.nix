@@ -7,88 +7,88 @@ with final.haskell.lib;
       pathFor = name: final.gitignoreSource (../. + "/${name}");
       ticklerPkg =
         name:
-          failOnAllWarnings (
-            disableLibraryProfiling (final.haskellPackages.callCabal2nix name (pathFor name) {})
-          );
+        failOnAllWarnings (
+          disableLibraryProfiling (final.haskellPackages.callCabal2nix name (pathFor name) { })
+        );
       ticklerPkgWithComp =
         exeName: name:
-          generateOptparseApplicativeCompletion exeName (ticklerPkg name);
+        generateOptparseApplicativeCompletion exeName (ticklerPkg name);
       ticklerPkgWithOwnComp = name: ticklerPkgWithComp name name;
     in
-      {
-        "tickler-data" = ticklerPkg "tickler-data";
-        "tickler-data-gen" = ticklerPkg "tickler-data-gen";
-        "tickler-api" = ticklerPkg "tickler-api";
-        "tickler-api-gen" = ticklerPkg "tickler-api-gen";
-        "tickler-cli" = ticklerPkgWithComp "tickler" "tickler-cli";
-        "tickler-client" = ticklerPkg "tickler-client";
-        "tickler-client-gen" = ticklerPkg "tickler-client-gen";
-        "tickler-server" = ticklerPkgWithOwnComp "tickler-server";
-        "tickler-server-gen" = ticklerPkg "tickler-server-gen";
-        "tickler-web-server" =
-          let
-            semantic-js =
-              builtins.fetchurl {
-                url =
-                  https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js;
-                sha256 =
-                  "sha256:0ll00jawcwd4nj568sj7lfp2ixrni9wqf37sz5nhz6wggjk9xhdp";
-              };
-            semantic-css =
-              builtins.fetchurl {
-                url =
-                  https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css;
-                sha256 =
-                  "sha256:0m13jdkv3vdqr0pbr1zfc2ndsafr2p5mnfzkbm7pd8v1ylwy8rpn";
-              };
-            jquery-js =
-              builtins.fetchurl {
-                url = https://code.jquery.com/jquery-3.1.1.min.js;
-                sha256 =
-                  "sha256:1gyrxy9219l11mn8c6538hnh3gr6idmimm7wv37183c0m1hnfmc5";
-              };
-            icons-ttf =
-              builtins.fetchurl {
-                url =
-                  https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.ttf;
-                sha256 =
-                  "sha256:1nm34hrh3inyrq7cbkh47g8m2hbqpsgkzbdrpfiiii7m8bsq2zyb";
-              };
-            icons-woff =
-              builtins.fetchurl {
-                url =
-                  https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.woff;
-                sha256 =
-                  "sha256:1qgzlmd80c4ckh9zpfl2qzjvg389hvmkdhkv8amyq4c71y2a9dlm";
-              };
-            icons-woff2 =
-              builtins.fetchurl {
-                url =
-                  https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.woff2;
-                sha256 =
-                  "sha256:1lqd60f1pml8zc93hgwcm6amkcy6rnbq3cyxqv5a3a25jnsnci23";
-              };
-          in
-            overrideCabal (ticklerPkgWithOwnComp "tickler-web-server") (
-              old:
-                {
-                  preConfigure =
-                    ''
-                      ${old.preConfigure or ""}
+    {
+      "tickler-data" = ticklerPkg "tickler-data";
+      "tickler-data-gen" = ticklerPkg "tickler-data-gen";
+      "tickler-api" = ticklerPkg "tickler-api";
+      "tickler-api-gen" = ticklerPkg "tickler-api-gen";
+      "tickler-cli" = ticklerPkgWithComp "tickler" "tickler-cli";
+      "tickler-client" = ticklerPkg "tickler-client";
+      "tickler-client-gen" = ticklerPkg "tickler-client-gen";
+      "tickler-server" = ticklerPkgWithOwnComp "tickler-server";
+      "tickler-server-gen" = ticklerPkg "tickler-server-gen";
+      "tickler-web-server" =
+        let
+          semantic-js =
+            builtins.fetchurl {
+              url =
+                https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js;
+              sha256 =
+                "sha256:0ll00jawcwd4nj568sj7lfp2ixrni9wqf37sz5nhz6wggjk9xhdp";
+            };
+          semantic-css =
+            builtins.fetchurl {
+              url =
+                https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css;
+              sha256 =
+                "sha256:0m13jdkv3vdqr0pbr1zfc2ndsafr2p5mnfzkbm7pd8v1ylwy8rpn";
+            };
+          jquery-js =
+            builtins.fetchurl {
+              url = https://code.jquery.com/jquery-3.1.1.min.js;
+              sha256 =
+                "sha256:1gyrxy9219l11mn8c6538hnh3gr6idmimm7wv37183c0m1hnfmc5";
+            };
+          icons-ttf =
+            builtins.fetchurl {
+              url =
+                https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.ttf;
+              sha256 =
+                "sha256:1nm34hrh3inyrq7cbkh47g8m2hbqpsgkzbdrpfiiii7m8bsq2zyb";
+            };
+          icons-woff =
+            builtins.fetchurl {
+              url =
+                https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.woff;
+              sha256 =
+                "sha256:1qgzlmd80c4ckh9zpfl2qzjvg389hvmkdhkv8amyq4c71y2a9dlm";
+            };
+          icons-woff2 =
+            builtins.fetchurl {
+              url =
+                https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.woff2;
+              sha256 =
+                "sha256:1lqd60f1pml8zc93hgwcm6amkcy6rnbq3cyxqv5a3a25jnsnci23";
+            };
+        in
+        overrideCabal (ticklerPkgWithOwnComp "tickler-web-server") (
+          old:
+          {
+            preConfigure =
+              ''
+                ${old.preConfigure or ""}
 
-                      mkdir -p static/
-                      cp ${jquery-js} static/jquery.min.js
-                      mkdir -p static/semantic/
-                      cp ${semantic-css} static/semantic/semantic.min.css
-                      cp ${semantic-js} static/semantic/semantic.min.js
-                      mkdir -p static/semantic/themes/default/assets/fonts
-                      cp ${icons-ttf} static/semantic/themes/default/assets/fonts/icons.ttf
-                      cp ${icons-woff} static/semantic/themes/default/assets/fonts/icons.woff
-                      cp ${icons-woff2} static/semantic/themes/default/assets/fonts/icons.woff2
-                    '';
-                }
-            );
-      };
+                mkdir -p static/
+                cp ${jquery-js} static/jquery.min.js
+                mkdir -p static/semantic/
+                cp ${semantic-css} static/semantic/semantic.min.css
+                cp ${semantic-js} static/semantic/semantic.min.js
+                mkdir -p static/semantic/themes/default/assets/fonts
+                cp ${icons-ttf} static/semantic/themes/default/assets/fonts/icons.ttf
+                cp ${icons-woff} static/semantic/themes/default/assets/fonts/icons.woff
+                cp ${icons-woff2} static/semantic/themes/default/assets/fonts/icons.woff2
+              '';
+          }
+        );
+    };
 
   ticklerRelease =
     final.symlinkJoin {
@@ -102,7 +102,7 @@ with final.haskell.lib;
         let
           ticklerPkg =
             name:
-              disableLibraryProfiling (super.callCabal2nix name (./. + "/${name}") {});
+            disableLibraryProfiling (super.callCabal2nix name (./. + "/${name}") { });
           looperRepo =
             final.fetchFromGitHub {
               owner = "NorfairKing";
@@ -111,7 +111,7 @@ with final.haskell.lib;
               sha256 =
                 "sha256:1sx5gc41vrmvcgrbh7g83zhrpqwz339g4fq0m1c15hhlz4480lh8";
             };
-          looperPkg = self.callCabal2nix "looper" (looperRepo) {};
+          looperPkg = self.callCabal2nix "looper" (looperRepo) { };
           servantAuthRepo =
             final.fetchFromGitHub {
               owner = "haskell-servant";
@@ -139,49 +139,54 @@ with final.haskell.lib;
             };
           stripeHaskellPkg =
             name:
-              dontCheck (
-                self.callCabal2nix name (stripeHaskellRepo + "/${name}") {}
-              );
+            dontCheck (
+              self.callCabal2nix name (stripeHaskellRepo + "/${name}") { }
+            );
           servantAuthPkg =
             name:
-              doJailbreak (
-                self.callCabal2nix name (servantAuthRepo + "/${name}") {}
-              );
+            doJailbreak (
+              self.callCabal2nix name (servantAuthRepo + "/${name}") { }
+            );
           persistentPkg =
             name:
-              overrideCabal (
+            overrideCabal
+              (
                 # Because there is some nastiness that makes nix think we need the haskell sqlite library.
-                self.callCabal2nix name (persistentRepo + "/${name}") {}
-              ) (
+                self.callCabal2nix name (persistentRepo + "/${name}") { }
+              )
+              (
                 old:
-                  {
-                    librarySystemDepends = [ final.sqlite ];
-                  }
+                {
+                  librarySystemDepends = [ final.sqlite ];
+                }
               );
         in
-          with final.haskellPackages;
+        with final.haskellPackages;
 
-          {
-            amazonka = callHackage "amazonka" "1.6.1" {};
-            amazonka-test = callHackage "amazonka-test" "1.6.1" {};
-            amazonka-core = callHackage "amazonka-core" "1.6.1" {};
-            amazonka-ses = callHackage "amazonka-ses" "1.6.1" {};
-            looper = looperPkg;
-          } // final.lib.genAttrs [
-            "stripe-core"
-            "stripe-haskell"
-            "stripe-http-client"
-            "stripe-http-streams"
-          ] stripeHaskellPkg // final.lib.genAttrs [
-            "servant-auth"
-            "servant-auth-client"
-            "servant-auth-docs"
-            "servant-auth-swagger"
-            "servant-auth-server"
-          ] servantAuthPkg // final.lib.genAttrs [
-            "persistent"
-            "persistent-sqlite"
-            "persistent-template"
-          ] persistentPkg // final.ticklerPackages
+        {
+          amazonka = callHackage "amazonka" "1.6.1" { };
+          amazonka-test = callHackage "amazonka-test" "1.6.1" { };
+          amazonka-core = callHackage "amazonka-core" "1.6.1" { };
+          amazonka-ses = callHackage "amazonka-ses" "1.6.1" { };
+          looper = looperPkg;
+        } // final.lib.genAttrs [
+          "stripe-core"
+          "stripe-haskell"
+          "stripe-http-client"
+          "stripe-http-streams"
+        ]
+          stripeHaskellPkg // final.lib.genAttrs [
+          "servant-auth"
+          "servant-auth-client"
+          "servant-auth-docs"
+          "servant-auth-swagger"
+          "servant-auth-server"
+        ]
+          servantAuthPkg // final.lib.genAttrs [
+          "persistent"
+          "persistent-sqlite"
+          "persistent-template"
+        ]
+          persistentPkg // final.ticklerPackages
     );
 }

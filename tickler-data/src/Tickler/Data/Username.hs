@@ -22,10 +22,9 @@ import Database.Persist.Sql
 import Import
 import YamlParse.Applicative
 
-newtype Username
-  = Username
-      { usernameText :: Text
-      }
+newtype Username = Username
+  { usernameText :: Text
+  }
   deriving (Show, Eq, Ord, Generic)
 
 instance Validity Username where
@@ -33,10 +32,10 @@ instance Validity Username where
     mconcat
       [ check (not (T.null t)) "The username is not empty.",
         check (T.length t >= 3) "The username is at least three characters long.",
-        mconcat
-          $ flip map (zip [1 ..] $ map UsernameChar $ T.unpack t)
-          $ \(ix, uc@(UsernameChar c)) ->
-            annotate uc $ unwords ["character number", show (ix :: Int), "of the username:", show c]
+        mconcat $
+          flip map (zip [1 ..] $ map UsernameChar $ T.unpack t) $
+            \(ix, uc@(UsernameChar c)) ->
+              annotate uc $ unwords ["character number", show (ix :: Int), "of the username:", show c]
       ]
 
 instance Hashable Username

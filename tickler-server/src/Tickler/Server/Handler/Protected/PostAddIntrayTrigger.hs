@@ -3,7 +3,6 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Protected.PostAddIntrayTrigger
   ( servePostAddIntrayTrigger,
@@ -33,17 +32,17 @@ servePostAddIntrayTrigger AuthCookie {..} AddIntrayTrigger {..} = do
   errOrOk <-
     do
       let env = ClientEnv man addIntrayTriggerUrl Nothing
-      liftIO
-        $ flip runClientM env
-        $ do
-          let loginForm =
-                Intray.LoginForm
-                  { Intray.loginFormUsername = addIntrayTriggerUsername,
-                    Intray.loginFormPassword = Intray.accessKeySecretText addIntrayTriggerAccessKey
-                  }
-          res <- Intray.clientPostLogin loginForm
-          case res of
-            Headers Intray.NoContent (HCons _ HNil) -> pure ()
+      liftIO $
+        flip runClientM env $
+          do
+            let loginForm =
+                  Intray.LoginForm
+                    { Intray.loginFormUsername = addIntrayTriggerUsername,
+                      Intray.loginFormPassword = Intray.accessKeySecretText addIntrayTriggerAccessKey
+                    }
+            res <- Intray.clientPostLogin loginForm
+            case res of
+              Headers Intray.NoContent (HCons _ HNil) -> pure ()
   case errOrOk of
     Left err ->
       case err of

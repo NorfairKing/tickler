@@ -13,8 +13,8 @@ import Tickler.Data
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
 import Tickler.Server.OptParse.Types
-import qualified Web.Stripe as Stripe
 import Web.Stripe as Stripe ((-&-))
+import qualified Web.Stripe as Stripe
 import Web.Stripe.Conduit
 import qualified Web.Stripe.Customer as Stripe
 import qualified Web.Stripe.Event as Stripe
@@ -52,13 +52,13 @@ handleEvent :: Stripe.Event -> Looper StripeEvent
 handleEvent Stripe.Event {..} =
   let err t = do
         logErr t
-        runDb
-          $ insert_
-          $ AdminNotificationEmail
-            { adminNotificationEmailContents =
-                T.unlines ["The following problem occurred during Stripe event handling: ", t],
-              adminNotificationEmailEmail = Nothing
-            }
+        runDb $
+          insert_ $
+            AdminNotificationEmail
+              { adminNotificationEmailContents =
+                  T.unlines ["The following problem occurred during Stripe event handling: ", t],
+                adminNotificationEmailEmail = Nothing
+              }
         pure $ StripeEvent {stripeEventEvent = eventId, stripeEventError = Just t}
    in case eventType of
         Stripe.CheckoutSessionCompletedEvent ->
@@ -68,7 +68,7 @@ handleEvent Stripe.Event {..} =
                 Stripe.SessionSubscription eCus _ ->
                   case sessionClientReferenceId of
                     Just crid ->
-                      case parseUUID (Stripe.getClientReferenceId crid) of
+                      case parseUUIDText (Stripe.getClientReferenceId crid) of
                         Just au ->
                           completePayment eventId au $
                             case eCus of
@@ -82,12 +82,12 @@ handleEvent Stripe.Event {..} =
 
 completePayment :: Stripe.EventId -> AccountUUID -> Stripe.CustomerId -> Looper StripeEvent
 completePayment eventId account cid = do
-  void
-    $ runDb
-    $ upsertBy
-      (UniqueCustomerUser account)
-      (Customer {customerUser = account, customerStripeCustomer = cid})
-      [CustomerStripeCustomer =. cid]
+  void $
+    runDb $
+      upsertBy
+        (UniqueCustomerUser account)
+        (Customer {customerUser = account, customerStripeCustomer = cid})
+        [CustomerStripeCustomer =. cid]
   pure StripeEvent {stripeEventEvent = eventId, stripeEventError = Nothing}
 
 logErr :: Text -> Looper ()

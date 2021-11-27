@@ -17,8 +17,6 @@ where
 import Import
 import Servant.API
 import Servant.API.Generic
-import Servant.Auth.Docs ()
-import Servant.Docs
 import Tickler.API.Account.Types
 import Tickler.API.Protected.Types
 import Tickler.API.Types
@@ -26,30 +24,29 @@ import Tickler.Data
 
 type TicklerProtectedAPI = ToServantApi TicklerProtectedSite
 
-data TicklerProtectedSite route
-  = TicklerProtectedSite
-      { getItemUUIDs :: !(route :- GetItemUUIDs),
-        getItems :: !(route :- GetItems),
-        postAddItem :: !(route :- PostAddItem),
-        getItem :: !(route :- GetItem),
-        postItem :: !(route :- PostItem),
-        deleteItem :: !(route :- DeleteItem),
-        postRetryTriggered :: !(route :- PostRetryTriggered),
-        deleteTriggereds :: !(route :- DeleteTriggereds),
-        postSync :: !(route :- PostSync),
-        getTriggers :: !(route :- GetTriggers),
-        getTrigger :: !(route :- GetTrigger),
-        postAddIntrayTrigger :: !(route :- PostAddIntrayTrigger),
-        postAddEmailTrigger :: !(route :- PostAddEmailTrigger),
-        postEmailTriggerVerify :: !(route :- PostEmailTriggerVerify),
-        postEmailTriggerResendVerificationEmail :: !(route :- PostEmailTriggerResendVerificationEmail),
-        deleteTrigger :: !(route :- DeleteTrigger),
-        getAccountInfo :: !(route :- GetAccountInfo),
-        getAccountSettings :: !(route :- GetAccountSettings),
-        postChangePassphrase :: route :- PostChangePassphrase,
-        putAccountSettings :: !(route :- PutAccountSettings),
-        deleteAccount :: !(route :- DeleteAccount)
-      }
+data TicklerProtectedSite route = TicklerProtectedSite
+  { getItemUUIDs :: !(route :- GetItemUUIDs),
+    getItems :: !(route :- GetItems),
+    postAddItem :: !(route :- PostAddItem),
+    getItem :: !(route :- GetItem),
+    postItem :: !(route :- PostItem),
+    deleteItem :: !(route :- DeleteItem),
+    postRetryTriggered :: !(route :- PostRetryTriggered),
+    deleteTriggereds :: !(route :- DeleteTriggereds),
+    postSync :: !(route :- PostSync),
+    getTriggers :: !(route :- GetTriggers),
+    getTrigger :: !(route :- GetTrigger),
+    postAddIntrayTrigger :: !(route :- PostAddIntrayTrigger),
+    postAddEmailTrigger :: !(route :- PostAddEmailTrigger),
+    postEmailTriggerVerify :: !(route :- PostEmailTriggerVerify),
+    postEmailTriggerResendVerificationEmail :: !(route :- PostEmailTriggerResendVerificationEmail),
+    deleteTrigger :: !(route :- DeleteTrigger),
+    getAccountInfo :: !(route :- GetAccountInfo),
+    getAccountSettings :: !(route :- GetAccountSettings),
+    postChangePassphrase :: route :- PostChangePassphrase,
+    putAccountSettings :: !(route :- PutAccountSettings),
+    deleteAccount :: !(route :- DeleteAccount)
+  }
   deriving (Generic)
 
 -- | The order of the items is not guaranteed to be the same for every call.
@@ -59,14 +56,6 @@ type GetItemUUIDs = ProtectAPI :> "tickler" :> "uuids" :> Get '[JSON] [ItemUUID]
 type GetItems =
   ProtectAPI :> "tickler" :> "items" :> QueryParam "filter" ItemFilter :> Get '[JSON] [ItemInfo TypedItem]
 
-instance ToParam (QueryParam "filter" ItemFilter) where
-  toParam Proxy =
-    DocQueryParam
-      "filter"
-      (map show [minBound .. maxBound :: ItemFilter])
-      "Optionally specify a filter on the items"
-      Normal
-
 type PostAddItem =
   ProtectAPI :> "tickler" :> "item" :> ReqBody '[JSON] AddItem :> Post '[JSON] ItemUUID
 
@@ -75,9 +64,6 @@ type GetItem =
 
 type PostItem =
   ProtectAPI :> "tickler" :> "item" :> "info" :> Capture "id" ItemUUID :> ReqBody '[JSON] TypedTickle :> Post '[JSON] NoContent
-
-instance ToCapture (Capture "id" ItemUUID) where
-  toCapture _ = DocCapture "id" "The UUID of the item"
 
 type DeleteItem =
   ProtectAPI :> "tickler" :> "item" :> "delete" :> Capture "id" ItemUUID :> Delete '[JSON] NoContent
@@ -95,9 +81,6 @@ type GetTriggers = ProtectAPI :> "trigger" :> Get '[JSON] [TriggerInfo TypedTrig
 type GetTrigger =
   ProtectAPI :> "trigger" :> "info" :> Capture "id" TriggerUUID :> Get '[JSON] (TriggerInfo TypedTriggerInfo)
 
-instance ToCapture (Capture "id" TriggerUUID) where
-  toCapture _ = DocCapture "id" "The UUID of the trigger"
-
 type PostAddIntrayTrigger =
   ProtectAPI :> "trigger" :> "intray" :> ReqBody '[JSON] AddIntrayTrigger :> Post '[JSON] (Either Text TriggerUUID)
 
@@ -106,9 +89,6 @@ type PostAddEmailTrigger =
 
 type PostEmailTriggerVerify =
   ProtectAPI :> "trigger" :> "email" :> "verify" :> Capture "id" TriggerUUID :> Capture "key" EmailVerificationKey :> Post '[JSON] NoContent
-
-instance ToCapture (Capture "key" EmailVerificationKey) where
-  toCapture _ = DocCapture "key" "The verification key that was sent in the verification email"
 
 type PostEmailTriggerResendVerificationEmail =
   ProtectAPI :> "trigger" :> "email" :> "resend" :> Capture "id" TriggerUUID :> Post '[JSON] NoContent

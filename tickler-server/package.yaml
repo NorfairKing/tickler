@@ -62,7 +62,6 @@ library:
   - servant-auth-server
   - servant-client
   - servant-client-core
-  - servant-docs
   - servant-server
   - shakespeare
   - stripe-core

@@ -11,16 +11,28 @@
         "url": "https://github.com/NorfairKing/autodocodec/archive/f0cb2ead0985b4394db0627e6befd7ce23c54c22.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "intray": {
+    "gitignore": {
         "branch": "master",
+        "description": "Nix functions for filtering local git sources",
+        "homepage": "",
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "rev": "5b9e0ff9d3b551234b4f3eb3983744fa354b17f1",
+        "sha256": "01l4phiqgw9xgaxr6jr456qmww6kzghqrnbc7aiiww3h6db5vw53",
+        "type": "tarball",
+        "url": "https://github.com/hercules-ci/gitignore.nix/archive/5b9e0ff9d3b551234b4f3eb3983744fa354b17f1.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "intray": {
+        "branch": "development",
         "description": "GTD Capture tool",
         "homepage": "https://intray.eu",
         "owner": "NorfairKing",
         "repo": "intray",
-        "rev": "be1ce0539eb790492c4bd55f5f10216698464370",
-        "sha256": "11fbqaax84pdsnvy6bi24h38c113aggkz2i1z4nmlg8m6xxnmks9",
+        "rev": "7d7374906f737f487b8b2379c7993acdcafcf089",
+        "sha256": "17plkl9rzw9y2a3yd6dn8bxfj90np4n7ws269bwcwbi27fchfngw",
         "type": "tarball",
-        "url": "https://github.com/NorfairKing/intray/archive/be1ce0539eb790492c4bd55f5f10216698464370.tar.gz",
+        "url": "https://github.com/NorfairKing/intray/archive/7d7374906f737f487b8b2379c7993acdcafcf089.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "looper": {
@@ -47,6 +59,18 @@
         "url": "https://github.com/NorfairKing/mergeful/archive/5a81800ab75c08c5cf2781accf74944cfee30762.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "mergeless": {
+        "branch": "master",
+        "description": "Merge-less syncing of arbitrary immutable items",
+        "homepage": "http://hackage.haskell.org/package/mergeless",
+        "owner": "NorfairKing",
+        "repo": "mergeless",
+        "rev": "9a10547aba61f10a32ba2a54dbe7301ced48f9fc",
+        "sha256": "0g4kvjp9axp727x3h51a9fa78286iwq3pbf33zq9nfi8rxz573gx",
+        "type": "tarball",
+        "url": "https://github.com/NorfairKing/mergeless/archive/9a10547aba61f10a32ba2a54dbe7301ced48f9fc.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "niv": {
         "branch": "master",
         "description": "Easy dependency management for Nix projects",
@@ -60,15 +84,27 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "nixpkgs": {
-        "branch": "release-20.03",
+        "branch": "20.09",
         "description": "Nix Packages collection",
         "homepage": "",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "eb73405ecceb1dc505b7cbbd234f8f94165e2696",
-        "sha256": "06k21wbyhhvq2f1xczszh3c2934p0m02by3l2ixvd6nkwrqklax7",
+        "rev": "cd63096d6d887d689543a0b97743d28995bc9bc3",
+        "sha256": "1wg61h4gndm3vcprdcg7rc4s1v3jkm5xd7lw8r2f67w502y94gcy",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/eb73405ecceb1dc505b7cbbd234f8f94165e2696.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs/archive/cd63096d6d887d689543a0b97743d28995bc9bc3.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "pre-commit-hooks": {
+        "branch": "master",
+        "description": "Seamless integration of https://pre-commit.com git hooks with Nix.",
+        "homepage": "",
+        "owner": "hercules-ci",
+        "repo": "nix-pre-commit-hooks",
+        "rev": "c3b4f94350b0e59c2546fa85890cc70d03616b9c",
+        "sha256": "1x90b2m8kzxzslfssvnaq9s1m0n9rxqw41qhz298gnv4nvahcr0f",
+        "type": "tarball",
+        "url": "https://github.com/hercules-ci/nix-pre-commit-hooks/archive/c3b4f94350b0e59c2546fa85890cc70d03616b9c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "pretty-relative-time": {
@@ -93,6 +129,18 @@
         "sha256": "0lgq503wa3ws5cci82kmaz4ws6bl9fz11i73kkqmmrldsr0gsvs0",
         "type": "tarball",
         "url": "https://github.com/NorfairKing/safe-coloured-text/archive/f30fe0e4d2a0fa036967ffe17538b60e5f9861f5.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "sydtest": {
+        "branch": "master",
+        "description": "A modern testing framework for Haskell with good defaults and advanced testing features.",
+        "homepage": "",
+        "owner": "NorfairKing",
+        "repo": "sydtest",
+        "rev": "e75c55b920936e344b779093b2a0318fb35d1770",
+        "sha256": "086mr29c5a3fysz8nx06a0j8g1asy63xpqpi546bydxqxny9hyvl",
+        "type": "tarball",
+        "url": "https://github.com/NorfairKing/sydtest/archive/e75c55b920936e344b779093b2a0318fb35d1770.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "typed-uuid": {

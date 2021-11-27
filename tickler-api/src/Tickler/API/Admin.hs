@@ -14,7 +14,6 @@ where
 import Import
 import Servant.API
 import Servant.API.Generic
-import Servant.Auth.Docs ()
 import Tickler.API.Account.Types
 import Tickler.API.Admin.Types
 import Tickler.API.Types
@@ -22,12 +21,11 @@ import Tickler.Data
 
 type TicklerAdminAPI = ToServantApi TicklerAdminSite
 
-data TicklerAdminSite route
-  = TicklerAdminSite
-      { adminGetStats :: route :- AdminGetStats,
-        adminDeleteAccount :: route :- AdminDeleteAccount,
-        adminGetAccounts :: route :- AdminGetAccounts
-      }
+data TicklerAdminSite route = TicklerAdminSite
+  { adminGetStats :: route :- AdminGetStats,
+    adminDeleteAccount :: route :- AdminDeleteAccount,
+    adminGetAccounts :: route :- AdminGetAccounts
+  }
   deriving (Generic)
 
 type AdminGetStats = ProtectAPI :> "stats" :> Get '[JSON] AdminStats

@@ -3,7 +3,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Tickler.Server.Handler.Public.PostRegister
   ( servePostRegister,
@@ -45,12 +44,12 @@ servePostRegister Registration {..} = do
           throwError
             err409
               { errBody =
-                  LB.fromStrict
-                    $ TE.encodeUtf8
-                    $ T.unwords
-                      [ "Account with the username",
-                        usernameText registrationUsername,
-                        "already exists."
-                      ]
+                  LB.fromStrict $
+                    TE.encodeUtf8 $
+                      T.unwords
+                        [ "Account with the username",
+                          usernameText registrationUsername,
+                          "already exists."
+                        ]
               }
   pure NoContent
