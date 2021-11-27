@@ -5,7 +5,7 @@ module Tickler.API.Protected.InstanceSpec
   )
 where
 
-import Test.Validity.Aeson
+import Test.Syd.Validity.Aeson
 import TestImport
 import Tickler.API.Protected.Gen ()
 import Tickler.API.Protected.Types

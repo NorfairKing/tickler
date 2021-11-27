@@ -3,11 +3,11 @@
 module Tickler.Web.Server.Handler.AuthRSpec where
 
 import Network.HTTP.Types
+import Test.Syd.Yesod
 import TestImport
 import Tickler.Data (parseUsername)
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.TestUtils
-import Yesod.Test
 
 {-# ANN module ("HLint: ignore Reduce duplication" :: String) #-}
 

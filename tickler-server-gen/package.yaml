@@ -24,11 +24,11 @@ library:
   - cache
   - cookie >=0.4 && <0.5
   - genvalidity-bytestring
-  - genvalidity-hspec
+  - genvalidity-sydtest
   - genvalidity-mergeless
   - genvalidity-text
   - genvalidity-time
-  - hspec
+  - sydtest
   - http-client
   - http-types
   - intray-server
@@ -75,10 +75,10 @@ tests:
     - bytestring
     - containers
     - genvalidity-bytestring
-    - genvalidity-hspec
+    - genvalidity-sydtest
     - genvalidity-text
     - genvalidity-time
-    - hspec
+    - sydtest
     - http-types
     - intray-client
     - intray-server-gen

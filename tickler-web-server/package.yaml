@@ -81,9 +81,8 @@ tests:
     dependencies:
     - QuickCheck
     - base >=4.9 && <5
-    - genvalidity-hspec
-    - hspec
-    - hspec-core
+    - genvalidity-sydtest
+    - sydtest
     - http-types
     - lens
     - monad-logger
@@ -101,4 +100,4 @@ tests:
     - tickler-web-server
     - typed-uuid
     - yesod-auth
-    - yesod-test
+    - sydtest-yesod

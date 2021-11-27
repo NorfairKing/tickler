@@ -1,9 +1,9 @@
 module Tickler.Web.Server.Handler.TriggeredsSpec where
 
+import Test.Syd.Yesod
 import TestImport
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.TestUtils
-import Yesod.Test
 
 spec :: Spec
 spec =

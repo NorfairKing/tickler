@@ -5,7 +5,7 @@ module Tickler.API.Admin.InstanceSpec
   )
 where
 
-import Test.Validity.Aeson
+import Test.Syd.Validity.Aeson
 import TestImport
 import Tickler.API.Admin.Gen ()
 import Tickler.API.Admin.Types

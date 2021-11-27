@@ -2,11 +2,11 @@
 
 module Tickler.Web.Server.Handler.ErrorRSpec where
 
+import Test.Syd.Yesod
 import TestImport
 import Tickler.Web.Server (makeTicklerApp)
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.TestUtils
-import Yesod.Test
 
 spec :: Spec
 spec = do

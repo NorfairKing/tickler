@@ -52,10 +52,10 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - base
-    - genvalidity-hspec
-    - genvalidity-hspec-aeson
+    - genvalidity-sydtest
+    - genvalidity-sydtest-aeson
     - genvalidity-text
-    - hspec
+    - sydtest
     - tickler-api
     - tickler-api-gen
     - tickler-data

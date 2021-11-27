@@ -3,12 +3,12 @@
 module Tickler.Web.Server.Handler.AddSpec where
 
 import Network.HTTP.Types
+import Test.Syd.Yesod
 import TestImport
 import Tickler.Data
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.Handler.Item
 import Tickler.Web.Server.TestUtils
-import Yesod.Test
 
 spec :: Spec
 spec = do

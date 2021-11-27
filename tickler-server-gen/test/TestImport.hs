@@ -17,8 +17,7 @@ import Data.Text as X (Text)
 import Path as X
 import Path.IO as X
 import System.Exit as X
-import Test.Hspec as X
-import Test.Hspec.QuickCheck as X
 import Test.QuickCheck as X
-import Test.Validity as X
+import Test.Syd as X
+import Test.Syd.Validity as X
 import Prelude as X

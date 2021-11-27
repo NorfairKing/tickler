@@ -126,9 +126,10 @@ extra-deps:
   subdirs:
   - sydtest
   - sydtest-discover
-  - sydtest-persistent-sqlite
   - sydtest-persistent
+  - sydtest-persistent-sqlite
   - sydtest-wai
+  - sydtest-yesod
 - github: NorfairKing/autodocodec
   commit: f0cb2ead0985b4394db0627e6befd7ce23c54c22
   subdirs:

@@ -20,6 +20,7 @@ import Control.Monad.Logger
 import Database.Persist.Sqlite (mkSqliteConnectionInfo, walEnabled)
 import Network.HTTP.Types
 import Servant.Client (ClientEnv (..))
+import Test.Syd.Yesod
 import TestImport
 import Tickler.Data
 import Tickler.Data.Gen ()
@@ -29,7 +30,6 @@ import Tickler.Web.Server
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.OptParse.Types
 import Yesod.Auth
-import Yesod.Test
 
 {-# ANN module ("HLint: ignore Reduce duplication" :: String) #-}
 

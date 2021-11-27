@@ -7,8 +7,8 @@ where
 
 import Data.Mergeful.Timed as Mergeful
 import qualified Intray.Data as Intray
-import Test.Validity.Aeson
-import Test.Validity.Persist
+import Test.Syd.Validity.Aeson
+import Test.Syd.Validity.Persist
 import TestImport
 import Tickler.Data
 import Tickler.Data.Gen ()

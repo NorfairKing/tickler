@@ -75,9 +75,9 @@ tests:
     dependencies:
     - base
     - bytestring
-    - genvalidity-hspec
-    - genvalidity-hspec-aeson >=0.1
-    - hspec
+    - genvalidity-sydtest
+    - genvalidity-sydtest-aeson >=0.1
+    - sydtest
     - mergeful
     - mtl
     - path

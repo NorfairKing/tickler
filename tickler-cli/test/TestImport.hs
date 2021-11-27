@@ -16,7 +16,7 @@ import Path as X
 import Path.IO as X
 import System.Environment as X
 import System.Exit as X
-import Test.Hspec as X
-import Test.Validity as X
-import Test.Validity.Aeson as X
+import Test.Syd as X
+import Test.Syd.Validity as X
+import Test.Syd.Validity.Aeson as X
 import Prelude as X

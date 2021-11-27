@@ -36,9 +36,9 @@ tests:
     dependencies:
     - QuickCheck
     - base
-    - genvalidity-hspec
-    - genvalidity-hspec-aeson
-    - hspec
+    - genvalidity-sydtest
+    - genvalidity-sydtest-aeson
+    - sydtest
     - tickler-api
     - tickler-client
     - tickler-client-gen

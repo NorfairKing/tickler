@@ -6,7 +6,7 @@ module Tickler.API.Account.InstanceSpec
 where
 
 import System.IO
-import Test.Validity.Aeson
+import Test.Syd.Validity.Aeson
 import TestImport
 import Tickler.API.Account.Gen ()
 import Tickler.API.Account.Types
