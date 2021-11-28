@@ -18,17 +18,16 @@ library:
   - NoImplicitPrelude
 
   dependencies:
-  - base
   - QuickCheck >=2.9
+  - base
   - bytestring >=0.10 && <0.11
   - cache
   - cookie >=0.4 && <0.5
   - genvalidity-bytestring
-  - genvalidity-sydtest
   - genvalidity-mergeless
+  - genvalidity-sydtest
   - genvalidity-text
   - genvalidity-time
-  - sydtest
   - http-client
   - http-types
   - intray-server
@@ -45,6 +44,9 @@ library:
   - servant-client
   - servant-server
   - stripe-core
+  - sydtest
+  - sydtest-persistent-sqlite
+  - sydtest-wai
   - text >=1.2 && <1.3
   - tickler-api
   - tickler-api-gen

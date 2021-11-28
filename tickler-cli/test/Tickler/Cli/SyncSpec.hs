@@ -47,9 +47,7 @@ spec = do
                 mToken <- runReaderT loadToken sets
                 token <-
                   case mToken of
-                    Nothing -> do
-                      expectationFailure "Should have a token after logging in"
-                      undefined
+                    Nothing -> expectationFailure "Should have a token after logging in"
                     Just t -> pure t
                 uuid <- runClientOrError cenv $ clientPostAddItem token ti
                 tickler ["sync"]

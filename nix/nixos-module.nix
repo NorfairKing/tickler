@@ -244,7 +244,7 @@ in
       tickler-service =
         let
           workingDir = "/www/tickler/${envname}/data/";
-          tickler-pkgs = (import ../nix/pkgs.nix).ticklerPackages;
+          tickler-pkgs = (import ../nix/pkgs.nix { }).ticklerPackages;
           configFile =
             let
               config =

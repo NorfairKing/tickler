@@ -126,8 +126,8 @@ addIntrayTriggerForm =
           ( pure
               . ( \t ->
                     case Intray.parseAccessKeySecretText t of
-                      Nothing -> Left ("Invalid access key" :: Text)
-                      Just aks -> pure aks
+                      Left _ -> Left ("Invalid access key" :: Text)
+                      Right aks -> pure aks
                 )
           )
           Intray.accessKeySecretText

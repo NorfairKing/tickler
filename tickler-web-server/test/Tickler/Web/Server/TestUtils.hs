@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -18,7 +19,7 @@ where
 import Control.Lens
 import Control.Monad.Logger
 import Database.Persist.Sqlite (mkSqliteConnectionInfo, walEnabled)
-import Network.HTTP.Types
+import qualified Network.HTTP.Client as HTTP
 import Servant.Client (ClientEnv (..))
 import Test.Syd.Yesod
 import TestImport
@@ -68,17 +69,17 @@ ticklerTestServeSettings = do
 ticklerWebServerSpec :: YesodSpec App -> Spec
 ticklerWebServerSpec = b . a
   where
-    a :: YesodSpec App -> SpecWith ClientEnv
-    a =
-      yesodSpecWithSiteGeneratorAndArgument
-        ( \(ClientEnv _ burl _) -> do
-            sets_ <- ticklerTestServeSettings
-            let apiSets = (serveSetAPISettings sets_) {API.serveSetPort = baseUrlPort burl}
-            let sets' = sets_ {serveSetAPISettings = apiSets}
-            makeTicklerApp sets'
-        )
-    b :: SpecWith ClientEnv -> Spec
+    a :: YesodSpec App -> TestDef '[Manager] ClientEnv
+    a = yesodSpecWithSiteSetupFunc' appSetupFunc
+    b :: TestDef '[Manager] ClientEnv -> Spec
     b = API.withTicklerServer
+
+appSetupFunc :: HTTP.Manager -> ClientEnv -> SetupFunc App
+appSetupFunc _ (ClientEnv _ burl _) = do
+  sets_ <- liftIO ticklerTestServeSettings
+  let apiSets = (serveSetAPISettings sets_) {API.serveSetPort = baseUrlPort burl}
+  let sets' = sets_ {serveSetAPISettings = apiSets}
+  liftIO $ makeTicklerApp sets'
 
 loginTo :: Username -> Text -> YesodExample App ()
 loginTo username passphrase = do

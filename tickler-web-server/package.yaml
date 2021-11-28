@@ -83,7 +83,7 @@ tests:
     - QuickCheck
     - base >=4.9 && <5
     - genvalidity-sydtest
-    - sydtest
+    - http-client
     - http-types
     - lens
     - monad-logger
@@ -93,6 +93,8 @@ tests:
     - persistent-sqlite
     - pretty-show
     - servant-client
+    - sydtest
+    - sydtest-yesod
     - text
     - tickler-data
     - tickler-data-gen
@@ -101,4 +103,3 @@ tests:
     - tickler-web-server
     - typed-uuid
     - yesod-auth
-    - sydtest-yesod

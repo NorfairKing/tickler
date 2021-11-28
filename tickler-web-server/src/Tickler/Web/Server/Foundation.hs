@@ -286,7 +286,7 @@ instance RenderMessage App FormMessage where
   renderMessage _ _ = defaultFormMessage
 
 instance PathPiece (UUID a) where
-  fromPathPiece = parseUUID
+  fromPathPiece = parseUUIDText
   toPathPiece = uuidText
 
 withNavBar :: WidgetFor App () -> HandlerFor App Html

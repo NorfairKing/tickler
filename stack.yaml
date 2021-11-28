@@ -108,19 +108,23 @@ extra-deps:
 
 - github: NorfairKing/pretty-relative-time
   commit: a634358ff274380a12360f7814c3aea46ea35b1b
+
 - github: NorfairKing/safe-coloured-text
   commit: f30fe0e4d2a0fa036967ffe17538b60e5f9861f5
   subdirs:
     - safe-coloured-text
     - safe-coloured-text-terminfo
+
 - github: NorfairKing/looper
   commit: e01054970b47d9eaab8b9314a1400c231ac4a960
   subdirs:
     - looper
+
 - github: NorfairKing/yamlparse-applicative
   commit: 224a03aa8880d426b7641db16a05e0c7b311684f
   subdirs:
   - yamlparse-applicative
+
 - github: NorfairKing/sydtest
   commit: e75c55b920936e344b779093b2a0318fb35d1770
   subdirs:
@@ -130,6 +134,7 @@ extra-deps:
   - sydtest-persistent-sqlite
   - sydtest-wai
   - sydtest-yesod
+
 - github: NorfairKing/autodocodec
   commit: f0cb2ead0985b4394db0627e6befd7ce23c54c22
   subdirs:
@@ -137,6 +142,8 @@ extra-deps:
   - autodocodec-yaml
   - autodocodec-schema
 
+- github: NorfairKing/yesod-autoreload
+  commit: 7135e864c0d4a48efeae473ee2761f5168946e58
 
 nix:
   shell-file: shell.nix

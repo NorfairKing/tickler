@@ -29,8 +29,6 @@
 
 /error/api-down/#Text                                     ErrorAPIDownR        GET
 
-/api/docs                                                 APIDocsR             GET
-
 /reload                                                   ReloadR              GET
 
 -- Subsites
