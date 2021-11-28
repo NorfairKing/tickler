@@ -1,10 +1,13 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Data.Recurrence where
 
+import Autodocodec
 import Control.Applicative
-import Data.Aeson
+import Data.Aeson (FromJSON, ToJSON)
 import Data.Time
 import Data.Word
 import Database.Persist
@@ -14,7 +17,8 @@ import Import
 data Recurrence
   = EveryDaysAtTime Word (Maybe TimeOfDay)
   | EveryMonthsOnDay Word (Maybe Word8) (Maybe TimeOfDay)
-  deriving (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving (FromJSON, ToJSON) via (Autodocodec Recurrence)
 
 instance Validity Recurrence where
   validate (EveryDaysAtTime ds mtod) =
@@ -35,32 +39,38 @@ instance Validity Recurrence where
           declare "The day of the month is less than or equal to 31" $ maybe True (<= 31) md
         ]
 
-instance FromJSON Recurrence where
-  parseJSON v =
-    withObject
-      "Recurrence"
-      ( \o ->
-          o .: "every-x-days"
-            >>= withObject
-              "EveryDaysAtTime"
-              (\o' -> EveryDaysAtTime <$> o' .: "days" <*> o' .: "time-of-day")
-      )
-      v
-      <|> withObject
-        "Recurrence"
-        ( \o ->
-            o .: "every-x-months"
-              >>= withObject
-                "EveryMonthsOnDay"
-                (\o' -> EveryMonthsOnDay <$> o' .: "months" <*> o' .:? "day" <*> o' .:? "time-of-day")
-        )
-        v
-
-instance ToJSON Recurrence where
-  toJSON (EveryDaysAtTime ds tod) =
-    object ["every-x-days" .= object ["days" .= ds, "time-of-day" .= tod]]
-  toJSON (EveryMonthsOnDay ms md mtod) =
-    object ["every-x-months" .= object ["months" .= ms, "day" .= md, "time-of-day" .= mtod]]
+instance HasCodec Recurrence where
+  codec =
+    object "Recurrence" $
+      dimapCodec f g $ eitherCodec everyDaysAtTimeCodec everyMonthsOnDayCodec
+    where
+      f = \case
+        Left (ds, mtod) -> EveryDaysAtTime ds mtod
+        Right (ms, md, mtod) -> EveryMonthsOnDay ms md mtod
+      g = \case
+        EveryDaysAtTime ds mtod -> Left (ds, mtod)
+        EveryMonthsOnDay ms md mtod -> Right (ms, md, mtod)
+      everyDaysAtTimeCodec :: JSONObjectCodec (Word, Maybe TimeOfDay)
+      everyDaysAtTimeCodec =
+        requiredFieldWith
+          "every-x-days"
+          ( object "EveryDaysAtTime" $
+              (,)
+                <$> requiredField "days" "days between recurrence" .= fst
+                <*> optionalField "time-of-day" "time of day within the recurring day" .= snd
+          )
+          "every x days"
+      everyMonthsOnDayCodec :: JSONObjectCodec (Word, Maybe Word8, Maybe TimeOfDay)
+      everyMonthsOnDayCodec =
+        requiredFieldWith
+          "every-x-months"
+          ( object "EveryMonthsOnDay" $
+              (,,)
+                <$> requiredField "months" "months between recurrence" .= (\(a, _, _) -> a)
+                <*> optionalField "day" "day within the recurring month" .= (\(_, a, _) -> a)
+                <*> optionalField "time-of-day" "time of day within the recurring day" .= (\(_, _, a) -> a)
+          )
+          "every x months"
 
 instance PersistField Recurrence where
   fromPersistValue = fromPersistValueJSON

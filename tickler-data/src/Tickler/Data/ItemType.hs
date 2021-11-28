@@ -1,33 +1,42 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module Tickler.Data.ItemType where
 
-import Data.Aeson
+import Autodocodec
+import Data.Aeson (FromJSON, ToJSON)
+import qualified Data.Text as T
 import Database.Persist
 import Database.Persist.Sql
 import Import
 
 data ItemType
   = TextItem
-  deriving (Show, Read, Eq, Ord, Bounded, Enum, Generic)
+  deriving stock (Show, Read, Eq, Ord, Bounded, Enum, Generic)
+  deriving (FromJSON, ToJSON) via (Autodocodec ItemType)
 
 instance Validity ItemType
 
 instance PersistField ItemType where
-  toPersistValue TextItem = PersistByteString "text"
-  fromPersistValue (PersistByteString "text") = Right TextItem
-  fromPersistValue _ = Left "Not a valid ItemType"
+  toPersistValue = toPersistValue . renderItemType
+  fromPersistValue = fromPersistValue >=> (left T.pack . parseItemType)
 
 instance PersistFieldSql ItemType where
   sqlType Proxy = SqlString
 
-instance FromJSON ItemType where
-  parseJSON (String "text") = pure TextItem
-  parseJSON _ = fail "Not a valid TextItem"
+instance HasCodec ItemType where
+  codec = bimapCodec parseItemType renderItemType codec
 
-instance ToJSON ItemType where
-  toJSON TextItem = String "text"
+renderItemType :: ItemType -> Text
+renderItemType = \case
+  TextItem -> "text"
+
+parseItemType :: Text -> Either String ItemType
+parseItemType = \case
+  "text" -> Right TextItem
+  t -> Left $ "Unknown ItemType: " <> show t

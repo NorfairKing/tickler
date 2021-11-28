@@ -1,12 +1,16 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module Tickler.Data.TriggerType where
 
-import Data.Aeson
+import Autodocodec
+import Data.Aeson (FromJSON, ToJSON)
+import qualified Data.Text as T
 import Database.Persist
 import Database.Persist.Sql
 import Import
@@ -14,25 +18,28 @@ import Import
 data TriggerType
   = EmailTriggerType
   | IntrayTriggerType
-  deriving (Show, Read, Eq, Ord, Bounded, Enum, Generic)
+  deriving stock (Show, Read, Eq, Ord, Bounded, Enum, Generic)
+  deriving (FromJSON, ToJSON) via (Autodocodec TriggerType)
 
 instance Validity TriggerType
 
 instance PersistField TriggerType where
-  toPersistValue EmailTriggerType = PersistByteString "email"
-  toPersistValue IntrayTriggerType = PersistByteString "intray"
-  fromPersistValue (PersistByteString "email") = Right EmailTriggerType
-  fromPersistValue (PersistByteString "intray") = Right IntrayTriggerType
-  fromPersistValue _ = Left "Not a valid TriggerType"
+  toPersistValue = toPersistValue . renderTriggerType
+  fromPersistValue = fromPersistValue >=> (left T.pack . parseTriggerType)
 
 instance PersistFieldSql TriggerType where
   sqlType Proxy = SqlString
 
-instance FromJSON TriggerType where
-  parseJSON (String "email") = pure EmailTriggerType
-  parseJSON (String "intray") = pure IntrayTriggerType
-  parseJSON _ = fail "Not a valid TriggerType"
+instance HasCodec TriggerType where
+  codec = bimapCodec parseTriggerType renderTriggerType codec
 
-instance ToJSON TriggerType where
-  toJSON EmailTriggerType = String "email"
-  toJSON IntrayTriggerType = String "intray"
+renderTriggerType :: TriggerType -> Text
+renderTriggerType = \case
+  EmailTriggerType -> "email"
+  IntrayTriggerType -> "intray"
+
+parseTriggerType :: Text -> Either String TriggerType
+parseTriggerType = \case
+  "email" -> Right EmailTriggerType
+  "intray" -> Right IntrayTriggerType
+  t -> Left $ "Unknown trigger type: " <> show t
