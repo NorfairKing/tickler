@@ -105,22 +105,24 @@ data Configuration = Configuration
   deriving (FromJSON, ToJSON) via (Autodocodec Configuration)
 
 instance HasCodec Configuration where
-  codec =
-    object "Configuration" $
-      Configuration <$> optionalField "database" "The database file" .= confDb
-        <*> optionalField
-          "web-host"
-          "The host to serve the web-server on, this is used to to send emails with links to the web interface"
-          .= confWebHost
-        <*> optionalField "api-port" "The port to serve the api-server on" .= confPort
-        <*> optionalField "log-level" "The minimal sevirity of log messages" .= confLogLevel
-        <*> optionalField "admins" "The list of usernames that will be considered administrators" .= confAdmins
-        <*> optionalField "freeloaders" "The list of usernames that won't have to pay" .= confFreeloaders
-        <*> optionalField
-          "monetisation"
-          "Monetisation configuration. If this is not configured then the server is run for free."
-          .= confMonetisationConfiguration
-        <*> optionalField "loopers" "The configuration for all the loopers" .= confLoopersConfiguration
+  codec = object "Configuration" configurationObjectCodec
+
+configurationObjectCodec :: JSONObjectCodec Configuration
+configurationObjectCodec =
+  Configuration <$> optionalField "database" "The database file" .= confDb
+    <*> optionalField
+      "web-host"
+      "The host to serve the web-server on, this is used to to send emails with links to the web interface"
+      .= confWebHost
+    <*> optionalField "api-port" "The port to serve the api-server on" .= confPort
+    <*> optionalField "log-level" "The minimal sevirity of log messages" .= confLogLevel
+    <*> optionalField "admins" "The list of usernames that will be considered administrators" .= confAdmins
+    <*> optionalField "freeloaders" "The list of usernames that won't have to pay" .= confFreeloaders
+    <*> optionalField
+      "monetisation"
+      "Monetisation configuration. If this is not configured then the server is run for free."
+      .= confMonetisationConfiguration
+    <*> optionalField "loopers" "The configuration for all the loopers" .= confLoopersConfiguration
 
 data MonetisationConfiguration = MonetisationConfiguration
   { monetisationConfStripePlan :: !(Maybe String),

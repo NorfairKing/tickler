@@ -1,9 +1,10 @@
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Web.Server.OptParse.Types where
 
 import Autodocodec
-import Data.Aeson
 import Import
 import Servant.Client.Core
 import qualified Tickler.Server.OptParse.Types as API
@@ -39,26 +40,24 @@ data Configuration = Configuration
     confTracking :: Maybe Text,
     confVerification :: Maybe Text
   }
-  deriving (Show, Eq)
-
-instance FromJSON Configuration where
-  parseJSON = viaHasCodec
+  deriving stock (Show, Eq, Generic)
 
 instance HasCodec Configuration where
   codec =
-    (\apiConf (a, b, c, d, e) -> Configuration apiConf a b c d e) <$> codec
-      <*> objectParser
-        "Configuration"
-        ( (,,,,) <$> optionalField "web-port" "The port to serve web requests on"
-            <*> optionalField
-              "persist-logins"
-              "Whether to persist logins accross server restarts. Don't use this in production."
-            <*> optionalField
-              "default-intray-url"
-              "The default intray url to fill in for setting up intray triggers"
-            <*> optionalField "tracking" "The google analytics tracking code"
-            <*> optionalField "verification" "The google search console verification code"
-        )
+    object "Configuration" $
+      Configuration
+        <$> API.configurationObjectCodec .= confAPIConf
+          <*> optionalField "web-port" "The port to serve web requests on" .= confPort
+          <*> optionalField
+            "persist-logins"
+            "Whether to persist logins accross server restarts. Don't use this in production."
+            .= confPersistLogins
+          <*> optionalField
+            "default-intray-url"
+            "The default intray url to fill in for setting up intray triggers"
+            .= confDefaultIntrayUrl
+          <*> optionalField "tracking" "The google analytics tracking code" .= confTracking
+          <*> optionalField "verification" "The google search console verification code" .= confVerification
 
 data Environment = Environment
   { envPort :: Maybe Int,

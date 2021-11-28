@@ -19,11 +19,13 @@ module Tickler.Cli.OptParse
   )
 where
 
-import Autodocodec (confDesc, readConfigFile, readFirstConfigFile)
+import Autodocodec.Yaml
 import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
 import Data.Time
 import Import
 import Options.Applicative
+import qualified Options.Applicative.Help as OptParse
 import Servant.Client
 import qualified System.Environment as System (getArgs, getEnvironment)
 import Text.Read (readMaybe)
@@ -156,8 +158,8 @@ getEnvironment = do
 getConfiguration :: Flags -> Environment -> IO (Maybe Configuration)
 getConfiguration Flags {..} Environment {..} =
   case flagConfigFile <|> envConfigFile of
-    Nothing -> defaultConfigFiles >>= readFirstConfigFile
-    Just cf -> resolveFile' cf >>= readConfigFile
+    Nothing -> defaultConfigFiles >>= readFirstYamlConfigFile
+    Just cf -> resolveFile' cf >>= readYamlConfigFile
 
 defaultConfigFiles :: IO [Path Abs File]
 defaultConfigFiles =
@@ -186,8 +188,12 @@ prefs_ = defaultPrefs {prefShowHelpOnError = True, prefShowHelpOnEmpty = True}
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_
   where
-    help_ = fullDesc <> progDesc description <> confDesc @Configuration
-    description = "tickler"
+    help_ = fullDesc <> footerDoc (Just $ OptParse.string footerStr)
+    footerStr =
+      unlines
+        [ "Configuration file format:",
+          T.unpack (TE.decodeUtf8 (renderColouredSchemaViaCodec @Configuration))
+        ]
 
 parseArgs :: Parser Arguments
 parseArgs = Arguments <$> parseCommand <*> parseFlags

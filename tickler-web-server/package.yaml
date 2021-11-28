@@ -11,6 +11,8 @@ library:
   - aeson-pretty
   - amazonka
   - async
+  - autodocodec
+  - autodocodec-yaml
   - base >=4.9 && <5
   - base16-bytestring
   - bytestring
@@ -49,7 +51,6 @@ library:
   - unordered-containers
   - wai
   - yaml
-  - autodocodec
   - yesod
   - yesod-auth
   - yesod-autoreload

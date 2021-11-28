@@ -11,10 +11,12 @@ module Tickler.Web.Server.OptParse
   )
 where
 
-import Autodocodec (confDesc, readConfigFile)
+import Autodocodec.Yaml
 import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
 import Import
-import Options.Applicative
+import Options.Applicative as OptParse
+import qualified Options.Applicative.Help as OptParse
 import Servant.Client.Core
 import qualified System.Environment as System (getArgs, getEnvironment)
 import Text.Read
@@ -64,7 +66,7 @@ getConfiguration Flags {..} Environment {..} = do
     case API.flagConfigFile flagAPIFlags <|> API.envConfigFile envAPIEnvironment of
       Nothing -> API.getDefaultConfigFile
       Just cf -> resolveFile' cf
-  readConfigFile configFile
+  readYamlConfigFile configFile
 
 getEnvironment :: IO Environment
 getEnvironment = do
@@ -105,8 +107,12 @@ runArgumentsParser = execParserPure prefs_ argParser
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_
   where
-    help_ = fullDesc <> progDesc description <> confDesc @Configuration
-    description = "Tickler web server"
+    help_ = fullDesc <> footerDoc (Just $ OptParse.string footerStr)
+    footerStr =
+      unlines
+        [ "Configuration file format:",
+          T.unpack (TE.decodeUtf8 (renderColouredSchemaViaCodec @Configuration))
+        ]
 
 parseArgs :: Parser Arguments
 parseArgs = (,) <$> parseCommand <*> parseFlags
@@ -115,7 +121,7 @@ parseCommand :: Parser Command
 parseCommand = hsubparser $ mconcat [command "serve" parseCommandServe]
 
 parseCommandServe :: ParserInfo Command
-parseCommandServe = info parser modifier
+parseCommandServe = info parser help_
   where
     parser =
       CommandServe
@@ -166,7 +172,12 @@ parseCommandServe = info parser modifier
                   )
                 <*> API.parseServeFlags
             )
-    modifier = fullDesc <> progDesc "Serve." <> confDesc @Configuration
+    help_ = fullDesc <> footerDoc (Just $ OptParse.string footerStr)
+    footerStr =
+      unlines
+        [ "Configuration file format:",
+          T.unpack (TE.decodeUtf8 (renderColouredSchemaViaCodec @Configuration))
+        ]
 
 parseFlags :: Parser Flags
 parseFlags = Flags <$> API.parseFlags

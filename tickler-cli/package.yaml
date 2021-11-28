@@ -24,6 +24,8 @@ library:
   dependencies:
   - aeson >=1.0
   - aeson-pretty >=0.8
+  - autodocodec
+  - autodocodec-yaml
   - base >=4.9 && <5
   - bytestring >=0.10
   - containers
@@ -40,15 +42,14 @@ library:
   - servant-auth-client >=0.2
   - servant-auth-server >=0.3
   - servant-client >=0.9
+  - servant-server >=0.9
+  - text >=1.2
   - tickler-api
   - tickler-client
   - tickler-data
-  - servant-server >=0.9
-  - validity
-  - text >=1.2
   - time
+  - validity
   - yaml >=0.8
-  - autodocodec
 
 executables:
   tickler:
