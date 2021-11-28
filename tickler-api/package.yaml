@@ -4,7 +4,7 @@ synopsis: Tickler API
 category: Tickler
 author: Tom Sydney Kerckhove
 maintainer: syd.kerckhove@gmail.com
-copyright: ! 'Copyright: (c) 2016-2018 Tom Sydney Kerckhove'
+copyright: ! 'Copyright: (c) 2016-2021 Tom Sydney Kerckhove'
 license: AllRightsReserved
 github: NorfairKing/tickler
 default-extensions:
