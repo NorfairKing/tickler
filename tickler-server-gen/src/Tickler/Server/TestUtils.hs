@@ -64,7 +64,7 @@ withPaidTicklerServer maxFree specFunc =
 withFreeTicklerServer :: TestDef '[HTTP.Manager] ClientEnv -> Spec
 withFreeTicklerServer specFunc =
   managerSpec $
-    setupAroundWith' (\man () -> intrayTestClientEnvSetupFunc Nothing man) $
+    setupAroundWith' (\man () -> ticklerTestClientEnvSetupFunc Nothing man) $
       modifyMaxSuccess (`div` 20) specFunc
 
 withBothTicklerAndIntrayServer :: TestDef '[HTTP.Manager] (ClientEnv, ClientEnv) -> Spec
