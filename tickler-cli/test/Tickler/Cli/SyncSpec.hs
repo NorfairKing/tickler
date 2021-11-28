@@ -19,7 +19,8 @@ import Tickler.Client
 import Tickler.Server.TestUtils
 
 spec :: Spec
-spec = do
+spec = sequential $ do
+  -- uses 'withArgs'
   withTicklerServer $
     it "correctly deletes the local LastSeen after a sync if the item has dissappeared remotely" $
       \cenv ->

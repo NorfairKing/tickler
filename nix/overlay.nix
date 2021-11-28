@@ -100,18 +100,6 @@ with final.haskell.lib;
     previous.haskellPackages.extend (
       self: super:
         let
-          ticklerPkg =
-            name:
-            disableLibraryProfiling (super.callCabal2nix name (./. + "/${name}") { });
-          looperRepo =
-            final.fetchFromGitHub {
-              owner = "NorfairKing";
-              repo = "looper";
-              rev = "8d6e69e99c5eb8f5f01b6bc36a2112962cb8d343";
-              sha256 =
-                "sha256:1sx5gc41vrmvcgrbh7g83zhrpqwz339g4fq0m1c15hhlz4480lh8";
-            };
-          looperPkg = self.callCabal2nix "looper" (looperRepo) { };
           servantAuthRepo =
             final.fetchFromGitHub {
               owner = "haskell-servant";
@@ -160,15 +148,16 @@ with final.haskell.lib;
                   librarySystemDepends = [ final.sqlite ];
                 }
               );
+          yesodAutoReloadRepo = builtins.fetchGit {
+            url = "https://github.com/NorfairKing/yesod-autoreload";
+            rev = "f4f03bae0b9c1916838bb1c52a7182ac5afb28e0";
+          };
+
         in
         with final.haskellPackages;
 
         {
-          amazonka = callHackage "amazonka" "1.6.1" { };
-          amazonka-test = callHackage "amazonka-test" "1.6.1" { };
-          amazonka-core = callHackage "amazonka-core" "1.6.1" { };
-          amazonka-ses = callHackage "amazonka-ses" "1.6.1" { };
-          looper = looperPkg;
+          yesod-autoreload = self.callCabal2nix "yesod-autoreload" yesodAutoReloadRepo { };
         } // final.lib.genAttrs [
           "stripe-core"
           "stripe-haskell"

@@ -9,7 +9,7 @@ import Tickler.Cli.TestUtils
 import Tickler.Server.TestUtils
 
 spec :: Spec
-spec =
+spec = sequential $ -- uses 'withArgs'
   withTicklerServer $
     it "Going through the usual manual steps 'just works'" $
       \(ClientEnv _ burl _) ->

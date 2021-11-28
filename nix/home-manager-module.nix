@@ -60,7 +60,7 @@ in
     };
   config =
     let
-      ticklerPkgs = (import ../nix/pkgs.nix).ticklerPackages;
+      ticklerPkgs = (import ../nix/pkgs.nix { }).ticklerPackages;
 
       nullOrOption =
         name: opt: optionalString (opt != null) "${name}: ${opt}";
