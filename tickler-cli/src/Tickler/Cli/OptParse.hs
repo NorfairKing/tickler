@@ -19,6 +19,7 @@ module Tickler.Cli.OptParse
   )
 where
 
+import Autodocodec (confDesc, readConfigFile, readFirstConfigFile)
 import qualified Data.Text as T
 import Data.Time
 import Import
@@ -28,7 +29,6 @@ import qualified System.Environment as System (getArgs, getEnvironment)
 import Text.Read (readMaybe)
 import Tickler.Cli.OptParse.Types
 import Tickler.Data
-import YamlParse.Applicative (confDesc, readConfigFile, readFirstConfigFile)
 
 getInstructions :: IO Instructions
 getInstructions = do

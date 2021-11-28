@@ -1,5 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -13,19 +15,20 @@ module Tickler.Data.Username
   )
 where
 
+import Autodocodec
 import Data.Aeson as JSON
-import Data.Aeson.Types as JSON (toJSONKeyText)
 import qualified Data.Char as Char
 import Data.Hashable
 import qualified Data.Text as T
 import Database.Persist.Sql
 import Import
-import YamlParse.Applicative
 
 newtype Username = Username
   { usernameText :: Text
   }
-  deriving (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving newtype (ToJSONKey)
+  deriving (FromJSON, ToJSON) via (Autodocodec Username)
 
 instance Validity Username where
   validate (Username t) =
@@ -54,11 +57,8 @@ instance PersistFieldSql Username where
 instance FromJSONKey Username where
   fromJSONKey = FromJSONKeyTextParser parseUsername
 
-instance FromJSON Username where
-  parseJSON = viaYamlSchema
-
-instance YamlSchema Username where
-  yamlSchema = eitherParser parseUsernameWithError yamlSchema
+instance HasCodec Username where
+  codec = bimapCodec parseUsernameWithError usernameText codec
 
 parseUsername :: MonadFail m => Text -> m Username
 parseUsername t =
@@ -71,12 +71,6 @@ parseUsernameWithError t =
   case prettyValidate $ Username t of
     Right un -> Right un
     Left err -> Left err
-
-instance ToJSON Username where
-  toJSON = toJSON . usernameText
-
-instance ToJSONKey Username where
-  toJSONKey = toJSONKeyText usernameText
 
 newtype UsernameChar
   = UsernameChar Char

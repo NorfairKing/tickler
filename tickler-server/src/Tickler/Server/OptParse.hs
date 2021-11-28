@@ -10,6 +10,7 @@ module Tickler.Server.OptParse
   )
 where
 
+import Autodocodec.Yaml
 import Control.Applicative
 import Control.Monad.Logger
 import qualified Control.Monad.Trans.AWS as AWS
@@ -17,14 +18,14 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Database.Persist.Sqlite
 import Import
-import Options.Applicative
+import Options.Applicative as OptParse
+import qualified Options.Applicative.Help as OptParse
 import qualified System.Environment as System
 import Text.Read
 import Tickler.API
 import Tickler.Server.OptParse.Types
 import Web.Stripe.Client as Stripe
 import Web.Stripe.Types as Stripe
-import YamlParse.Applicative (confDesc, readConfigFile)
 
 getInstructions :: IO Instructions
 getInstructions = do
@@ -276,7 +277,7 @@ getConfiguration Flags {..} Environment {..} = do
     case flagConfigFile <|> envConfigFile of
       Nothing -> getDefaultConfigFile
       Just cf -> resolveFile' cf
-  readConfigFile configFile
+  readYamlConfigFile configFile
 
 getDefaultConfigFile :: IO (Path Abs File)
 getDefaultConfigFile = do
@@ -377,8 +378,12 @@ runArgumentsParser = execParserPure prefs_ argParser
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_
   where
-    help_ = fullDesc <> progDesc description <> confDesc @Configuration
-    description = "Tickler server"
+    help_ = fullDesc <> footerDoc (Just $ OptParse.string footerStr)
+    footerStr =
+      unlines
+        [ "Configuration file format:",
+          T.unpack (TE.decodeUtf8 (renderColouredSchemaViaCodec @Configuration))
+        ]
 
 parseArgs :: Parser Arguments
 parseArgs = Arguments <$> parseCommand <*> parseFlags
@@ -387,10 +392,15 @@ parseCommand :: Parser Command
 parseCommand = hsubparser $ mconcat [command "serve" parseCommandServe]
 
 parseCommandServe :: ParserInfo Command
-parseCommandServe = info parser modifier
+parseCommandServe = info parser help_
   where
     parser = CommandServe <$> parseServeFlags
-    modifier = fullDesc <> progDesc "Command example." <> confDesc @Configuration
+    help_ = fullDesc <> footerDoc (Just $ OptParse.string footerStr)
+    footerStr =
+      unlines
+        [ "Configuration file format:",
+          T.unpack (TE.decodeUtf8 (renderColouredSchemaViaCodec @Configuration))
+        ]
 
 parseServeFlags :: Parser ServeFlags
 parseServeFlags =

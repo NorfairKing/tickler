@@ -120,11 +120,6 @@ extra-deps:
   subdirs:
     - looper
 
-- github: NorfairKing/yamlparse-applicative
-  commit: 224a03aa8880d426b7641db16a05e0c7b311684f
-  subdirs:
-  - yamlparse-applicative
-
 - github: NorfairKing/sydtest
   commit: e75c55b920936e344b779093b2a0318fb35d1770
   subdirs:

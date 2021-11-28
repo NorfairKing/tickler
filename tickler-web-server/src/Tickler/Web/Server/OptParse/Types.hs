@@ -2,11 +2,11 @@
 
 module Tickler.Web.Server.OptParse.Types where
 
+import Autodocodec
 import Data.Aeson
 import Import
 import Servant.Client.Core
 import qualified Tickler.Server.OptParse.Types as API
-import YamlParse.Applicative
 
 type Arguments = (Command, Flags)
 
@@ -42,11 +42,11 @@ data Configuration = Configuration
   deriving (Show, Eq)
 
 instance FromJSON Configuration where
-  parseJSON = viaYamlSchema
+  parseJSON = viaHasCodec
 
-instance YamlSchema Configuration where
-  yamlSchema =
-    (\apiConf (a, b, c, d, e) -> Configuration apiConf a b c d e) <$> yamlSchema
+instance HasCodec Configuration where
+  codec =
+    (\apiConf (a, b, c, d, e) -> Configuration apiConf a b c d e) <$> codec
       <*> objectParser
         "Configuration"
         ( (,,,,) <$> optionalField "web-port" "The port to serve web requests on"

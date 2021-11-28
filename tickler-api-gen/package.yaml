@@ -4,7 +4,7 @@ synopsis: Generators for tickler-api
 category: Tickler
 author: Tom Sydney Kerckhove
 maintainer: syd.kerckhove@gmail.com
-copyright: ! 'Copyright: (c) 2018 Tom Sydney Kerckhove'
+copyright: ! 'Copyright: (c) 2018-2021 Tom Sydney Kerckhove'
 license: AllRightsReserved
 github: NorfairKing/tickler
 default-extensions:
@@ -13,11 +13,6 @@ default-extensions:
 library:
   source-dirs: src
   ghc-options: -Wall
-  exposed-modules:
-  - Tickler.API.Gen
-  - Tickler.API.Account.Gen
-  - Tickler.API.Admin.Gen
-  - Tickler.API.Protected.Gen
 
   dependencies:
   - QuickCheck
@@ -32,10 +27,10 @@ library:
   - genvalidity-typed-uuid
   - genvalidity-uuid
   - intray-data-gen
+  - text
   - tickler-api
   - tickler-data
   - tickler-data-gen
-  - text
   - validity
   - validity-bytestring
   - validity-text
@@ -45,21 +40,22 @@ tests:
   tickler-api-test:
     main: Spec.hs
     source-dirs: test
+    build-tools: sydtest-discover
     ghc-options:
     - -Wall
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - QuickCheck
     - base
+    - bytestring
     - genvalidity-sydtest
     - genvalidity-sydtest-aeson
     - genvalidity-text
     - sydtest
+    - text
     - tickler-api
     - tickler-api-gen
     - tickler-data
     - tickler-data-gen
-    - QuickCheck
-    - text
-    - bytestring

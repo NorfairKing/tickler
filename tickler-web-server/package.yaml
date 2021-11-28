@@ -49,7 +49,7 @@ library:
   - unordered-containers
   - wai
   - yaml
-  - yamlparse-applicative
+  - autodocodec
   - yesod
   - yesod-auth
   - yesod-autoreload

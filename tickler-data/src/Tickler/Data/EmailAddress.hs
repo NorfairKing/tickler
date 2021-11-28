@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -17,6 +18,7 @@ module Tickler.Data.EmailAddress
   )
 where
 
+import Autodocodec
 import Data.Aeson as JSON
 import qualified Data.Char as Char
 import qualified Data.Text as T
@@ -26,12 +28,12 @@ import Database.Persist
 import Database.Persist.Sql
 import Import
 import qualified Text.Email.Validate as Email
-import YamlParse.Applicative
 
 newtype EmailAddress = EmailAddress
   { unEmailAddress :: Email.EmailAddress
   }
-  deriving (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving (FromJSON, ToJSON) via (Autodocodec EmailAddress)
 
 instance Validity EmailAddress where
   validate eaa =
@@ -55,14 +57,8 @@ instance PersistFieldSql EmailAddress where
   sqlType :: Proxy EmailAddress -> SqlType
   sqlType Proxy = sqlType (Proxy :: Proxy Text)
 
-instance ToJSON EmailAddress where
-  toJSON = toJSON . emailAddressText
-
-instance FromJSON EmailAddress where
-  parseJSON = viaYamlSchema
-
-instance YamlSchema EmailAddress where
-  yamlSchema = eitherParser emailValidateFromText yamlSchema
+instance HasCodec EmailAddress where
+  codec = bimapCodec emailValidateFromText emailAddressText codec
 
 normalizeEmail :: Text -> Text
 normalizeEmail = T.map Char.toLower

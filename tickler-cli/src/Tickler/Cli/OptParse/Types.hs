@@ -5,13 +5,13 @@
 
 module Tickler.Cli.OptParse.Types where
 
+import Autodocodec
 import Data.Time
 import Data.Word
 import Data.Yaml as Yaml
 import Import
 import Servant.Client
 import Tickler.Data
-import YamlParse.Applicative
 
 data Arguments
   = Arguments Command Flags
@@ -85,10 +85,10 @@ data Configuration = Configuration
   deriving (Show, Eq, Generic)
 
 instance FromJSON Configuration where
-  parseJSON = viaYamlSchema
+  parseJSON = viaHasCodec
 
-instance YamlSchema Configuration where
-  yamlSchema =
+instance HasCodec Configuration where
+  codec =
     objectParser "Configuration" $
       Configuration
         <$> optionalField "url" "The api url of the tickler server. Example: api.tickler.cs-syd.eu"
@@ -119,12 +119,12 @@ data SyncStrategy
   deriving (Show, Read, Eq, Generic)
 
 instance FromJSON SyncStrategy where
-  parseJSON = viaYamlSchema
+  parseJSON = viaHasCodec
 
 instance ToJSON SyncStrategy
 
-instance YamlSchema SyncStrategy where
-  yamlSchema =
+instance HasCodec SyncStrategy where
+  codec =
     alternatives
       [ literalValue NeverSync
           <??> [ "Only sync when manually running 'intray sync'.",

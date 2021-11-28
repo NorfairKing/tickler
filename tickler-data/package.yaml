@@ -39,4 +39,4 @@ library:
   - validity-text
   - validity-time
   - validity-uuid
-  - yamlparse-applicative
+  - autodocodec

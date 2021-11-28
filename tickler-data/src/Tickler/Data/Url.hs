@@ -7,6 +7,7 @@ module Tickler.Data.Url
   )
 where
 
+import Autodocodec
 import Control.Exception
 import Data.Char as Char
 import qualified Data.Text as T
@@ -14,7 +15,6 @@ import Database.Persist
 import Database.Persist.Sql
 import Import
 import Servant.Client.Core
-import YamlParse.Applicative
 
 instance Validity Scheme
 
@@ -56,5 +56,5 @@ instance PersistField BaseUrl where
 instance PersistFieldSql BaseUrl where
   sqlType Proxy = SqlString
 
-instance YamlSchema BaseUrl where
-  yamlSchema = maybeParser parseBaseUrl yamlSchema
+instance HasCodec BaseUrl where
+  codec = bimapCodec (left show . parseBaseUrl) show codec

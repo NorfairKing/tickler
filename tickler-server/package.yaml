@@ -21,6 +21,8 @@ library:
   - amazonka
   - amazonka-ses
   - async
+  - autodocodec
+  - autodocodec-yaml
   - base >=4.7 && <5
   - blaze-html
   - bytestring
@@ -86,7 +88,6 @@ library:
   - wai-extra
   - warp >=3.2
   - yaml
-  - yamlparse-applicative
 
 executables:
   tickler-server:

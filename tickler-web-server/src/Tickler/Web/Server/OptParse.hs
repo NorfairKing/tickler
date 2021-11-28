@@ -11,6 +11,7 @@ module Tickler.Web.Server.OptParse
   )
 where
 
+import Autodocodec (confDesc, readConfigFile)
 import qualified Data.Text as T
 import Import
 import Options.Applicative
@@ -19,7 +20,6 @@ import qualified System.Environment as System (getArgs, getEnvironment)
 import Text.Read
 import qualified Tickler.Server.OptParse as API
 import Tickler.Web.Server.OptParse.Types
-import YamlParse.Applicative (confDesc, readConfigFile)
 
 getInstructions :: IO Instructions
 getInstructions = do
