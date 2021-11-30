@@ -8,6 +8,8 @@ module Tickler.Server.Looper.AdminNotificationEmailConverter
   )
 where
 
+import Conduit
+import qualified Data.Conduit.Combinators as C
 import qualified Data.Text.Lazy as LT
 import qualified Data.Text.Lazy.Builder as LTB
 import Data.Time
@@ -23,12 +25,16 @@ import Tickler.Server.OptParse.Types
 
 runAdminNotificationEmailConverter :: AdminNotificationEmailConverterSettings -> Looper ()
 runAdminNotificationEmailConverter vecs@AdminNotificationEmailConverterSettings {..} = do
-  ves <- runDb $ selectList [AdminNotificationEmailEmail ==. Nothing] []
-  forM_ ves $ \(Entity vid ve@AdminNotificationEmail {..}) -> do
-    e <- makeAdminNotificationEmail vecs ve undefined
-    runDb $ do
-      eid <- insert e
-      update vid [AdminNotificationEmailEmail =. Just eid]
+  acqAdminEmailSource <- runDb $ selectSourceRes [AdminNotificationEmailEmail ==. Nothing] []
+  withAcquire acqAdminEmailSource $ \adminEmailSource ->
+    runConduit $ adminEmailSource .| C.mapM_ (convertAdminEmail vecs)
+
+convertAdminEmail :: AdminNotificationEmailConverterSettings -> Entity AdminNotificationEmail -> Looper ()
+convertAdminEmail vecs (Entity vid ve@AdminNotificationEmail {..}) = do
+  e <- makeAdminNotificationEmail vecs ve undefined
+  runDb $ do
+    eid <- insert e
+    update vid [AdminNotificationEmailEmail =. Just eid]
 
 makeAdminNotificationEmail ::
   AdminNotificationEmailConverterSettings ->

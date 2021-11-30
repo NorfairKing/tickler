@@ -6,8 +6,10 @@ module Tickler.Server.Looper.Emailer
   )
 where
 
+import Conduit
 import Control.Lens
 import Control.Monad.Trans.AWS
+import qualified Data.Conduit.Combinators as C
 import qualified Data.Text as T
 import Data.Time
 import Database.Persist.Sqlite
@@ -21,15 +23,10 @@ import Tickler.Server.Looper.Types
 import Tickler.Server.OptParse.Types
 
 runEmailer :: EmailerSettings -> Looper ()
-runEmailer EmailerSettings {..} =
-  let go = do
-        list <- runDb $ selectFirst [EmailStatus ==. EmailUnsent] [Asc EmailScheduled]
-        case list of
-          Nothing -> pure ()
-          Just e -> do
-            handleSingleEmail emailerSetAWSCredentials e
-            go -- Go on until there are no more emails to be sent.
-   in go
+runEmailer EmailerSettings {..} = do
+  acqEmailsToSendSource <- runDb $ selectSourceRes [EmailStatus ==. EmailUnsent] [Asc EmailScheduled]
+  withAcquire acqEmailsToSendSource $ \emailsToSendSource -> do
+    runConduit $ emailsToSendSource .| C.mapM_ (handleSingleEmail emailerSetAWSCredentials)
 
 handleSingleEmail :: AWS.Credentials -> Entity Email -> Looper ()
 handleSingleEmail awsCreds (Entity emailId email) =
@@ -39,9 +36,15 @@ handleSingleEmail awsCreds (Entity emailId email) =
     update emailId $
       case newStatus of
         Right hid ->
-          [EmailStatus =. EmailSent, EmailSesId =. Just hid, EmailSendAttempt =. Just now]
+          [ EmailStatus =. EmailSent,
+            EmailSesId =. Just hid,
+            EmailSendAttempt =. Just now
+          ]
         Left err ->
-          [EmailStatus =. EmailError, EmailSendError =. Just err, EmailSendAttempt =. Just now]
+          [ EmailStatus =. EmailError,
+            EmailSendError =. Just err,
+            EmailSendAttempt =. Just now
+          ]
 
 sendSingleEmail :: AWS.Credentials -> Email -> IO (Either Text Text)
 sendSingleEmail creds Email {..} = do

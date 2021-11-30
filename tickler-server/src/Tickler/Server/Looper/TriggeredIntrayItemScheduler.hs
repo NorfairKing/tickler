@@ -3,6 +3,8 @@ module Tickler.Server.Looper.TriggeredIntrayItemScheduler
   )
 where
 
+import Conduit
+import qualified Data.Conduit.Combinators as C
 import Database.Persist.Sqlite
 import Import
 import Tickler.Data
@@ -11,34 +13,36 @@ import Tickler.Server.Looper.Types
 
 runTriggeredIntrayItemScheduler :: () -> Looper ()
 runTriggeredIntrayItemScheduler () = do
-  tis <- runDb $ selectList [] [Asc TriggeredItemScheduledDay, Asc TriggeredItemScheduledTime]
-  tes <-
-    fmap concat $
-      forM tis $
-        \(Entity _ ti) -> do
-          uts <-
-            runDb $
-              selectList
-                [ UserTriggerUserId ==. triggeredItemUserId ti,
-                  UserTriggerTriggerType ==. IntrayTriggerType
-                ]
-                []
-          fmap catMaybes $
-            forM uts $
-              \(Entity _ ut) -> do
-                mte <-
-                  runDb $
-                    getBy $
-                      UniqueTriggeredIntrayItem (triggeredItemIdentifier ti) (userTriggerTriggerId ut)
-                pure $
-                  case mte of
-                    Nothing ->
-                      Just
-                        TriggeredIntrayItem
-                          { triggeredIntrayItemItem = triggeredItemIdentifier ti,
-                            triggeredIntrayItemTrigger = userTriggerTriggerId ut,
-                            triggeredIntrayItemIntrayItemUUID = Nothing,
-                            triggeredIntrayItemError = Nothing
-                          }
-                    Just _ -> Nothing
-  runDb $ insertMany_ tes
+  acqTriggeredItemsSource <- runDb $ selectSourceRes [] [Asc TriggeredItemScheduledDay, Asc TriggeredItemScheduledTime]
+  withAcquire acqTriggeredItemsSource $ \triggeredItemsSource ->
+    runConduit $ triggeredItemsSource .| C.mapM_ scheduleTriggeredIntrayItem
+
+scheduleTriggeredIntrayItem :: Entity TriggeredItem -> Looper ()
+scheduleTriggeredIntrayItem (Entity _ ti) = do
+  acqUserIntrayTriggersSource <-
+    runDb $
+      selectSourceRes
+        [ UserTriggerUserId ==. triggeredItemUserId ti,
+          UserTriggerTriggerType ==. IntrayTriggerType
+        ]
+        []
+  withAcquire acqUserIntrayTriggersSource $ \userIntrayTriggersSource ->
+    runConduit $ userIntrayTriggersSource .| C.mapM_ (scheduleTriggeredIntrayItemViaUserTrigger ti)
+
+scheduleTriggeredIntrayItemViaUserTrigger :: TriggeredItem -> Entity UserTrigger -> Looper ()
+scheduleTriggeredIntrayItemViaUserTrigger ti (Entity _ ut) = do
+  mte <-
+    runDb $
+      getBy $
+        UniqueTriggeredIntrayItem (triggeredItemIdentifier ti) (userTriggerTriggerId ut)
+  case mte of
+    Nothing ->
+      runDb $
+        insert_
+          TriggeredIntrayItem
+            { triggeredIntrayItemItem = triggeredItemIdentifier ti,
+              triggeredIntrayItemTrigger = userTriggerTriggerId ut,
+              triggeredIntrayItemIntrayItemUUID = Nothing,
+              triggeredIntrayItemError = Nothing
+            }
+    Just _ -> pure ()
