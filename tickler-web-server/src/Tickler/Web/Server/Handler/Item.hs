@@ -118,7 +118,7 @@ makeEditItemFormWidget mii = do
           Just EveryMonthsOnDay {} -> (False, False, True)
       selectedString =
         case mRec of
-          Nothing -> "null" :: Text
+          Nothing -> "'None'" :: Text
           Just EveryDaysAtTime {} -> "'EveryDay'"
           Just EveryMonthsOnDay {} -> "'EveryMonth'"
       scheduledDayVal = maybe "" (show . tickleScheduledDay) mItem

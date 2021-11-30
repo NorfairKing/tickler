@@ -15,126 +15,145 @@
                   required>
                   #{Textarea t}
     $nothing
-      <div .field .changeable .text-input>
+      <div .field .text-input>
         <textarea .textarea rows="2"
           name="contents"
           autofocus
           required>
 
-    <div .columns .is-multiline>
-      <div .column .is-two-thirds>
+
+
     
-        <div .field .has-addons>
-          <div .control>
-            <button .button .non-interactive>
-              On
-          <div .control>
-            <input .input type="date" name="scheduled-day" value=#{scheduledDayVal}>
+  <div .columns .is-multiline>
+    <div .column .is-two-thirds>
+      <div #None-input .changable style="display: none;">
+        <div .field .is-horizontal>
+          <div .field-body>
+            <div .field .has-addons>
+              <div .control>
+                <button .button .non-interactive>
+                  On
+              <div .control>
+                <input .input type="date" name="scheduled-day" value=#{scheduledDayVal}>
 
-        <div .field .has-addons>
-          <div .control>
-            <button .button .non-interactive>
-              At
-          <div .control>
-            <input .input type="time" name="scheduled-time" value=#{scheduledTimeVal}>
-
-
-
-
-      <div .column>
-        <div .control>
-          <label .radio>
-            <input id="None" type="radio" .recurrence-option name="recurrence" value="NoRecurrence" :noRecurrenceChecked:checked>
-            No reccurence
-
-        <div .control>
-          <label .radio>
-            <input id="EveryDay" type="radio" .recurrence-option name="recurrence" value="Days" :everyXDaysChecked:checked>
-            Every X days
-
-        <div .control>
-          <label .radio>
-            <input id="EveryMonth" type="radio" .recurrence-option name="recurrence" value="Months" :everyXMonthsChecked:checked>
-            Every X months
+        <div .field .is-horizontal>
+          <div .field-body>
+            <div .field .has-addons>
+              <div .control>
+                <button .button .non-interactive>
+                  At
+              <div .control>
+                <input .input type="time" name="scheduled-time" value=#{scheduledTimeVal}>
 
 
 
 
-    <div .EveryDay-input .changable style="display: none;">
-      <div .field .is-horizontal>
-        <div .field-body>
-          <div .field .has-addons .is-expanded>
-            <p .control>
-              <button .button .non-interactive>
-                Every
-            <p .control>
-              <input .input type="number" name="days" value="#{daysVal}">
-            <p .control>
-              <button .button .non-interactive>
-                day(s)
+      <div #EveryDay-input .changable style="display: none;">
+        <div .field .is-horizontal>
+          <div .field-body>
+            <div .field .has-addons .is-expanded>
+              <p .control>
+                <button .button .non-interactive>
+                  Every
+              <p .control>
+                <input .input type="number" name="days" value="#{daysVal}">
+              <p .control>
+                <button .button .non-interactive>
+                  day(s)
 
-      <div .field .is-horizontal>
-        <div field-body>
-          <div .field .has-addons .is-expanded>
-            <p .control>
-              <button .button .non-interactive>
-                At
-            <p .control>
-              <input .input type="time" name="day-time-of-day" value="#{timeVal}">
-
-
-
-
-    <div .EveryMonth-input .changable style="display: none;">
-      <div .field .is-horizontal>
-        <div .field-body>
-          <div .field .has-addons .is-expanded>
-            <p .control>
-              <button .button .non-interactive .no-select>
-                Every
-            <p .control>
-              <input .input type="number" name="months" value="#{monthsVal}">
-            <p .control>
-              <button .button .non-interactive>
-                month(s)
-          
-          
-          
-      <div .field .is-horizontal>
-        <div field-body>
-          <div .field .has-addons .is-expanded>
-            <p .control>
-              <button .button .non-interactive .no-select>
-                On day
-            <p .conrtol>
-              <input .input type="number" name="day" value="#{monthsDayVal}">
-            <p .control>
-              <button .button .non-interactive>
-                of the month
-
-      <div .field .is-horizontal>
-        <div field-body>
-          <div .field .has-addons .is-expanded>
-            <p .control>
-              <button .button .non-interactive>
-                At
-            <p .control>
-              <input .input type="time" name="month-time-of-day" value="#{monthsTodVal}">
+        <div .field .is-horizontal>
+          <div field-body>
+            <div .field .has-addons .is-expanded>
+              <p .control>
+                <button .button .non-interactive>
+                  At
+              <p .control>
+                <input .input type="time" name="day-time-of-day" value="#{timeVal}">
 
 
 
 
+      <div #EveryMonth-input .changable style="display: none;">
+        <div .field .is-horizontal>
+          <div .field-body>
+            <div .field .has-addons .is-expanded>
+              <p .control>
+                <button .button .non-interactive .no-select>
+                  Every
+              <p .control>
+                <input .input type="number" name="months" value="#{monthsVal}">
+              <p .control>
+                <button .button .non-interactive>
+                  month(s)
+            
+            
+            
+        <div .field .is-horizontal>
+          <div field-body>
+            <div .field .has-addons .is-expanded>
+              <p .control>
+                <button .button .non-interactive .no-select>
+                  On day
+              <p .conrtol>
+                <input .input type="number" name="day" value="#{monthsDayVal}">
+              <p .control>
+                <button .button .non-interactive>
+                  of the month
 
+        <div .field .is-horizontal>
+          <div field-body>
+            <div .field .has-addons .is-expanded>
+              <p .control>
+                <button .button .non-interactive>
+                  At
+              <p .control>
+                <input .input type="time" name="month-time-of-day" value="#{monthsTodVal}">
 
-
-    ^{token}
-    <div .field .is-grouped .is-grouped-centered .mt-3>
+    <div .column .is-one-third>
       <div .control>
-        <button .button type="submit" .is-primary>
-          Save
+        <label .radio>
+          <input .recurrence-option
+            id="None"
+            type="radio"
+            name="recurrence"
+            value="NoRecurrence"
+            :noRecurrenceChecked:checked>
+          No reccurence
+
       <div .control>
-        <button .button href=@{TicklesR}>
-          Cancel
+        <label .radio>
+          <input .recurrence-option
+            id="EveryDay"
+            type="radio"
+            name="recurrence"
+            value="Days"
+            :everyXDaysChecked:checked>
+          Every X days
+
+      <div .control>
+        <label .radio>
+          <input .recurrence-option
+            id="EveryMonth"
+            type="radio"
+            name="recurrence"
+            value="Months"
+            :everyXMonthsChecked:checked>
+          Every X months
+
+
+
+
+
+
+
+  ^{token}
+  <div .field .is-grouped .is-grouped-centered .mt-3>
+    <div .control>
+      <button .button type="submit" .is-primary>
+        Save
+    <div .control>
+      <button .button href=@{TicklesR}>
+        Cancel
 
 
 

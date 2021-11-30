@@ -3,7 +3,7 @@ set -x
 
 cd tickler-web-server
 
-pkill -f 'tickler-web-server serve'
+killall tickler-web-server || true
 
 set -e
 
