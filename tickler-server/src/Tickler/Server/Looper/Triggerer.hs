@@ -2,6 +2,8 @@
 
 module Tickler.Server.Looper.Triggerer where
 
+import Conduit
+import qualified Data.Conduit.Combinators as C
 import Data.Time
 import Database.Persist.Sqlite
 import Import
@@ -15,12 +17,13 @@ runTriggerer () = do
   let nowLocal = zonedTimeToLocalTime nowZoned
       nowDay = localDay nowLocal
       later = addDays 2 nowDay
-  itemsToConsider <-
+  acqItemsToConsiderSource <-
     runDb $
-      selectList
+      selectSourceRes
         [TicklerItemScheduledDay <=. later]
         [Asc TicklerItemScheduledDay, Asc TicklerItemScheduledTime]
-  mapM_ considerTicklerItem itemsToConsider
+  withAcquire acqItemsToConsiderSource $ \itemsToConsiderSource ->
+    runConduit $ itemsToConsiderSource .| C.mapM_ considerTicklerItem
 
 considerTicklerItem :: Entity TicklerItem -> Looper ()
 considerTicklerItem e@(Entity _ ti@TicklerItem {..}) =

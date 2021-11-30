@@ -15,6 +15,7 @@ import Data.Pool
 import Database.Persist.Sqlite
 import Import
 import Tickler.Server.OptParse.Types
+import UnliftIO
 
 data LooperEnv = LooperEnv
   { looperEnvPool :: Pool SqlBackend,
@@ -29,6 +30,7 @@ newtype Looper a = Looper
       Applicative,
       Monad,
       MonadIO,
+      MonadUnliftIO,
       MonadReader LooperEnv,
       MonadLogger,
       MonadThrow,
