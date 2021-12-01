@@ -8,7 +8,9 @@ module Tickler.Server.Looper.TriggeredEmailConverter
   )
 where
 
+import Conduit
 import Data.Char as Char
+import qualified Data.Conduit.Combinators as C
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as LT
@@ -26,23 +28,21 @@ import Tickler.Server.OptParse.Types
 
 runTriggeredEmailConverter :: TriggeredEmailConverterSettings -> Looper ()
 runTriggeredEmailConverter tess = do
-  tes <- runDb $ selectList [TriggeredEmailEmail ==. Nothing] []
-  tups <-
-    fmap catMaybes $
-      forM tes $
-        \(Entity tid TriggeredEmail {..}) -> do
-          meti <- runDb $ getBy $ UniqueTriggeredItemIdentifier triggeredEmailItem
-          meet <- runDb $ getBy $ UniqueEmailTrigger triggeredEmailTrigger
-          case (,) <$> meti <*> meet of
-            Nothing -> pure Nothing
-            Just (Entity _ ti, Entity _ et) ->
-              Just . (,) tid <$> makeTriggeredEmail tess et ti undefined
-  runDb $
-    forM_ tups $
-      \(tid, e) -> do
-        eid <- insert e
-        -- FIXME This should be a transaction.
-        update tid [TriggeredEmailEmail =. Just eid]
+  acqTriggeredEmailSource <- runDb $ selectSourceRes [TriggeredEmailEmail ==. Nothing] []
+  withAcquire acqTriggeredEmailSource $ \triggeredEmailSource -> do
+    runConduit $ triggeredEmailSource .| C.mapM_ (convertTriggeredEmail tess)
+
+convertTriggeredEmail :: TriggeredEmailConverterSettings -> Entity TriggeredEmail -> Looper ()
+convertTriggeredEmail tess (Entity tid TriggeredEmail {..}) = do
+  meti <- runDb $ getBy $ UniqueTriggeredItemIdentifier triggeredEmailItem
+  meet <- runDb $ getBy $ UniqueEmailTrigger triggeredEmailTrigger
+  case (,) <$> meti <*> meet of
+    Nothing -> pure ()
+    Just (Entity _ ti, Entity _ et) -> do
+      email <- makeTriggeredEmail tess et ti undefined
+      runDb $ do
+        emailId <- insert email
+        update tid [TriggeredEmailEmail =. Just emailId]
 
 makeTriggeredEmail ::
   TriggeredEmailConverterSettings -> EmailTrigger -> TriggeredItem -> Render Text -> Looper Email

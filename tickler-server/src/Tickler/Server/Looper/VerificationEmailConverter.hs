@@ -8,6 +8,8 @@ module Tickler.Server.Looper.VerificationEmailConverter
   )
 where
 
+import Conduit
+import qualified Data.Conduit.Combinators as C
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as LT
 import qualified Data.Text.Lazy.Builder as LTB
@@ -24,12 +26,16 @@ import Tickler.Server.OptParse.Types
 
 runVerificationEmailConverter :: VerificationEmailConverterSettings -> Looper ()
 runVerificationEmailConverter vecs@VerificationEmailConverterSettings {..} = do
-  ves <- runDb $ selectList [VerificationEmailEmail ==. Nothing] []
-  forM_ ves $ \(Entity vid ve@VerificationEmail {..}) -> do
-    e <- makeVerificationEmail vecs ve undefined
-    runDb $ do
-      eid <- insert e
-      update vid [VerificationEmailEmail =. Just eid]
+  acqVerificationEmailSource <- runDb $ selectSourceRes [VerificationEmailEmail ==. Nothing] []
+  withAcquire acqVerificationEmailSource $ \verificationEmailSource ->
+    runConduit $ verificationEmailSource .| C.mapM_ (convertVerificationEmail vecs)
+
+convertVerificationEmail :: VerificationEmailConverterSettings -> Entity VerificationEmail -> Looper ()
+convertVerificationEmail vecs (Entity vid ve) = do
+  email <- makeVerificationEmail vecs ve (error "unused")
+  runDb $ do
+    emailId <- insert email
+    update vid [VerificationEmailEmail =. Just emailId]
 
 makeVerificationEmail ::
   VerificationEmailConverterSettings -> VerificationEmail -> Render Text -> Looper Email
