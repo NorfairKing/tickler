@@ -2,7 +2,6 @@ resolver: lts-16.12
 packages:
 - tickler-api
 - tickler-api-gen
-- tickler-cli
 - tickler-client
 - tickler-client-gen
 - tickler-data

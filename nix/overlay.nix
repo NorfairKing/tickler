@@ -20,7 +20,6 @@ with final.haskell.lib;
       "tickler-data-gen" = ticklerPkg "tickler-data-gen";
       "tickler-api" = ticklerPkg "tickler-api";
       "tickler-api-gen" = ticklerPkg "tickler-api-gen";
-      "tickler-cli" = ticklerPkgWithComp "tickler" "tickler-cli";
       "tickler-client" = ticklerPkg "tickler-client";
       "tickler-client-gen" = ticklerPkg "tickler-client-gen";
       "tickler-server" = ticklerPkgWithOwnComp "tickler-server";

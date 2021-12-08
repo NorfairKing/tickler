@@ -1,15 +1,9 @@
+version: 1.0.0
+value:
 - entry: Features
   forest:
   - entry: Server
     forest:
-    - header: Restart loopers when they fail
-      state-history:
-      - new-state: DONE
-        timestamp: 2018-12-10 10:32:32.987301755000+0000
-    - header: A way to remove triggered tickles
-      state-history:
-      - new-state: DONE
-        timestamp: 2018-12-10 10:32:48.387671104000+0000
     - A way to auto-remove triggered tickles
     - Weekly and yearly recurrence
     - Seperate item uuid from triggered item uuid
@@ -25,18 +19,11 @@
     forest:
     - Documentation to explain how tickler deals with time zones
     - Make sure newlnines are preserved in the text
-    - header: Google analytics
-      state-history:
-      - new-state: DONE
-        timestamp: 2018-12-10 10:34:35.163685904000+0000
     - Nicer form failure when adding tickles
     - Feedback form
     - Make items' recurrence editable?
     - Make sure that failing to ad an intray trigger shows a nice error
     - Comply with GBDPR
-  - entry: CLI
-    forest:
-    - Sync triggered items too
 - entry: Bug
   forest:
   - entry: Server
