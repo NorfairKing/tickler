@@ -45,14 +45,14 @@ ticklerTestServeSettings = do
         serveSetTracking = Nothing,
         serveSetVerification = Nothing,
         serveSetAPISettings =
-          API.ServeSettings
-            { API.serveSetPort = 8001,
-              API.serveSetLogLevel = LevelWarn,
-              API.serveSetConnectionInfo = connInfo,
-              API.serveSetAdmins = catMaybes [parseUsername "admin"],
-              API.serveSetFreeloaders = catMaybes [parseUsername "freeloader"],
-              API.serveSetMonetisationSettings = Nothing,
-              API.serveSetLoopersSettings =
+          API.Settings
+            { API.setPort = 8001,
+              API.setLogLevel = LevelWarn,
+              API.setConnectionInfo = connInfo,
+              API.setAdmins = catMaybes [parseUsername "admin"],
+              API.setFreeloaders = catMaybes [parseUsername "freeloader"],
+              API.setMonetisationSettings = Nothing,
+              API.setLoopersSettings =
                 API.LoopersSettings
                   { API.looperSetTriggererSets = API.LooperDisabled,
                     API.looperSetEmailerSets = API.LooperDisabled,
@@ -77,7 +77,7 @@ ticklerWebServerSpec = b . a
 appSetupFunc :: HTTP.Manager -> ClientEnv -> SetupFunc App
 appSetupFunc _ (ClientEnv _ burl _) = do
   sets_ <- liftIO ticklerTestServeSettings
-  let apiSets = (serveSetAPISettings sets_) {API.serveSetPort = baseUrlPort burl}
+  let apiSets = (serveSetAPISettings sets_) {API.setPort = baseUrlPort burl}
   let sets' = sets_ {serveSetAPISettings = apiSets}
   liftIO $ makeTicklerApp sets'
 

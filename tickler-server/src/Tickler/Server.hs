@@ -17,7 +17,7 @@ import Data.Cache
 import Database.Persist.Sqlite
 import Import
 import Network.Wai as Wai
-import Network.Wai.Handler.Warp as Warp
+import qualified Network.Wai.Handler.Warp as Warp
 import Network.Wai.Middleware.Cors
 import Servant hiding (BadPassword, NoSuchUser)
 import Servant.Auth.Server as Auth
@@ -29,19 +29,19 @@ import Tickler.Server.OptParse.Types
 import Tickler.Server.SigningKey
 import Tickler.Server.Types
 
-runTicklerServer :: ServeSettings -> IO ()
-runTicklerServer ServeSettings {..} =
+runTicklerServer :: Settings -> IO ()
+runTicklerServer Settings {..} =
   runStderrLoggingT $
-    filterLogger (\_ ll -> ll >= serveSetLogLevel) $
-      withSqlitePoolInfo serveSetConnectionInfo 1 $
+    filterLogger (\_ ll -> ll >= setLogLevel) $
+      withSqlitePoolInfo setConnectionInfo 1 $
         \pool -> do
           runResourceT $ flip runSqlPool pool $ runMigration migrateAll
           signingKey <- liftIO loadSigningKey
           let jwtCfg = defaultJWTSettings signingKey
           let cookieCfg = defaultCookieSettings
-          loopersHandle <- startLoopers pool serveSetLoopersSettings serveSetMonetisationSettings
+          loopersHandle <- startLoopers pool setLoopersSettings setMonetisationSettings
           mMonetisationEnv <-
-            forM serveSetMonetisationSettings $ \MonetisationSettings {..} -> do
+            forM setMonetisationSettings $ \MonetisationSettings {..} -> do
               planCache <- liftIO $ newCache Nothing
               pure
                 MonetisationEnv
@@ -54,12 +54,12 @@ runTicklerServer ServeSettings {..} =
                   { envConnectionPool = pool,
                     envCookieSettings = cookieCfg,
                     envJWTSettings = jwtCfg,
-                    envAdmins = serveSetAdmins,
-                    envFreeloaders = serveSetFreeloaders,
+                    envAdmins = setAdmins,
+                    envFreeloaders = setFreeloaders,
                     envMonetisation = mMonetisationEnv,
                     envLoopersHandle = loopersHandle
                   }
-          liftIO $ Warp.run serveSetPort $ ticklerApp ticklerEnv
+          liftIO $ Warp.run setPort $ ticklerApp ticklerEnv
 
 ticklerApp :: TicklerServerEnv -> Wai.Application
 ticklerApp se =

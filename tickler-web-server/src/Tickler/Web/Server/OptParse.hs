@@ -34,14 +34,13 @@ combineToInstructions :: Command -> Flags -> Environment -> Maybe Configuration 
 combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..} mConf = do
   let mc :: (Configuration -> Maybe a) -> Maybe a
       mc f = mConf >>= f
-  API.Instructions (API.DispatchServe apiServeSets) API.Settings <-
-    API.combineToInstructions
-      (API.CommandServe serveFlagAPIServeFlags)
+  apiSets <-
+    API.combineToSettings
       flagAPIFlags
       envAPIEnvironment
       (confAPIConf <$> mConf)
   let webPort = fromMaybe 8000 $ serveFlagPort <|> envPort <|> mc confPort
-  when (API.serveSetPort apiServeSets == webPort) $
+  when (API.setPort apiSets == webPort) $
     die $
       unlines
         ["Web server port and API port must not be the same.", "They are both: " ++ show webPort]
@@ -55,7 +54,7 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..}
               serveFlagDefaultIntrayUrl <|> envDefaultIntrayUrl <|> mc confDefaultIntrayUrl,
             serveSetTracking = serveFlagTracking <|> envTracking <|> mc confTracking,
             serveSetVerification = serveFlagVerification <|> envVerification <|> mc confVerification,
-            serveSetAPISettings = apiServeSets
+            serveSetAPISettings = apiSets
           },
       Settings
     )
@@ -170,7 +169,7 @@ parseCommandServe = info parser help_
                         help "The contents of the google search console verification tag"
                       ]
                   )
-                <*> API.parseServeFlags
+                <*> API.parseFlags
             )
     help_ = fullDesc <> footerDoc (Just $ OptParse.string footerStr)
     footerStr =

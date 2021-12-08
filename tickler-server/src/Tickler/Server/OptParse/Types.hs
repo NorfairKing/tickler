@@ -18,25 +18,16 @@ import Web.Stripe.Types as Stripe hiding (object)
 instance HasCodec () where
   codec = nullCodec
 
-data Arguments
-  = Arguments Command Flags
-
-data Instructions
-  = Instructions Dispatch Settings
-
-newtype Command
-  = CommandServe ServeFlags
-  deriving (Show, Eq)
-
-data ServeFlags = ServeFlags
-  { serveFlagPort :: Maybe Int,
-    serveFlagWebHost :: Maybe Text,
-    serveFlagLogLevel :: Maybe LogLevel,
-    serveFlagDb :: Maybe Text,
-    serveFlagAdmins :: [Username],
-    serveFlagFreeloaders :: [Username],
-    serveFlagsMonetisationFlags :: MonetisationFlags,
-    serveFlagsLooperFlags :: LoopersFlags
+data Flags = Flags
+  { flagConfigFile :: Maybe FilePath,
+    flagPort :: Maybe Int,
+    flagWebHost :: Maybe Text,
+    flagLogLevel :: Maybe LogLevel,
+    flagDb :: Maybe Text,
+    flagAdmins :: [Username],
+    flagFreeloaders :: [Username],
+    flagsMonetisationFlags :: MonetisationFlags,
+    flagsLooperFlags :: LoopersFlags
   }
   deriving (Show, Eq)
 
@@ -83,11 +74,6 @@ data LooperFlagsWith a = LooperFlagsWith
 data LooperFlagsRetryPolicy = LooperFlagsRetryPolicy
   { looperFlagsRetryDelay :: Maybe Int,
     looperFlagsRetryAmount :: Maybe Int
-  }
-  deriving (Show, Eq)
-
-data Flags = Flags
-  { flagConfigFile :: Maybe FilePath
   }
   deriving (Show, Eq)
 
@@ -334,22 +320,14 @@ data AdminNotificationEmailConverterEnvironment = AdminNotificationEmailConverte
   }
   deriving (Show, Eq)
 
-newtype Dispatch
-  = DispatchServe ServeSettings
-  deriving (Show)
-
-data Settings
-  = Settings
-  deriving (Show, Eq)
-
-data ServeSettings = ServeSettings
-  { serveSetPort :: !Int,
-    serveSetLogLevel :: !LogLevel,
-    serveSetConnectionInfo :: !SqliteConnectionInfo,
-    serveSetAdmins :: ![Username],
-    serveSetFreeloaders :: ![Username],
-    serveSetMonetisationSettings :: !(Maybe MonetisationSettings),
-    serveSetLoopersSettings :: !LoopersSettings
+data Settings = Settings
+  { setPort :: !Int,
+    setLogLevel :: !LogLevel,
+    setConnectionInfo :: !SqliteConnectionInfo,
+    setAdmins :: ![Username],
+    setFreeloaders :: ![Username],
+    setMonetisationSettings :: !(Maybe MonetisationSettings),
+    setLoopersSettings :: !LoopersSettings
   }
   deriving (Show)
 

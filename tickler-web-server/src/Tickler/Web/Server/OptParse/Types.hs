@@ -23,7 +23,7 @@ data ServeFlags = ServeFlags
     serveFlagDefaultIntrayUrl :: Maybe BaseUrl,
     serveFlagTracking :: Maybe Text,
     serveFlagVerification :: Maybe Text,
-    serveFlagAPIServeFlags :: API.ServeFlags
+    serveFlagAPIServeFlags :: API.Flags
   }
   deriving (Show, Eq)
 
@@ -79,7 +79,7 @@ data ServeSettings = ServeSettings
     serveSetDefaultIntrayUrl :: Maybe BaseUrl,
     serveSetTracking :: Maybe Text,
     serveSetVerification :: Maybe Text,
-    serveSetAPISettings :: API.ServeSettings
+    serveSetAPISettings :: API.Settings
   }
   deriving (Show)
 

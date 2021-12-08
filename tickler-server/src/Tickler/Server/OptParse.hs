@@ -27,38 +27,38 @@ import Tickler.Server.OptParse.Types
 import Web.Stripe.Client as Stripe
 import Web.Stripe.Types as Stripe
 
-getInstructions :: IO Instructions
-getInstructions = do
-  Arguments cmd flags <- getArguments
+getSettings :: IO Settings
+getSettings = do
+  flags <- getFlags
   env <- getEnvironment
   config <- getConfiguration flags env
-  combineToInstructions cmd flags env config
+  combineToSettings flags env config
 
-combineToInstructions :: Command -> Flags -> Environment -> Maybe Configuration -> IO Instructions
-combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..} mConf = do
+combineToSettings :: Flags -> Environment -> Maybe Configuration -> IO Settings
+combineToSettings Flags {..} Environment {..} mConf = do
   let mc :: (Configuration -> Maybe a) -> Maybe a
       mc func = mConf >>= func
-  let serveSetPort = fromMaybe 8001 $ serveFlagPort <|> envPort <|> mc confPort
-  let serveSetLogLevel = fromMaybe LevelInfo $ serveFlagLogLevel <|> envLogLevel <|> mc confLogLevel
-  let mWebHost = serveFlagWebHost <|> envWebHost <|> mc confWebHost
-  let serveSetConnectionInfo = mkSqliteConnectionInfo $ fromMaybe "tickler.db" $ serveFlagDb <|> envDb <|> mc confDb
-  let serveSetAdmins = serveFlagAdmins ++ fromMaybe [] (mc confAdmins)
-  let serveSetFreeloaders = serveFlagFreeloaders ++ fromMaybe [] (mc confFreeloaders)
-  serveSetLoopersSettings <-
+  let setPort = fromMaybe 8001 $ flagPort <|> envPort <|> mc confPort
+  let setLogLevel = fromMaybe LevelInfo $ flagLogLevel <|> envLogLevel <|> mc confLogLevel
+  let mWebHost = flagWebHost <|> envWebHost <|> mc confWebHost
+  let setConnectionInfo = mkSqliteConnectionInfo $ fromMaybe "tickler.db" $ flagDb <|> envDb <|> mc confDb
+  let setAdmins = flagAdmins ++ fromMaybe [] (mc confAdmins)
+  let setFreeloaders = flagFreeloaders ++ fromMaybe [] (mc confFreeloaders)
+  setLoopersSettings <-
     combineToLoopersSettings
       mWebHost
-      serveFlagsLooperFlags
+      flagsLooperFlags
       envLoopersEnvironment
       (mc confLoopersConfiguration)
-  serveSetMonetisationSettings <-
+  setMonetisationSettings <-
     do
       let (defEnabled, defStaticConfig) =
             defaultLooperSettings
-              serveFlagsLooperFlags
+              flagsLooperFlags
               envLoopersEnvironment
               (mc confLoopersConfiguration)
           comb' = combineToLooperSettings' defEnabled defStaticConfig
-      let MonetisationFlags {..} = serveFlagsMonetisationFlags
+      let MonetisationFlags {..} = flagsMonetisationFlags
       let MonetisationEnvironment {..} = envMonetisationEnvironment
       let mmc :: (MonetisationConfiguration -> Maybe a) -> Maybe a
           mmc func = mc confMonetisationConfiguration >>= func
@@ -99,7 +99,7 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..}
           <*> pure monetisationSetStripeEventsFetcher
           <*> pure monetisationSetStripeEventsRetrier
           <*> pure monetisationSetMaxItemsFree
-  pure $ Instructions (DispatchServe ServeSettings {..}) Settings
+  pure Settings {..}
 
 defaultLooperSettings ::
   LoopersFlags -> LoopersEnvironment -> Maybe LoopersConfiguration -> (Bool, LooperStaticConfig)
@@ -364,19 +364,19 @@ getEitherEnv env func key =
         die $ unlines [unwords ["Failed to parse environment variable", key <> ":", s], err]
       Right res -> pure res
 
-getArguments :: IO Arguments
-getArguments = do
+getFlags :: IO Flags
+getFlags = do
   args <- System.getArgs
-  let result = runArgumentsParser args
+  let result = runFlagsParser args
   handleParseResult result
 
-runArgumentsParser :: [String] -> ParserResult Arguments
-runArgumentsParser = execParserPure prefs_ argParser
+runFlagsParser :: [String] -> ParserResult Flags
+runFlagsParser = execParserPure prefs_ flagsParser
   where
     prefs_ = defaultPrefs {prefShowHelpOnError = True, prefShowHelpOnEmpty = True}
 
-argParser :: ParserInfo Arguments
-argParser = info (helper <*> parseArgs) help_
+flagsParser :: ParserInfo Flags
+flagsParser = info (helper <*> parseFlags) help_
   where
     help_ = fullDesc <> footerDoc (Just $ OptParse.string footerStr)
     footerStr =
@@ -385,56 +385,75 @@ argParser = info (helper <*> parseArgs) help_
           T.unpack (TE.decodeUtf8 (renderColouredSchemaViaCodec @Configuration))
         ]
 
-parseArgs :: Parser Arguments
-parseArgs = Arguments <$> parseCommand <*> parseFlags
-
-parseCommand :: Parser Command
-parseCommand = hsubparser $ mconcat [command "serve" parseCommandServe]
-
-parseCommandServe :: ParserInfo Command
-parseCommandServe = info parser help_
-  where
-    parser = CommandServe <$> parseServeFlags
-    help_ = fullDesc <> footerDoc (Just $ OptParse.string footerStr)
-    footerStr =
-      unlines
-        [ "Configuration file format:",
-          T.unpack (TE.decodeUtf8 (renderColouredSchemaViaCodec @Configuration))
-        ]
-
-parseServeFlags :: Parser ServeFlags
-parseServeFlags =
-  ServeFlags
-    <$> option
-      (Just <$> auto)
-      ( mconcat
-          [long "web-host", value Nothing, metavar "HOST", help "the host to serve the web server on"]
+parseFlags :: Parser Flags
+parseFlags =
+  Flags
+    <$> optional
+      ( strOption
+          ( mconcat
+              [ long "config-file",
+                metavar "FILEPATH",
+                help "The config file"
+              ]
+          )
       )
-    <*> option
-      (Just <$> auto)
-      (mconcat [long "api-port", value Nothing, metavar "PORT", help "the port to serve the API on"])
-    <*> option
-      (Just <$> auto)
-      (mconcat [long "log-level", value Nothing, metavar "LOG_LEVEL", help "the minimal sevirity of log levels"])
-    <*> option
-      (Just <$> str)
-      ( mconcat
-          [ long "database",
-            value Nothing,
-            metavar "DATABASE_CONNECTION_STRING",
-            help "The sqlite connection string"
-          ]
-      )
-    <*> many
+    <*> optional
       ( option
-          (eitherReader (parseUsernameWithError . T.pack))
-          (mconcat [long "admin", metavar "USERNAME", help "An admin"])
+          auto
+          ( mconcat
+              [ long "web-host",
+                metavar "HOST",
+                help "the host to serve the web server on"
+              ]
+          )
+      )
+    <*> optional
+      ( option
+          auto
+          ( mconcat
+              [ long "api-port",
+                metavar "PORT",
+                help "the port to serve the API on"
+              ]
+          )
+      )
+    <*> optional
+      ( option
+          auto
+          ( mconcat
+              [ long "log-level",
+                metavar "LOG_LEVEL",
+                help "the minimal sevirity of log messages"
+              ]
+          )
+      )
+    <*> optional
+      ( strOption
+          ( mconcat
+              [ long "database",
+                metavar "DATABASE_CONNECTION_STRING",
+                help "The sqlite connection string"
+              ]
+          )
       )
     <*> many
       ( option
           (eitherReader (parseUsernameWithError . T.pack))
           ( mconcat
-              [long "freeloader", metavar "USERNAME", help "A user that can use the service for free"]
+              [ long "admin",
+                metavar "USERNAME",
+                help "An admin"
+              ]
+          )
+      )
+    <*> many
+      ( option
+          (eitherReader (parseUsernameWithError . T.pack))
+          ( mconcat
+              [ long "freeloader",
+                metavar "USERNAME",
+                help "A user that can use the service for free"
+              ]
           )
       )
     <*> parseMonetisationFlags
@@ -443,43 +462,44 @@ parseServeFlags =
 parseMonetisationFlags :: Parser MonetisationFlags
 parseMonetisationFlags =
   MonetisationFlags
-    <$> option
-      (Just <$> str)
-      ( mconcat
-          [ long "stripe-plan",
-            value Nothing,
-            metavar "PLAN_ID",
-            help "The product pricing plan for stripe"
-          ]
+    <$> optional
+      ( strOption
+          ( mconcat
+              [ long "stripe-plan",
+                metavar "PLAN_ID",
+                help "The product pricing plan for stripe"
+              ]
+          )
       )
-    <*> option
-      (Just <$> str)
-      ( mconcat
-          [ long "stripe-secret-key",
-            value Nothing,
-            metavar "SECRET_KEY",
-            help "The secret key for stripe"
-          ]
+    <*> optional
+      ( strOption
+          ( mconcat
+              [ long "stripe-secret-key",
+                metavar "SECRET_KEY",
+                help "The secret key for stripe"
+              ]
+          )
       )
-    <*> option
-      (Just <$> str)
-      ( mconcat
-          [ long "stripe-publishable-key",
-            value Nothing,
-            metavar "PUBLISHABLE_KEY",
-            help "The publishable key for stripe"
-          ]
+    <*> optional
+      ( strOption
+          ( mconcat
+              [ long "stripe-publishable-key",
+                metavar "PUBLISHABLE_KEY",
+                help "The publishable key for stripe"
+              ]
+          )
       )
     <*> parseLooperFlagsWith "stripe-events-fetcher" (pure ())
     <*> parseLooperFlagsWith "stripe-events-retrier" (pure ())
-    <*> option
-      (Just <$> auto)
-      ( mconcat
-          [ long "max-items-free",
-            value Nothing,
-            metavar "INT",
-            help "How many items a user can sync in the free plan"
-          ]
+    <*> optional
+      ( option
+          auto
+          ( mconcat
+              [ long "max-items-free",
+                metavar "INT",
+                help "How many items a user can sync in the free plan"
+              ]
+          )
       )
 
 parseLoopersFlags :: Parser LoopersFlags
@@ -616,10 +636,3 @@ onOffFlag suffix mods =
     <|> pure Nothing
   where
     pf s = intercalate "-" [s, suffix]
-
-parseFlags :: Parser Flags
-parseFlags =
-  Flags
-    <$> option
-      (Just <$> str)
-      (mconcat [long "config-file", value Nothing, metavar "FILEPATH", help "The config file"])

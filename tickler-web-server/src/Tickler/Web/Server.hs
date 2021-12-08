@@ -36,7 +36,7 @@ runTicklerWebServer ss@ServeSettings {..} = do
 
 makeTicklerApp :: ServeSettings -> IO App
 makeTicklerApp ServeSettings {..} = do
-  let apiPort = API.serveSetPort serveSetAPISettings
+  let apiPort = API.setPort serveSetAPISettings
   burl <- parseBaseUrl $ "http://127.0.0.1:" ++ show apiPort
   man <- Http.newManager Http.tlsManagerSettings
   tokens <- newMVar HM.empty
