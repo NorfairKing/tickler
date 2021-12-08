@@ -9,26 +9,13 @@ import Import
 import Servant.Client.Core
 import qualified Tickler.Server.OptParse.Types as API
 
-type Arguments = (Command, Flags)
-
-type Instructions = (Dispatch, Settings)
-
-newtype Command
-  = CommandServe ServeFlags
-  deriving (Show, Eq)
-
-data ServeFlags = ServeFlags
-  { serveFlagPort :: Maybe Int,
-    serveFlagPersistLogins :: Maybe Bool,
-    serveFlagDefaultIntrayUrl :: Maybe BaseUrl,
-    serveFlagTracking :: Maybe Text,
-    serveFlagVerification :: Maybe Text,
-    serveFlagAPIServeFlags :: API.Flags
-  }
-  deriving (Show, Eq)
-
 data Flags = Flags
-  { flagAPIFlags :: API.Flags
+  { flagPort :: Maybe Int,
+    flagPersistLogins :: Maybe Bool,
+    flagDefaultIntrayUrl :: Maybe BaseUrl,
+    flagTracking :: Maybe Text,
+    flagVerification :: Maybe Text,
+    flagAPIFlags :: API.Flags
   }
   deriving (Show, Eq)
 
@@ -69,20 +56,12 @@ data Environment = Environment
   }
   deriving (Show, Eq)
 
-newtype Dispatch
-  = DispatchServe ServeSettings
-  deriving (Show)
-
-data ServeSettings = ServeSettings
-  { serveSetPort :: Int,
-    serveSetPersistLogins :: Bool,
-    serveSetDefaultIntrayUrl :: Maybe BaseUrl,
-    serveSetTracking :: Maybe Text,
-    serveSetVerification :: Maybe Text,
-    serveSetAPISettings :: API.Settings
+data Settings = Settings
+  { setPort :: Int,
+    setPersistLogins :: Bool,
+    setDefaultIntrayUrl :: Maybe BaseUrl,
+    setTracking :: Maybe Text,
+    setVerification :: Maybe Text,
+    setAPISettings :: API.Settings
   }
   deriving (Show)
-
-data Settings
-  = Settings
-  deriving (Show, Eq)

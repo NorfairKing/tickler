@@ -11,8 +11,8 @@ import Control.Concurrent
 import Control.Concurrent.Async (concurrently_)
 import qualified Data.HashMap.Strict as HM
 import Import
-import qualified Network.HTTP.Client as Http
-import qualified Network.HTTP.Client.TLS as Http
+import qualified Network.HTTP.Client as HTTP
+import qualified Network.HTTP.Client.TLS as HTTP
 import Servant.Client (parseBaseUrl)
 import qualified Tickler.Server as API
 import qualified Tickler.Server.OptParse as API
@@ -24,33 +24,33 @@ import Yesod
 
 ticklerWebServer :: IO ()
 ticklerWebServer = do
-  (DispatchServe ss, Settings) <- getInstructions
+  ss <- getSettings
   putStrLn $ unlines ["Running tickler-web-server with these settings:", ppShow ss]
-  bootCheck (serveSetDefaultIntrayUrl ss)
+  bootCheck (setDefaultIntrayUrl ss)
   concurrently_ (runTicklerWebServer ss) (runTicklerAPIServer ss)
 
-runTicklerWebServer :: ServeSettings -> IO ()
-runTicklerWebServer ss@ServeSettings {..} = do
+runTicklerWebServer :: Settings -> IO ()
+runTicklerWebServer ss@Settings {..} = do
   appl <- makeTicklerApp ss
-  warp serveSetPort appl
+  warp setPort appl
 
-makeTicklerApp :: ServeSettings -> IO App
-makeTicklerApp ServeSettings {..} = do
-  let apiPort = API.setPort serveSetAPISettings
+makeTicklerApp :: Settings -> IO App
+makeTicklerApp Settings {..} = do
+  let apiPort = API.setPort setAPISettings
   burl <- parseBaseUrl $ "http://127.0.0.1:" ++ show apiPort
-  man <- Http.newManager Http.tlsManagerSettings
+  man <- HTTP.newManager HTTP.tlsManagerSettings
   tokens <- newMVar HM.empty
   pure
     App
-      { appHttpManager = man,
+      { appHTTPManager = man,
         appStatic = myStatic,
         appLoginTokens = tokens,
         appAPIBaseUrl = burl,
-        appTracking = serveSetTracking,
-        appVerification = serveSetVerification,
-        appPersistLogins = serveSetPersistLogins,
-        appDefaultIntrayUrl = serveSetDefaultIntrayUrl
+        appTracking = setTracking,
+        appVerification = setVerification,
+        appPersistLogins = setPersistLogins,
+        appDefaultIntrayUrl = setDefaultIntrayUrl
       }
 
-runTicklerAPIServer :: ServeSettings -> IO ()
-runTicklerAPIServer ss = API.runTicklerServer $ serveSetAPISettings ss
+runTicklerAPIServer :: Settings -> IO ()
+runTicklerAPIServer ss = API.runTicklerServer $ setAPISettings ss

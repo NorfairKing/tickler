@@ -24,8 +24,8 @@ import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import Data.Text.Encoding (encodeUtf8)
 import Import
-import qualified Network.HTTP.Client as Http
-import qualified Network.HTTP.Types as Http
+import qualified Network.HTTP.Client as HTTP
+import qualified Network.HTTP.Types as HTTP
 import Servant.API
 import Servant.Auth.Client (Token (..))
 import Servant.Client
@@ -51,7 +51,7 @@ type TicklerHandler = HandlerFor App
 type TicklerAuthHandler a = AuthHandler App a
 
 data App = App
-  { appHttpManager :: Http.Manager,
+  { appHTTPManager :: HTTP.Manager,
     appStatic :: EmbeddedStatic,
     appAPIBaseUrl :: BaseUrl,
     appPersistLogins :: Bool,
@@ -98,7 +98,7 @@ instance YesodAuth App where
   type AuthId App = Username
   loginDest _ = AddR
   logoutDest _ = HomeR
-  authHttpManager = getsYesod appHttpManager
+  authHttpManager = getsYesod appHTTPManager
   authenticate creds =
     if credsPlugin creds == ticklerAuthPluginName
       then case parseUsername $ credsIdent creds of
@@ -224,7 +224,7 @@ postNewAccountR = do
         Left err -> do
           case err of
             FailureResponse _ resp ->
-              case Http.statusCode $ responseStatusCode resp of
+              case HTTP.statusCode $ responseStatusCode resp of
                 409 -> addMessage "error" "An account with this username already exists"
                 c ->
                   addMessage "error" $
@@ -318,7 +318,7 @@ genToken = do
 
 runClient :: ClientM a -> Handler (Either ClientError a)
 runClient func = do
-  man <- getsYesod appHttpManager
+  man <- getsYesod appHTTPManager
   burl <- getsYesod appAPIBaseUrl
   let cenv = ClientEnv man burl Nothing
   liftIO $ runClientM func cenv
@@ -328,7 +328,7 @@ runClientOrErr func = do
   errOrRes <- runClient func
   case errOrRes of
     Left err ->
-      handleStandardServantErrs err $ \resp -> sendResponseStatus Http.status500 $ show resp
+      handleStandardServantErrs err $ \resp -> sendResponseStatus HTTP.status500 $ show resp
     Right r -> pure r
 
 runClientOrDisallow :: ClientM a -> Handler (Maybe a)
@@ -337,9 +337,9 @@ runClientOrDisallow func = do
   case errOrRes of
     Left err ->
       handleStandardServantErrs err $ \resp ->
-        if responseStatusCode resp == Http.unauthorized401
+        if responseStatusCode resp == HTTP.unauthorized401
           then pure Nothing
-          else sendResponseStatus Http.status500 $ show resp
+          else sendResponseStatus HTTP.status500 $ show resp
     Right r -> pure $ Just r
 
 handleStandardServantErrs :: ClientError -> (Response -> Handler a) -> Handler a
@@ -347,7 +347,7 @@ handleStandardServantErrs err func =
   case err of
     FailureResponse _ resp -> func resp
     ConnectionError e -> redirect $ ErrorAPIDownR $ T.pack $ show e
-    e -> sendResponseStatus Http.status500 $ unwords ["Error while calling API:", show e]
+    e -> sendResponseStatus HTTP.status500 $ unwords ["Error while calling API:", show e]
 
 login :: LoginForm -> Handler ()
 login form = do
@@ -355,17 +355,20 @@ login form = do
   case errOrRes of
     Left err ->
       handleStandardServantErrs err $ \resp ->
-        if responseStatusCode resp == Http.unauthorized401
+        if responseStatusCode resp == HTTP.unauthorized401
           then do
             addMessage "error" "Unable to login"
             redirect $ AuthR LoginR
-          else sendResponseStatus Http.status500 $ show resp
+          else sendResponseStatus HTTP.status500 $ show resp
     Right (Headers NoContent (HCons sessionHeader HNil)) ->
       case sessionHeader of
         Header session -> recordLoginToken (loginFormUsername form) session
         _ ->
-          sendResponseStatus Http.status500 $
-            unwords ["The server responded but with an invalid header for login", show sessionHeader]
+          sendResponseStatus HTTP.status500 $
+            unwords
+              [ "The server responded but with an invalid header for login",
+                show sessionHeader
+              ]
 
 withLogin :: (Token -> Handler a) -> Handler a
 withLogin func = do

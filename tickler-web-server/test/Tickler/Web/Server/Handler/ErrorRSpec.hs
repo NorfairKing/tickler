@@ -16,7 +16,7 @@ spec = do
         do
           get $ ErrorAPIDownR "example"
           statusIs 200
-  let makeServer = ticklerTestServeSettings >>= makeTicklerApp
+  let makeServer = ticklerTestSettings >>= makeTicklerApp
   yesodSpecWithSiteGenerator makeServer $ do
     ydescribe "ErrorAPIDownR" $
       yit "gets a 200 when the API is down" $

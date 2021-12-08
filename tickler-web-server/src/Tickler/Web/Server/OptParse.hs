@@ -3,11 +3,8 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Tickler.Web.Server.OptParse
-  ( getInstructions,
-    Instructions,
-    Dispatch (..),
+  ( getSettings,
     Settings (..),
-    ServeSettings (..),
   )
 where
 
@@ -23,15 +20,15 @@ import Text.Read
 import qualified Tickler.Server.OptParse as API
 import Tickler.Web.Server.OptParse.Types
 
-getInstructions :: IO Instructions
-getInstructions = do
-  (cmd, flags) <- getArguments
+getSettings :: IO Settings
+getSettings = do
+  flags <- getFlags
   env <- getEnvironment
   config <- getConfiguration flags env
-  combineToInstructions cmd flags env config
+  combineToSettings flags env config
 
-combineToInstructions :: Command -> Flags -> Environment -> Maybe Configuration -> IO Instructions
-combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..} mConf = do
+combineToSettings :: Flags -> Environment -> Maybe Configuration -> IO Settings
+combineToSettings Flags {..} Environment {..} mConf = do
   let mc :: (Configuration -> Maybe a) -> Maybe a
       mc f = mConf >>= f
   apiSets <-
@@ -39,25 +36,17 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags {..} Environment {..}
       flagAPIFlags
       envAPIEnvironment
       (confAPIConf <$> mConf)
-  let webPort = fromMaybe 8000 $ serveFlagPort <|> envPort <|> mc confPort
-  when (API.setPort apiSets == webPort) $
+  let setPort = fromMaybe 8000 $ flagPort <|> envPort <|> mc confPort
+  let setPersistLogins = fromMaybe False $ flagPersistLogins <|> envPersistLogins <|> mc confPersistLogins
+  let setDefaultIntrayUrl = flagDefaultIntrayUrl <|> envDefaultIntrayUrl <|> mc confDefaultIntrayUrl
+  let setTracking = flagTracking <|> envTracking <|> mc confTracking
+  let setVerification = flagVerification <|> envVerification <|> mc confVerification
+  let setAPISettings = apiSets
+  when (API.setPort apiSets == setPort) $
     die $
       unlines
-        ["Web server port and API port must not be the same.", "They are both: " ++ show webPort]
-  pure
-    ( DispatchServe
-        ServeSettings
-          { serveSetPort = webPort,
-            serveSetPersistLogins =
-              fromMaybe False $ serveFlagPersistLogins <|> envPersistLogins <|> mc confPersistLogins,
-            serveSetDefaultIntrayUrl =
-              serveFlagDefaultIntrayUrl <|> envDefaultIntrayUrl <|> mc confDefaultIntrayUrl,
-            serveSetTracking = serveFlagTracking <|> envTracking <|> mc confTracking,
-            serveSetVerification = serveFlagVerification <|> envVerification <|> mc confVerification,
-            serveSetAPISettings = apiSets
-          },
-      Settings
-    )
+        ["Web server port and API port must not be the same.", "They are both: " ++ show setPort]
+  pure Settings {..}
 
 getConfiguration :: Flags -> Environment -> IO (Maybe Configuration)
 getConfiguration Flags {..} Environment {..} = do
@@ -92,85 +81,20 @@ getEnvironment = do
   envAPIEnvironment <- API.getEnvironment
   pure Environment {..}
 
-getArguments :: IO Arguments
-getArguments = do
+getFlags :: IO Flags
+getFlags = do
   args <- System.getArgs
-  let result = runArgumentsParser args
+  let result = runFlagsParser args
   handleParseResult result
 
-runArgumentsParser :: [String] -> ParserResult Arguments
-runArgumentsParser = execParserPure prefs_ argParser
+runFlagsParser :: [String] -> ParserResult Flags
+runFlagsParser = execParserPure prefs_ flagsParser
   where
     prefs_ = defaultPrefs {prefShowHelpOnError = True, prefShowHelpOnEmpty = True}
 
-argParser :: ParserInfo Arguments
-argParser = info (helper <*> parseArgs) help_
+flagsParser :: ParserInfo Flags
+flagsParser = info (helper <*> parseFlags) help_
   where
-    help_ = fullDesc <> footerDoc (Just $ OptParse.string footerStr)
-    footerStr =
-      unlines
-        [ "Configuration file format:",
-          T.unpack (TE.decodeUtf8 (renderColouredSchemaViaCodec @Configuration))
-        ]
-
-parseArgs :: Parser Arguments
-parseArgs = (,) <$> parseCommand <*> parseFlags
-
-parseCommand :: Parser Command
-parseCommand = hsubparser $ mconcat [command "serve" parseCommandServe]
-
-parseCommandServe :: ParserInfo Command
-parseCommandServe = info parser help_
-  where
-    parser =
-      CommandServe
-        <$> ( ServeFlags
-                <$> option
-                  (Just <$> auto)
-                  ( mconcat
-                      [ long "web-port",
-                        metavar "PORT",
-                        value Nothing,
-                        help "the port to serve the web interface on"
-                      ]
-                  )
-                <*> flag
-                  Nothing
-                  (Just True)
-                  ( mconcat
-                      [ long "persist-logins",
-                        help
-                          "Whether to persist logins accross restarts. This should not be used in production."
-                      ]
-                  )
-                <*> option
-                  (Just <$> eitherReader (left show . parseBaseUrl))
-                  ( mconcat
-                      [ long "default-intray-url",
-                        value Nothing,
-                        help "The default intray url to suggest when adding an intray trigger."
-                      ]
-                  )
-                <*> option
-                  (Just . T.pack <$> str)
-                  ( mconcat
-                      [ long "analytics-tracking-id",
-                        value Nothing,
-                        metavar "TRACKING_ID",
-                        help "The google analytics tracking ID"
-                      ]
-                  )
-                <*> option
-                  (Just . T.pack <$> str)
-                  ( mconcat
-                      [ long "search-console-verification",
-                        value Nothing,
-                        metavar "VERIFICATION_TAG",
-                        help "The contents of the google search console verification tag"
-                      ]
-                  )
-                <*> API.parseFlags
-            )
     help_ = fullDesc <> footerDoc (Just $ OptParse.string footerStr)
     footerStr =
       unlines
@@ -179,4 +103,52 @@ parseCommandServe = info parser help_
         ]
 
 parseFlags :: Parser Flags
-parseFlags = Flags <$> API.parseFlags
+parseFlags =
+  Flags
+    <$> optional
+      ( option
+          auto
+          ( mconcat
+              [ long "web-port",
+                metavar "PORT",
+                help "the port to serve the web interface on"
+              ]
+          )
+      )
+    <*> flag
+      Nothing
+      (Just True)
+      ( mconcat
+          [ long "persist-logins",
+            help
+              "Whether to persist logins accross restarts. This should not be used in production."
+          ]
+      )
+    <*> optional
+      ( option
+          (eitherReader (left show . parseBaseUrl))
+          ( mconcat
+              [ long "default-intray-url",
+                help "The default intray url to suggest when adding an intray trigger."
+              ]
+          )
+      )
+    <*> optional
+      ( strOption
+          ( mconcat
+              [ long "analytics-tracking-id",
+                metavar "TRACKING_ID",
+                help "The google analytics tracking ID"
+              ]
+          )
+      )
+    <*> optional
+      ( strOption
+          ( mconcat
+              [ long "search-console-verification",
+                metavar "VERIFICATION_TAG",
+                help "The contents of the google search console verification tag"
+              ]
+          )
+      )
+    <*> API.parseFlags

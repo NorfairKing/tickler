@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Web.Server.TestUtils
-  ( ticklerTestServeSettings,
+  ( ticklerTestSettings,
     ticklerWebServerSpec,
     withExampleAccount,
     withExampleAccount_,
@@ -34,17 +34,17 @@ import Yesod.Auth
 
 {-# ANN module ("HLint: ignore Reduce duplication" :: String) #-}
 
-ticklerTestServeSettings :: IO ServeSettings
-ticklerTestServeSettings = do
+ticklerTestSettings :: IO Settings
+ticklerTestSettings = do
   let connInfo = mkSqliteConnectionInfo "tickler-test.db" & walEnabled .~ False
   pure
-    ServeSettings
-      { serveSetPort = 8000,
-        serveSetPersistLogins = False,
-        serveSetDefaultIntrayUrl = Nothing,
-        serveSetTracking = Nothing,
-        serveSetVerification = Nothing,
-        serveSetAPISettings =
+    Settings
+      { setPort = 8000,
+        setPersistLogins = False,
+        setDefaultIntrayUrl = Nothing,
+        setTracking = Nothing,
+        setVerification = Nothing,
+        setAPISettings =
           API.Settings
             { API.setPort = 8001,
               API.setLogLevel = LevelWarn,
@@ -76,9 +76,9 @@ ticklerWebServerSpec = b . a
 
 appSetupFunc :: HTTP.Manager -> ClientEnv -> SetupFunc App
 appSetupFunc _ (ClientEnv _ burl _) = do
-  sets_ <- liftIO ticklerTestServeSettings
-  let apiSets = (serveSetAPISettings sets_) {API.setPort = baseUrlPort burl}
-  let sets' = sets_ {serveSetAPISettings = apiSets}
+  sets_ <- liftIO ticklerTestSettings
+  let apiSets = (setAPISettings sets_) {API.setPort = baseUrlPort burl}
+  let sets' = sets_ {setAPISettings = apiSets}
   liftIO $ makeTicklerApp sets'
 
 loginTo :: Username -> Text -> YesodExample App ()
