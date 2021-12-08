@@ -27,8 +27,6 @@
 /checkout/success                                         CheckoutSuccessR     GET
 /checkout/canceled                                        CheckoutCanceledR    GET
 
-/error/api-down/#Text                                     ErrorAPIDownR        GET
-
 /reload                                                   ReloadR              GET
 
 -- Subsites
