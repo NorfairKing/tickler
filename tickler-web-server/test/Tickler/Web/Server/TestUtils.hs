@@ -3,8 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Tickler.Web.Server.TestUtils
-  ( ticklerTestSettings,
-    ticklerWebServerSpec,
+  ( ticklerWebServerSpec,
     withExampleAccount,
     withExampleAccount_,
     withExampleAccountAndLogin,
@@ -16,16 +15,12 @@ module Tickler.Web.Server.TestUtils
   )
 where
 
-import Control.Lens
-import Control.Monad.Logger
-import Database.Persist.Sqlite (mkSqliteConnectionInfo, walEnabled)
 import qualified Network.HTTP.Client as HTTP
 import Servant.Client (ClientEnv (..))
 import Test.Syd.Yesod
 import TestImport
 import Tickler.Data
 import Tickler.Data.Gen ()
-import qualified Tickler.Server.OptParse.Types as API
 import qualified Tickler.Server.TestUtils as API
 import Tickler.Web.Server
 import Tickler.Web.Server.Foundation
@@ -33,38 +28,6 @@ import Tickler.Web.Server.OptParse.Types
 import Yesod.Auth
 
 {-# ANN module ("HLint: ignore Reduce duplication" :: String) #-}
-
-ticklerTestSettings :: IO Settings
-ticklerTestSettings = do
-  let connInfo = mkSqliteConnectionInfo "tickler-test.db" & walEnabled .~ False
-  pure
-    Settings
-      { setPort = 8000,
-        setPersistLogins = False,
-        setDefaultIntrayUrl = Nothing,
-        setTracking = Nothing,
-        setVerification = Nothing,
-        setAPISettings =
-          API.Settings
-            { API.setPort = 8001,
-              API.setLogLevel = LevelWarn,
-              API.setConnectionInfo = connInfo,
-              API.setAdmins = catMaybes [parseUsername "admin"],
-              API.setFreeloaders = catMaybes [parseUsername "freeloader"],
-              API.setMonetisationSettings = Nothing,
-              API.setLoopersSettings =
-                API.LoopersSettings
-                  { API.looperSetTriggererSets = API.LooperDisabled,
-                    API.looperSetEmailerSets = API.LooperDisabled,
-                    API.looperSetTriggeredIntrayItemSchedulerSets = API.LooperDisabled,
-                    API.looperSetTriggeredIntrayItemSenderSets = API.LooperDisabled,
-                    API.looperSetVerificationEmailConverterSets = API.LooperDisabled,
-                    API.looperSetTriggeredEmailSchedulerSets = API.LooperDisabled,
-                    API.looperSetTriggeredEmailConverterSets = API.LooperDisabled,
-                    API.looperSetAdminNotificationEmailConverterSets = API.LooperDisabled
-                  }
-            }
-      }
 
 ticklerWebServerSpec :: YesodSpec App -> Spec
 ticklerWebServerSpec = b . a
@@ -76,10 +39,16 @@ ticklerWebServerSpec = b . a
 
 appSetupFunc :: HTTP.Manager -> ClientEnv -> SetupFunc App
 appSetupFunc _ (ClientEnv _ burl _) = do
-  sets_ <- liftIO ticklerTestSettings
-  let apiSets = (setAPISettings sets_) {API.setPort = baseUrlPort burl}
-  let sets' = sets_ {setAPISettings = apiSets}
-  liftIO $ makeTicklerApp sets'
+  liftIO $
+    makeTicklerApp
+      Settings
+        { setPort = 8000,
+          setAPIBaseUrl = burl,
+          setPersistLogins = False,
+          setDefaultIntrayUrl = Nothing,
+          setTracking = Nothing,
+          setVerification = Nothing
+        }
 
 loginTo :: Username -> Text -> YesodExample App ()
 loginTo username passphrase = do

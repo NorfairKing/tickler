@@ -100,7 +100,7 @@ configurationObjectCodec =
       "web-host"
       "The host to serve the web-server on, this is used to to send emails with links to the web interface"
       .= confWebHost
-    <*> optionalField "api-port" "The port to serve the api-server on" .= confPort
+    <*> optionalField "port" "The port to serve the api-server on" .= confPort
     <*> optionalField "log-level" "The minimal sevirity of log messages" .= confLogLevel
     <*> optionalField "admins" "The list of usernames that will be considered administrators" .= confAdmins
     <*> optionalField "freeloaders" "The list of usernames that won't have to pay" .= confFreeloaders

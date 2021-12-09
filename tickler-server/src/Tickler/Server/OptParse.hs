@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
@@ -38,7 +37,7 @@ combineToSettings :: Flags -> Environment -> Maybe Configuration -> IO Settings
 combineToSettings Flags {..} Environment {..} mConf = do
   let mc :: (Configuration -> Maybe a) -> Maybe a
       mc func = mConf >>= func
-  let setPort = fromMaybe 8001 $ flagPort <|> envPort <|> mc confPort
+  let setPort = fromMaybe 8000 $ flagPort <|> envPort <|> mc confPort
   let setLogLevel = fromMaybe LevelInfo $ flagLogLevel <|> envLogLevel <|> mc confLogLevel
   let mWebHost = flagWebHost <|> envWebHost <|> mc confWebHost
   let setConnectionInfo = mkSqliteConnectionInfo $ fromMaybe "tickler.db" $ flagDb <|> envDb <|> mc confDb
@@ -280,9 +279,7 @@ getConfiguration Flags {..} Environment {..} = do
   readYamlConfigFile configFile
 
 getDefaultConfigFile :: IO (Path Abs File)
-getDefaultConfigFile = do
-  configDir <- getXdgDir XdgConfig (Just [reldir|tickler|])
-  resolveFile configDir "config.yaml"
+getDefaultConfigFile = resolveFile' "config.yaml"
 
 getEnvironment :: IO Environment
 getEnvironment = do

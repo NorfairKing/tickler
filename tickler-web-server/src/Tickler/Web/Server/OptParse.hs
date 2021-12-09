@@ -17,7 +17,6 @@ import qualified Options.Applicative.Help as OptParse
 import Servant.Client.Core
 import qualified System.Environment as System (getArgs, getEnvironment)
 import Text.Read
-import qualified Tickler.Server.OptParse as API
 import Tickler.Web.Server.OptParse.Types
 
 getSettings :: IO Settings
@@ -31,30 +30,26 @@ combineToSettings :: Flags -> Environment -> Maybe Configuration -> IO Settings
 combineToSettings Flags {..} Environment {..} mConf = do
   let mc :: (Configuration -> Maybe a) -> Maybe a
       mc f = mConf >>= f
-  apiSets <-
-    API.combineToSettings
-      flagAPIFlags
-      envAPIEnvironment
-      (confAPIConf <$> mConf)
-  let setPort = fromMaybe 8000 $ flagPort <|> envPort <|> mc confPort
+  let setPort = fromMaybe 8080 $ flagPort <|> envPort <|> mc confPort
+  setAPIBaseUrl <- case flagAPIBaseUrl <|> envAPIBaseUrl <|> mc confAPIBaseUrl of
+    Nothing -> die "No API URL Configured. Try --help to see how to configure it."
+    Just burl -> pure burl
   let setPersistLogins = fromMaybe False $ flagPersistLogins <|> envPersistLogins <|> mc confPersistLogins
   let setDefaultIntrayUrl = flagDefaultIntrayUrl <|> envDefaultIntrayUrl <|> mc confDefaultIntrayUrl
   let setTracking = flagTracking <|> envTracking <|> mc confTracking
   let setVerification = flagVerification <|> envVerification <|> mc confVerification
-  let setAPISettings = apiSets
-  when (API.setPort apiSets == setPort) $
-    die $
-      unlines
-        ["Web server port and API port must not be the same.", "They are both: " ++ show setPort]
   pure Settings {..}
 
 getConfiguration :: Flags -> Environment -> IO (Maybe Configuration)
 getConfiguration Flags {..} Environment {..} = do
   configFile <-
-    case API.flagConfigFile flagAPIFlags <|> API.envConfigFile envAPIEnvironment of
-      Nothing -> API.getDefaultConfigFile
+    case flagConfigFile <|> envConfigFile of
+      Nothing -> getDefaultConfigFile
       Just cf -> resolveFile' cf
   readYamlConfigFile configFile
+
+getDefaultConfigFile :: IO (Path Abs File)
+getDefaultConfigFile = resolveFile' "config.yaml"
 
 getEnvironment :: IO Environment
 getEnvironment = do
@@ -73,12 +68,13 @@ getEnvironment = do
             Nothing -> Left "Parsing failed without a good error message."
             Just v -> Right v
       mr k = mrf k readMaybe
+  let envConfigFile = ms "CONFIG_FILE"
   envPort <- mr "PORT"
+  envAPIBaseUrl <- mre "API_URL" (left show . parseBaseUrl)
   envPersistLogins <- mr "PERSIST_LOGINS"
   envDefaultIntrayUrl <- mre "DEFAULT_INTRAY_URL" (left show . parseBaseUrl)
   let envTracking = ms "TRACKING"
   let envVerification = ms "SEARCH_CONSOLE_VERIFICATION"
-  envAPIEnvironment <- API.getEnvironment
   pure Environment {..}
 
 getFlags :: IO Flags
@@ -106,10 +102,28 @@ parseFlags :: Parser Flags
 parseFlags =
   Flags
     <$> optional
+      ( strOption
+          ( mconcat
+              [ long "config-file",
+                metavar "FILEPATH",
+                help "configuration file"
+              ]
+          )
+      )
+    <*> optional
+      ( option
+          (eitherReader (left show . parseBaseUrl))
+          ( mconcat
+              [ long "api-url",
+                help "The url to contact the api server at"
+              ]
+          )
+      )
+    <*> optional
       ( option
           auto
           ( mconcat
-              [ long "web-port",
+              [ long "port",
                 metavar "PORT",
                 help "the port to serve the web interface on"
               ]
@@ -151,4 +165,3 @@ parseFlags =
               ]
           )
       )
-    <*> API.parseFlags
