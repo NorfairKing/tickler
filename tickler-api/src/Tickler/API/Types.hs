@@ -99,11 +99,13 @@ instance Validity Pricing
 instance FromJSON Pricing where
   parseJSON =
     withObject "Pricing" $ \o ->
-      Pricing <$> o .: "plan" <*> o .:? "trial-period" <*> o .: "price" <*> o .: "currency"
-        <*> o
-        .: "publishable-key"
-        <*> o
-        .: "max-items-free"
+      Pricing
+        <$> o .: "plan"
+        <*> o .:? "trial-period"
+        <*> o .: "price"
+        <*> o .: "currency"
+        <*> o .: "publishable-key"
+        <*> o .: "max-items-free"
 
 instance ToJSON Pricing where
   toJSON Pricing {..} =
@@ -115,53 +117,6 @@ instance ToJSON Pricing where
         "publishable-key" .= pricingStripePublishableKey,
         "max-items-free" .= pricingMaxItemsFree
       ]
-
-data LoopersInfo = LoopersInfo
-  { emailerLooperInfo :: LooperInfo,
-    triggererLooperInfo :: LooperInfo,
-    verificationEmailConverterLooperInfo :: LooperInfo,
-    triggeredIntrayItemSchedulerLooperInfo :: LooperInfo,
-    triggeredIntrayItemSenderLooperInfo :: LooperInfo,
-    triggeredEmailSchedulerLooperInfo :: LooperInfo,
-    triggeredEmailConverterLooperInfo :: LooperInfo,
-    adminNotificationEmailConverterLooperInfo :: LooperInfo,
-    stripeEventsFetcherLooperInfo :: LooperInfo,
-    stripeEventsRetrierLooperInfo :: LooperInfo
-  }
-  deriving (Show, Eq, Generic)
-
-instance Validity LoopersInfo
-
-instance FromJSON LoopersInfo
-
-instance ToJSON LoopersInfo
-
-data LooperInfo = LooperInfo
-  { looperInfoStatus :: LooperStatus,
-    looperInfoPeriod :: Maybe Int,
-    looperInfoRetryDelay :: Maybe Int,
-    looperInfoRetryAmount :: Maybe Int
-  }
-  deriving (Show, Eq, Generic)
-
-instance Validity LooperInfo
-
-instance FromJSON LooperInfo
-
-instance ToJSON LooperInfo
-
-data LooperStatus
-  = LooperStatusDisabled
-  | LooperStatusRunning
-  | LooperStatusErrored Text
-  | LooperStatusStopped
-  deriving (Show, Eq, Generic)
-
-instance Validity LooperStatus
-
-instance FromJSON LooperStatus
-
-instance ToJSON LooperStatus
 
 newtype GetDocsResponse = GetDocsResponse
   { unGetDocsResponse :: HTML.Html

@@ -23,7 +23,7 @@ value:
     - Feedback form
     - Make items' recurrence editable?
     - Make sure that failing to ad an intray trigger shows a nice error
-    - Comply with GBDPR
+    - Comply with GDPR
 - entry: Bug
   forest:
   - entry: Server

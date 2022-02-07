@@ -131,7 +131,6 @@ ticklerPublicServer =
   TicklerPublicSite
     { postRegister = servePostRegister,
       postLogin = servePostLogin,
-      getLoopersStatus = serveGetLoopersStatus,
       getPricing = serveGetPricing
     }
 

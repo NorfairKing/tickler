@@ -57,39 +57,20 @@ makeEmailTriggerWidget TriggerInfo {..} = do
 makeAddIntrayTriggerWidget :: Handler Widget
 makeAddIntrayTriggerWidget =
   withLogin $ \t -> do
-    LoopersInfo {..} <- runClientOrErr clientGetLoopersInfo
-    if any
-      ((== LooperStatusDisabled) . looperInfoStatus)
-      [ triggeredIntrayItemSenderLooperInfo,
-        triggeredIntrayItemSchedulerLooperInfo,
-        triggererLooperInfo
-      ]
-      then pure mempty
-      else do
-        defaultIntrayUrl <- getsYesod appDefaultIntrayUrl
-        mun <-
-          do
-            errOrAi <- runClient $ clientGetAccountInfo t
-            case errOrAi of
-              Left _ -> pure Nothing
-              Right AccountInfo {..} -> pure $ Just accountInfoUsername
-        token <- genToken
-        pure $(widgetFile "add-intray-trigger")
+    defaultIntrayUrl <- getsYesod appDefaultIntrayUrl
+    mun <-
+      do
+        errOrAi <- runClient $ clientGetAccountInfo t
+        case errOrAi of
+          Left _ -> pure Nothing
+          Right AccountInfo {..} -> pure $ Just accountInfoUsername
+    token <- genToken
+    pure $(widgetFile "add-intray-trigger")
 
 makeAddEmailTriggerWidget :: Handler Widget
 makeAddEmailTriggerWidget = do
-  LoopersInfo {..} <- runClientOrErr clientGetLoopersInfo
-  if any
-    ((== LooperStatusDisabled) . looperInfoStatus)
-    [ verificationEmailConverterLooperInfo,
-      triggeredEmailSchedulerLooperInfo,
-      triggeredEmailConverterLooperInfo,
-      emailerLooperInfo
-    ]
-    then pure mempty
-    else do
-      token <- genToken
-      pure $(widgetFile "add-email-trigger")
+  token <- genToken
+  pure $(widgetFile "add-email-trigger")
 
 addIntrayTriggerForm :: FormInput Handler AddIntrayTrigger
 addIntrayTriggerForm =

@@ -54,7 +54,6 @@ type TicklerPublicAPI = ToServantApi TicklerPublicSite
 data TicklerPublicSite route = TicklerPublicSite
   { postRegister :: route :- PostRegister,
     postLogin :: route :- PostLogin,
-    getLoopersStatus :: route :- GetLoopersStatus,
     getPricing :: route :- GetPricing
   }
   deriving (Generic)
@@ -63,8 +62,6 @@ type PostRegister = "register" :> ReqBody '[JSON] Registration :> Post '[JSON] N
 
 type PostLogin =
   "login" :> ReqBody '[JSON] LoginForm :> PostNoContent '[JSON] (Headers '[Header "Set-Cookie" Text] NoContent)
-
-type GetLoopersStatus = "loopers" :> Get '[JSON] LoopersInfo
 
 type GetDocs = Get '[HTML] GetDocsResponse
 
