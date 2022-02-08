@@ -17,12 +17,8 @@ import Data.Aeson as JSON
 import Data.UUID.Typed
 import Import
 import Intray.API ()
-import Servant.API
 import Servant.Auth
 import Servant.Auth.Server
-import Servant.HTML.Blaze
-import Text.Blaze as HTML
-import Text.Blaze.Html as HTML
 import Tickler.Data
 import qualified Web.Stripe.Plan as Stripe
 
@@ -117,14 +113,3 @@ instance ToJSON Pricing where
         "publishable-key" .= pricingStripePublishableKey,
         "max-items-free" .= pricingMaxItemsFree
       ]
-
-newtype GetDocsResponse = GetDocsResponse
-  { unGetDocsResponse :: HTML.Html
-  }
-  deriving (Generic)
-
-instance MimeUnrender HTML GetDocsResponse where
-  mimeUnrender Proxy bs = Right $ GetDocsResponse $ HTML.unsafeLazyByteString bs
-
-instance ToMarkup GetDocsResponse where
-  toMarkup (GetDocsResponse html) = toMarkup html

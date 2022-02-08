@@ -20,7 +20,6 @@ import Data.UUID.Typed
 import Import
 import Servant.API
 import Servant.API.Generic
-import Servant.HTML.Blaze
 import Tickler.API.Account.Types
 import Tickler.API.Admin
 import Tickler.API.Protected
@@ -62,7 +61,5 @@ type PostRegister = "register" :> ReqBody '[JSON] Registration :> Post '[JSON] N
 
 type PostLogin =
   "login" :> ReqBody '[JSON] LoginForm :> PostNoContent '[JSON] (Headers '[Header "Set-Cookie" Text] NoContent)
-
-type GetDocs = Get '[HTML] GetDocsResponse
 
 type GetPricing = "pricing" :> Get '[JSON] (Maybe Pricing)

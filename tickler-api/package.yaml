@@ -17,8 +17,6 @@ library:
   - aeson
   - base >=4.7 && <5
   - base64-bytestring
-  - blaze-html
-  - blaze-markup
   - bytestring >=0.10 && <0.11
   - containers
   - cookie
