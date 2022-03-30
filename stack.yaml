@@ -33,7 +33,7 @@ extra-deps:
     - stripe-http-streams
 
 - github: NorfairKing/intray
-  commit: 7d7374906f737f487b8b2379c7993acdcafcf089
+  commit: 2f2228e15606b4473336b041d40e312d4868c134
   subdirs:
     - intray-data
     - intray-data-gen

@@ -27,15 +27,6 @@ mkEmbeddedStatic
     embedFile "static/tom-sydney-kerckhove_twitter-icon.svg",
     embedFile "static/tom-sydney-kerckhove_youtube-icon.svg",
     embedFile "static/tom-sydney-kerckhove_logo-tickler.svg",
-    embedRemoteFileAt
-      "static/semantic/themes/default/assets/fonts/icons.ttf"
-      "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.ttf",
-    embedRemoteFileAt
-      "static/semantic/themes/default/assets/fonts/icons.woff"
-      "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.woff",
-    embedRemoteFileAt
-      "static/semantic/themes/default/assets/fonts/icons.woff2"
-      "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.woff2",
     embedRemoteFileAt "static/jquery.min.js" "https://code.jquery.com/jquery-3.1.1.min.js",
     embedRemoteFileAt
       "static/bulma/bulma.min.css"

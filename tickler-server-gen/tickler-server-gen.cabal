@@ -1,0 +1,166 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.6.
+--
+-- see: https://github.com/sol/hpack
+
+name:           tickler-server-gen
+version:        0.0.0.0
+synopsis:       Test utils for tickler-server
+description:    Please see README.md
+category:       Tickler
+homepage:       https://github.com/NorfairKing/tickler-server#readme
+bug-reports:    https://github.com/NorfairKing/tickler-server/issues
+author:         Tom Sydney Kerckhove
+maintainer:     syd.kerckhove@gmail.com
+copyright:      Copyright: (c) 2016-2021 Tom Sydney Kerckhove
+license:        AllRightsReserved
+license-file:   LICENSE
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/NorfairKing/tickler-server
+
+library
+  exposed-modules:
+      Tickler.Server.TestUtils
+  other-modules:
+      Import
+      Paths_tickler_server_gen
+  hs-source-dirs:
+      src
+  default-extensions:
+      NoImplicitPrelude
+  ghc-options: -Wall
+  build-depends:
+      QuickCheck >=2.9
+    , base
+    , bytestring ==0.10.*
+    , cache
+    , cookie ==0.4.*
+    , genvalidity-bytestring
+    , genvalidity-mergeless
+    , genvalidity-sydtest
+    , genvalidity-text
+    , genvalidity-time
+    , http-client
+    , http-types
+    , intray-server
+    , intray-server-gen
+    , microlens ==0.4.*
+    , monad-logger
+    , path
+    , path-io
+    , persistent-sqlite
+    , resourcet
+    , servant
+    , servant-auth-client
+    , servant-auth-server
+    , servant-client
+    , servant-server
+    , stripe-core
+    , sydtest
+    , sydtest-persistent-sqlite
+    , sydtest-wai
+    , text ==1.2.*
+    , tickler-api
+    , tickler-api-gen
+    , tickler-client
+    , tickler-client-gen
+    , tickler-data
+    , tickler-data-gen
+    , tickler-server
+    , time
+    , typed-uuid
+    , wai
+    , warp
+  default-language: Haskell2010
+
+test-suite tickler-server-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      TestImport
+      Tickler.Server.Handler.AdminDeleteAccountSpec
+      Tickler.Server.Handler.AdminGetAccountsSpec
+      Tickler.Server.Handler.AdminGetStatsSpec
+      Tickler.Server.Handler.DeleteAccountSpec
+      Tickler.Server.Handler.DeleteItemSpec
+      Tickler.Server.Handler.GetAccountInfoSpec
+      Tickler.Server.Handler.GetAccountSettingsSpec
+      Tickler.Server.Handler.GetItemSpec
+      Tickler.Server.Handler.GetPricingSpec
+      Tickler.Server.Handler.ListItemsSpec
+      Tickler.Server.Handler.ListItemUUIDsSpec
+      Tickler.Server.Handler.PostAddEmailTriggerSpec
+      Tickler.Server.Handler.PostAddIntrayTriggerSpec
+      Tickler.Server.Handler.PostAddItemSpec
+      Tickler.Server.Handler.PostChangePassphraseSpec
+      Tickler.Server.Handler.PostItemSpec
+      Tickler.Server.Handler.PutAccountSettingsSpec
+      Tickler.Server.Handler.RegisterSpec
+      Tickler.Server.Handler.RetryTriggeredSpec
+      Tickler.Server.Handler.SyncSpec
+      Tickler.Server.Looper.TriggererSpec
+      Paths_tickler_server_gen
+  hs-source-dirs:
+      test
+  default-extensions:
+      NoImplicitPrelude
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends:
+      sydtest-discover:sydtest-discover
+  build-depends:
+      QuickCheck
+    , base >=4.9 && <5
+    , bytestring
+    , containers
+    , genvalidity-bytestring
+    , genvalidity-sydtest
+    , genvalidity-text
+    , genvalidity-time
+    , http-types
+    , intray-client
+    , intray-server-gen
+    , mergeful
+    , mergeless
+    , path
+    , path-io
+    , servant
+    , servant-client
+    , sydtest
+    , text
+    , tickler-api
+    , tickler-api-gen
+    , tickler-client
+    , tickler-client-gen
+    , tickler-data
+    , tickler-data-gen
+    , tickler-server
+    , tickler-server-gen
+    , time
+  default-language: Haskell2010
+
+benchmark tickler-server-bench
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Paths_tickler_server_gen
+  hs-source-dirs:
+      bench
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -fno-warn-name-shadowing
+  build-depends:
+      QuickCheck
+    , base
+    , bytestring
+    , cookie
+    , criterion
+    , http-client
+    , servant
+    , servant-auth-client
+    , servant-client
+    , sydtest
+    , tickler-client
+    , tickler-server-gen
+  default-language: Haskell2010

@@ -1,6 +1,6 @@
 { sources ? import ./sources.nix
 , pkgs ? import ./pkgs.nix { inherit sources; }
-, ticklerPackages ? pkgs.ticklerPackages
+, ticklerReleasePackages ? pkgs.ticklerReleasePackages
 , envname
 }:
 { lib, pkgs, config, ... }:
@@ -301,7 +301,7 @@ in
             ''
               mkdir -p "${workingDir}"
               cd "${workingDir}"
-              ${ticklerPackages.tickler-server}/bin/tickler-server
+              ${ticklerReleasePackages.tickler-server}/bin/tickler-server
             '';
           serviceConfig =
             {
@@ -346,7 +346,7 @@ in
             ''
               mkdir -p "${workingDir}"
               cd "${workingDir}"
-              ${ticklerPackages.tickler-web-server}/bin/tickler-web-server
+              ${ticklerReleasePackages.tickler-web-server}/bin/tickler-web-server
             '';
           serviceConfig =
             {

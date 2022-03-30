@@ -11,6 +11,18 @@
         "url": "https://github.com/NorfairKing/autodocodec/archive/f0cb2ead0985b4394db0627e6befd7ce23c54c22.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "envparse": {
+        "branch": "master",
+        "description": "Parse environment variables",
+        "homepage": "https://supki.github.io/envparse",
+        "owner": "supki",
+        "repo": "envparse",
+        "rev": "de5944fb09e9d941fafa35c0f05446af348e7b4d",
+        "sha256": "0piljyzplj3bjylnxqfl4zpc3vc88i9fjhsj06bk7xj48dv3jg3b",
+        "type": "tarball",
+        "url": "https://github.com/supki/envparse/archive/de5944fb09e9d941fafa35c0f05446af348e7b4d.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "gitignore": {
         "branch": "master",
         "description": "Nix functions for filtering local git sources",
@@ -29,10 +41,10 @@
         "homepage": "https://intray.eu",
         "owner": "NorfairKing",
         "repo": "intray",
-        "rev": "7d7374906f737f487b8b2379c7993acdcafcf089",
-        "sha256": "17plkl9rzw9y2a3yd6dn8bxfj90np4n7ws269bwcwbi27fchfngw",
+        "rev": "2f2228e15606b4473336b041d40e312d4868c134",
+        "sha256": "1z76mjzp2dbw6zd85lp5475cfblj416dzxqp0d0q84js4vhli8ia",
         "type": "tarball",
-        "url": "https://github.com/NorfairKing/intray/archive/7d7374906f737f487b8b2379c7993acdcafcf089.tar.gz",
+        "url": "https://github.com/NorfairKing/intray/archive/2f2228e15606b4473336b041d40e312d4868c134.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "looper": {

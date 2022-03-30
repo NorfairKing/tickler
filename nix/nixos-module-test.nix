@@ -1,12 +1,12 @@
 { sources ? import ./sources.nix
 , pkgs ? import ./pkgs.nix { inherit sources; }
-, ticklerPackages ? pkgs.ticklerPackages
+, ticklerReleasePackages ? pkgs.ticklerReleasePackages
 }:
 let
   tickler-production = import (./nixos-module.nix) {
     inherit sources;
     inherit pkgs;
-    inherit ticklerPackages;
+    inherit ticklerReleasePackages;
     envname = "production";
   };
 
@@ -16,33 +16,47 @@ in
 pkgs.nixosTest (
   { lib, pkgs, ... }: {
     name = "tickler-module-test";
-    machine = {
-      imports = [
-        tickler-production
-      ];
-      services.tickler.production = {
-        enable = true;
-        api-server = {
+    nodes = {
+      apiserver = {
+        imports = [
+          tickler-production
+        ];
+        services.tickler.production = {
           enable = true;
-          port = api-port;
-          log-level = "LevelDebug";
+          api-server = {
+            enable = true;
+            port = api-port;
+            log-level = "Debug";
+          };
         };
-        web-server = {
+      };
+      webserver = {
+        imports = [
+          tickler-production
+        ];
+        services.tickler.production = {
           enable = true;
-          port = web-port;
-          api-url = "http://machine:${builtins.toString api-port}";
-          log-level = "LevelDebug";
+          web-server = {
+            enable = true;
+            port = web-port;
+            api-url = "http://apiserver:${builtins.toString api-port}";
+            log-level = "Debug";
+          };
         };
       };
     };
     testScript = ''
-      machine.wait_for_unit("multi-user.target")
+      apiserver.wait_for_unit("multi-user.target")
+      webserver.wait_for_unit("multi-user.target")
 
-      machine.wait_for_unit("tickler-production.service")
-      machine.wait_for_open_port(${builtins.toString api-port})
-      machine.succeed("curl localhost:${builtins.toString api-port}")
-      machine.wait_for_open_port(${builtins.toString web-port})
-      machine.succeed("curl localhost:${builtins.toString web-port}")
+      apiserver.wait_for_open_port(${builtins.toString api-port})
+      apiserver.succeed("curl localhost:${builtins.toString api-port}")
+
+      webserver.wait_for_open_port(${builtins.toString web-port})
+      webserver.succeed("curl localhost:${builtins.toString web-port}")
+
+      apiserver.wait_for_unit("tickler-api-server-production.service")
+      webserver.wait_for_unit("tickler-web-server-production.service")
     '';
   }
 )

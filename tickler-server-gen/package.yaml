@@ -66,6 +66,7 @@ tests:
     source-dirs: test
     default-extensions:
     - NoImplicitPrelude
+    build-tools: sydtest-discover
     ghc-options:
     - -Wall
     - -threaded
@@ -112,13 +113,15 @@ benchmarks:
     - -Wall
     - -fno-warn-name-shadowing
     dependencies:
-    - base
     - QuickCheck
+    - base
     - bytestring
     - cookie
     - criterion
+    - http-client
     - servant
     - servant-auth-client
     - servant-client
+    - sydtest
     - tickler-client
     - tickler-server-gen

@@ -1,0 +1,68 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.6.
+--
+-- see: https://github.com/sol/hpack
+
+name:           tickler-client-gen
+version:        0.0.0.0
+synopsis:       Tickler Client Generators
+category:       Tickler
+homepage:       https://github.com/NorfairKing/tickler#readme
+bug-reports:    https://github.com/NorfairKing/tickler/issues
+author:         Tom Sydney Kerckhove
+maintainer:     syd.kerckhove@gmail.com
+copyright:      Copyright: (c) 2016-2021 Tom Sydney Kerckhove
+license:        AllRightsReserved
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/NorfairKing/tickler
+
+library
+  exposed-modules:
+      Tickler.Client.Gen
+  other-modules:
+      Import
+      Paths_tickler_client_gen
+  hs-source-dirs:
+      src
+  default-extensions:
+      NoImplicitPrelude
+  ghc-options: -Wall
+  build-depends:
+      QuickCheck
+    , base >=4.7 && <5
+    , genvalidity
+    , genvalidity-containers
+    , tickler-api-gen
+    , tickler-client
+  default-language: Haskell2010
+
+test-suite tickler-client-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      TestImport
+      Tickler.Client.StoreSpec
+      Paths_tickler_client_gen
+  hs-source-dirs:
+      test/
+  default-extensions:
+      NoImplicitPrelude
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends:
+      sydtest-discover:sydtest-discover
+  build-depends:
+      QuickCheck
+    , base
+    , genvalidity-sydtest
+    , genvalidity-sydtest-aeson
+    , sydtest
+    , text
+    , tickler-api
+    , tickler-client
+    , tickler-client-gen
+    , tickler-data-gen
+  default-language: Haskell2010
