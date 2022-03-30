@@ -11,7 +11,7 @@ $doctype 5
       <meta name="google-site-verification" content="#{searchConsoleId}" />
 
     <link rel="stylesheet" href=@{StaticR static_bulma_bulma_min_css}>
-    <script src=@{StaticR static_jquery_min_js}>
+    <script src=@{StaticR static_jquery_jquery_min_js}>
 
     ^{pageHead pc}
 

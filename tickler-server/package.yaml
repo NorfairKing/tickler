@@ -9,6 +9,9 @@ copyright: ! 'Copyright: (c) 2016-2021 Tom Sydney Kerckhove'
 license: AllRightsReserved
 github: NorfairKing/tickler-server
 
+extra-source-files:
+- templates/**/*
+
 library:
   source-dirs: src
   ghc-options: -Wall

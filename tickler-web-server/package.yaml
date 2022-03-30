@@ -1,6 +1,13 @@
 name:    tickler-web-server
 version: "0.0.0.0"
 
+extra-source-files:
+- routes
+- static/*.jpg
+- static/*.ico
+- static/*.svg
+- templates/**/*
+
 library:
   source-dirs: src
   ghc-options: -Wall

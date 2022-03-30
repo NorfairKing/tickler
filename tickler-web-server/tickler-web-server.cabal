@@ -7,6 +7,48 @@ cabal-version: 1.12
 name:           tickler-web-server
 version:        0.0.0.0
 build-type:     Simple
+extra-source-files:
+    routes
+    static/gtd_flowchart.jpg
+    static/favicon.ico
+    static/tom-sydney-kerckhove_faq.svg
+    static/tom-sydney-kerckhove_flowchart-gtd.svg
+    static/tom-sydney-kerckhove_github-icon.svg
+    static/tom-sydney-kerckhove_linkedin-icon.svg
+    static/tom-sydney-kerckhove_logo-tickler.svg
+    static/tom-sydney-kerckhove_tasks.svg
+    static/tom-sydney-kerckhove_thinking.svg
+    static/tom-sydney-kerckhove_tiktok-icon.svg
+    static/tom-sydney-kerckhove_twitter-icon.svg
+    static/tom-sydney-kerckhove_youtube-icon.svg
+    templates/account.hamlet
+    templates/add-email-trigger.hamlet
+    templates/add-intray-trigger.hamlet
+    templates/add.hamlet
+    templates/admin.hamlet
+    templates/api-down.hamlet
+    templates/auth/change-password.hamlet
+    templates/auth/login.hamlet
+    templates/auth/register.hamlet
+    templates/default-body.hamlet
+    templates/default-body.lucius
+    templates/default-page.hamlet
+    templates/email-trigger.hamlet
+    templates/home.hamlet
+    templates/intray-trigger.hamlet
+    templates/item.hamlet
+    templates/item.julius
+    templates/item.lucius
+    templates/stripe-form.hamlet
+    templates/stripe-form.julius
+    templates/tickle.hamlet
+    templates/tickles.hamlet
+    templates/timestamp.hamlet
+    templates/triggered.hamlet
+    templates/triggereds.hamlet
+    templates/triggers.hamlet
+    templates/with-nav-bar.hamlet
+    templates/with-nav-bar.julius
 
 library
   exposed-modules:

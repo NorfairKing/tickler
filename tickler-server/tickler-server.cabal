@@ -17,6 +17,13 @@ copyright:      Copyright: (c) 2016-2021 Tom Sydney Kerckhove
 license:        AllRightsReserved
 license-file:   LICENSE
 build-type:     Simple
+extra-source-files:
+    templates/email/admin-notification-email.hamlet
+    templates/email/admin-notification-email.txt
+    templates/email/triggered-email.hamlet
+    templates/email/triggered-email.txt
+    templates/email/verification-email.hamlet
+    templates/email/verification-email.txt
 
 source-repository head
   type: git

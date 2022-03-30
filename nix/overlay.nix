@@ -7,7 +7,7 @@ with final.haskell.lib;
       pathFor = name: final.gitignoreSource (../. + "/${name}");
       ticklerPkg = name:
         overrideCabal
-          (final.haskellPackages.callCabal2nixWithOptions name (pathFor name) "--no-hpack" { })
+          (buildStrictly (final.haskellPackages.callCabal2nixWithOptions name (pathFor name) "--no-hpack" { }))
           (old: {
             doBenchmark = true;
             doHaddock = false;
@@ -65,21 +65,6 @@ with final.haskell.lib;
               url = "https://code.jquery.com/jquery-3.1.1.min.js";
               sha256 = "sha256:1gyrxy9219l11mn8c6538hnh3gr6idmimm7wv37183c0m1hnfmc5";
             };
-          icons-ttf =
-            builtins.fetchurl {
-              url = "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.ttf";
-              sha256 = "sha256:1nm34hrh3inyrq7cbkh47g8m2hbqpsgkzbdrpfiiii7m8bsq2zyb";
-            };
-          icons-woff =
-            builtins.fetchurl {
-              url = "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.woff";
-              sha256 = "sha256:1qgzlmd80c4ckh9zpfl2qzjvg389hvmkdhkv8amyq4c71y2a9dlm";
-            };
-          icons-woff2 =
-            builtins.fetchurl {
-              url = "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/themes/default/assets/fonts/icons.woff2";
-              sha256 = "sha256:1lqd60f1pml8zc93hgwcm6amkcy6rnbq3cyxqv5a3a25jnsnci23";
-            };
         in
         overrideCabal (ticklerPkgWithOwnComp "tickler-web-server") (
           old:
@@ -88,15 +73,11 @@ with final.haskell.lib;
               ''
                 ${old.preConfigure or ""}
 
-                mkdir -p static/
-                ln -s ${jquery-js} static/jquery.min.js
-                mkdir -p static/semantic/
+                mkdir -p static/jquery/
+                ln -s ${jquery-js} static/jquery/jquery.min.js
+                mkdir -p static/bulma/
                 ln -s ${bulma-css} static/bulma/bulma.min.css
                 ln -s ${bulma-tooltip-css} static/bulma/bulma-tooltip.min.css
-                mkdir -p static/semantic/themes/default/assets/fonts
-                ln -s ${icons-ttf} static/semantic/themes/default/assets/fonts/icons.ttf
-                ln -s ${icons-woff} static/semantic/themes/default/assets/fonts/icons.woff
-                ln -s ${icons-woff2} static/semantic/themes/default/assets/fonts/icons.woff2
               '';
           }
         );

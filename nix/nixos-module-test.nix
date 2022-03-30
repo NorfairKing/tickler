@@ -10,8 +10,8 @@ let
     envname = "production";
   };
 
-  api-port = 8001;
-  web-port = 8002;
+  api-port = 8000;
+  web-port = 8080;
 in
 pkgs.nixosTest (
   { lib, pkgs, ... }: {
