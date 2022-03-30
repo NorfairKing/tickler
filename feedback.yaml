@@ -1,0 +1,14 @@
+loops:
+  ci: 
+    description: Run CI locally
+    command: nix-build ci.nix --no-out-link
+
+  test-all:
+    description: Test all with stack, pedantically
+    command: |
+      stack test \
+        --fast \
+        --ghc-options='-freverse-errors' \
+        --no-nix-pure \
+        --no-rerun-tests \
+        --pedantic
