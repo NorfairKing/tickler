@@ -17,6 +17,7 @@ module Tickler.Server.TestUtils
     withAdmin,
     withValidNewUser,
     withValidNewUserAndData,
+    withNewUser,
     requiresAdmin,
     login,
     module Servant.Client,
