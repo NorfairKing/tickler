@@ -15,8 +15,6 @@
 
 module Tickler.Data.DB where
 
-import Data.Mergeful.Persistent ()
-import Data.Mergeful.Timed as Mergeful
 import Data.Time
 import Database.Persist.Sql
 import Database.Persist.TH
@@ -96,7 +94,6 @@ TicklerItem
     type ItemType
     contents ByteString
     created UTCTime
-    serverTime Mergeful.ServerTime default=0
 
     scheduledDay Day
     scheduledTime TimeOfDay Maybe

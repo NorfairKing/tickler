@@ -9,7 +9,6 @@ module Tickler.Data.Gen where
 
 import Data.GenValidity
 import Data.GenValidity.ByteString ()
-import Data.GenValidity.Mergeful ()
 import Data.GenValidity.Persist ()
 import Data.GenValidity.Text ()
 import Data.GenValidity.Time ()

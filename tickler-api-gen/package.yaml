@@ -21,7 +21,6 @@ library:
   - genvalidity
   - genvalidity-aeson
   - genvalidity-bytestring
-  - genvalidity-mergeful
   - genvalidity-text
   - genvalidity-time
   - genvalidity-typed-uuid
@@ -31,10 +30,6 @@ library:
   - tickler-api
   - tickler-data
   - tickler-data-gen
-  - validity
-  - validity-bytestring
-  - validity-text
-  - validity-time
 
 tests:
   tickler-api-test:

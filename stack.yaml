@@ -3,7 +3,6 @@ packages:
 - tickler-api
 - tickler-api-gen
 - tickler-client
-- tickler-client-gen
 - tickler-data
 - tickler-data-gen
 - tickler-server
@@ -49,13 +48,6 @@ extra-deps:
     - mergeless
     - mergeless-persistent
     - genvalidity-mergeless
-
-- github: NorfairKing/mergeful
-  commit: 5a81800ab75c08c5cf2781accf74944cfee30762
-  subdirs:
-    - mergeful
-    - genvalidity-mergeful
-    - mergeful-persistent
 
 - github: NorfairKing/validity
   commit: e1750f9d29c64705a4b9ccddf9f5afd5275e7d75

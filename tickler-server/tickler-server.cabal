@@ -7,13 +7,12 @@ cabal-version: 1.12
 name:           tickler-server
 version:        0.0.0.0
 synopsis:       Tickler Server
-description:    Please see README.md
 category:       Tickler
 homepage:       https://github.com/NorfairKing/tickler-server#readme
 bug-reports:    https://github.com/NorfairKing/tickler-server/issues
 author:         Tom Sydney Kerckhove
 maintainer:     syd.kerckhove@gmail.com
-copyright:      Copyright: (c) 2016-2021 Tom Sydney Kerckhove
+copyright:      Copyright: (c) 2016-2022 Tom Sydney Kerckhove
 license:        AllRightsReserved
 license-file:   LICENSE
 build-type:     Simple
@@ -59,7 +58,6 @@ library
       Tickler.Server.Handler.Protected.PostEmailTriggerVerify
       Tickler.Server.Handler.Protected.PostItem
       Tickler.Server.Handler.Protected.PostRetryTriggered
-      Tickler.Server.Handler.Protected.PostSync
       Tickler.Server.Handler.Protected.PutAccountSettings
       Tickler.Server.Handler.Public
       Tickler.Server.Handler.Public.GetPricing
@@ -102,52 +100,38 @@ library
     , async
     , autodocodec
     , autodocodec-yaml
-    , base >=4.7 && <5
+    , base
     , blaze-html
     , bytestring
     , cache
     , conduit
-    , containers
     , cookie
-    , data-default
-    , email-validate
     , esqueleto
     , exceptions
-    , file-embed
     , http-client
     , http-client-tls
-    , http-types
     , intray-client
     , intray-server
     , jose
     , lens
-    , markdown
-    , mergeful
-    , mergeful-persistent
     , monad-logger
     , mtl >=2.2
-    , nonce
     , optparse-applicative >=0.13
     , path
     , path-io
     , persistent
     , persistent-sqlite
-    , persistent-template
     , pretty-show
     , resource-pool
     , resourcet
     , retry
-    , safe
-    , servant
     , servant-auth-client
     , servant-auth-server
     , servant-client
-    , servant-client-core
     , servant-server
     , shakespeare
     , stripe-core
     , stripe-haskell
-    , template-haskell
     , text
     , tickler-api
     , tickler-client
@@ -155,18 +139,9 @@ library
     , time
     , typed-uuid
     , unliftio
-    , validity
-    , validity-bytestring
-    , validity-containers
-    , validity-path
-    , validity-text
-    , validity-time
     , wai
-    , wai-app-static
     , wai-cors
-    , wai-extra
     , warp >=3.2
-    , yaml
   default-language: Haskell2010
 
 executable tickler-server

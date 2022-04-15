@@ -74,11 +74,3 @@ instance GenValid AddIntrayTrigger where
 instance GenValid AddEmailTrigger where
   genValid = genValidStructurally
   shrinkValid = shrinkValidStructurally
-
-instance GenValid SyncRequest where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
-
-instance GenValid SyncResponse where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally

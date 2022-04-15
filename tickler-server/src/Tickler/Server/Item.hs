@@ -9,14 +9,13 @@ module Tickler.Server.Item
   )
 where
 
-import Data.Mergeful.Timed as Mergeful
 import Data.Time
 import Import
 import Tickler.API
 
 makeTicklerItem ::
-  AccountUUID -> ItemUUID -> UTCTime -> Mergeful.ServerTime -> TypedTickle -> TicklerItem
-makeTicklerItem u i cr st Tickle {..} =
+  AccountUUID -> ItemUUID -> UTCTime -> TypedTickle -> TicklerItem
+makeTicklerItem u i cr Tickle {..} =
   let TypedItem {..} = tickleContent
    in TicklerItem
         { ticklerItemIdentifier = i,
@@ -24,15 +23,14 @@ makeTicklerItem u i cr st Tickle {..} =
           ticklerItemType = itemType,
           ticklerItemContents = itemData,
           ticklerItemCreated = cr,
-          ticklerItemServerTime = st,
           ticklerItemScheduledDay = tickleScheduledDay,
           ticklerItemScheduledTime = tickleScheduledTime,
           ticklerItemRecurrence = tickleRecurrence
         }
 
 makeTriggeredItem ::
-  AccountUUID -> ItemUUID -> UTCTime -> Mergeful.ServerTime -> TypedTickle -> TicklerItem
-makeTriggeredItem u i cr st Tickle {..} =
+  AccountUUID -> ItemUUID -> UTCTime -> TypedTickle -> TicklerItem
+makeTriggeredItem u i cr Tickle {..} =
   let TypedItem {..} = tickleContent
    in TicklerItem
         { ticklerItemIdentifier = i,
@@ -40,29 +38,24 @@ makeTriggeredItem u i cr st Tickle {..} =
           ticklerItemType = itemType,
           ticklerItemContents = itemData,
           ticklerItemCreated = cr,
-          ticklerItemServerTime = st,
           ticklerItemScheduledDay = tickleScheduledDay,
           ticklerItemScheduledTime = tickleScheduledTime,
           ticklerItemRecurrence = tickleRecurrence
         }
 
-makeTicklerAdded :: TicklerItem -> (ItemUUID, Mergeful.Timed (AddedItem TypedTickle))
+makeTicklerAdded :: TicklerItem -> (ItemUUID, AddedItem TypedTickle)
 makeTicklerAdded TicklerItem {..} =
   ( ticklerItemIdentifier,
-    Timed
-      { timedValue =
-          AddedItem
-            { addedItemContents =
-                Tickle
-                  { tickleContent =
-                      TypedItem {itemType = ticklerItemType, itemData = ticklerItemContents},
-                    tickleScheduledDay = ticklerItemScheduledDay,
-                    tickleScheduledTime = ticklerItemScheduledTime,
-                    tickleRecurrence = ticklerItemRecurrence
-                  },
-              addedItemCreated = ticklerItemCreated
+    AddedItem
+      { addedItemContents =
+          Tickle
+            { tickleContent =
+                TypedItem {itemType = ticklerItemType, itemData = ticklerItemContents},
+              tickleScheduledDay = ticklerItemScheduledDay,
+              tickleScheduledTime = ticklerItemScheduledTime,
+              tickleRecurrence = ticklerItemRecurrence
             },
-        timedTime = ticklerItemServerTime
+        addedItemCreated = ticklerItemCreated
       }
   )
 

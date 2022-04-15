@@ -1,16 +1,18 @@
 name: tickler-server
 version: '0.0.0.0'
 synopsis: Tickler Server
-description: Please see README.md
 category: Tickler
 author: Tom Sydney Kerckhove
 maintainer: syd.kerckhove@gmail.com
-copyright: ! 'Copyright: (c) 2016-2021 Tom Sydney Kerckhove'
+copyright: ! 'Copyright: (c) 2016-2022 Tom Sydney Kerckhove'
 license: AllRightsReserved
 github: NorfairKing/tickler-server
 
 extra-source-files:
 - templates/**/*
+
+dependencies:
+- base
 
 library:
   source-dirs: src
@@ -26,52 +28,37 @@ library:
   - async
   - autodocodec
   - autodocodec-yaml
-  - base >=4.7 && <5
   - blaze-html
   - bytestring
   - cache
   - conduit
-  - containers
   - cookie
-  - data-default
-  - email-validate
   - esqueleto
   - exceptions
-  - file-embed
   - http-client
   - http-client-tls
-  - http-types
   - intray-client
   - intray-server # Only for Web.Stripe.Conduit
   - jose
   - lens
-  - markdown
-  - mergeful
-  - mergeful-persistent
   - monad-logger
   - mtl >=2.2
-  - nonce
   - optparse-applicative >=0.13
   - path
   - path-io
   - persistent
   - persistent-sqlite
-  - persistent-template
   - pretty-show
   - resource-pool
   - resourcet
   - retry
-  - safe
-  - servant
   - servant-auth-client
   - servant-auth-server
   - servant-client
-  - servant-client-core
   - servant-server
   - shakespeare
   - stripe-core
   - stripe-haskell
-  - template-haskell
   - text
   - tickler-api
   - tickler-client
@@ -79,18 +66,9 @@ library:
   - time
   - typed-uuid
   - unliftio
-  - validity
-  - validity-bytestring
-  - validity-containers
-  - validity-path
-  - validity-text
-  - validity-time
   - wai
-  - wai-app-static
   - wai-cors
-  - wai-extra
   - warp >=3.2
-  - yaml
 
 executables:
   tickler-server:

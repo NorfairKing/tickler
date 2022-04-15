@@ -12,7 +12,7 @@ homepage:       https://github.com/NorfairKing/tickler-server#readme
 bug-reports:    https://github.com/NorfairKing/tickler-server/issues
 author:         Tom Sydney Kerckhove
 maintainer:     syd.kerckhove@gmail.com
-copyright:      Copyright: (c) 2016-2021 Tom Sydney Kerckhove
+copyright:      Copyright: (c) 2016-2022 Tom Sydney Kerckhove
 license:        AllRightsReserved
 build-type:     Simple
 
@@ -22,9 +22,9 @@ source-repository head
 
 library
   exposed-modules:
+      Import
       Tickler.Data.Gen
   other-modules:
-      Import
       Paths_tickler_data_gen
   hs-source-dirs:
       src
@@ -37,14 +37,12 @@ library
     , bytestring
     , genvalidity
     , genvalidity-bytestring
-    , genvalidity-mergeful
     , genvalidity-persistent
     , genvalidity-text
     , genvalidity-time
     , genvalidity-typed-uuid
     , genvalidity-uuid
     , intray-api-gen
-    , persistent
     , servant-client-core
     , text
     , tickler-data
@@ -77,7 +75,6 @@ test-suite tickler-data-test
     , genvalidity-sydtest-persistent
     , genvalidity-text
     , intray-data
-    , mergeful
     , sydtest
     , text
     , tickler-data

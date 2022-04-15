@@ -4,7 +4,7 @@ synopsis: Generators for tickler-data
 category: Tickler
 author: Tom Sydney Kerckhove
 maintainer: syd.kerckhove@gmail.com
-copyright: ! 'Copyright: (c) 2016-2021 Tom Sydney Kerckhove'
+copyright: ! 'Copyright: (c) 2016-2022 Tom Sydney Kerckhove'
 license: AllRightsReserved
 github: NorfairKing/tickler-server
 default-extensions:
@@ -13,8 +13,6 @@ default-extensions:
 library:
   source-dirs: src
   ghc-options: -Wall
-  exposed-modules:
-  - Tickler.Data.Gen
 
   dependencies:
   - QuickCheck
@@ -22,14 +20,12 @@ library:
   - bytestring
   - genvalidity
   - genvalidity-bytestring
-  - genvalidity-mergeful
   - genvalidity-persistent
   - genvalidity-text
   - genvalidity-time
   - genvalidity-typed-uuid
   - genvalidity-uuid
   - intray-api-gen
-  - persistent
   - servant-client-core
   - text
   - tickler-data
@@ -58,7 +54,6 @@ tests:
     - genvalidity-text
     - sydtest
     - intray-data
-    - mergeful
     - text
     - tickler-data
     - tickler-data-gen

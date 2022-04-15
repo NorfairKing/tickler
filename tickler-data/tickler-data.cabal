@@ -57,8 +57,6 @@ library
     , email-validate
     , hashable
     , intray-data
-    , mergeful
-    , mergeful-persistent
     , persistent
     , persistent-template
     , random
@@ -67,7 +65,6 @@ library
     , text
     , time
     , typed-uuid
-    , uuid
     , validity
     , validity-bytestring
     , validity-text

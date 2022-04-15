@@ -92,27 +92,21 @@ library
   build-depends:
       aeson
     , aeson-pretty
-    , amazonka
-    , async
     , autodocodec
     , autodocodec-yaml
     , base >=4.9 && <5
     , base16-bytestring
     , bytestring
-    , containers
     , cookie
     , data-default
     , http-client
     , http-client-tls
-    , http-media
     , http-types
     , intray-data
-    , lens
     , mtl
     , optparse-applicative
     , path
     , path-io
-    , persistent-sqlite
     , pretty-relative-time
     , pretty-show
     , servant
@@ -132,13 +126,9 @@ library
     , transformers
     , typed-uuid
     , unordered-containers
-    , wai
-    , yaml
     , yesod
     , yesod-auth
     , yesod-autoreload
-    , yesod-core
-    , yesod-form
     , yesod-static
     , yesod-static-remote
   default-language: Haskell2010
@@ -181,12 +171,9 @@ test-suite tickler-web-server-test
     , genvalidity-sydtest
     , http-client
     , http-types
-    , lens
-    , monad-logger
     , mtl
     , path
     , path-io
-    , persistent-sqlite
     , pretty-show
     , servant-client
     , sydtest

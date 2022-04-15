@@ -15,21 +15,15 @@ library:
 
   dependencies:
   - base >=4.7 && <5
-  - aeson
   - bytestring >=0.10 && <0.11
   - containers
-  - http-client
-  - http-client-tls
-  - mergeful
   - servant
   - servant-auth-client
-  - servant-auth-server
   - servant-client
   - servant-flatten
   - text
   - tickler-api
   - tickler-data
-  - time
   - typed-uuid
   - validity >=0.4
   - validity-bytestring >=0.2

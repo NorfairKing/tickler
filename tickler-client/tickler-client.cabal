@@ -24,7 +24,6 @@ library
   exposed-modules:
       Import
       Tickler.Client
-      Tickler.Client.Store
   other-modules:
       Paths_tickler_client
   hs-source-dirs:
@@ -33,22 +32,16 @@ library
       NoImplicitPrelude
   ghc-options: -Wall
   build-depends:
-      aeson
-    , base >=4.7 && <5
+      base >=4.7 && <5
     , bytestring ==0.10.*
     , containers
-    , http-client
-    , http-client-tls
-    , mergeful
     , servant
     , servant-auth-client
-    , servant-auth-server
     , servant-client
     , servant-flatten
     , text
     , tickler-api
     , tickler-data
-    , time
     , typed-uuid
     , validity >=0.4
     , validity-bytestring >=0.2

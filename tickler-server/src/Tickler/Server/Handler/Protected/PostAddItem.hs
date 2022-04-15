@@ -8,7 +8,6 @@ module Tickler.Server.Handler.Protected.PostAddItem
   )
 where
 
-import qualified Data.Mergeful.Timed as Mergeful
 import Data.Time
 import Data.UUID.Typed
 import Database.Persist
@@ -34,5 +33,5 @@ servePostAddItem AuthCookie {..} ti = do
     goAhead = do
       now <- liftIO getCurrentTime
       uuid <- liftIO nextRandomUUID
-      runDb $ insert_ $ makeTicklerItem authCookieUserUUID uuid now Mergeful.initialServerTime ti
+      runDb $ insert_ $ makeTicklerItem authCookieUserUUID uuid now ti
       pure uuid

@@ -5,7 +5,6 @@ module Tickler.Data.InstanceSpec
   )
 where
 
-import Data.Mergeful.Timed as Mergeful
 import qualified Intray.Data as Intray
 import Test.Syd.Validity.Aeson
 import Test.Syd.Validity.Persist
@@ -39,8 +38,7 @@ spec = do
       it "produces valid recurrences" $
         producesValid3 everyMonthsOnDayAtTime
   genValidSpec @TicklerItem
-  -- persistSpec @TicklerItem
-  persistSpec @Mergeful.ServerTime
+  persistSpec @TicklerItem
   genValidSpec @TriggeredItem
   persistSpec @TriggeredItem
   genValidSpec @UserTrigger

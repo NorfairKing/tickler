@@ -45,7 +45,6 @@ with final.haskell.lib;
       "tickler-api" = ticklerPkg "tickler-api";
       "tickler-api-gen" = ticklerPkg "tickler-api-gen";
       "tickler-client" = ticklerPkg "tickler-client";
-      "tickler-client-gen" = ticklerPkg "tickler-client-gen";
       "tickler-server" = ticklerPkgWithOwnComp "tickler-server";
       "tickler-server-gen" = ticklerPkg "tickler-server-gen";
       "tickler-web-server" =

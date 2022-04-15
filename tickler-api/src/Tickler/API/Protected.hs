@@ -33,7 +33,6 @@ data TicklerProtectedSite route = TicklerProtectedSite
     deleteItem :: !(route :- DeleteItem),
     postRetryTriggered :: !(route :- PostRetryTriggered),
     deleteTriggereds :: !(route :- DeleteTriggereds),
-    postSync :: !(route :- PostSync),
     getTriggers :: !(route :- GetTriggers),
     getTrigger :: !(route :- GetTrigger),
     postAddIntrayTrigger :: !(route :- PostAddIntrayTrigger),
@@ -73,8 +72,6 @@ type PostRetryTriggered =
 
 type DeleteTriggereds =
   ProtectAPI :> "tickler" :> "item" :> "delete-triggereds" :> Post '[JSON] NoContent
-
-type PostSync = ProtectAPI :> "sync" :> ReqBody '[JSON] SyncRequest :> Post '[JSON] SyncResponse
 
 type GetTriggers = ProtectAPI :> "trigger" :> Get '[JSON] [TriggerInfo TypedTriggerInfo]
 

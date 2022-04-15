@@ -18,7 +18,6 @@ where
 import Data.Aeson as JSON
 import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Char8 as SB8
-import qualified Data.Mergeful as Mergeful
 import qualified Data.Text.Encoding as TE
 import Data.Time
 import Data.UUID.Typed
@@ -225,28 +224,6 @@ instance ToJSON a => ToJSON (TriggerInfo a) where
 
 instance Functor TriggerInfo where
   fmap f ti = ti {triggerInfo = f $ triggerInfo ti}
-
-data SyncRequest = SyncRequest
-  { syncRequestTickles :: !(Mergeful.SyncRequest Mergeful.ClientId ItemUUID (AddedItem TypedTickle))
-  }
-  deriving (Show, Eq, Generic)
-
-instance Validity SyncRequest
-
-instance FromJSON SyncRequest
-
-instance ToJSON SyncRequest
-
-data SyncResponse = SyncResponse
-  { syncResponseTickles :: !(Mergeful.SyncResponse Mergeful.ClientId ItemUUID (AddedItem TypedTickle))
-  }
-  deriving (Show, Eq, Generic)
-
-instance Validity SyncResponse
-
-instance FromJSON SyncResponse
-
-instance ToJSON SyncResponse
 
 decodeTriggerInfo ::
   FromJSON a => TriggerType -> TriggerInfo TypedTriggerInfo -> Maybe (TriggerInfo a)

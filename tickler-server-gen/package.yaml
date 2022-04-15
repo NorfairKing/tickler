@@ -24,7 +24,6 @@ library:
   - cache
   - cookie >=0.4 && <0.5
   - genvalidity-bytestring
-  - genvalidity-mergeless
   - genvalidity-sydtest
   - genvalidity-text
   - genvalidity-time
@@ -32,12 +31,9 @@ library:
   - http-types
   - intray-server
   - intray-server-gen
-  - microlens >=0.4 && <0.5
-  - monad-logger
   - path
   - path-io
   - persistent-sqlite
-  - resourcet
   - servant
   - servant-auth-client
   - servant-auth-server
@@ -51,14 +47,11 @@ library:
   - tickler-api
   - tickler-api-gen
   - tickler-client
-  - tickler-client-gen
   - tickler-data
   - tickler-data-gen
   - tickler-server
   - time
   - typed-uuid
-  - wai
-  - warp
 
 tests:
   tickler-server-test:
@@ -85,8 +78,6 @@ tests:
     - http-types
     - intray-client
     - intray-server-gen
-    - mergeful
-    - mergeless
     - path
     - path-io
     - servant
@@ -95,7 +86,6 @@ tests:
     - tickler-api
     - tickler-api-gen
     - tickler-client
-    - tickler-client-gen
     - tickler-data
     - tickler-data-gen
     - tickler-server

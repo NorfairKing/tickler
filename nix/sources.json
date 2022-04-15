@@ -59,18 +59,6 @@
         "url": "https://github.com/NorfairKing/looper/archive/e01054970b47d9eaab8b9314a1400c231ac4a960.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "mergeful": {
-        "branch": "master",
-        "description": "Safely synchronise values with safe merge conflicts.",
-        "homepage": "http://hackage.haskell.org/package/mergeful",
-        "owner": "NorfairKing",
-        "repo": "mergeful",
-        "rev": "5a81800ab75c08c5cf2781accf74944cfee30762",
-        "sha256": "1i0nivf7x8fqpblcrbhnb7xl2jygkp7hisdsdfg5nk154xyisvjk",
-        "type": "tarball",
-        "url": "https://github.com/NorfairKing/mergeful/archive/5a81800ab75c08c5cf2781accf74944cfee30762.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
     "mergeless": {
         "branch": "master",
         "description": "Merge-less syncing of arbitrary immutable items",

@@ -34,7 +34,3 @@ spec = do
   jsonSpec @AddIntrayTrigger
   genValidSpec @AddEmailTrigger
   jsonSpec @AddEmailTrigger
-  genValidSpec @SyncRequest
-  jsonSpec @SyncRequest
-  genValidSpec @SyncResponse
-  jsonSpec @SyncResponse
