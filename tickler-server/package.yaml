@@ -82,3 +82,16 @@ executables:
     dependencies:
     - base
     - tickler-server
+
+tests:
+  tickler-server-dummy:
+    main: Main.hs
+    source-dirs: test
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - tickler-server
+

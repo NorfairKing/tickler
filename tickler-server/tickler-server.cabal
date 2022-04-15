@@ -155,3 +155,16 @@ executable tickler-server
       base
     , tickler-server
   default-language: Haskell2010
+
+test-suite tickler-server-dummy
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Paths_tickler_server
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base
+    , tickler-server
+  default-language: Haskell2010
