@@ -33,31 +33,21 @@ instance GenValid Username where
       charGen = choose ('\NUL', '\255') `suchThat` validUsernameChar
   shrinkValid = shrinkValidStructurally
 
-instance GenValid HashedPassword where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid HashedPassword
 
-instance GenValid User where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid User
 
 instance GenValid UserSettings
 
 instance GenValid ItemType
 
-instance GenValid TicklerItem where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid TicklerItem
 
-instance GenValid TriggeredItem where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid TriggeredItem
 
 instance GenValid TriggerType
 
-instance GenValid UserTrigger where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid UserTrigger
 
 instance GenValid Scheme
 
@@ -76,9 +66,7 @@ instance GenValid BaseUrl where
       validChar = elements $ ['a' .. 'z'] ++ ['A' .. 'Z'] ++ ['0' .. '9'] ++ "-_.~"
   shrinkValid = shrinkValidStructurally
 
-instance GenValid IntrayTrigger where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid IntrayTrigger
 
 instance GenValid EmailAddress where
   genValid = do
@@ -93,26 +81,14 @@ instance GenValid EmailAddress where
       genChar = elements $ ['a' .. 'z'] ++ ['A' .. 'Z'] ++ ['0' .. '9'] ++ "-_.~"
   shrinkValid _ = []
 
-instance GenValid EmailVerificationKey where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid EmailVerificationKey
 
-instance GenValid EmailTrigger where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid EmailTrigger
 
-instance GenValid VerificationEmail where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid VerificationEmail
 
-instance GenValid EmailStatus where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid EmailStatus
 
-instance GenValid Email where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid Email
 
-instance GenValid Recurrence where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid Recurrence

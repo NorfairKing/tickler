@@ -10,9 +10,7 @@ import Intray.Data.Gen ()
 import Tickler.API.Protected.Types
 import Tickler.Data.Gen ()
 
-instance GenValid ItemFilter where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid ItemFilter
 
 instance GenValid TypedItem where
   genValid = do
@@ -23,54 +21,30 @@ instance GenValid TypedItem where
         pure TypedItem {itemType = TextItem, itemData = TE.encodeUtf8 t}
   shrinkValid = shrinkValidStructurally
 
-instance GenValid a => GenValid (Tickle a) where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid a => GenValid (Tickle a)
 
-instance GenValid TriggerAttempt where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid TriggerAttempt
 
-instance GenValid EmailTriggerResult where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid EmailTriggerResult
 
-instance GenValid IntrayTriggerResult where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid IntrayTriggerResult
 
-instance GenValid TriggeredInfo where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid TriggeredInfo
 
 instance GenValid a => GenValid (AddedItem a) where
   genValid = genValidStructurallyWithoutExtraChecking
   shrinkValid = shrinkValidStructurallyWithoutExtraFiltering
 
-instance GenValid a => GenValid (ItemInfo a) where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid a => GenValid (ItemInfo a)
 
-instance GenValid a => GenValid (TriggerInfo a) where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid a => GenValid (TriggerInfo a)
 
-instance GenValid TypedTriggerInfo where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid TypedTriggerInfo
 
-instance GenValid IntrayTriggerInfo where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid IntrayTriggerInfo
 
-instance GenValid EmailTriggerInfo where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid EmailTriggerInfo
 
-instance GenValid AddIntrayTrigger where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid AddIntrayTrigger
 
-instance GenValid AddEmailTrigger where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid AddEmailTrigger

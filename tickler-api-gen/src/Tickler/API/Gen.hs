@@ -17,18 +17,10 @@ import Tickler.API.Admin.Gen ()
 import Tickler.API.Protected.Gen ()
 import Tickler.Data.Gen ()
 
-instance GenValid Registration where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid Registration
 
-instance GenValid LoginForm where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid LoginForm
 
-instance GenValid ChangePassphrase where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid ChangePassphrase
 
-instance GenValid Pricing where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid Pricing

@@ -9,14 +9,8 @@ import Tickler.API
 import Tickler.API.Admin.Gen ()
 import Tickler.Data.Gen ()
 
-instance GenValid AccountInfo where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid AccountInfo
 
-instance GenValid PaidStatus where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid PaidStatus
 
-instance GenValid AccountSettings where
-  genValid = genValidStructurally
-  shrinkValid = shrinkValidStructurally
+instance GenValid AccountSettings
