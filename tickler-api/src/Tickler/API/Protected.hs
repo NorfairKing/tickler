@@ -25,8 +25,7 @@ import Tickler.Data
 type TicklerProtectedAPI = ToServantApi TicklerProtectedSite
 
 data TicklerProtectedSite route = TicklerProtectedSite
-  { getItemUUIDs :: !(route :- GetItemUUIDs),
-    getItems :: !(route :- GetItems),
+  { getItems :: !(route :- GetItems),
     postAddItem :: !(route :- PostAddItem),
     getItem :: !(route :- GetItem),
     postItem :: !(route :- PostItem),

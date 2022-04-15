@@ -102,8 +102,7 @@ ticklerOpenServer =
 ticklerProtectedServer :: TicklerProtectedSite (AsServerT TicklerHandler)
 ticklerProtectedServer =
   TicklerProtectedSite
-    { getItemUUIDs = withAuthResult serveGetItemUUIDs,
-      getItems = withAuthResult serveGetItems,
+    { getItems = withAuthResult serveGetItems,
       postAddItem = withAuthResult servePostAddItem,
       postItem = withAuthResult servePostItem,
       getItem = withAuthResult serveGetItem,

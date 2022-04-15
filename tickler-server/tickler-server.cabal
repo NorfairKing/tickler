@@ -47,7 +47,6 @@ library
       Tickler.Server.Handler.Protected.GetAccountSettings
       Tickler.Server.Handler.Protected.GetItem
       Tickler.Server.Handler.Protected.GetItems
-      Tickler.Server.Handler.Protected.GetItemUUIDs
       Tickler.Server.Handler.Protected.GetTrigger
       Tickler.Server.Handler.Protected.GetTriggers
       Tickler.Server.Handler.Protected.PostAddEmailTrigger
