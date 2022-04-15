@@ -29,6 +29,7 @@ spec = do
                     recurrenceDataMonthTimeOfDay = todm
                   }
                 `shouldBe` Just (Just (EveryDaysAtTime days todd))
+
     it "works for multiple months" $
       forAllValid $ \(months, day, todm) ->
         forAllValid $ \(days, todd) ->
@@ -56,13 +57,72 @@ spec = do
             recurrenceDataMonthTimeOfDay = Nothing
           }
         `shouldBe` Just (Just (EveryMonthsOnDay 8 Nothing Nothing))
-  ticklerWebServerSpec $
-    describe "Add" $ do
+
+  describe "Add" $ do
+    let maxItems = 5
+    paidTicklerWebServerSpec maxItems $ do
+      it "gets an error when adding more than the maximum number of items" $ do
+        withExampleAccountAndLogin_ $ do
+          get AddR
+          statusIs 200
+          let addAnItem = do
+                request $ do
+                  setMethod methodPost
+                  setUrl AddR
+                  addTokenFromCookie
+                  addPostParam "contents" "hello"
+                  addPostParam "scheduled-day" "2200-12-03"
+                  addPostParam "scheduled-time" ""
+                  addPostParam "recurrence" "NoRecurrence"
+                  addPostParam "days" ""
+                  addPostParam "day-time-of-day" ""
+                  addPostParam "months" ""
+                  addPostParam "day" ""
+                  addPostParam "month-time-of-day" ""
+          replicateM_ maxItems $ do
+            addAnItem
+            statusIs 303
+            locationShouldBe AddR
+            _ <- followRedirect
+            statusIs 200
+          addAnItem
+          statusIs 303
+          locationShouldBe AddR
+          _ <- followRedirect
+          statusIs 200
+          bodyContains "limit"
+
+    freeTicklerWebServerSpec $ do
+      it "gets a 200 even when adding 10 items" $ do
+        withExampleAccountAndLogin_ $ do
+          get AddR
+          statusIs 200
+          replicateM_ 10 $ do
+            request $ do
+              setMethod methodPost
+              setUrl AddR
+              addTokenFromCookie
+              addPostParam "contents" "hello"
+              addPostParam "scheduled-day" "2200-12-03"
+              addPostParam "scheduled-time" ""
+              addPostParam "recurrence" "NoRecurrence"
+              addPostParam "days" ""
+              addPostParam "day-time-of-day" ""
+              addPostParam "months" ""
+              addPostParam "day" ""
+              addPostParam "month-time-of-day" ""
+            statusIs 303
+            locationShouldBe AddR
+            _ <- followRedirect
+            statusIs 200
+
+    ticklerWebServerSpec $ do
       it "gets a 200 for a logged-in user" $ do
         withExampleAccountAndLogin_ $ do
           get AddR
           statusIs 200
-      it "can post an example item" $
+
+      it "can post an example item without recurrence" $
         withExampleAccountAndLogin_ $ do
           get AddR
           statusIs 200
@@ -80,9 +140,13 @@ spec = do
             addPostParam "day" ""
             addPostParam "month-time-of-day" ""
           statusIs 303
-          loc1 <- getLocation
-          void followRedirect
-          liftIO $ loc1 `shouldBe` Right AddR
+          locationShouldBe AddR
+          _ <- followRedirect
+          statusIs 200
+
+      it "can post an example item with daily" $
+        withExampleAccountAndLogin_ $ do
+          get AddR
           statusIs 200
           request $ do
             setMethod methodPost
@@ -97,9 +161,14 @@ spec = do
             addPostParam "months" ""
             addPostParam "day" ""
             addPostParam "month-time-of-day" ""
-          loc2 <- getLocation
-          void followRedirect
-          liftIO $ loc2 `shouldBe` Right AddR
+          statusIs 303
+          locationShouldBe AddR
+          _ <- followRedirect
+          statusIs 200
+
+      it "can post an example item with monthly recurrence" $
+        withExampleAccountAndLogin_ $ do
+          get AddR
           statusIs 200
           request $ do
             setMethod methodPost
@@ -114,7 +183,7 @@ spec = do
             addPostParam "months" "6"
             addPostParam "day" "15"
             addPostParam "month-time-of-day" "08:03"
-          loc <- getLocation
-          void followRedirect
-          liftIO $ loc `shouldBe` Right AddR
+          statusIs 303
+          locationShouldBe AddR
+          _ <- followRedirect
           statusIs 200

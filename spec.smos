@@ -7,122 +7,162 @@ value:
       time: 2022-04-15 15:01:31
   forest:
   - entry:
-      header: Authentication
+      header: API server
       state-history:
-      - state: DONE
-        time: 2022-04-15 15:04:34
       - state: TODO
-        time: 2022-04-15 15:01:31
+        time: 2022-04-15 15:43:23
     forest:
     - entry:
-        header: Registration
+        header: Authentication
         state-history:
-        - state: DONE
-          time: 2022-04-15 15:04:33
         - state: TODO
-          time: 2022-04-15 15:01:31
+          time: 2022-04-15 15:43:23
       forest:
-      - header: API Server endpoint
+      - header: Registration
         contents: POST /register
         state-history:
         - state: DONE
-          time: 2022-04-15 15:04:29
+          time: 2022-04-15 16:23:29
         - state: TODO
-          time: 2022-04-15 15:01:31
-      - header: Web server page
-        contents: AuthR loginR
-        state-history:
-        - state: DONE
-          time: 2022-04-15 15:04:30
-        - state: TODO
-          time: 2022-04-15 15:01:31
-    - entry:
-        header: Login
-        state-history:
-        - state: DONE
-          time: 2022-04-15 15:04:32
-        - state: TODO
-          time: 2022-04-15 15:01:31
-      forest:
-      - header: API Server endpoint
+          time: 2022-04-15 15:43:23
+      - header: Login
         contents: POST /login
         state-history:
         - state: DONE
-          time: 2022-04-15 15:04:31
+          time: 2022-04-15 16:23:29
         - state: TODO
-          time: 2022-04-15 15:01:31
-      - header: Web Server page
+          time: 2022-04-15 15:43:23
+    - entry:
+        header: Tickles of user
+        state-history:
+        - state: TODO
+          time: 2022-04-15 15:44:32
+      forest:
+      - header: Add
+        contents: POST /item
+        state-history:
+        - state: DONE
+          time: 2022-04-15 22:42:00
+        - state: TODO
+          time: 2022-04-15 16:15:24
+      - header: Get list
+        contents: GET /items
+        state-history:
+        - state: TODO
+          time: 2022-04-15 16:11:56
+      - header: Get single
+        contents: GET /item/:uuid
+        state-history:
+        - state: TODO
+          time: 2022-04-15 16:15:30
+      - header: 'Edit '
+        contents: PUT /item/:uuid
+        state-history:
+        - state: TODO
+          time: 2022-04-15 16:15:44
+      - header: Delete
+        contents: DELETE /item/:uuid
+        state-history:
+        - state: TODO
+          time: 2022-04-15 16:16:27
+  - entry:
+      header: Web server
+      state-history:
+      - state: TODO
+        time: 2022-04-15 15:43:25
+    forest:
+    - entry:
+        header: Authentication
+        state-history:
+        - state: TODO
+          time: 2022-04-15 15:43:25
+      forest:
+      - header: Login
+        contents: AuthR loginR
+        state-history:
+        - state: DONE
+          time: 2022-04-15 16:23:35
+        - state: TODO
+          time: 2022-04-15 15:43:25
+      - header: Registration
         contents: AuthR registerR
         state-history:
         - state: DONE
-          time: 2022-04-15 15:04:31
+          time: 2022-04-15 16:23:35
+        - state: TODO
+          time: 2022-04-15 15:43:25
+    - entry:
+        header: Items
+        state-history:
+        - state: TODO
+          time: 2022-04-15 16:20:43
+      forest:
+      - header: Add
+        contents: AddR
+        state-history:
+        - state: DONE
+          time: 2022-04-15 22:42:02
+        - state: TODO
+          time: 2022-04-15 16:20:43
+      - header: List
+        contents: TicklesR
+        state-history:
+        - state: TODO
+          time: 2022-04-15 16:20:54
+      - header: Edit
+        contents: EditR
+        state-history:
+        - state: TODO
+          time: 2022-04-15 16:20:43
+    - entry:
+        header: Triggers
+        state-history:
         - state: TODO
           time: 2022-04-15 15:01:31
-  - entry:
-      header: Tickles
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:01:31
-    forest:
-    - header: List
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:01:31
-    - header: Get
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:16:35
-    - header: Add
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:01:31
-    - header: Edit
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:01:31
-    - header: Delete
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:01:31
-  - entry:
-      header: Triggers
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:01:31
-    forest:
-    - header: List
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:01:31
-    - header: Add
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:01:31
-    - header: Delete
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:01:31
-  - entry:
-      header: Account
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:01:31
-    forest:
-    - header: Settings
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:01:31
-    - header: 'Delete '
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:01:31
-  - entry:
-      header: Admin
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:01:31
-    forest:
-    - header: Admin panel
-      state-history:
-      - state: TODO
-        time: 2022-04-15 15:01:31
+      forest:
+      - header: List
+        state-history:
+        - state: TODO
+          time: 2022-04-15 15:01:31
+      - entry:
+          header: Add
+          state-history:
+          - state: TODO
+            time: 2022-04-15 15:01:31
+        forest:
+        - header: Email
+          state-history:
+          - state: TODO
+            time: 2022-04-15 16:22:03
+        - header: Intray
+          state-history:
+          - state: TODO
+            time: 2022-04-15 16:22:03
+      - header: Delete
+        state-history:
+        - state: TODO
+          time: 2022-04-15 15:01:31
+    - entry:
+        header: Account
+        state-history:
+        - state: TODO
+          time: 2022-04-15 15:01:31
+      forest:
+      - header: Settings
+        state-history:
+        - state: TODO
+          time: 2022-04-15 15:01:31
+      - header: 'Delete '
+        state-history:
+        - state: TODO
+          time: 2022-04-15 15:01:31
+    - entry:
+        header: Admin
+        state-history:
+        - state: TODO
+          time: 2022-04-15 15:01:31
+      forest:
+      - header: Admin panel
+        state-history:
+        - state: TODO
+          time: 2022-04-15 15:01:31

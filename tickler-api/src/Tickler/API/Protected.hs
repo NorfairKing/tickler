@@ -48,58 +48,127 @@ data TicklerProtectedSite route = TicklerProtectedSite
   deriving (Generic)
 
 -- | The order of the items is not guaranteed to be the same for every call.
-type GetItemUUIDs = ProtectAPI :> "tickler" :> "uuids" :> Get '[JSON] [ItemUUID]
-
--- | The order of the items is not guaranteed to be the same for every call.
 type GetItems =
-  ProtectAPI :> "tickler" :> "items" :> QueryParam "filter" ItemFilter :> Get '[JSON] [ItemInfo TypedItem]
+  ProtectAPI
+    :> "items"
+    :> QueryParam "filter" ItemFilter
+    :> Get '[JSON] [ItemInfo TypedItem]
 
 type PostAddItem =
-  ProtectAPI :> "tickler" :> "item" :> ReqBody '[JSON] AddItem :> Post '[JSON] ItemUUID
+  ProtectAPI
+    :> "item"
+    :> ReqBody '[JSON] AddItem
+    :> Post '[JSON] ItemUUID
 
 type GetItem =
-  ProtectAPI :> "tickler" :> "item" :> "info" :> Capture "id" ItemUUID :> Get '[JSON] (ItemInfo TypedItem)
+  ProtectAPI
+    :> "item"
+    :> "info"
+    :> Capture "id" ItemUUID
+    :> Get '[JSON] (ItemInfo TypedItem)
 
 type PostItem =
-  ProtectAPI :> "tickler" :> "item" :> "info" :> Capture "id" ItemUUID :> ReqBody '[JSON] TypedTickle :> Post '[JSON] NoContent
+  ProtectAPI
+    :> "item"
+    :> "info"
+    :> Capture "id" ItemUUID
+    :> ReqBody '[JSON] TypedTickle
+    :> Post '[JSON] NoContent
 
 type DeleteItem =
-  ProtectAPI :> "tickler" :> "item" :> "delete" :> Capture "id" ItemUUID :> Delete '[JSON] NoContent
+  ProtectAPI
+    :> "item"
+    :> "delete"
+    :> Capture "id" ItemUUID
+    :> Delete '[JSON] NoContent
 
 type PostRetryTriggered =
-  ProtectAPI :> "tickler" :> "item" :> "retry" :> ReqBody '[JSON] [ItemUUID] :> Post '[JSON] NoContent
+  ProtectAPI
+    :> "item"
+    :> "retry"
+    :> ReqBody '[JSON] [ItemUUID]
+    :> Post '[JSON] NoContent
 
 type DeleteTriggereds =
-  ProtectAPI :> "tickler" :> "item" :> "delete-triggereds" :> Post '[JSON] NoContent
+  ProtectAPI
+    :> "item"
+    :> "delete-triggereds"
+    :> Post '[JSON] NoContent
 
-type GetTriggers = ProtectAPI :> "trigger" :> Get '[JSON] [TriggerInfo TypedTriggerInfo]
+type GetTriggers =
+  ProtectAPI
+    :> "trigger"
+    :> Get '[JSON] [TriggerInfo TypedTriggerInfo]
 
 type GetTrigger =
-  ProtectAPI :> "trigger" :> "info" :> Capture "id" TriggerUUID :> Get '[JSON] (TriggerInfo TypedTriggerInfo)
+  ProtectAPI
+    :> "trigger"
+    :> "info"
+    :> Capture "id" TriggerUUID
+    :> Get '[JSON] (TriggerInfo TypedTriggerInfo)
 
 type PostAddIntrayTrigger =
-  ProtectAPI :> "trigger" :> "intray" :> ReqBody '[JSON] AddIntrayTrigger :> Post '[JSON] (Either Text TriggerUUID)
+  ProtectAPI
+    :> "trigger"
+    :> "intray"
+    :> ReqBody '[JSON] AddIntrayTrigger
+    :> Post '[JSON] (Either Text TriggerUUID)
 
 type PostAddEmailTrigger =
-  ProtectAPI :> "trigger" :> "email" :> ReqBody '[JSON] AddEmailTrigger :> Post '[JSON] TriggerUUID
+  ProtectAPI
+    :> "trigger"
+    :> "email"
+    :> ReqBody '[JSON] AddEmailTrigger
+    :> Post '[JSON] TriggerUUID
 
 type PostEmailTriggerVerify =
-  ProtectAPI :> "trigger" :> "email" :> "verify" :> Capture "id" TriggerUUID :> Capture "key" EmailVerificationKey :> Post '[JSON] NoContent
+  ProtectAPI
+    :> "trigger"
+    :> "email"
+    :> "verify"
+    :> Capture "id" TriggerUUID
+    :> Capture "key" EmailVerificationKey
+    :> Post '[JSON] NoContent
 
 type PostEmailTriggerResendVerificationEmail =
-  ProtectAPI :> "trigger" :> "email" :> "resend" :> Capture "id" TriggerUUID :> Post '[JSON] NoContent
+  ProtectAPI
+    :> "trigger"
+    :> "email"
+    :> "resend"
+    :> Capture "id" TriggerUUID
+    :> Post '[JSON] NoContent
 
 type DeleteTrigger =
-  ProtectAPI :> "trigger" :> "delete" :> Capture "id" TriggerUUID :> Delete '[JSON] NoContent
+  ProtectAPI
+    :> "trigger"
+    :> "delete"
+    :> Capture "id" TriggerUUID
+    :> Delete '[JSON] NoContent
 
-type GetAccountInfo = ProtectAPI :> "account" :> Get '[JSON] AccountInfo
+type GetAccountInfo =
+  ProtectAPI
+    :> "account"
+    :> Get '[JSON] AccountInfo
 
-type GetAccountSettings = ProtectAPI :> "account" :> "settings" :> Get '[JSON] AccountSettings
+type GetAccountSettings =
+  ProtectAPI
+    :> "account"
+    :> "settings"
+    :> Get '[JSON] AccountSettings
 
 type PostChangePassphrase =
-  ProtectAPI :> ReqBody '[JSON] ChangePassphrase :> PostNoContent '[JSON] NoContent
+  ProtectAPI
+    :> ReqBody '[JSON] ChangePassphrase
+    :> PostNoContent '[JSON] NoContent
 
 type PutAccountSettings =
-  ProtectAPI :> "account" :> "settings" :> ReqBody '[JSON] AccountSettings :> Put '[JSON] NoContent
+  ProtectAPI
+    :> "account"
+    :> "settings"
+    :> ReqBody '[JSON] AccountSettings
+    :> Put '[JSON] NoContent
 
-type DeleteAccount = ProtectAPI :> "account" :> Delete '[JSON] NoContent
+type DeleteAccount =
+  ProtectAPI
+    :> "account"
+    :> Delete '[JSON] NoContent

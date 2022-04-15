@@ -3,10 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Tickler.Server.Handler.Protected.PostItem
-  ( servePostItem,
-  )
-where
+module Tickler.Server.Handler.Protected.PostItem (servePostItem) where
 
 import Database.Persist
 import Import
@@ -15,7 +12,11 @@ import Tickler.API
 import Tickler.Server.Handler.Utils
 import Tickler.Server.Types
 
-servePostItem :: AuthCookie -> ItemUUID -> Tickle TypedItem -> TicklerHandler NoContent
+servePostItem ::
+  AuthCookie ->
+  ItemUUID ->
+  Tickle TypedItem ->
+  TicklerHandler NoContent
 servePostItem AuthCookie {..} uuid Tickle {..} = do
   mI <- runDb $ getBy (UniqueItemIdentifier uuid)
   case mI of

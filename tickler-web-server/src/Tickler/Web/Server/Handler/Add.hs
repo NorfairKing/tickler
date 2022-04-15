@@ -35,7 +35,6 @@ postAddR =
         handleStandardServantErrs err $ \resp ->
           case responseStatusCode resp of
             c
-              | c == Http.unauthorized401 -> addNegativeMessage "You are not allowed to add items."
               | c == Http.paymentRequired402 ->
                 addNegativeMessage
                   "You have reached the limit of the free plan, subscribe to be able to add more items. Click 'Account' to get started."

@@ -4,6 +4,8 @@
 
 module Tickler.Web.Server.TestUtils
   ( ticklerWebServerSpec,
+    freeTicklerWebServerSpec,
+    paidTicklerWebServerSpec,
     withExampleAccount,
     withExampleAccount_,
     withExampleAccountAndLogin,
@@ -36,6 +38,22 @@ ticklerWebServerSpec = b . a
     a = yesodSpecWithSiteSetupFunc' appSetupFunc
     b :: TestDef '[Manager] ClientEnv -> Spec
     b = API.withTicklerServer
+
+freeTicklerWebServerSpec :: YesodSpec App -> Spec
+freeTicklerWebServerSpec = b . a
+  where
+    a :: YesodSpec App -> TestDef '[Manager] ClientEnv
+    a = yesodSpecWithSiteSetupFunc' appSetupFunc
+    b :: TestDef '[Manager] ClientEnv -> Spec
+    b = API.withFreeTicklerServer
+
+paidTicklerWebServerSpec :: Int -> YesodSpec App -> Spec
+paidTicklerWebServerSpec maxItems = b . a
+  where
+    a :: YesodSpec App -> TestDef '[Manager] ClientEnv
+    a = yesodSpecWithSiteSetupFunc' appSetupFunc
+    b :: TestDef '[Manager] ClientEnv -> Spec
+    b = API.withPaidTicklerServer maxItems
 
 appSetupFunc :: HTTP.Manager -> ClientEnv -> SetupFunc App
 appSetupFunc _ (ClientEnv _ burl _) = do

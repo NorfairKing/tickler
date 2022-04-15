@@ -3,10 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Tickler.Server.Handler.Protected.PostAddItem
-  ( servePostAddItem,
-  )
-where
+module Tickler.Server.Handler.Protected.PostAddItem (servePostAddItem) where
 
 import Data.Time
 import Data.UUID.Typed
