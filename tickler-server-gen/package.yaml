@@ -53,45 +53,6 @@ library:
   - time
   - typed-uuid
 
-tests:
-  tickler-server-test:
-    main: Spec.hs
-    source-dirs: test
-    default-extensions:
-    - NoImplicitPrelude
-    build-tools: sydtest-discover
-    ghc-options:
-    - -Wall
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - base >=4.9 && <5
-    - QuickCheck
-    - bytestring
-    - containers
-    - genvalidity-bytestring
-    - genvalidity-sydtest
-    - genvalidity-text
-    - genvalidity-time
-    - sydtest
-    - http-types
-    - intray-client
-    - intray-server-gen
-    - path
-    - path-io
-    - servant
-    - servant-client
-    - text
-    - tickler-api
-    - tickler-api-gen
-    - tickler-client
-    - tickler-data
-    - tickler-data-gen
-    - tickler-server
-    - tickler-server-gen
-    - time
-
 benchmarks:
   tickler-server-bench:
     main: Main.hs
@@ -115,3 +76,42 @@ benchmarks:
     - sydtest
     - tickler-client
     - tickler-server-gen
+
+tests:
+  tickler-server-test:
+    main: Spec.hs
+    source-dirs: test
+    default-extensions:
+    - NoImplicitPrelude
+    build-tools: sydtest-discover
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - QuickCheck
+    - base >=4.9 && <5
+    - bytestring
+    - containers
+    - genvalidity-bytestring
+    - genvalidity-sydtest
+    - genvalidity-text
+    - genvalidity-time
+    - http-types
+    - intray-client
+    - intray-server-gen
+    - path
+    - path-io
+    - servant
+    - servant-client
+    - sydtest
+    - text
+    - tickler-api
+    - tickler-api-gen
+    - tickler-client
+    - tickler-data
+    - tickler-data-gen
+    - tickler-server
+    - tickler-server-gen
+    - time

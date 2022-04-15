@@ -83,6 +83,8 @@ executables:
     - base
     - tickler-server
 
+# For coverage reports, until this issue is fixed:
+# https://github.com/commercialhaskell/stack/issues/5713
 tests:
   tickler-server-dummy:
     main: Main.hs
