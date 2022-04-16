@@ -8,17 +8,18 @@ import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.TestUtils
 
 spec :: Spec
-spec =
-  ticklerWebServerSpec $
-    describe "Tickles" $ do
-      it "gets a 200 for a logged-in user" $
-        withExampleAccountAndLogin_ $ do
-          get TicklesR
-          statusIs 200
-      it "gets a 200 for a logged-in user when there is a tickle" $
-        withExampleAccountAndLogin_ $ do
-          get AddR
-          statusIs 200
+spec = ticklerWebServerSpec $
+  describe "Tickles" $ do
+    it "gets a 200 for a logged-in user" $
+      withExampleAccountAndLogin_ $ do
+        get TicklesR
+        statusIs 200
+
+    it "gets a 200 for a logged-in user when there are tickles" $
+      withExampleAccountAndLogin_ $ do
+        get AddR
+        statusIs 200
+        replicateM_ 2 $ do
           request $ do
             setMethod methodPost
             setUrl AddR
@@ -36,3 +37,5 @@ spec =
           locationShouldBe AddR
           _ <- followRedirect
           statusIs 200
+        get TicklesR
+        statusIs 200

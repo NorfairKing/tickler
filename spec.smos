@@ -48,6 +48,8 @@ value:
       - header: Get list
         contents: GET /items
         state-history:
+        - state: DONE
+          time: 2022-04-16 19:12:08
         - state: TODO
           time: 2022-04-15 16:11:56
       - header: Get single
@@ -107,6 +109,8 @@ value:
       - header: List
         contents: TicklesR
         state-history:
+        - state: DONE
+          time: 2022-04-16 19:12:22
         - state: TODO
           time: 2022-04-15 16:20:54
       - header: Edit
