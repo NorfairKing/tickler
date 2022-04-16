@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Web.Server.TestUtils
   ( ticklerWebServerSpec,
@@ -14,14 +15,16 @@ module Tickler.Web.Server.TestUtils
     withAdminAccount_,
     withAdminAccountAndLogin,
     withAdminAccountAndLogin_,
+    addItem,
   )
 where
 
+import qualified Data.Text as T
+import Data.Time
 import qualified Network.HTTP.Client as HTTP
-import Servant.Client (ClientEnv (..))
 import Test.Syd.Yesod
 import TestImport
-import Tickler.Data
+import Tickler.Client
 import Tickler.Data.Gen ()
 import qualified Tickler.Server.TestUtils as API
 import Tickler.Web.Server
@@ -128,3 +131,39 @@ withAdminAccountAndLogin func =
 
 withAdminAccountAndLogin_ :: YesodExample App a -> YesodExample App a
 withAdminAccountAndLogin_ = withAdminAccountAndLogin . const . const
+
+addItem :: Tickle -> YesodExample App ()
+addItem tickle = do
+  get AddR
+  statusIs 200
+  request $ do
+    addItemRequestBuilder tickle
+  statusIs 303
+  locationShouldBe AddR
+  _ <- followRedirect
+  statusIs 200
+
+addItemRequestBuilder :: Tickle -> RequestBuilder App ()
+addItemRequestBuilder Tickle {..} = do
+  setMethod methodPost
+  setUrl AddR
+  addTokenFromCookie
+  addPostParam "contents" tickleContent
+  addPostParam "scheduled-day" $ T.pack $ formatTime defaultTimeLocale "%F" tickleScheduledDay
+  forM_ tickleScheduledTime $ \tod ->
+    addPostParam "scheduled-time" $ T.pack $ formatTime defaultTimeLocale "%H:%M" tod
+  case tickleRecurrence of
+    Nothing ->
+      addPostParam "recurrence" "NoRecurrence"
+    Just recurrence -> case recurrence of
+      EveryDaysAtTime ds mtod -> do
+        addPostParam "recurrence" "Days"
+        addPostParam "days" $ T.pack $ show ds
+        forM_ mtod $ \tod ->
+          addPostParam "day-time-of-day" $ T.pack $ formatTime defaultTimeLocale "%H:%M" tod
+      EveryMonthsOnDay ms md mtod -> do
+        addPostParam "recurrence" "Months"
+        addPostParam "months" $ T.pack $ show ms
+        forM_ md $ \d -> addPostParam "day" $ T.pack $ show d
+        forM_ mtod $ \tod ->
+          addPostParam "month-time-of-day" $ T.pack $ formatTime defaultTimeLocale "%H:%M" tod

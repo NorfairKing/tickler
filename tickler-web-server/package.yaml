@@ -92,10 +92,12 @@ tests:
     - sydtest
     - sydtest-yesod
     - text
+    - tickler-client
     - tickler-data
     - tickler-data-gen
     - tickler-server
     - tickler-server-gen
     - tickler-web-server
+    - time
     - typed-uuid
     - yesod-auth

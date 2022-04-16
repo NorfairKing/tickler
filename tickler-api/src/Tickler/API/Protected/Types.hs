@@ -16,6 +16,7 @@ module Tickler.API.Protected.Types
 where
 
 import Data.Aeson as JSON
+import qualified Data.Text as T
 import Data.Time
 import Data.UUID.Typed
 import Import
@@ -33,7 +34,12 @@ data Tickle = Tickle
   }
   deriving (Show, Eq, Ord, Generic)
 
-instance Validity Tickle
+instance Validity Tickle where
+  validate t@Tickle {..} =
+    mconcat
+      [ genericValidate t,
+        declare "the content is not empty" $ not $ T.null tickleContent
+      ]
 
 instance FromJSON Tickle where
   parseJSON =

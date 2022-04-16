@@ -2,9 +2,11 @@
 
 module Tickler.Web.Server.Handler.AddSpec where
 
+import Data.Time
 import Network.HTTP.Types
 import Test.Syd.Yesod
 import TestImport
+import Tickler.Client
 import Tickler.Data
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.Handler.Item
@@ -46,6 +48,7 @@ spec = do
                     recurrenceDataMonthTimeOfDay = todm
                   }
                 `shouldBe` Just (Just (EveryMonthsOnDay months day todm))
+
     it "works for this example of multiple months" $
       mkRecurrence
         RecurrenceData
@@ -61,60 +64,27 @@ spec = do
   describe "Add" $ do
     let maxItems = 5
     paidTicklerWebServerSpec maxItems $ do
-      it "gets an error when adding more than the maximum number of items" $ do
-        withExampleAccountAndLogin_ $ do
-          get AddR
-          statusIs 200
-          let addAnItem = do
-                request $ do
-                  setMethod methodPost
-                  setUrl AddR
-                  addTokenFromCookie
-                  addPostParam "contents" "hello"
-                  addPostParam "scheduled-day" "2200-12-03"
-                  addPostParam "scheduled-time" ""
-                  addPostParam "recurrence" "NoRecurrence"
-                  addPostParam "days" ""
-                  addPostParam "day-time-of-day" ""
-                  addPostParam "months" ""
-                  addPostParam "day" ""
-                  addPostParam "month-time-of-day" ""
-          replicateM_ maxItems $ do
-            addAnItem
-            statusIs 303
-            locationShouldBe AddR
-            _ <- followRedirect
-            statusIs 200
-          addAnItem
-          statusIs 303
-          locationShouldBe AddR
-          _ <- followRedirect
-          statusIs 200
-          bodyContains "limit"
+      it "gets an error when adding more than the maximum number of items" $ \yc ->
+        forAll (replicateM maxItems genValid) $ \items ->
+          forAllValid $ \extraItem ->
+            runYesodClientM yc $ do
+              withExampleAccountAndLogin_ $ do
+                get AddR
+                statusIs 200
+                mapM_ addItem items
+                addItem extraItem
+                statusIs 200
+                bodyContains "limit"
 
     freeTicklerWebServerSpec $ do
-      it "gets a 200 even when adding 10 items" $ do
-        withExampleAccountAndLogin_ $ do
-          get AddR
-          statusIs 200
-          replicateM_ 10 $ do
-            request $ do
-              setMethod methodPost
-              setUrl AddR
-              addTokenFromCookie
-              addPostParam "contents" "hello"
-              addPostParam "scheduled-day" "2200-12-03"
-              addPostParam "scheduled-time" ""
-              addPostParam "recurrence" "NoRecurrence"
-              addPostParam "days" ""
-              addPostParam "day-time-of-day" ""
-              addPostParam "months" ""
-              addPostParam "day" ""
-              addPostParam "month-time-of-day" ""
-            statusIs 303
-            locationShouldBe AddR
-            _ <- followRedirect
-            statusIs 200
+      it "gets a 200 even when adding 10 items" $ \yc -> do
+        forAll (replicateM maxItems genValid) $ \items ->
+          runYesodClientM yc $
+            withExampleAccountAndLogin_ $ do
+              get AddR
+              statusIs 200
+              mapM_ addItem items
+              statusIs 200
 
     ticklerWebServerSpec $ do
       it "gets a 200 for a logged-in user" $ do
@@ -124,66 +94,43 @@ spec = do
 
       it "can post an example item without recurrence" $
         withExampleAccountAndLogin_ $ do
-          get AddR
-          statusIs 200
-          request $ do
-            setMethod methodPost
-            setUrl AddR
-            addTokenFromCookie
-            addPostParam "contents" "hello"
-            addPostParam "scheduled-day" "2200-12-03"
-            addPostParam "scheduled-time" ""
-            addPostParam "recurrence" "NoRecurrence"
-            addPostParam "days" ""
-            addPostParam "day-time-of-day" ""
-            addPostParam "months" ""
-            addPostParam "day" ""
-            addPostParam "month-time-of-day" ""
-          statusIs 303
-          locationShouldBe AddR
-          _ <- followRedirect
+          addItem $
+            Tickle
+              { tickleContent = "hello",
+                tickleScheduledDay = fromGregorian 2200 12 03,
+                tickleScheduledTime = Nothing,
+                tickleRecurrence = Nothing
+              }
           statusIs 200
 
-      it "can post an example item with daily" $
+      it "can post an example item with daily recurrence" $
         withExampleAccountAndLogin_ $ do
-          get AddR
-          statusIs 200
-          request $ do
-            setMethod methodPost
-            setUrl AddR
-            addTokenFromCookie
-            addPostParam "contents" "hello"
-            addPostParam "scheduled-day" "2200-12-03"
-            addPostParam "scheduled-time" ""
-            addPostParam "recurrence" "Days"
-            addPostParam "days" "5"
-            addPostParam "day-time-of-day" "12:34"
-            addPostParam "months" ""
-            addPostParam "day" ""
-            addPostParam "month-time-of-day" ""
-          statusIs 303
-          locationShouldBe AddR
-          _ <- followRedirect
+          addItem $
+            Tickle
+              { tickleContent = "hello world",
+                tickleScheduledDay = fromGregorian 2200 12 04,
+                tickleScheduledTime = Nothing,
+                tickleRecurrence =
+                  Just $
+                    EveryDaysAtTime 5 (Just (TimeOfDay 12 34 00))
+              }
           statusIs 200
 
       it "can post an example item with monthly recurrence" $
         withExampleAccountAndLogin_ $ do
-          get AddR
+          addItem $
+            Tickle
+              { tickleContent = "hello world",
+                tickleScheduledDay = fromGregorian 2200 12 04,
+                tickleScheduledTime = Nothing,
+                tickleRecurrence =
+                  Just $
+                    EveryMonthsOnDay 6 (Just 15) (Just (TimeOfDay 23 45 00))
+              }
           statusIs 200
-          request $ do
-            setMethod methodPost
-            setUrl AddR
-            addTokenFromCookie
-            addPostParam "contents" "hello"
-            addPostParam "scheduled-day" "2200-12-03"
-            addPostParam "scheduled-time" ""
-            addPostParam "recurrence" "Months"
-            addPostParam "days" ""
-            addPostParam "day-time-of-day" ""
-            addPostParam "months" "6"
-            addPostParam "day" "15"
-            addPostParam "month-time-of-day" "08:03"
-          statusIs 303
-          locationShouldBe AddR
-          _ <- followRedirect
-          statusIs 200
+
+      it "can post any item" $ \yc ->
+        forAllValid $ \item -> runYesodClientM yc $
+          withExampleAccountAndLogin_ $ do
+            addItem item
+            statusIs 200
