@@ -93,7 +93,6 @@ test-suite tickler-server-test
       Tickler.Server.Handler.PostLoginSpec
       Tickler.Server.Handler.PostRegisterSpec
       Tickler.Server.Handler.PutAccountSettingsSpec
-      Tickler.Server.Handler.RetryTriggeredSpec
       Tickler.Server.Looper.TriggererSpec
       Paths_tickler_server_gen
   hs-source-dirs:

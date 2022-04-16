@@ -10,8 +10,6 @@ import Intray.Data.Gen ()
 import Tickler.API.Protected.Types
 import Tickler.Data.Gen ()
 
-instance GenValid ItemFilter
-
 instance GenValid TypedItem where
   genValid = do
     ti <- genValid
@@ -22,18 +20,6 @@ instance GenValid TypedItem where
   shrinkValid = shrinkValidStructurally
 
 instance GenValid a => GenValid (Tickle a)
-
-instance GenValid TriggerAttempt
-
-instance GenValid EmailTriggerResult
-
-instance GenValid IntrayTriggerResult
-
-instance GenValid TriggeredInfo
-
-instance GenValid a => GenValid (AddedItem a) where
-  genValid = genValidStructurallyWithoutExtraChecking
-  shrinkValid = shrinkValidStructurallyWithoutExtraFiltering
 
 instance GenValid a => GenValid (ItemInfo a)
 

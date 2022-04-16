@@ -42,7 +42,6 @@ library
       Tickler.Server.Handler.Protected.DeleteAccount
       Tickler.Server.Handler.Protected.DeleteItem
       Tickler.Server.Handler.Protected.DeleteTrigger
-      Tickler.Server.Handler.Protected.DeleteTriggereds
       Tickler.Server.Handler.Protected.GetAccountInfo
       Tickler.Server.Handler.Protected.GetAccountSettings
       Tickler.Server.Handler.Protected.GetItem
@@ -56,7 +55,6 @@ library
       Tickler.Server.Handler.Protected.PostEmailTriggerResendVerificationEmail
       Tickler.Server.Handler.Protected.PostEmailTriggerVerify
       Tickler.Server.Handler.Protected.PostItem
-      Tickler.Server.Handler.Protected.PostRetryTriggered
       Tickler.Server.Handler.Protected.PutAccountSettings
       Tickler.Server.Handler.Public
       Tickler.Server.Handler.Public.GetPricing

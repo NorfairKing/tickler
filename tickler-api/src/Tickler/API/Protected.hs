@@ -30,8 +30,6 @@ data TicklerProtectedSite route = TicklerProtectedSite
     getItem :: !(route :- GetItem),
     postItem :: !(route :- PostItem),
     deleteItem :: !(route :- DeleteItem),
-    postRetryTriggered :: !(route :- PostRetryTriggered),
-    deleteTriggereds :: !(route :- DeleteTriggereds),
     getTriggers :: !(route :- GetTriggers),
     getTrigger :: !(route :- GetTrigger),
     postAddIntrayTrigger :: !(route :- PostAddIntrayTrigger),
@@ -51,7 +49,6 @@ data TicklerProtectedSite route = TicklerProtectedSite
 type GetItems =
   ProtectAPI
     :> "items"
-    :> QueryParam "filter" ItemFilter
     :> Get '[JSON] [ItemInfo TypedItem]
 
 type PostAddItem =
@@ -81,19 +78,6 @@ type DeleteItem =
     :> "delete"
     :> Capture "id" ItemUUID
     :> Delete '[JSON] NoContent
-
-type PostRetryTriggered =
-  ProtectAPI
-    :> "item"
-    :> "retry"
-    :> ReqBody '[JSON] [ItemUUID]
-    :> Post '[JSON] NoContent
-
-type DeleteTriggereds =
-  ProtectAPI
-    :> "item"
-    :> "delete-triggereds"
-    :> Post '[JSON] NoContent
 
 type GetTriggers =
   ProtectAPI

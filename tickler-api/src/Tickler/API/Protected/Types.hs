@@ -28,19 +28,6 @@ import Tickler.API.Types
 import Tickler.Data
 import Web.HttpApiData
 
-data ItemFilter
-  = OnlyUntriggered
-  | OnlyTriggered
-  deriving (Show, Read, Eq, Enum, Bounded, Generic)
-
-instance Validity ItemFilter
-
-instance ToHttpApiData ItemFilter where
-  toQueryParam = showTextData
-
-instance FromHttpApiData ItemFilter where
-  parseQueryParam = parseBoundedTextData
-
 data TypedItem = TypedItem
   { itemType :: !ItemType,
     itemData :: !ByteString
@@ -84,20 +71,6 @@ newtype TypedItemCase
   = CaseTextItem Text
   deriving (Show, Read, Eq, Ord, Generic)
 
-data AddedItem a = AddedItem
-  { addedItemContents :: a,
-    addedItemCreated :: UTCTime
-  }
-  deriving (Show, Read, Eq, Ord, Generic)
-
-instance Validity a => Validity (AddedItem a)
-
-instance ToJSON a => ToJSON (AddedItem a) where
-  toJSON AddedItem {..} = object ["contents" .= addedItemContents, "created" .= addedItemCreated]
-
-instance FromJSON a => FromJSON (AddedItem a) where
-  parseJSON = withObject "AddedItem" $ \o -> AddedItem <$> o .: "contents" <*> o .: "created"
-
 data Tickle a = Tickle
   { tickleContent :: !a,
     tickleScheduledDay :: !Day,
@@ -129,8 +102,7 @@ type TypedTickle = Tickle TypedItem
 data ItemInfo a = ItemInfo
   { itemInfoIdentifier :: !ItemUUID,
     itemInfoContents :: !(Tickle a),
-    itemInfoCreated :: !UTCTime,
-    itemInfoTriggered :: !(Maybe TriggeredInfo)
+    itemInfoCreated :: !UTCTime
   }
   deriving (Show, Eq, Ord, Generic)
 
@@ -141,50 +113,15 @@ instance ToJSON a => ToJSON (ItemInfo a) where
     object
       [ "id" .= itemInfoIdentifier,
         "contents" .= itemInfoContents,
-        "created" .= itemInfoCreated,
-        "triggered" .= itemInfoTriggered
+        "created" .= itemInfoCreated
       ]
 
 instance FromJSON a => FromJSON (ItemInfo a) where
   parseJSON =
     withObject "ItemInfo TypedItem" $ \o ->
-      ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created" <*> o .: "triggered"
+      ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created"
 
 type TypedItemInfo = ItemInfo TypedItem
-
-data TriggeredInfo = TriggeredInfo
-  { triggeredInfoTriggered :: !UTCTime,
-    triggeredInfoTriggerTriggerAttempts :: ![TriggerAttempt]
-  }
-  deriving (Show, Read, Eq, Ord, Generic)
-
-instance Validity TriggeredInfo
-
-instance FromJSON TriggeredInfo
-
-instance ToJSON TriggeredInfo
-
-data TriggerAttempt
-  = EmailTriggerAttempt !TriggerUUID !EmailTriggerResult
-  | IntrayTriggerAttempt !TriggerUUID !IntrayTriggerResult
-  deriving (Show, Read, Eq, Ord, Generic)
-
-instance Validity TriggerAttempt
-
-instance FromJSON TriggerAttempt
-
-instance ToJSON TriggerAttempt
-
-data EmailTriggerResult
-  = EmailResultSent
-  | EmailResultError !Text
-  deriving (Show, Read, Eq, Ord, Generic)
-
-instance Validity EmailTriggerResult
-
-instance FromJSON EmailTriggerResult
-
-instance ToJSON EmailTriggerResult
 
 instance ToHttpApiData EmailVerificationKey where
   toUrlPiece = emailVerificationKeyText
@@ -194,17 +131,6 @@ instance FromHttpApiData EmailVerificationKey where
     case parseEmailVerificationKeyText t of
       Nothing -> Left "Invalid email verification key"
       Just evk -> pure evk
-
-data IntrayTriggerResult
-  = IntrayAdditionSuccess !Intray.ItemUUID
-  | IntrayAdditionFailure !Text
-  deriving (Show, Read, Eq, Ord, Generic)
-
-instance Validity IntrayTriggerResult
-
-instance FromJSON IntrayTriggerResult
-
-instance ToJSON IntrayTriggerResult
 
 type AddItem = TypedTickle
 

@@ -26,7 +26,6 @@ extra-source-files:
     templates/add-intray-trigger.hamlet
     templates/add.hamlet
     templates/admin.hamlet
-    templates/api-down.hamlet
     templates/auth/change-password.hamlet
     templates/auth/login.hamlet
     templates/auth/register.hamlet
@@ -44,8 +43,6 @@ extra-source-files:
     templates/tickle.hamlet
     templates/tickles.hamlet
     templates/timestamp.hamlet
-    templates/triggered.hamlet
-    templates/triggereds.hamlet
     templates/triggers.hamlet
     templates/with-nav-bar.hamlet
     templates/with-nav-bar.julius
@@ -64,7 +61,6 @@ library
       Tickler.Web.Server.Handler.Admin
       Tickler.Web.Server.Handler.Checkout
       Tickler.Web.Server.Handler.Delete
-      Tickler.Web.Server.Handler.DeleteTriggereds
       Tickler.Web.Server.Handler.Edit
       Tickler.Web.Server.Handler.EmailTriggerResend
       Tickler.Web.Server.Handler.EmailTriggerVerify
@@ -72,9 +68,7 @@ library
       Tickler.Web.Server.Handler.Item
       Tickler.Web.Server.Handler.Pricing
       Tickler.Web.Server.Handler.Reload
-      Tickler.Web.Server.Handler.RetryTriggered
       Tickler.Web.Server.Handler.Tickles
-      Tickler.Web.Server.Handler.Triggered
       Tickler.Web.Server.Handler.Triggers
       Tickler.Web.Server.OptParse
       Tickler.Web.Server.OptParse.Types
@@ -156,7 +150,6 @@ test-suite tickler-web-server-test
       Tickler.Web.Server.Handler.DeleteAccountSpec
       Tickler.Web.Server.Handler.HomeRSpec
       Tickler.Web.Server.Handler.TicklesSpec
-      Tickler.Web.Server.Handler.TriggeredsSpec
       Tickler.Web.Server.Handler.TriggersSpec
       Tickler.Web.Server.TestUtils
       Paths_tickler_web_server

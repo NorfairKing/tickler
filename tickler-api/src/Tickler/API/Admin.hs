@@ -28,9 +28,18 @@ data TicklerAdminSite route = TicklerAdminSite
   }
   deriving (Generic)
 
-type AdminGetStats = ProtectAPI :> "stats" :> Get '[JSON] AdminStats
+type AdminGetStats =
+  ProtectAPI
+    :> "stats"
+    :> Get '[JSON] AdminStats
 
 type AdminDeleteAccount =
-  ProtectAPI :> "account" :> Capture "id" AccountUUID :> Delete '[JSON] NoContent
+  ProtectAPI
+    :> "account"
+    :> Capture "id" AccountUUID
+    :> Delete '[JSON] NoContent
 
-type AdminGetAccounts = ProtectAPI :> "accounts" :> Get '[JSON] [AccountInfo]
+type AdminGetAccounts =
+  ProtectAPI
+    :> "accounts"
+    :> Get '[JSON] [AccountInfo]

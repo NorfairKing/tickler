@@ -44,13 +44,6 @@
             $maybe dt <- mtod
               at #{show dt}
 
-
-    $maybe triggeredWidget <- mTriggeredWidget
-      <div .help .level .level-left>
-        Triggered:&nbsp;
-        ^{triggeredWidget}
-
-
     <div .mt-2>
       <div .level>
         <div .help .level-left>

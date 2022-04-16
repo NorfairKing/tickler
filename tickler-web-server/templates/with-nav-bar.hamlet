@@ -22,9 +22,6 @@
         <a .navbar-item href=@{TicklesR}>
           Tickles
 
-        <a .navbar-item href=@{TriggeredsR}>
-          Triggered Tickles
-
         <a .navbar-item href=@{TriggersR}>
           Triggers
 
@@ -47,13 +44,10 @@
           <a .button href=@{AuthR registerR}>
             Register
 
-<!-- Messages -->
 $forall (msgtype, msg) <- msgs
   <div .is-#{msgtype} .message>
     <div .message-body>
       ^{msg}
-
-
 
 <div .container>
   ^{body}

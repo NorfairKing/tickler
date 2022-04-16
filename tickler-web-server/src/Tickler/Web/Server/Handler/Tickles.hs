@@ -20,7 +20,7 @@ import Yesod
 getTicklesR :: Handler Html
 getTicklesR =
   withLogin $ \t -> do
-    items <- runClientOrErr $ clientGetItems t (Just OnlyUntriggered)
+    items <- runClientOrErr $ clientGetItems t
     mItemsWidget <-
       case items of
         [] -> pure Nothing
@@ -44,10 +44,6 @@ makeItemInfoWidget items =
                     LocalTime
                       (tickleScheduledDay itemInfoContents)
                       (fromMaybe midnight $ tickleScheduledTime itemInfoContents)
-          let mTriggeredWidget =
-                case itemInfoTriggered of
-                  Nothing -> Nothing
-                  Just iit -> Just $ makeTimestampWidget now (triggeredInfoTriggered iit)
           pure $(widgetFile "tickle")
 
 sortByScheduled :: [ItemInfo a] -> [ItemInfo a]
