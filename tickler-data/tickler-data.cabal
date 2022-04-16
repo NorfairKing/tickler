@@ -30,7 +30,6 @@ library
       Tickler.Data.EmailStatus
       Tickler.Data.EmailVerificationKey
       Tickler.Data.HashedPassword
-      Tickler.Data.ItemType
       Tickler.Data.ItemUUID
       Tickler.Data.Recurrence
       Tickler.Data.Stripe

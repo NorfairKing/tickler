@@ -18,10 +18,10 @@ import Servant.Auth.Client
 import Servant.Client
 import Tickler.API
 
-clientGetItems :: Token -> ClientM [ItemInfo TypedItem]
-clientPostAddItem :: Token -> AddItem -> ClientM ItemUUID
-clientGetItem :: Token -> ItemUUID -> ClientM (ItemInfo TypedItem)
-clientPostItem :: Token -> ItemUUID -> Tickle TypedItem -> ClientM NoContent
+clientGetItems :: Token -> ClientM [ItemInfo]
+clientPostAddItem :: Token -> Tickle -> ClientM ItemUUID
+clientGetItem :: Token -> ItemUUID -> ClientM ItemInfo
+clientPostItem :: Token -> ItemUUID -> Tickle -> ClientM NoContent
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
 clientGetTriggers :: Token -> ClientM [TriggerInfo TypedTriggerInfo]
 clientGetTrigger :: Token -> TriggerUUID -> ClientM (TriggerInfo TypedTriggerInfo)

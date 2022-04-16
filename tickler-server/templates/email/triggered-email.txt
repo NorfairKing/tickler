@@ -1,6 +1,6 @@
 The following tickle item got triggered:
 
-#{textContents}
+#{triggeredItemContents}
 
 You received this email because you signed up to receive triggered tickles via email at #{triggeredEmailConverterSetWebHost}.
 

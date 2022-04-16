@@ -16,9 +16,6 @@ module Tickler.API.Protected.Types
 where
 
 import Data.Aeson as JSON
-import qualified Data.ByteString.Base64 as Base64
-import qualified Data.ByteString.Char8 as SB8
-import qualified Data.Text.Encoding as TE
 import Data.Time
 import Data.UUID.Typed
 import Import
@@ -28,67 +25,26 @@ import Tickler.API.Types
 import Tickler.Data
 import Web.HttpApiData
 
-data TypedItem = TypedItem
-  { itemType :: !ItemType,
-    itemData :: !ByteString
-  }
-  deriving (Show, Read, Eq, Ord, Generic)
-
-instance Validity TypedItem
-
-instance FromJSON TypedItem where
-  parseJSON v =
-    case v of
-      Object o ->
-        TypedItem <$> o .: "type"
-          <*> ( do
-                  d <- o .: "data"
-                  case Base64.decode $ SB8.pack d of
-                    Left err -> fail $ unwords ["Failed to decode base64-encoded typed item data:", err]
-                    Right r -> pure r
-              )
-      String t -> pure $ TypedItem {itemType = TextItem, itemData = TE.encodeUtf8 t}
-      _ -> fail "Invalid json object for 'TypedItem'"
-
-instance ToJSON TypedItem where
-  toJSON TypedItem {..} =
-    case itemType of
-      TextItem ->
-        case TE.decodeUtf8' itemData of
-          Left _ -> object ["type" .= itemType, "data" .= SB8.unpack (Base64.encode itemData)]
-          Right t -> JSON.String t
-      _ -> object ["type" .= itemType, "data" .= SB8.unpack (Base64.encode itemData)]
-
-textTypedItem :: Text -> TypedItem
-textTypedItem t = TypedItem {itemType = TextItem, itemData = TE.encodeUtf8 t}
-
-typedItemCase :: TypedItem -> Either String TypedItemCase
-typedItemCase TypedItem {..} =
-  case itemType of
-    TextItem -> left show $ CaseTextItem <$> TE.decodeUtf8' itemData
-
-newtype TypedItemCase
-  = CaseTextItem Text
-  deriving (Show, Read, Eq, Ord, Generic)
-
-data Tickle a = Tickle
-  { tickleContent :: !a,
+data Tickle = Tickle
+  { tickleContent :: !Text,
     tickleScheduledDay :: !Day,
     tickleScheduledTime :: !(Maybe TimeOfDay),
     tickleRecurrence :: !(Maybe Recurrence)
   }
   deriving (Show, Eq, Ord, Generic)
 
-instance Validity a => Validity (Tickle a)
+instance Validity Tickle
 
-instance FromJSON a => FromJSON (Tickle a) where
+instance FromJSON Tickle where
   parseJSON =
     withObject "Tickle" $ \o ->
-      Tickle <$> o .: "content" <*> o .: "scheduled-day" <*> o .: "scheduled-time"
-        <*> o
-        .:? "recurrence"
+      Tickle
+        <$> o .: "content"
+        <*> o .: "scheduled-day"
+        <*> o .: "scheduled-time"
+        <*> o .:? "recurrence"
 
-instance ToJSON a => ToJSON (Tickle a) where
+instance ToJSON Tickle where
   toJSON Tickle {..} =
     object
       [ "content" .= tickleContent,
@@ -97,18 +53,16 @@ instance ToJSON a => ToJSON (Tickle a) where
         "recurrence" .= tickleRecurrence
       ]
 
-type TypedTickle = Tickle TypedItem
-
-data ItemInfo a = ItemInfo
+data ItemInfo = ItemInfo
   { itemInfoIdentifier :: !ItemUUID,
-    itemInfoContents :: !(Tickle a),
+    itemInfoContents :: !Tickle,
     itemInfoCreated :: !UTCTime
   }
   deriving (Show, Eq, Ord, Generic)
 
-instance Validity a => Validity (ItemInfo a)
+instance Validity ItemInfo
 
-instance ToJSON a => ToJSON (ItemInfo a) where
+instance ToJSON ItemInfo where
   toJSON ItemInfo {..} =
     object
       [ "id" .= itemInfoIdentifier,
@@ -116,12 +70,13 @@ instance ToJSON a => ToJSON (ItemInfo a) where
         "created" .= itemInfoCreated
       ]
 
-instance FromJSON a => FromJSON (ItemInfo a) where
+instance FromJSON ItemInfo where
   parseJSON =
     withObject "ItemInfo TypedItem" $ \o ->
-      ItemInfo <$> o .: "id" <*> o .: "contents" <*> o .: "created"
-
-type TypedItemInfo = ItemInfo TypedItem
+      ItemInfo
+        <$> o .: "id"
+        <*> o .: "contents"
+        <*> o .: "created"
 
 instance ToHttpApiData EmailVerificationKey where
   toUrlPiece = emailVerificationKeyText
@@ -131,8 +86,6 @@ instance FromHttpApiData EmailVerificationKey where
     case parseEmailVerificationKeyText t of
       Nothing -> Left "Invalid email verification key"
       Just evk -> pure evk
-
-type AddItem = TypedTickle
 
 data TriggerInfo a = TriggerInfo
   { triggerInfoIdentifier :: !TriggerUUID,

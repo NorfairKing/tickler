@@ -28,7 +28,7 @@ data TicklerProtectedSite route = TicklerProtectedSite
   { getItems :: !(route :- GetItems),
     postAddItem :: !(route :- PostAddItem),
     getItem :: !(route :- GetItem),
-    postItem :: !(route :- PostItem),
+    putItem :: !(route :- PutItem),
     deleteItem :: !(route :- DeleteItem),
     getTriggers :: !(route :- GetTriggers),
     getTrigger :: !(route :- GetTrigger),
@@ -49,33 +49,30 @@ data TicklerProtectedSite route = TicklerProtectedSite
 type GetItems =
   ProtectAPI
     :> "items"
-    :> Get '[JSON] [ItemInfo TypedItem]
+    :> Get '[JSON] [ItemInfo]
 
 type PostAddItem =
   ProtectAPI
     :> "item"
-    :> ReqBody '[JSON] AddItem
+    :> ReqBody '[JSON] Tickle
     :> Post '[JSON] ItemUUID
 
 type GetItem =
   ProtectAPI
     :> "item"
-    :> "info"
     :> Capture "id" ItemUUID
-    :> Get '[JSON] (ItemInfo TypedItem)
+    :> Get '[JSON] ItemInfo
 
-type PostItem =
+type PutItem =
   ProtectAPI
     :> "item"
-    :> "info"
     :> Capture "id" ItemUUID
-    :> ReqBody '[JSON] TypedTickle
-    :> Post '[JSON] NoContent
+    :> ReqBody '[JSON] Tickle
+    :> Put '[JSON] NoContent
 
 type DeleteItem =
   ProtectAPI
     :> "item"
-    :> "delete"
     :> Capture "id" ItemUUID
     :> Delete '[JSON] NoContent
 

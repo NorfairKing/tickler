@@ -15,7 +15,7 @@ import Tickler.Client
 import Tickler.Web.Server.Foundation
 import Yesod
 
-handleEditItemForm :: Handler TypedTickle
+handleEditItemForm :: Handler Tickle
 handleEditItemForm = do
   EditItem {..} <- runInputPost editItemForm
   case mkRecurrence editItemRecurrenceData of
@@ -28,7 +28,7 @@ handleEditItemForm = do
               Just r -> (r, editItemScheduledTime)
       pure
         Tickle
-          { tickleContent = textTypedItem $ unTextarea editItemText,
+          { tickleContent = unTextarea editItemText,
             tickleScheduledDay = d,
             tickleScheduledTime = mtod,
             tickleRecurrence = recurrence
@@ -103,7 +103,7 @@ mkRecurrence RecurrenceData {..} =
         Nothing -> Nothing
         Just r -> Just $ Just r
 
-makeEditItemFormWidget :: Maybe (ItemUUID, ItemInfo TypedItem) -> Handler Widget
+makeEditItemFormWidget :: Maybe (ItemUUID, ItemInfo) -> Handler Widget
 makeEditItemFormWidget mii = do
   token <- genToken
   let mUUID = fst <$> mii

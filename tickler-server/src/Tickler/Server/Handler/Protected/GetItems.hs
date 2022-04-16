@@ -12,9 +12,11 @@ import Tickler.Server.Handler.Utils
 import Tickler.Server.Item
 import Tickler.Server.Types
 
-serveGetItems :: AuthCookie -> TicklerHandler [TypedItemInfo]
+serveGetItems :: AuthCookie -> TicklerHandler [ItemInfo]
 serveGetItems AuthCookie {..} = do
   itemsEnts <-
     runDb $
-      selectList [TicklerItemUserId ==. authCookieUserUUID] [Asc TicklerItemCreated]
+      selectList
+        [TicklerItemUserId ==. authCookieUserUUID]
+        [Asc TicklerItemCreated]
   pure $ map (makeTicklerItemInfo . entityVal) itemsEnts

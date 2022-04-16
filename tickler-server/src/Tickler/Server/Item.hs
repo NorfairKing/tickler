@@ -10,27 +10,25 @@ import Data.Time
 import Tickler.API
 
 makeTicklerItem ::
-  AccountUUID -> ItemUUID -> UTCTime -> TypedTickle -> TicklerItem
+  AccountUUID -> ItemUUID -> UTCTime -> Tickle -> TicklerItem
 makeTicklerItem u i cr Tickle {..} =
-  let TypedItem {..} = tickleContent
-   in TicklerItem
-        { ticklerItemIdentifier = i,
-          ticklerItemUserId = u,
-          ticklerItemType = itemType,
-          ticklerItemContents = itemData,
-          ticklerItemCreated = cr,
-          ticklerItemScheduledDay = tickleScheduledDay,
-          ticklerItemScheduledTime = tickleScheduledTime,
-          ticklerItemRecurrence = tickleRecurrence
-        }
+  TicklerItem
+    { ticklerItemIdentifier = i,
+      ticklerItemUserId = u,
+      ticklerItemContents = tickleContent,
+      ticklerItemCreated = cr,
+      ticklerItemScheduledDay = tickleScheduledDay,
+      ticklerItemScheduledTime = tickleScheduledTime,
+      ticklerItemRecurrence = tickleRecurrence
+    }
 
-makeTicklerItemInfo :: TicklerItem -> TypedItemInfo
+makeTicklerItemInfo :: TicklerItem -> ItemInfo
 makeTicklerItemInfo TicklerItem {..} =
   ItemInfo
     { itemInfoIdentifier = ticklerItemIdentifier,
       itemInfoContents =
         Tickle
-          { tickleContent = TypedItem {itemType = ticklerItemType, itemData = ticklerItemContents},
+          { tickleContent = ticklerItemContents,
             tickleScheduledDay = ticklerItemScheduledDay,
             tickleScheduledTime = ticklerItemScheduledTime,
             tickleRecurrence = ticklerItemRecurrence

@@ -27,7 +27,7 @@ spec =
       it "it always lists valid items" $ \cenv ->
         forAllValid $ \items ->
           withValidNewUser cenv $ \token -> do
-            void $ runClientOrError cenv $ mapM (clientPostAddItem token) (items :: [AddItem])
+            void $ runClientOrError cenv $ mapM (clientPostAddItem token) (items :: [Tickle])
             is <- runClientOrError cenv $ clientGetItems token
             shouldBeValid is
 

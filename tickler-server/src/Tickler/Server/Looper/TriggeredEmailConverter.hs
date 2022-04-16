@@ -12,7 +12,6 @@ import Conduit
 import Data.Char as Char
 import qualified Data.Conduit.Combinators as C
 import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as LT
 import qualified Data.Text.Lazy.Builder as LTB
 import Data.Time
@@ -54,12 +53,13 @@ makeTriggeredEmail tecs@TriggeredEmailConverterSettings {..} EmailTrigger {..} t
         emailFrom = triggeredEmailConverterSetFromAddress,
         emailFromName = triggeredEmailConverterSetFromName,
         emailSubject =
-          "[Tickler]: "
-            <> case triggeredItemType of
-              TextItem ->
-                let textContents = TE.decodeUtf8 triggeredItemContents
-                 in T.take 50 $
-                      T.filter (\c -> not (Char.isControl c) && c /= '\n' && c /= '\r') textContents,
+          T.pack $
+            unwords
+              [ "[Tickler]:",
+                take 50 $
+                  filter (\c -> not (Char.isControl c) && c /= '\n' && c /= '\r') $
+                    T.unpack triggeredItemContents
+              ],
         emailTextContent = triggeredEmailTextContent tecs ti render,
         emailHtmlContent = triggeredEmailHtmlContent tecs ti render,
         emailStatus = EmailUnsent,
@@ -71,14 +71,8 @@ makeTriggeredEmail tecs@TriggeredEmailConverterSettings {..} EmailTrigger {..} t
 
 triggeredEmailTextContent :: TriggeredEmailConverterSettings -> TriggeredItem -> Render Text -> Text
 triggeredEmailTextContent TriggeredEmailConverterSettings {..} TriggeredItem {..} render =
-  case triggeredItemType of
-    TextItem ->
-      let textContents = TE.decodeUtf8 triggeredItemContents
-       in LT.toStrict $ LTB.toLazyText $ $(textFile "templates/email/triggered-email.txt") render
+  LT.toStrict $ LTB.toLazyText $ $(textFile "templates/email/triggered-email.txt") render
 
 triggeredEmailHtmlContent :: TriggeredEmailConverterSettings -> TriggeredItem -> Render Text -> Text
 triggeredEmailHtmlContent TriggeredEmailConverterSettings {..} TriggeredItem {..} render =
-  case triggeredItemType of
-    TextItem ->
-      let textContents = TE.decodeUtf8 triggeredItemContents
-       in LT.toStrict $ renderHtml $ $(hamletFile "templates/email/triggered-email.hamlet") render
+  LT.toStrict $ renderHtml $ $(hamletFile "templates/email/triggered-email.hamlet") render

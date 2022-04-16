@@ -2,18 +2,12 @@
   method=post
   action=@{maybe AddR EditR mUUID}>
     $maybe contents <- mContents
-      $case typedItemCase contents
-        $of Left err
-          Invalid item: #{err}
-        $of Right i
-          $case i
-            $of CaseTextItem t
-              <div .field .changeable .text-input>
-                <textarea .textarea rows="2"
-                  name="contents"
-                  autofocus 
-                  required>
-                  #{Textarea t}
+      <div .field .changeable .text-input>
+        <textarea .textarea rows="2"
+          name="contents"
+          autofocus 
+          required>
+          #{contents}
     $nothing
       <div .field .text-input>
         <textarea .textarea rows="2"

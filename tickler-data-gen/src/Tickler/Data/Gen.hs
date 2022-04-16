@@ -39,8 +39,6 @@ instance GenValid User
 
 instance GenValid UserSettings
 
-instance GenValid ItemType
-
 instance GenValid TicklerItem
 
 instance GenValid TriggeredItem

@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Tickler.Server.Handler.Protected.PostItem (servePostItem) where
+module Tickler.Server.Handler.Protected.PutItem (servePutItem) where
 
 import Database.Persist
 import Import
@@ -12,24 +12,22 @@ import Tickler.API
 import Tickler.Server.Handler.Utils
 import Tickler.Server.Types
 
-servePostItem ::
+servePutItem ::
   AuthCookie ->
   ItemUUID ->
-  Tickle TypedItem ->
+  Tickle ->
   TicklerHandler NoContent
-servePostItem AuthCookie {..} uuid Tickle {..} = do
+servePutItem AuthCookie {..} uuid Tickle {..} = do
   mI <- runDb $ getBy (UniqueItemIdentifier uuid)
   case mI of
     Nothing -> throwError $ err404 {errBody = "Item not found."}
     Just (Entity i TicklerItem {..}) ->
       if ticklerItemUserId == authCookieUserUUID
         then do
-          let TypedItem {..} = tickleContent
           runDb $
             update
               i
-              [ TicklerItemType =. itemType,
-                TicklerItemContents =. itemData,
+              [ TicklerItemContents =. tickleContent,
                 TicklerItemScheduledDay =. tickleScheduledDay,
                 TicklerItemScheduledTime =. tickleScheduledTime,
                 TicklerItemRecurrence =. tickleRecurrence

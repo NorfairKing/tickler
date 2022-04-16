@@ -12,16 +12,10 @@ import Tickler.API.Protected.Types
 
 spec :: Spec
 spec = do
-  genValidSpec @(ItemInfo ByteString)
-  genValidSpec @TypedItem
-  jsonSpec @TypedItem
-  jsonSpec @TypedItem
-  genValidSpec @(Tickle TypedItem)
-  jsonSpec @(Tickle TypedItem)
-  genValidSpec @(ItemInfo TypedItem)
-  jsonSpec @(ItemInfo TypedItem)
-  genValidSpec @AddItem
-  jsonSpec @AddItem
+  genValidSpec @ItemInfo
+  jsonSpec @ItemInfo
+  genValidSpec @Tickle
+  jsonSpec @Tickle
   genValidSpec @TypedTriggerInfo
   jsonSpec @TypedTriggerInfo
   genValidSpec @(TriggerInfo TypedTriggerInfo)

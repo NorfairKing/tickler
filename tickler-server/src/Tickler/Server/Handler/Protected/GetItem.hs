@@ -17,7 +17,7 @@ import Tickler.Server.Handler.Utils
 import Tickler.Server.Item
 import Tickler.Server.Types
 
-serveGetItem :: AuthCookie -> ItemUUID -> TicklerHandler TypedItemInfo
+serveGetItem :: AuthCookie -> ItemUUID -> TicklerHandler ItemInfo
 serveGetItem AuthCookie {..} id_ = do
   mIItem <- runDb $ getBy $ UniqueItemIdentifier id_
   case mIItem of

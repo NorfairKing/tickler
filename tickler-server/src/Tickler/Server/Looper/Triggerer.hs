@@ -53,7 +53,6 @@ makeTriggeredItem uuid now TicklerItem {..} =
   TriggeredItem
     { triggeredItemIdentifier = uuid,
       triggeredItemUserId = ticklerItemUserId,
-      triggeredItemType = ticklerItemType,
       triggeredItemContents = ticklerItemContents,
       triggeredItemCreated = ticklerItemCreated,
       triggeredItemScheduledDay = ticklerItemScheduledDay,

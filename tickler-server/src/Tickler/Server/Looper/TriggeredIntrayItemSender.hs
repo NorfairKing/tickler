@@ -77,9 +77,8 @@ sendTriggeredIntrayItem (Entity tii TriggeredIntrayItem {..}) = do
                               let token = Token $ setCookieValue session
                               let item =
                                     Intray.TypedItem
-                                      { Intray.itemType = case triggeredItemType of
-                                          TextItem -> Intray.TextItem,
-                                        Intray.itemData = triggeredItemContents
+                                      { Intray.itemType = Intray.TextItem,
+                                        Intray.itemData = TE.encodeUtf8 triggeredItemContents
                                       }
                               Right <$> Intray.clientPostAddItem token item
           case errOrUuid of

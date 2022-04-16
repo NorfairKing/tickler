@@ -25,7 +25,6 @@ import Tickler.Data.EmailAddress
 import Tickler.Data.EmailStatus
 import Tickler.Data.EmailVerificationKey
 import Tickler.Data.HashedPassword
-import Tickler.Data.ItemType
 import Tickler.Data.ItemUUID
 import Tickler.Data.Recurrence
 import Tickler.Data.Stripe ()
@@ -91,8 +90,7 @@ UserSettings
 TicklerItem
     identifier ItemUUID
     userId AccountUUID
-    type ItemType
-    contents ByteString
+    contents Text
     created UTCTime
 
     scheduledDay Day
@@ -112,8 +110,7 @@ TicklerItem
 TriggeredItem
     identifier ItemUUID
     userId AccountUUID
-    type ItemType
-    contents ByteString
+    contents Text
     created UTCTime
 
     scheduledDay Day
@@ -177,11 +174,11 @@ EmailTrigger
 
 
 VerificationEmail
-    to          EmailAddress
-    key         EmailVerificationKey
-    trigger     TriggerUUID
-    scheduled   UTCTime
-    email       EmailId      Maybe
+    to EmailAddress
+    key EmailVerificationKey
+    trigger TriggerUUID
+    scheduled UTCTime
+    email EmailId Maybe
 
     deriving Show
     deriving Eq
@@ -191,8 +188,8 @@ VerificationEmail
 
 
 AdminNotificationEmail
-    contents    Text
-    email       EmailId      Maybe
+    contents Text
+    email EmailId Maybe
 
     deriving Show
     deriving Eq
@@ -201,10 +198,10 @@ AdminNotificationEmail
     deriving Typeable
 
 TriggeredIntrayItem
-    item            ItemUUID
-    trigger         TriggerUUID
-    intrayItemUUID  Intray.ItemUUID        Maybe
-    error           Text                   Maybe
+    item ItemUUID
+    trigger TriggerUUID
+    intrayItemUUID Intray.ItemUUID Maybe
+    error Text Maybe
 
     UniqueTriggeredIntrayItem item trigger
 
@@ -216,10 +213,10 @@ TriggeredIntrayItem
 
 
 TriggeredEmail
-    item            ItemUUID
-    trigger         TriggerUUID
-    email           EmailId     Maybe
-    error           Text                   Maybe
+    item ItemUUID
+    trigger TriggerUUID
+    email EmailId Maybe
+    error Text Maybe
 
     UniqueTriggeredEmail item trigger
 
@@ -231,17 +228,17 @@ TriggeredEmail
 
 
 Email
-    to              EmailAddress
-    from            EmailAddress
-    fromName        Text
-    subject         Text
-    textContent     Text
-    htmlContent     Text
-    status          EmailStatus
-    sendError       Text         Maybe
-    sesId           Text         Maybe
-    scheduled       UTCTime
-    sendAttempt     UTCTime      Maybe
+    to EmailAddress
+    from EmailAddress
+    fromName Text
+    subject Text
+    textContent Text
+    htmlContent Text
+    status EmailStatus
+    sendError Text Maybe
+    sesId Text Maybe
+    scheduled UTCTime
+    sendAttempt UTCTime Maybe
 
     deriving Show
     deriving Eq

@@ -51,17 +51,17 @@ value:
         - state: TODO
           time: 2022-04-15 16:11:56
       - header: Get single
-        contents: GET /item/:uuid
+        contents: GET /item/:id
         state-history:
         - state: TODO
           time: 2022-04-15 16:15:30
       - header: 'Edit '
-        contents: PUT /item/:uuid
+        contents: PUT /item/:id
         state-history:
         - state: TODO
           time: 2022-04-15 16:15:44
       - header: Delete
-        contents: DELETE /item/:uuid
+        contents: DELETE /item/:id
         state-history:
         - state: TODO
           time: 2022-04-15 16:16:27

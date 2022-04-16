@@ -16,7 +16,7 @@ import Tickler.Server.Handler.Utils
 import Tickler.Server.Item
 import Tickler.Server.Types
 
-servePostAddItem :: AuthCookie -> AddItem -> TicklerHandler ItemUUID
+servePostAddItem :: AuthCookie -> Tickle -> TicklerHandler ItemUUID
 servePostAddItem AuthCookie {..} ti = do
   ups <- getUserPaidStatus authCookieUserUUID
   case ups of

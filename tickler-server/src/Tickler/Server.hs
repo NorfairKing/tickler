@@ -104,7 +104,7 @@ ticklerProtectedServer =
   TicklerProtectedSite
     { getItems = withAuthResult serveGetItems,
       postAddItem = withAuthResult servePostAddItem,
-      postItem = withAuthResult servePostItem,
+      putItem = withAuthResult servePutItem,
       getItem = withAuthResult serveGetItem,
       deleteItem = withAuthResult serveDeleteItem,
       getTriggers = withAuthResult serveGetTriggers,

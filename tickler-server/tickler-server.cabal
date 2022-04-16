@@ -54,8 +54,8 @@ library
       Tickler.Server.Handler.Protected.PostChangePassphrase
       Tickler.Server.Handler.Protected.PostEmailTriggerResendVerificationEmail
       Tickler.Server.Handler.Protected.PostEmailTriggerVerify
-      Tickler.Server.Handler.Protected.PostItem
       Tickler.Server.Handler.Protected.PutAccountSettings
+      Tickler.Server.Handler.Protected.PutItem
       Tickler.Server.Handler.Public
       Tickler.Server.Handler.Public.GetPricing
       Tickler.Server.Handler.Public.PostLogin

@@ -3,13 +3,7 @@
   <div .box>
     <div .box>
       <p .content>
-        $case typedItemCase $ tickleContent itemInfoContents
-          $of Left err
-            Invalid item: #{err}
-          $of Right i
-            $case i 
-              $of CaseTextItem t
-                #{Textarea t}
+        #{tickleContent itemInfoContents}
 
 
 
