@@ -21,7 +21,7 @@ import Tickler.API
 clientGetItems :: Token -> ClientM [ItemInfo]
 clientPostAddItem :: Token -> Tickle -> ClientM ItemUUID
 clientGetItem :: Token -> ItemUUID -> ClientM ItemInfo
-clientPostItem :: Token -> ItemUUID -> Tickle -> ClientM NoContent
+clientPutItem :: Token -> ItemUUID -> Tickle -> ClientM NoContent
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
 clientGetTriggers :: Token -> ClientM [TriggerInfo TypedTriggerInfo]
 clientGetTrigger :: Token -> TriggerUUID -> ClientM (TriggerInfo TypedTriggerInfo)
@@ -41,5 +41,5 @@ clientGetPricing :: ClientM (Maybe Pricing)
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientPostItem :<|> clientDeleteItem :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientPostEmailTriggerVerify :<|> clientPostEmailTriggerResendVerificationEmail :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPostChangePassphrase :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetPricing :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientPutItem :<|> clientDeleteItem :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientPostEmailTriggerVerify :<|> clientPostEmailTriggerResendVerificationEmail :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPostChangePassphrase :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetPricing :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
   client (flatten ticklerAPI)

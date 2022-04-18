@@ -15,6 +15,9 @@ module Tickler.Web.Server.TestUtils
     withAdminAccount_,
     withAdminAccountAndLogin,
     withAdminAccountAndLogin_,
+    withFreshAccount,
+    loginTo,
+    logout,
     addItem,
     addItemRequestBuilder,
     editItem,
@@ -88,8 +91,18 @@ loginTo username passphrase = do
   loc <- getLocation
   liftIO $ loc `shouldBe` Right AddR
 
+logout :: YesodExample App ()
+logout = do
+  request $ do
+    setMethod methodPost
+    setUrl $ AuthR LogoutR
+    addTokenFromCookie
+  statusIs 303
+  _ <- followRedirect
+  statusIs 200
+
 withFreshAccount ::
-  Username -> Text -> (Username -> Text -> YesodExample App a) -> YesodExample App a
+  Username -> Text -> YesodExample App a -> YesodExample App a
 withFreshAccount exampleUsername examplePassphrase func = do
   get $ AuthR registerR
   statusIs 200
@@ -103,10 +116,15 @@ withFreshAccount exampleUsername examplePassphrase func = do
   statusIs 303
   loc <- getLocation
   liftIO $ loc `shouldBe` Right AddR
-  func exampleUsername examplePassphrase
+  result <- func
+  logout
+  pure result
 
 withExampleAccount :: (Username -> Text -> YesodExample App a) -> YesodExample App a
-withExampleAccount = withFreshAccount (fromJust $ parseUsername "example") "pass"
+withExampleAccount func = do
+  let un = fromJust $ parseUsername "example"
+      pw = "pass"
+  withFreshAccount un pw $ func un pw
 
 withExampleAccountAndLogin :: (Username -> Text -> YesodExample App a) -> YesodExample App a
 withExampleAccountAndLogin func =
@@ -121,7 +139,10 @@ withExampleAccountAndLogin_ :: YesodExample App a -> YesodExample App a
 withExampleAccountAndLogin_ = withExampleAccountAndLogin . const . const
 
 withAdminAccount :: (Username -> Text -> YesodExample App a) -> YesodExample App a
-withAdminAccount = withFreshAccount (fromJust $ parseUsername "admin") "admin"
+withAdminAccount func = do
+  let un = fromJust $ parseUsername "admin"
+      pw = "admin"
+  withFreshAccount un pw $ func un pw
 
 withAdminAccount_ :: YesodExample App a -> YesodExample App a
 withAdminAccount_ = withAdminAccount . const . const

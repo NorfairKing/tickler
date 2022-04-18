@@ -21,7 +21,16 @@ spec =
             get $ EditR uuid
             statusIs 200
 
-    pending "gets a 404 for a another user's item"
+    it "gets a 404 for a another user's item" $ \yc ->
+      forAllValid $ \un1 ->
+        forAllValid $ \un2 ->
+          forAllValid $ \item ->
+            runYesodClientM yc $ do
+              uuid <- withFreshAccount un1 "pw1" $ do
+                addItem item
+              withFreshAccount un2 "pw2" $ do
+                get $ EditR uuid
+                statusIs 404
 
     it "can edit an item" $ \yc ->
       forAllValid $ \initialItem ->
@@ -31,4 +40,14 @@ spec =
               uuid <- addItem initialItem
               editItem uuid editedItem
 
-    pending "cannot edit another user's item"
+    it "connot edit another user's item" $ \yc ->
+      forAllValid $ \un1 ->
+        forAllValid $ \un2 ->
+          forAllValid $ \initialItem ->
+            forAllValid $ \editedItem ->
+              runYesodClientM yc $ do
+                uuid <- withFreshAccount un1 "pw1" $ do
+                  addItem initialItem
+                withFreshAccount un2 "pw2" $ do
+                  request $ editItemRequestBuilder uuid editedItem
+                  statusIs 404
