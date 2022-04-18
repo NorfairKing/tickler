@@ -16,6 +16,9 @@ module Tickler.Web.Server.TestUtils
     withAdminAccountAndLogin,
     withAdminAccountAndLogin_,
     addItem,
+    addItemRequestBuilder,
+    editItem,
+    editItemRequestBuilder,
   )
 where
 
@@ -132,21 +135,49 @@ withAdminAccountAndLogin func =
 withAdminAccountAndLogin_ :: YesodExample App a -> YesodExample App a
 withAdminAccountAndLogin_ = withAdminAccountAndLogin . const . const
 
-addItem :: Tickle -> YesodExample App ()
+addItem :: Tickle -> YesodExample App ItemUUID
 addItem tickle = do
   get AddR
   statusIs 200
-  request $ do
-    addItemRequestBuilder tickle
+  request $ addItemRequestBuilder tickle
   statusIs 303
-  locationShouldBe AddR
+  errOrLoc <- getLocation
+  case errOrLoc of
+    Right (EditR uuid) -> do
+      _ <- followRedirect
+      statusIs 200
+      pure uuid
+    route -> do
+      liftIO $
+        expectationFailure $
+          unwords
+            [ "Should have redirected to the edit page, but redirected here instead: ",
+              show route
+            ]
+
+addItemRequestBuilder :: Tickle -> RequestBuilder App ()
+addItemRequestBuilder tickle = do
+  setUrl AddR
+  tickleRequestBuilder tickle
+
+editItem :: ItemUUID -> Tickle -> YesodExample App ()
+editItem uuid tickle = do
+  get AddR
+  statusIs 200
+  request $ editItemRequestBuilder uuid tickle
+  statusIs 303
+  locationShouldBe (EditR uuid)
   _ <- followRedirect
   statusIs 200
 
-addItemRequestBuilder :: Tickle -> RequestBuilder App ()
-addItemRequestBuilder Tickle {..} = do
+editItemRequestBuilder :: ItemUUID -> Tickle -> RequestBuilder App ()
+editItemRequestBuilder uuid tickle = do
+  setUrl $ EditR uuid
+  tickleRequestBuilder tickle
+
+tickleRequestBuilder :: Tickle -> RequestBuilder App ()
+tickleRequestBuilder Tickle {..} = do
   setMethod methodPost
-  setUrl AddR
   addTokenFromCookie
   addPostParam "contents" tickleContent
   addPostParam "scheduled-day" $ T.pack $ formatTime defaultTimeLocale "%F" tickleScheduledDay

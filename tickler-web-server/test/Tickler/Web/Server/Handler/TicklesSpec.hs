@@ -4,38 +4,26 @@ module Tickler.Web.Server.Handler.TicklesSpec where
 
 import Test.Syd.Yesod
 import TestImport
+import Tickler.Client
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.TestUtils
 
 spec :: Spec
-spec = ticklerWebServerSpec $
-  describe "Tickles" $ do
-    it "gets a 200 for a logged-in user" $
-      withExampleAccountAndLogin_ $ do
-        get TicklesR
-        statusIs 200
-
-    it "gets a 200 for a logged-in user when there are tickles" $
-      withExampleAccountAndLogin_ $ do
-        get AddR
-        statusIs 200
-        replicateM_ 2 $ do
-          request $ do
-            setMethod methodPost
-            setUrl AddR
-            addTokenFromCookie
-            addPostParam "contents" "hello"
-            addPostParam "scheduled-day" "2200-12-03"
-            addPostParam "scheduled-time" ""
-            addPostParam "recurrence" "NoRecurrence"
-            addPostParam "days" ""
-            addPostParam "day-time-of-day" ""
-            addPostParam "months" ""
-            addPostParam "day" ""
-            addPostParam "month-time-of-day" ""
-          statusIs 303
-          locationShouldBe AddR
-          _ <- followRedirect
+spec = do
+  ticklerWebServerSpec $
+    describe "Tickles" $ do
+      it "gets a 200 for a logged-in user" $
+        withExampleAccountAndLogin_ $ do
+          get TicklesR
           statusIs 200
-        get TicklesR
-        statusIs 200
+
+  freeTicklerWebServerSpec $
+    it "gets a 200 for a logged-in user when there are tickles" $ \yc ->
+      forAllValid $ \items ->
+        runYesodClientM yc $
+          withExampleAccountAndLogin_ $ do
+            get AddR
+            statusIs 200
+            mapM_ addItem (items :: [Tickle])
+            get TicklesR
+            statusIs 200

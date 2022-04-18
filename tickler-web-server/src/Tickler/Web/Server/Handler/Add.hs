@@ -1,4 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -35,9 +34,10 @@ postAddR =
         handleStandardServantErrs err $ \resp ->
           case responseStatusCode resp of
             c
-              | c == Http.paymentRequired402 ->
-                addNegativeMessage
+              | c == Http.paymentRequired402 -> do
+                sendResponseStatus
+                  Http.status402
                   "You have reached the limit of the free plan, subscribe to be able to add more items. Click 'Account' to get started."
-              | otherwise -> sendResponseStatus Http.status500 $ show resp
-      Right _ -> pure ()
-    redirect AddR
+              | otherwise ->
+                sendResponseStatus Http.status500 $ show resp
+      Right uuid -> redirect $ EditR uuid

@@ -50,8 +50,8 @@ import Web.Stripe.Plan as Stripe
 
 withTicklerServer :: TestDef '[HTTP.Manager] ClientEnv -> Spec
 withTicklerServer specFunc = do
-  describe "Free" $ withPaidTicklerServer_ specFunc
-  describe "Paid" $ withFreeTicklerServer specFunc
+  describe "Free" $ withFreeTicklerServer specFunc
+  describe "Paid" $ withPaidTicklerServer_ specFunc
 
 withPaidTicklerServer_ :: TestDef '[HTTP.Manager] ClientEnv -> Spec
 withPaidTicklerServer_ = withPaidTicklerServer 5

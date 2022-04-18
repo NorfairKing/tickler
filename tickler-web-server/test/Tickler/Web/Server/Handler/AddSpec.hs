@@ -72,8 +72,8 @@ spec = do
                 get AddR
                 statusIs 200
                 mapM_ addItem items
-                addItem extraItem
-                statusIs 200
+                request $ addItemRequestBuilder extraItem
+                statusIs 402
                 bodyContains "limit"
 
     freeTicklerWebServerSpec $ do

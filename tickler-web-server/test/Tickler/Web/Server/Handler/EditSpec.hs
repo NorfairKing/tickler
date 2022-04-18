@@ -15,5 +15,11 @@ spec =
   ticklerWebServerSpec $ do
     pending "gets a 200 for a logged-in user's item"
     pending "gets a 404 for a another user's item"
-    pending "can edit an item"
+    it "can edit an item" $ \yc ->
+      forAllValid $ \initialItem ->
+        forAllValid $ \editedItem ->
+          runYesodClientM yc $
+            withExampleAccountAndLogin_ $ do
+              uuid <- addItem initialItem
+              editItem uuid editedItem
     pending "cannot edit another user's item"
