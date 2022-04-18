@@ -3,11 +3,9 @@
 module Tickler.Web.Server.Handler.AddSpec where
 
 import Data.Time
-import Network.HTTP.Types
 import Test.Syd.Yesod
 import TestImport
 import Tickler.Client
-import Tickler.Data
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.Handler.Item
 import Tickler.Web.Server.TestUtils
@@ -17,7 +15,7 @@ spec = do
   describe "mkRecurrence" $ do
     it "works for multiple days" $
       forAllValid $ \(days, todd) ->
-        forAllValid $ \(months, day, todm) ->
+        forAllValid $ \(ms, day, todm) ->
           case everyDaysAtTime days todd of
             Nothing -> pure ()
             Just _ ->
@@ -26,16 +24,16 @@ spec = do
                   { recurrenceDataOption = Days,
                     recurrenceDataDays = Just days,
                     recurrenceDataDayTimeOfDay = todd,
-                    recurrenceDataMonths = months,
+                    recurrenceDataMonths = ms,
                     recurrenceDataMonthDay = day,
                     recurrenceDataMonthTimeOfDay = todm
                   }
                 `shouldBe` Just (Just (EveryDaysAtTime days todd))
 
     it "works for multiple months" $
-      forAllValid $ \(months, day, todm) ->
+      forAllValid $ \(ms, day, todm) ->
         forAllValid $ \(days, todd) ->
-          case everyMonthsOnDayAtTime months day todm of
+          case everyMonthsOnDayAtTime ms day todm of
             Nothing -> pure ()
             Just _ ->
               mkRecurrence
@@ -43,11 +41,11 @@ spec = do
                   { recurrenceDataOption = Months,
                     recurrenceDataDays = days,
                     recurrenceDataDayTimeOfDay = todd,
-                    recurrenceDataMonths = Just months,
+                    recurrenceDataMonths = Just ms,
                     recurrenceDataMonthDay = day,
                     recurrenceDataMonthTimeOfDay = todm
                   }
-                `shouldBe` Just (Just (EveryMonthsOnDay months day todm))
+                `shouldBe` Just (Just (EveryMonthsOnDay ms day todm))
 
     it "works for this example of multiple months" $
       mkRecurrence
@@ -94,43 +92,46 @@ spec = do
 
       it "can post an example item without recurrence" $
         withExampleAccountAndLogin_ $ do
-          addItem $
-            Tickle
-              { tickleContent = "hello",
-                tickleScheduledDay = fromGregorian 2200 12 03,
-                tickleScheduledTime = Nothing,
-                tickleRecurrence = Nothing
-              }
+          _ <-
+            addItem $
+              Tickle
+                { tickleContent = "hello",
+                  tickleScheduledDay = fromGregorian 2200 12 03,
+                  tickleScheduledTime = Nothing,
+                  tickleRecurrence = Nothing
+                }
           statusIs 200
 
       it "can post an example item with daily recurrence" $
         withExampleAccountAndLogin_ $ do
-          addItem $
-            Tickle
-              { tickleContent = "hello world",
-                tickleScheduledDay = fromGregorian 2200 12 04,
-                tickleScheduledTime = Nothing,
-                tickleRecurrence =
-                  Just $
-                    EveryDaysAtTime 5 (Just (TimeOfDay 12 34 00))
-              }
+          _ <-
+            addItem $
+              Tickle
+                { tickleContent = "hello world",
+                  tickleScheduledDay = fromGregorian 2200 12 04,
+                  tickleScheduledTime = Nothing,
+                  tickleRecurrence =
+                    Just $
+                      EveryDaysAtTime 5 (Just (TimeOfDay 12 34 00))
+                }
           statusIs 200
 
       it "can post an example item with monthly recurrence" $
         withExampleAccountAndLogin_ $ do
-          addItem $
-            Tickle
-              { tickleContent = "hello world",
-                tickleScheduledDay = fromGregorian 2200 12 04,
-                tickleScheduledTime = Nothing,
-                tickleRecurrence =
-                  Just $
-                    EveryMonthsOnDay 6 (Just 15) (Just (TimeOfDay 23 45 00))
-              }
+          _ <-
+            addItem $
+              Tickle
+                { tickleContent = "hello world",
+                  tickleScheduledDay = fromGregorian 2200 12 04,
+                  tickleScheduledTime = Nothing,
+                  tickleRecurrence =
+                    Just $
+                      EveryMonthsOnDay 6 (Just 15) (Just (TimeOfDay 23 45 00))
+                }
           statusIs 200
 
       it "can post any item" $ \yc ->
         forAllValid $ \item -> runYesodClientM yc $
           withExampleAccountAndLogin_ $ do
-            addItem item
+            _ <- addItem item
             statusIs 200

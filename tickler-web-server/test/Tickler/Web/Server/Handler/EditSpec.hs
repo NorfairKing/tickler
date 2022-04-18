@@ -2,12 +2,9 @@
 
 module Tickler.Web.Server.Handler.EditSpec where
 
-import Network.HTTP.Types
 import Test.Syd.Yesod
 import TestImport
-import Tickler.Data
 import Tickler.Web.Server.Foundation
-import Tickler.Web.Server.Handler.Item
 import Tickler.Web.Server.TestUtils
 
 spec :: Spec

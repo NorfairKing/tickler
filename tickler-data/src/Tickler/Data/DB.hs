@@ -98,7 +98,7 @@ TicklerItem
 
     recurrence Recurrence Maybe
 
-    UniqueItemIdentifier identifier
+    UniqueItemIdentifier userId identifier
 
     deriving Show
     deriving Eq

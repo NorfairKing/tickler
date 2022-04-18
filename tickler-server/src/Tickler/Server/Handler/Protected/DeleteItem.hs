@@ -17,6 +17,6 @@ import Tickler.Server.Types
 
 serveDeleteItem :: AuthCookie -> ItemUUID -> TicklerHandler NoContent
 serveDeleteItem AuthCookie {..} id_ = do
-  runDb . deleteBy $ UniqueItemIdentifier id_
+  runDb . deleteBy $ UniqueItemIdentifier authCookieUserUUID id_
   runDb . deleteBy $ UniqueTriggeredItemIdentifier id_
   pure NoContent

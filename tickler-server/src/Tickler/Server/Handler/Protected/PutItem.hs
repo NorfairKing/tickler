@@ -18,19 +18,16 @@ servePutItem ::
   Tickle ->
   TicklerHandler NoContent
 servePutItem AuthCookie {..} uuid Tickle {..} = do
-  mI <- runDb $ getBy (UniqueItemIdentifier uuid)
+  mI <- runDb $ getBy (UniqueItemIdentifier authCookieUserUUID uuid)
   case mI of
     Nothing -> throwError err404
-    Just (Entity i TicklerItem {..}) ->
-      if ticklerItemUserId == authCookieUserUUID
-        then do
-          runDb $
-            update
-              i
-              [ TicklerItemContents =. tickleContent,
-                TicklerItemScheduledDay =. tickleScheduledDay,
-                TicklerItemScheduledTime =. tickleScheduledTime,
-                TicklerItemRecurrence =. tickleRecurrence
-              ]
-          pure NoContent
-        else throwError err404
+    Just (Entity i TicklerItem {..}) -> do
+      runDb $
+        update
+          i
+          [ TicklerItemContents =. tickleContent,
+            TicklerItemScheduledDay =. tickleScheduledDay,
+            TicklerItemScheduledTime =. tickleScheduledTime,
+            TicklerItemRecurrence =. tickleRecurrence
+          ]
+      pure NoContent

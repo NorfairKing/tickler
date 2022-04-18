@@ -22,7 +22,7 @@ getEditR uuid =
         handleStandardServantErrs err $ \resp ->
           case responseStatusCode resp of
             c
-              | c == Http.unauthorized401 -> notFound
+              | c == Http.notFound404 -> notFound
               | otherwise -> sendResponseStatus Http.status500 $ show resp
       Right ii -> do
         w <- makeEditItemFormWidget (Just (uuid, ii))
@@ -39,6 +39,6 @@ postEditR uuid =
         handleStandardServantErrs err $ \resp ->
           case responseStatusCode resp of
             c
-              | c == Http.unauthorized401 -> notFound
+              | c == Http.notFound404 -> notFound
               | otherwise -> sendResponseStatus Http.status500 $ show resp
       Right NoContent -> redirect $ EditR uuid
