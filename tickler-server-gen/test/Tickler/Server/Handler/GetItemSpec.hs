@@ -21,14 +21,14 @@ spec =
       forAllValid $ \ti ->
         withValidNewUser cenv $ \token -> do
           i <- runClientOrError cenv $ do
-            uuid <- clientPostAddItem token ti
+            uuid <- clientPostItem token ti
             clientGetItem token uuid
           itemInfoContents i `shouldBe` ti
     it "fails to get another user's item" $ \cenv ->
       forAllValid $ \ti ->
         withValidNewUser cenv $ \token1 -> do
           withValidNewUser cenv $ \token2 -> do
-            uuid <- runClientOrError cenv $ clientPostAddItem token1 ti
+            uuid <- runClientOrError cenv $ clientPostItem token1 ti
             errOrRes <- runClient cenv $ clientGetItem token2 uuid
             case errOrRes of
               Left err ->

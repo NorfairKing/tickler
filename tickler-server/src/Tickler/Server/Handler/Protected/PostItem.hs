@@ -3,7 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Tickler.Server.Handler.Protected.PostAddItem (servePostAddItem) where
+module Tickler.Server.Handler.Protected.PostItem (servePostItem) where
 
 import Data.Time
 import Data.UUID.Typed
@@ -16,8 +16,8 @@ import Tickler.Server.Handler.Utils
 import Tickler.Server.Item
 import Tickler.Server.Types
 
-servePostAddItem :: AuthCookie -> Tickle -> TicklerHandler ItemUUID
-servePostAddItem AuthCookie {..} ti = do
+servePostItem :: AuthCookie -> Tickle -> TicklerHandler ItemUUID
+servePostItem AuthCookie {..} ti = do
   ups <- getUserPaidStatus authCookieUserUUID
   case ups of
     HasNotPaid i ->

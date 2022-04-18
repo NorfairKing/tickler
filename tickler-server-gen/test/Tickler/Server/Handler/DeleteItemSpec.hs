@@ -20,7 +20,7 @@ spec =
             withValidNewUser cenv $ \token -> do
               errOrItem <-
                 runClient cenv $ do
-                  uuid <- clientPostAddItem token t
+                  uuid <- clientPostItem token t
                   void $ clientDeleteItem token uuid
                   clientGetItem token uuid
               case errOrItem of

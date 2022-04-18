@@ -55,11 +55,15 @@ value:
       - header: Get single
         contents: GET /item/:id
         state-history:
+        - state: DONE
+          time: 2022-04-18 22:27:23
         - state: TODO
           time: 2022-04-15 16:15:30
       - header: 'Edit '
         contents: PUT /item/:id
         state-history:
+        - state: DONE
+          time: 2022-04-18 22:27:24
         - state: TODO
           time: 2022-04-15 16:15:44
       - header: Delete
@@ -116,8 +120,15 @@ value:
       - header: Edit
         contents: EditR
         state-history:
+        - state: DONE
+          time: 2022-04-18 22:27:25
         - state: TODO
           time: 2022-04-15 16:20:43
+      - header: Delete
+        contents: DeleteR
+        state-history:
+        - state: TODO
+          time: 2022-04-18 22:27:28
     - entry:
         header: Triggers
         state-history:

@@ -87,8 +87,8 @@ test-suite tickler-server-test
       Tickler.Server.Handler.ListItemsSpec
       Tickler.Server.Handler.PostAddEmailTriggerSpec
       Tickler.Server.Handler.PostAddIntrayTriggerSpec
-      Tickler.Server.Handler.PostAddItemSpec
       Tickler.Server.Handler.PostChangePassphraseSpec
+      Tickler.Server.Handler.PostItemSpec
       Tickler.Server.Handler.PostLoginSpec
       Tickler.Server.Handler.PostRegisterSpec
       Tickler.Server.Handler.PutAccountSettingsSpec

@@ -20,14 +20,14 @@ spec =
       it "it lists items that were just added" $ \cenv ->
         forAllValid $ \items ->
           withValidNewUser cenv $ \token -> do
-            uuids <- runClientOrError cenv $ mapM (clientPostAddItem token) items
+            uuids <- runClientOrError cenv $ mapM (clientPostItem token) items
             items' <- runClientOrError cenv $ clientGetItems token
             map itemInfoIdentifier items' `shouldContain` uuids
 
       it "it always lists valid items" $ \cenv ->
         forAllValid $ \items ->
           withValidNewUser cenv $ \token -> do
-            void $ runClientOrError cenv $ mapM (clientPostAddItem token) (items :: [Tickle])
+            void $ runClientOrError cenv $ mapM (clientPostItem token) (items :: [Tickle])
             is <- runClientOrError cenv $ clientGetItems token
             shouldBeValid is
 
@@ -36,8 +36,8 @@ spec =
           forAllValid $ \items2 ->
             withValidNewUser cenv $ \token1 ->
               withValidNewUser cenv $ \token2 -> do
-                uuids1 <- runClientOrError cenv $ mapM (clientPostAddItem token1) items1
-                uuids2 <- runClientOrError cenv $ mapM (clientPostAddItem token2) items2
+                uuids1 <- runClientOrError cenv $ mapM (clientPostItem token1) items1
+                uuids2 <- runClientOrError cenv $ mapM (clientPostItem token2) items2
                 items' <- runClientOrError cenv $ clientGetItems token1
                 map itemInfoIdentifier items' `shouldContain` uuids1
                 forM_ (uuids2 :: [ItemUUID]) $ \u ->

@@ -28,7 +28,7 @@ postAddR =
   withLogin $ \t -> do
     AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
     tickle <- handleEditItemForm
-    errOrRes <- runClient $ clientPostAddItem t tickle
+    errOrRes <- runClient $ clientPostItem t tickle
     case errOrRes of
       Left err ->
         handleStandardServantErrs err $ \resp ->

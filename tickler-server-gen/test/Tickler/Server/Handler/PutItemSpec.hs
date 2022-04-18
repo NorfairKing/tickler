@@ -20,7 +20,7 @@ spec = withTicklerServer $ do
       forAllValid $ \editedItem ->
         withValidNewUser cenv $ \token -> do
           runClientOrError cenv $ do
-            uuid <- clientPostAddItem token initialItem
+            uuid <- clientPostItem token initialItem
             NoContent <- clientPutItem token uuid editedItem
             item <- clientGetItem token uuid
             liftIO $ itemInfoContents item `shouldBe` editedItem
@@ -31,7 +31,7 @@ spec = withTicklerServer $ do
         withValidNewUser cenv $ \token1 -> do
           withValidNewUser cenv $ \token2 -> do
             errOrRes <- runClient cenv $ do
-              uuid <- clientPostAddItem token1 initialItem
+              uuid <- clientPostItem token1 initialItem
               clientPutItem token2 uuid editedItem
             case errOrRes of
               Left err ->
