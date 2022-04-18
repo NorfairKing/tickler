@@ -13,8 +13,16 @@ import Tickler.Web.Server.TestUtils
 spec :: Spec
 spec =
   ticklerWebServerSpec $ do
-    pending "gets a 200 for a logged-in user's item"
+    it "gets a 200 for a logged-in user's item" $ \yc ->
+      forAllValid $ \item ->
+        runYesodClientM yc $
+          withExampleAccountAndLogin_ $ do
+            uuid <- addItem item
+            get $ EditR uuid
+            statusIs 200
+
     pending "gets a 404 for a another user's item"
+
     it "can edit an item" $ \yc ->
       forAllValid $ \initialItem ->
         forAllValid $ \editedItem ->
@@ -22,4 +30,5 @@ spec =
             withExampleAccountAndLogin_ $ do
               uuid <- addItem initialItem
               editItem uuid editedItem
+
     pending "cannot edit another user's item"
