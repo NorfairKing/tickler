@@ -20,7 +20,7 @@ servePutItem ::
 servePutItem AuthCookie {..} uuid Tickle {..} = do
   mI <- runDb $ getBy (UniqueItemIdentifier uuid)
   case mI of
-    Nothing -> throwError $ err404 {errBody = "Item not found."}
+    Nothing -> throwError err404
     Just (Entity i TicklerItem {..}) ->
       if ticklerItemUserId == authCookieUserUUID
         then do
@@ -33,4 +33,4 @@ servePutItem AuthCookie {..} uuid Tickle {..} = do
                 TicklerItemRecurrence =. tickleRecurrence
               ]
           pure NoContent
-        else throwError $ err401 {errBody = "You are not allowed to edit this item."}
+        else throwError err404
