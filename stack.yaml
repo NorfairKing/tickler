@@ -112,13 +112,17 @@ extra-deps:
     - looper
 
 - github: NorfairKing/sydtest
-  commit: e75c55b920936e344b779093b2a0318fb35d1770
+  commit: aac96e2e520a4fca97bccd3403721dc0036b026f
   subdirs:
   - sydtest
   - sydtest-discover
   - sydtest-persistent
   - sydtest-persistent-sqlite
+  - sydtest-typed-process
   - sydtest-wai
+  - sydtest-webdriver
+  - sydtest-webdriver-screenshot
+  - sydtest-webdriver-yesod
   - sydtest-yesod
 
 - github: NorfairKing/autodocodec

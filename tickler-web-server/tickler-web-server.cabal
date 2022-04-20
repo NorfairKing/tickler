@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.6.
+-- This file has been generated from package.yaml by hpack version 0.34.7.
 --
 -- see: https://github.com/sol/hpack
 
@@ -182,4 +182,24 @@ test-suite tickler-web-server-test
     , time
     , typed-uuid
     , yesod-auth
+  default-language: Haskell2010
+
+test-suite tickler-web-server-webdriver-test
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Spec
+      Tickler.Web.Server.TestUtils.Webdriver
+      Paths_tickler_web_server
+  hs-source-dirs:
+      webdriver-test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends:
+      sydtest-discover:sydtest-discover
+  build-depends:
+      base >=4.9 && <5
+    , sydtest
+    , sydtest-webdriver
+    , sydtest-webdriver-yesod
+    , tickler-web-server
   default-language: Haskell2010

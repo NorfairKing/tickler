@@ -8,6 +8,9 @@ extra-source-files:
 - static/*.svg
 - templates/**/*
 
+dependencies:
+- base >= 4.9 && < 5
+
 library:
   source-dirs: src
   ghc-options: -Wall
@@ -18,7 +21,6 @@ library:
   - aeson-pretty
   - autodocodec
   - autodocodec-yaml
-  - base >=4.9 && <5
   - base16-bytestring
   - bytestring
   - cookie
@@ -66,7 +68,6 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - base >=4.9 && <5
     - tickler-web-server
 
 tests:
@@ -80,7 +81,6 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - QuickCheck
-    - base >=4.9 && <5
     - genvalidity-sydtest
     - http-client
     - http-types
@@ -101,3 +101,17 @@ tests:
     - time
     - typed-uuid
     - yesod-auth
+
+  tickler-web-server-webdriver-test:
+    main: Main.hs
+    source-dirs: webdriver-test
+    build-tools: sydtest-discover
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - sydtest
+    - sydtest-webdriver
+    - sydtest-webdriver-yesod
+    - tickler-web-server
