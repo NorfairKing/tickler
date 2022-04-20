@@ -7,8 +7,11 @@ pkgs.haskell.lib.buildStackProject {
   name = "tickler-shell";
   buildInputs = with pkgs; [
     (import sources.niv { }).niv
+    chromedriver
+    chromium
     haskellPackages.autoexporter
     killall
+    selenium-server-standalone
     unzip
     zlib
   ] ++ pre-commit.tools;

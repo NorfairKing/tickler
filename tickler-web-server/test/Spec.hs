@@ -1,1 +1,2 @@
-{-# OPTIONS_GHC -F -pgmF sydtest-discover #-}
+main :: IO ()
+main = pure ()

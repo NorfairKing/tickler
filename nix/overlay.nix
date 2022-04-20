@@ -80,6 +80,7 @@ with final.haskell.lib;
               '';
           }
         );
+      "tickler-web-server-gen" = ticklerPkg "tickler-web-server-gen";
     };
 
   ticklerReleasePackages = mapAttrs

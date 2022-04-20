@@ -1,0 +1,81 @@
+name:    tickler-web-server-gen
+version: "0.0.0.0"
+
+dependencies:
+- base >= 4.9 && < 5
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  dependencies:
+    - QuickCheck
+    - genvalidity-sydtest
+    - http-client
+    - http-types
+    - mtl
+    - path
+    - path-io
+    - pretty-show
+    - servant-client
+    - sydtest
+    - sydtest-yesod
+    - text
+    - tickler-client
+    - tickler-data
+    - tickler-data-gen
+    - tickler-server
+    - tickler-server-gen
+    - tickler-web-server
+    - time
+    - typed-uuid
+    - yesod-auth
+
+
+tests:
+  tickler-web-server-test:
+    main: Spec.hs
+    source-dirs: test
+    build-tools: sydtest-discover
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - QuickCheck
+    - genvalidity-sydtest
+    - http-client
+    - http-types
+    - mtl
+    - path
+    - path-io
+    - pretty-show
+    - servant-client
+    - sydtest
+    - sydtest-yesod
+    - text
+    - tickler-client
+    - tickler-data
+    - tickler-data-gen
+    - tickler-server
+    - tickler-server-gen
+    - tickler-web-server
+    - tickler-web-server-gen
+    - time
+    - typed-uuid
+    - yesod-auth
+
+  tickler-web-server-webdriver-test:
+    main: Main.hs
+    source-dirs: webdriver-test
+    build-tools: sydtest-discover
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - sydtest
+    - sydtest-webdriver
+    - sydtest-webdriver-yesod
+    - tickler-server-gen
+    - tickler-web-server
+    - tickler-web-server-gen

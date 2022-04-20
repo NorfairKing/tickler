@@ -7,6 +7,7 @@ module Tickler.Web.Server.TestUtils
   ( ticklerWebServerSpec,
     freeTicklerWebServerSpec,
     paidTicklerWebServerSpec,
+    appSetupFunc,
     withExampleAccount,
     withExampleAccount_,
     withExampleAccountAndLogin,
@@ -25,11 +26,14 @@ module Tickler.Web.Server.TestUtils
   )
 where
 
+import Control.Monad
+import Data.Maybe
+import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Time
 import qualified Network.HTTP.Client as HTTP
+import Test.Syd
 import Test.Syd.Yesod
-import TestImport
 import Tickler.Client
 import Tickler.Data.Gen ()
 import qualified Tickler.Server.TestUtils as API
