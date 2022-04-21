@@ -15,5 +15,5 @@ pkgs.haskell.lib.buildStackProject {
     unzip
     zlib
   ] ++ pre-commit.tools;
-  shellHook = pre-commit.run.shellHook;
+  shellHook = pre-commit.run.shellHook + pkgs.haskellPackages.sydtest-webdriver.setupFontsConfigScript;
 }

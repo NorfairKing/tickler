@@ -81,13 +81,7 @@ with final.haskell.lib;
           }
         );
       "tickler-web-server-gen" = ticklerPkg "tickler-web-server-gen";
-      "tickler-web-server-webdriver" = overrideCabal (ticklerPkg "tickler-web-server-webdriver") (old: {
-        testDepends = (old.testDepends or [ ]) ++ (with final; [
-          chromedriver
-          chromium
-          selenium-server-standalone
-        ]);
-      });
+      "tickler-web-server-webdriver" = final.haskellPackages.sydtest-webdriver.enableWebdriver (ticklerPkg "tickler-web-server-webdriver");
     };
 
   ticklerReleasePackages = mapAttrs
