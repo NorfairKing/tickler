@@ -89,7 +89,7 @@ loginTo username passphrase = do
     setMethod methodPost
     setUrl $ AuthR loginFormPostTargetR
     addTokenFromCookie
-    addPostParam "userkey" $ usernameText username
+    addPostParam "username" $ usernameText username
     addPostParam "passphrase" passphrase
   statusIs 303
   loc <- getLocation

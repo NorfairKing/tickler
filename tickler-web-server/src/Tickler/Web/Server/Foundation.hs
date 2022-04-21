@@ -133,7 +133,7 @@ ticklerAuthPlugin = AuthPlugin ticklerAuthPluginName dispatch loginWidget
       $(widgetFile "auth/login")
 
 data LoginData = LoginData
-  { loginUserkey :: Text,
+  { loginUsername :: Text,
     loginPassword :: Text
   }
   deriving (Show)
@@ -149,8 +149,8 @@ postLoginR = do
     case result of
       FormMissing -> invalidArgs ["Form is missing"]
       FormFailure _ -> return $ Left Msg.InvalidLogin
-      FormSuccess (LoginData ukey pwd) ->
-        case parseUsername ukey of
+      FormSuccess (LoginData name pwd) ->
+        case parseUsername name of
           Nothing -> pure $ Left Msg.InvalidUsernamePass
           Just un -> do
             liftHandler $ login LoginForm {loginFormUsername = un, loginFormPassword = pwd}

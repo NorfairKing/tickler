@@ -8,5 +8,15 @@ spec :: WebdriverSpec App
 spec = do
   it "can register a dummy user" $ do
     openRoute HomeR
-    username <- liftIO $ parseUsername "dummy"
-    driveRegister username "password"
+    driveRegister dummyUser
+
+  it "can logout a dummy user" $ do
+    openRoute HomeR
+    driveRegister dummyUser
+    driveLogout
+
+  it "can login a dummy user" $ do
+    openRoute HomeR
+    driveRegister dummyUser
+    driveLogout
+    driveLogin dummyUser

@@ -60,7 +60,7 @@ spec = ticklerWebServerSpec $ do
         setMethod methodPost
         setUrl $ AuthR loginFormPostTargetR
         addTokenFromCookie
-        addPostParam "userkey" "example"
+        addPostParam "username" "example"
         addPostParam "passphrase" "example"
       statusIs 303
       locationShouldBe $ AuthR LoginR
@@ -73,7 +73,7 @@ spec = ticklerWebServerSpec $ do
         setMethod methodPost
         setUrl $ AuthR loginFormPostTargetR
         addTokenFromCookie
-        addPostParam "userkey" "example"
+        addPostParam "username" "example"
         addPostParam "passphrase" "wrong-password"
       statusIs 303
       locationShouldBe $ AuthR LoginR
