@@ -16,6 +16,7 @@ library:
   - tickler-server-gen
   - tickler-web-server
   - tickler-web-server-gen
+  - time
   - webdriver
 
 
@@ -29,6 +30,7 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - genvalidity-sydtest
     - sydtest
     - sydtest-webdriver
     - sydtest-webdriver-yesod
@@ -37,3 +39,4 @@ tests:
     - tickler-web-server
     - tickler-web-server-gen
     - tickler-web-server-webdriver
+    - time

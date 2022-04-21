@@ -6,6 +6,7 @@ module Tickler.Web.Server.Webdriver.Auth.TestUtils where
 import Data.Maybe
 import Data.Text (Text)
 import Test.Syd.Webdriver
+import Test.Syd.Webdriver.Yesod
 import Test.WebDriver
 import Tickler.API
 import Tickler.Web.Server.Foundation
@@ -21,13 +22,6 @@ dummyUser =
   TestUser
     { testUserUsername = fromJust $ parseUsername "dummy",
       testUserPassword = "password"
-    }
-
-dummyUser2 :: TestUser
-dummyUser2 =
-  TestUser
-    { testUserUsername = fromJust $ parseUsername "dummy2",
-      testUserPassword = "password2"
     }
 
 driveRegister :: TestUser -> WebdriverTestM App ()
@@ -51,6 +45,7 @@ driveLogout =
 
 driveAsNewUser :: TestUser -> WebdriverTestM App a -> WebdriverTestM App a
 driveAsNewUser testUser func = do
+  openRoute HomeR
   driveRegister testUser
   result <- func
   driveLogout

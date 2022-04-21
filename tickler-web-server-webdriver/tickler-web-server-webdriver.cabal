@@ -10,6 +10,7 @@ build-type:     Simple
 
 library
   exposed-modules:
+      Tickler.Web.Server.Webdriver.Add.TestUtils
       Tickler.Web.Server.Webdriver.Auth.TestUtils
       Tickler.Web.Server.Webdriver.TestUtils
   other-modules:
@@ -27,6 +28,7 @@ library
     , tickler-server-gen
     , tickler-web-server
     , tickler-web-server-gen
+    , time
     , webdriver
   default-language: Haskell2010
 
@@ -35,6 +37,7 @@ test-suite tickler-web-server-webdriver-test
   main-is: Main.hs
   other-modules:
       Spec
+      Tickler.Web.Server.Webdriver.AddSpec
       Tickler.Web.Server.Webdriver.AuthSpec
       Tickler.Web.Server.Webdriver.HomeSpec
       Tickler.Web.Server.Webdriver.TestImport
@@ -46,6 +49,7 @@ test-suite tickler-web-server-webdriver-test
       sydtest-discover:sydtest-discover
   build-depends:
       base >=4.9 && <5
+    , genvalidity-sydtest
     , sydtest
     , sydtest-webdriver
     , sydtest-webdriver-yesod
@@ -54,4 +58,5 @@ test-suite tickler-web-server-webdriver-test
     , tickler-web-server
     , tickler-web-server-gen
     , tickler-web-server-webdriver
+    , time
   default-language: Haskell2010
