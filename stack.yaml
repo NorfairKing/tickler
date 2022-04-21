@@ -9,6 +9,7 @@ packages:
 - tickler-server-gen
 - tickler-web-server
 - tickler-web-server-gen
+- tickler-web-server-webdriver
 extra-deps:
 - servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
 - envparse-0.4.1@sha256:989902e6368532548f61de1fa245ad2b39176cddd8743b20071af519a709ce30,2842

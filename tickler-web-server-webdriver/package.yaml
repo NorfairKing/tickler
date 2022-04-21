@@ -1,0 +1,35 @@
+name:    tickler-web-server-webdriver
+version: "0.0.0.0"
+
+dependencies:
+- base >= 4.9 && < 5
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  dependencies:
+  - sydtest
+  - sydtest-webdriver
+  - sydtest-webdriver-yesod
+  - tickler-server-gen
+  - tickler-web-server
+  - tickler-web-server-gen
+
+
+tests:
+  tickler-web-server-webdriver-test:
+    main: Main.hs
+    source-dirs: test
+    build-tools: sydtest-discover
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - sydtest
+    - sydtest-webdriver
+    - sydtest-webdriver-yesod
+    - tickler-server-gen
+    - tickler-web-server
+    - tickler-web-server-gen
+    - tickler-web-server-webdriver

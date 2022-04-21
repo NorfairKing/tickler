@@ -81,6 +81,13 @@ with final.haskell.lib;
           }
         );
       "tickler-web-server-gen" = ticklerPkg "tickler-web-server-gen";
+      "tickler-web-server-webdriver" = overrideCabal (ticklerPkg "tickler-web-server-webdriver") (old: {
+        testDepends = (old.testDepends or [ ]) ++ (with final; [
+          chromedriver
+          chromium
+          selenium-server-standalone
+        ]);
+      });
     };
 
   ticklerReleasePackages = mapAttrs
@@ -158,6 +165,9 @@ with final.haskell.lib;
               {
                 envparse = self.callHackage "envparse" "0.4.1" { };
                 yesod-autoreload = self.callCabal2nix "yesod-autoreload" yesodAutoReloadRepo { };
+                # Temporary hack until we can upgrade.
+                sydtest-persistent-sqlite = dontCheck super.sydtest-persistent-sqlite;
+                sydtest-yesod = dontCheck super.sydtest-yesod;
               } // genAttrs [
                 "stripe-core"
                 "stripe-haskell"
