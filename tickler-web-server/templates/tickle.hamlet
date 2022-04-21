@@ -1,5 +1,4 @@
-
-<div .content .p-5>
+<div id="#{uuidText itemInfoIdentifier}" .content .p-5>
   <div .box>
     <div .box>
       <p .content>
@@ -45,7 +44,7 @@
           ^{createdWidget}
         <div .level-right>
           <div .buttons .is-right>
-            <a .button href=@{EditR itemInfoIdentifier}>
+            <a .button #edit href=@{EditR itemInfoIdentifier}>
               Edit
             <form
               method="post"

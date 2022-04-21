@@ -3,23 +3,22 @@
 
 module Tickler.Web.Server.Webdriver.EditSpec (spec) where
 
+import Control.Monad
 import Tickler.Web.Server.Webdriver.TestImport
 
 spec :: WebdriverSpec App
 spec = do
-  it "works for changing the contents of any tickle" $ \wte ->
-    forAllValid $ \tickle ->
-      runWebdriverTestM wte $
-        editSpec (tickle {tickleContent = "original"}) (tickle {tickleContent = "new"})
+  let tickleTuples :: [(Tickle, Tickle)]
+      tickleTuples = do
+        t1 <- dummyTickles
+        t2 <- dummyTickles
+        if t1 == t2
+          then []
+          else pure (t1, t2)
 
-  pending "works for changing the scheduled day of any tickle"
-  pending "works for changing the scheduled time of any tickle"
-  pending "works for adding daily recurrence to a tickle without recurrence"
-  pending "works for adding monthly recurrence to a tickle without recurrence"
-  pending "works for removing recurrence from a tickle with daily recurrence"
-  pending "works for removing recurrence from a tickle with monthly recurrence"
-  pending "works for making daily recurrence monthly"
-  pending "works for making monthly recurrence daily"
+  forM_ tickleTuples $ \(original, new) ->
+    it "works for editing this tuple to be this other tuple" $
+      editSpec original new
 
 editSpec :: Tickle -> Tickle -> WebdriverTestM App ()
 editSpec originalTickle newTickle =
