@@ -10,4 +10,5 @@ import Tickler.Client as X
 import Tickler.Web.Server.Foundation as X
 import Tickler.Web.Server.Webdriver.Add.TestUtils as X
 import Tickler.Web.Server.Webdriver.Auth.TestUtils as X
+import Tickler.Web.Server.Webdriver.Edit.TestUtils as X
 import Tickler.Web.Server.Webdriver.TestUtils as X

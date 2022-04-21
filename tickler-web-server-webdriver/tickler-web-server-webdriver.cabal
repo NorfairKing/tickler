@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.6.
+-- This file has been generated from package.yaml by hpack version 0.34.7.
 --
 -- see: https://github.com/sol/hpack
 
@@ -12,6 +12,7 @@ library
   exposed-modules:
       Tickler.Web.Server.Webdriver.Add.TestUtils
       Tickler.Web.Server.Webdriver.Auth.TestUtils
+      Tickler.Web.Server.Webdriver.Edit.TestUtils
       Tickler.Web.Server.Webdriver.TestUtils
   other-modules:
       Paths_tickler_web_server_webdriver
@@ -43,6 +44,7 @@ test-suite tickler-web-server-webdriver-test
       Spec
       Tickler.Web.Server.Webdriver.AddSpec
       Tickler.Web.Server.Webdriver.AuthSpec
+      Tickler.Web.Server.Webdriver.EditSpec
       Tickler.Web.Server.Webdriver.HomeSpec
       Tickler.Web.Server.Webdriver.TestImport
       Paths_tickler_web_server_webdriver
