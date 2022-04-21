@@ -55,7 +55,7 @@
 
             <div .field .is-grouped>
               <div .control>
-                <button .button .is-light type="submit">
+                <button .button .is-light #submit type="submit">
                   Sign up
 
 

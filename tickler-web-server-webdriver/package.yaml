@@ -11,9 +11,12 @@ library:
   - sydtest
   - sydtest-webdriver
   - sydtest-webdriver-yesod
+  - text
+  - tickler-api
   - tickler-server-gen
   - tickler-web-server
   - tickler-web-server-gen
+  - webdriver
 
 
 tests:
@@ -29,6 +32,7 @@ tests:
     - sydtest
     - sydtest-webdriver
     - sydtest-webdriver-yesod
+    - tickler-api
     - tickler-server-gen
     - tickler-web-server
     - tickler-web-server-gen

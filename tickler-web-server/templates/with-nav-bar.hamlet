@@ -13,35 +13,35 @@
     <div .navbar-start>
 
       $if currentRoute /= Just HomeR
-        <a .navbar-item href=@{HomeR}>
+        <a .navbar-item #nav-home href=@{HomeR}>
           Home
       $maybe _ <- mauth
-        <a .navbar-item href=@{AddR}>
+        <a .navbar-item #nav-add href=@{AddR}>
           Add item
 
-        <a .navbar-item href=@{TicklesR}>
+        <a .navbar-item #nav-tickles href=@{TicklesR}>
           Tickles
 
-        <a .navbar-item href=@{TriggersR}>
+        <a .navbar-item #nav-triggers href=@{TriggersR}>
           Triggers
 
-        <a .navbar-item href=@{AccountR}>
+        <a .navbar-item #nav-account href=@{AccountR}>
           Account
 
     <div .navbar-end>
       $maybe _ <- mauth
 
         <div .navbar-item>
-          <a .button href=@{AuthR LogoutR}>
+          <a .button #nav-logout href=@{AuthR LogoutR}>
             Logout
       $nothing
 
         <div .navbar-item>
-          <a .button href=@{AuthR LoginR}>
+          <a .button #nav-login href=@{AuthR LoginR}>
             Login
         
         <div .navbar-item>
-          <a .button href=@{AuthR registerR}>
+          <a .button #nav-register href=@{AuthR registerR}>
             Register
 
 $forall (msgtype, msg) <- msgs
