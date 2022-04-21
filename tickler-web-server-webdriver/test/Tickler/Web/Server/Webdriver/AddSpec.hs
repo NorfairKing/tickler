@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Web.Server.Webdriver.AddSpec (spec) where
 
@@ -88,6 +89,6 @@ addSpec :: Tickle -> WebdriverTestM App ()
 addSpec tickle = do
   driveAsNewUser dummyUser $ do
     uuid <- driveAddTickle tickle
-    liftIO $ shouldBeValid uuid
-
--- TODO get the tickle out of the DB to check that it's correct.
+    token <- getUserToken $ testUserUsername dummyUser
+    ItemInfo {..} <- driveClientOrErr $ clientGetItem token uuid
+    liftIO $ itemInfoContents `shouldBe` tickle

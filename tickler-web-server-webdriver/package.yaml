@@ -8,17 +8,20 @@ library:
   source-dirs: src
   ghc-options: -Wall
   dependencies:
+  - mtl
   - sydtest
   - sydtest-webdriver
   - sydtest-webdriver-yesod
   - text
   - tickler-api
+  - tickler-client
   - tickler-server-gen
   - tickler-web-server
   - tickler-web-server-gen
   - time
   - webdriver
-
+  - unordered-containers
+  - servant-auth-client
 
 tests:
   tickler-web-server-webdriver-test:
@@ -35,6 +38,7 @@ tests:
     - sydtest-webdriver
     - sydtest-webdriver-yesod
     - tickler-api
+    - tickler-client
     - tickler-server-gen
     - tickler-web-server
     - tickler-web-server-gen

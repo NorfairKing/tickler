@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.7.
+-- This file has been generated from package.yaml by hpack version 0.34.6.
 --
 -- see: https://github.com/sol/hpack
 
@@ -20,15 +20,19 @@ library
   ghc-options: -Wall
   build-depends:
       base >=4.9 && <5
+    , mtl
+    , servant-auth-client
     , sydtest
     , sydtest-webdriver
     , sydtest-webdriver-yesod
     , text
     , tickler-api
+    , tickler-client
     , tickler-server-gen
     , tickler-web-server
     , tickler-web-server-gen
     , time
+    , unordered-containers
     , webdriver
   default-language: Haskell2010
 
@@ -54,6 +58,7 @@ test-suite tickler-web-server-webdriver-test
     , sydtest-webdriver
     , sydtest-webdriver-yesod
     , tickler-api
+    , tickler-client
     , tickler-server-gen
     , tickler-web-server
     , tickler-web-server-gen

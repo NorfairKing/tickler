@@ -6,6 +6,8 @@ import Test.Syd.Validity as X
 import Test.Syd.Webdriver as X
 import Test.Syd.Webdriver.Yesod as X
 import Tickler.API as X
+import Tickler.Client as X
 import Tickler.Web.Server.Foundation as X
 import Tickler.Web.Server.Webdriver.Add.TestUtils as X
 import Tickler.Web.Server.Webdriver.Auth.TestUtils as X
+import Tickler.Web.Server.Webdriver.TestUtils as X
