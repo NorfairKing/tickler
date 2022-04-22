@@ -9,13 +9,15 @@ import Tickler.Web.Server.Webdriver.TestImport
 spec :: WebdriverSpec App
 spec = do
   forM_ dummyTickles $ \tickle ->
-    it "can add this tickle" $
-      addSpec tickle
+    addSpec tickle
 
-addSpec :: Tickle -> WebdriverTestM App ()
+addSpec :: Tickle -> WebdriverSpec App
 addSpec tickle = do
-  driveAsNewUser dummyUser $ do
-    uuid <- driveAddTickle tickle
-    token <- getUserToken $ testUserUsername dummyUser
-    ItemInfo {..} <- driveClientOrErr $ clientGetItem token uuid
-    liftIO $ itemInfoContents `shouldBe` tickle
+  it "can add this tickle" $ \wte ->
+    context ("Tickle to add: " <> ppShow tickle) $
+      runWebdriverTestM wte $
+        driveAsNewUser dummyUser $ do
+          uuid <- driveAddTickle tickle
+          token <- getUserToken $ testUserUsername dummyUser
+          ItemInfo {..} <- driveClientOrErr $ clientGetItem token uuid
+          liftIO $ itemInfoContents `shouldBe` tickle

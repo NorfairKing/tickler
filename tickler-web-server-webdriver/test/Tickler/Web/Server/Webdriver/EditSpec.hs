@@ -17,14 +17,17 @@ spec = do
           else pure (t1, t2)
 
   forM_ tickleTuples $ \(original, new) ->
-    it "works for editing this tuple to be this other tuple" $
-      editSpec original new
+    editSpec original new
 
-editSpec :: Tickle -> Tickle -> WebdriverTestM App ()
+editSpec :: Tickle -> Tickle -> WebdriverSpec App
 editSpec originalTickle newTickle =
-  driveAsNewUser dummyUser $ do
-    uuid <- driveAddTickle originalTickle
-    driveEditTickle uuid newTickle
-    token <- getUserToken $ testUserUsername dummyUser
-    ItemInfo {..} <- driveClientOrErr $ clientGetItem token uuid
-    liftIO $ itemInfoContents `shouldBe` newTickle
+  it "works for editing this tuple to be this other tuple" $ \wte ->
+    let ctx = unlines ["original:", ppShow originalTickle, "new:", ppShow newTickle]
+     in context ctx $
+          runWebdriverTestM wte $
+            driveAsNewUser dummyUser $ do
+              uuid <- driveAddTickle originalTickle
+              driveEditTickle uuid newTickle
+              token <- getUserToken $ testUserUsername dummyUser
+              ItemInfo {..} <- driveClientOrErr $ clientGetItem token uuid
+              liftIO $ itemInfoContents `shouldBe` newTickle
