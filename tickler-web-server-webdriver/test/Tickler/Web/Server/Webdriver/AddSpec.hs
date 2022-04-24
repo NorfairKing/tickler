@@ -13,7 +13,7 @@ spec = do
 
 addSpec :: Tickle -> WebdriverSpec App
 addSpec tickle = do
-  it "can add this tickle" $ \wte ->
+  it ("can add tickle " <> show (tickleContent tickle)) $ \wte ->
     context ("Tickle to add: " <> ppShow tickle) $
       runWebdriverTestM wte $
         driveAsNewUser dummyUser $ do

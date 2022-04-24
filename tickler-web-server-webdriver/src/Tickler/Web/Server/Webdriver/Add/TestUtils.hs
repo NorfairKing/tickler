@@ -5,6 +5,7 @@
 module Tickler.Web.Server.Webdriver.Add.TestUtils where
 
 import Control.Monad
+import Data.Maybe
 import qualified Data.Text as T
 import Data.Time
 import Test.Syd
@@ -70,59 +71,45 @@ driveFillInTickleForm Tickle {..} = do
           >>= sendKeys (T.pack (formatTime defaultTimeLocale "%I%M%p" tod))
 
 dummyTickles :: [Tickle]
-dummyTickles =
-  [ Tickle
-      { tickleContent = "hello world",
-        tickleScheduledDay = fromGregorian 2222 04 21,
-        tickleScheduledTime = Nothing,
-        tickleRecurrence = Nothing
-      },
-    Tickle
-      { tickleContent = "hello world",
-        tickleScheduledDay = fromGregorian 2222 04 21,
-        tickleScheduledTime = Just $ TimeOfDay 12 45 00,
-        tickleRecurrence = Nothing
-      },
-    Tickle
-      { tickleContent = "hello world",
-        tickleScheduledDay = fromGregorian 2222 04 21,
-        tickleScheduledTime = Just $ TimeOfDay 12 45 00,
-        tickleRecurrence =
-          Just $ EveryDaysAtTime 5 Nothing
-      },
-    Tickle
-      { tickleContent = "hello world",
-        tickleScheduledDay = fromGregorian 2222 04 21,
-        tickleScheduledTime = Just $ TimeOfDay 12 45 00,
-        tickleRecurrence =
-          Just $ EveryDaysAtTime 5 (Just (TimeOfDay 12 34 00))
-      },
-    Tickle
-      { tickleContent = "hello world",
-        tickleScheduledDay = fromGregorian 2222 04 21,
-        tickleScheduledTime = Just $ TimeOfDay 12 45 00,
-        tickleRecurrence =
-          Just $ EveryMonthsOnDay 6 Nothing Nothing
-      },
-    Tickle
-      { tickleContent = "hello world",
-        tickleScheduledDay = fromGregorian 2222 04 21,
-        tickleScheduledTime = Just $ TimeOfDay 12 45 00,
-        tickleRecurrence =
-          Just $ EveryMonthsOnDay 6 (Just 15) Nothing
-      },
-    Tickle
-      { tickleContent = "hello world",
-        tickleScheduledDay = fromGregorian 2222 04 21,
-        tickleScheduledTime = Just $ TimeOfDay 12 45 00,
-        tickleRecurrence =
-          Just $ EveryMonthsOnDay 6 Nothing (Just (TimeOfDay 23 45 00))
-      },
-    Tickle
-      { tickleContent = "hello world",
-        tickleScheduledDay = fromGregorian 2222 04 21,
-        tickleScheduledTime = Just $ TimeOfDay 12 45 00,
-        tickleRecurrence =
-          Just $ EveryMonthsOnDay 6 (Just 15) (Just (TimeOfDay 23 45 00))
-      }
-  ]
+dummyTickles = do
+  tickleScheduledDay <- [fromGregorian 2222 04 24]
+  tickleScheduledTime <- [Nothing, Just $ TimeOfDay 12 15 00]
+  tickleRecurrence <-
+    mconcat
+      [ [Nothing],
+        do
+          mtod <- [Nothing, Just $ TimeOfDay 12 30 00]
+          pure $ Just $ EveryDaysAtTime 5 mtod,
+        do
+          mtod <- [Nothing, Just $ TimeOfDay 12 45 00]
+          md <- [Nothing, Just 15]
+          pure $ Just $ EveryMonthsOnDay 6 md mtod
+      ]
+  let tickleContent =
+        T.pack $
+          mconcat
+            [ if isJust tickleScheduledTime
+                then "scheduled time, "
+                else "no scheduled time, ",
+              case tickleRecurrence of
+                Nothing -> "no recurrence"
+                Just recurrence -> case recurrence of
+                  EveryDaysAtTime _ mtod ->
+                    mconcat
+                      [ "daily recurrence, ",
+                        if isJust mtod
+                          then "time of day"
+                          else "no time of day"
+                      ]
+                  EveryMonthsOnDay _ md mtod ->
+                    mconcat
+                      [ "monthly recurrence, ",
+                        if isJust md
+                          then "day, "
+                          else "no day, ",
+                        if isJust mtod
+                          then "time of day"
+                          else "no time of day"
+                      ]
+            ]
+  pure Tickle {..}
