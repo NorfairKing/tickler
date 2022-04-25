@@ -5,7 +5,6 @@
 module Tickler.Web.Server.Webdriver.Edit.TestUtils where
 
 import Control.Monad
-import Control.Monad.IO.Class
 import qualified Data.Text as T
 import Data.Time
 import Test.Syd.Webdriver
@@ -23,30 +22,25 @@ driveEditTickle uuid tickle = do
 driveEditTickleForm :: Tickle -> WebdriverTestM App ()
 driveEditTickleForm Tickle {..} = do
   -- Contents
-  liftIO $ putStrLn "Setting contents"
   contentsE <- findElem (ByName "contents")
   clearInput contentsE
   sendKeys tickleContent contentsE
 
   -- Scheduled day
-  liftIO $ putStrLn "Setting scheduled day"
   scheduledDayE <- findElem (ByName "scheduled-day")
   clearInput scheduledDayE
   sendKeys (T.pack (formatTime defaultTimeLocale "%m%d%Y" tickleScheduledDay)) scheduledDayE
 
   -- Scheduled time of day
-  liftIO $ putStrLn "Setting scheduled time"
   scheduledTimeE <- findElem (ByName "scheduled-time")
   clearInput scheduledTimeE
   forM_ tickleScheduledTime $ \scheduledTime -> do
     sendKeys (T.pack (formatTime defaultTimeLocale "%I%M%p" scheduledTime)) scheduledTimeE
 
   -- Recurrence
-  liftIO $ putStrLn "Setting recurrence"
   case tickleRecurrence of
     -- No recurrence
-    Nothing -> do
-      liftIO $ putStrLn "Setting no recurrence"
+    Nothing ->
       findElem (ById "None") >>= click
     Just recurrence -> case recurrence of
       -- Daily recurrence

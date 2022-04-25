@@ -20,24 +20,23 @@
     
   <div .columns .is-multiline>
     <div .column .is-two-thirds>
-      <div #None-input .changable style="display: none;">
-        <div .field .is-horizontal>
-          <div .field-body>
-            <div .field .has-addons>
-              <div .control>
-                <button .button .non-interactive>
-                  On
-              <div .control>
-                <input .input type="date" name="scheduled-day" value=#{scheduledDayVal}>
+      <div .field .is-horizontal>
+        <div .field-body>
+          <div .field .has-addons>
+            <div .control>
+              <button .button .non-interactive>
+                On
+            <div .control>
+              <input .input type="date" name="scheduled-day" value=#{scheduledDayVal}>
 
-        <div .field .is-horizontal>
-          <div .field-body>
-            <div .field .has-addons>
-              <div .control>
-                <button .button .non-interactive>
-                  At
-              <div .control>
-                <input .input type="time" name="scheduled-time" value=#{scheduledTimeVal}>
+      <div .field .is-horizontal>
+        <div .field-body>
+          <div .field .has-addons>
+            <div .control>
+              <button .button .non-interactive>
+                At
+            <div .control>
+              <input .input type="time" name="scheduled-time" value=#{scheduledTimeVal}>
 
 
 
