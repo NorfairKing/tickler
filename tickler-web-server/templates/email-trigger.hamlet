@@ -14,7 +14,7 @@
   <div .buttons .is-right>
     <form
       method="post"
-      action=@{EmailTriggerResendR triggerInfoIdentifier}>
+      action=@{TriggerEmailResendR triggerInfoIdentifier}>
       ^{token}
       <button .button type="submit" 
       onclick="return confirm('Are you sure? It can take a few minutes for a verification email to arrive.');">
@@ -22,7 +22,7 @@
   
     <form
       method="post"
-      action=@{DeleteTriggerR triggerInfoIdentifier}>
+      action=@{TriggerDeleteR triggerInfoIdentifier}>
       <input
         name="trigger"
         type="hidden"

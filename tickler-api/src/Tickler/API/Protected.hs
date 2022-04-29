@@ -48,7 +48,7 @@ data TicklerProtectedSite route = TicklerProtectedSite
 -- | The order of the items is not guaranteed to be the same for every call.
 type GetItems =
   ProtectAPI
-    :> "items"
+    :> "item"
     :> Get '[JSON] [ItemInfo]
 
 type PostItem =
@@ -84,7 +84,6 @@ type GetTriggers =
 type GetTrigger =
   ProtectAPI
     :> "trigger"
-    :> "info"
     :> Capture "id" TriggerUUID
     :> Get '[JSON] (TriggerInfo TypedTriggerInfo)
 
@@ -106,8 +105,8 @@ type PostEmailTriggerVerify =
   ProtectAPI
     :> "trigger"
     :> "email"
-    :> "verify"
     :> Capture "id" TriggerUUID
+    :> "verify"
     :> Capture "key" EmailVerificationKey
     :> Post '[JSON] NoContent
 
@@ -115,8 +114,8 @@ type PostEmailTriggerResendVerificationEmail =
   ProtectAPI
     :> "trigger"
     :> "email"
-    :> "resend"
     :> Capture "id" TriggerUUID
+    :> "resend"
     :> Post '[JSON] NoContent
 
 type DeleteTrigger =

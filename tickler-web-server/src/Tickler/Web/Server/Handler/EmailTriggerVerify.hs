@@ -1,5 +1,5 @@
 module Tickler.Web.Server.Handler.EmailTriggerVerify
-  ( getEmailTriggerVerifyR,
+  ( getTriggerEmailVerifyR,
   )
 where
 
@@ -9,8 +9,8 @@ import Tickler.Client
 import Tickler.Web.Server.Foundation
 import Yesod
 
-getEmailTriggerVerifyR :: TriggerUUID -> EmailVerificationKey -> Handler Html
-getEmailTriggerVerifyR tuuid evk =
+getTriggerEmailVerifyR :: TriggerUUID -> EmailVerificationKey -> Handler Html
+getTriggerEmailVerifyR tuuid evk =
   withLogin $ \t -> do
     NoContent <- runClientOrErr $ clientPostEmailTriggerVerify t tuuid evk
     redirect TriggersR

@@ -8,7 +8,7 @@
   <div .buttons .is-right>
     <form
       method="post"
-      action=@{DeleteTriggerR triggerInfoIdentifier}>
+      action=@{TriggerDeleteR triggerInfoIdentifier}>
       <input
         name="trigger"
         type="hidden"

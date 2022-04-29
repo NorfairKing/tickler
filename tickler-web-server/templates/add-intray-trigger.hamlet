@@ -3,7 +3,7 @@
 
   <form .form
     method=post
-    action=@{AddIntrayTriggerR}>
+    action=@{TriggerAddIntrayR}>
 
     <div .field .is-horizontal>
       <label .label>

@@ -38,15 +38,8 @@ value:
         - state: TODO
           time: 2022-04-15 15:44:32
       forest:
-      - header: Add
-        contents: POST /item
-        state-history:
-        - state: DONE
-          time: 2022-04-15 22:42:00
-        - state: TODO
-          time: 2022-04-15 16:15:24
       - header: Get list
-        contents: GET /items
+        contents: GET /item
         state-history:
         - state: DONE
           time: 2022-04-16 19:12:08
@@ -59,6 +52,13 @@ value:
           time: 2022-04-18 22:27:23
         - state: TODO
           time: 2022-04-15 16:15:30
+      - header: Add
+        contents: POST /item
+        state-history:
+        - state: DONE
+          time: 2022-04-15 22:42:00
+        - state: TODO
+          time: 2022-04-15 16:15:24
       - header: 'Edit '
         contents: PUT /item/:id
         state-history:
@@ -73,6 +73,47 @@ value:
           time: 2022-04-29 12:20:09
         - state: TODO
           time: 2022-04-15 16:16:27
+    - entry:
+        header: Triggers
+        state-history:
+        - state: TODO
+          time: 2022-04-29 12:41:54
+      forest:
+      - header: Get list
+        contents: GET /trigger
+        state-history:
+        - state: TODO
+          time: 2022-04-29 12:43:40
+      - header: Get single
+        contents: GET /trigger/:id
+        state-history:
+        - state: TODO
+          time: 2022-04-29 12:43:40
+      - header: Add intray trigger
+        contents: POST /trigger/intray
+        state-history:
+        - state: TODO
+          time: 2022-04-29 12:43:39
+      - header: Add email trigger
+        contents: POST /trigger/email
+        state-history:
+        - state: TODO
+          time: 2022-04-29 12:44:41
+      - header: Verify email trigger
+        contents: POST /trigger/email/:id/verify/:key
+        state-history:
+        - state: TODO
+          time: 2022-04-29 12:45:15
+      - header: Resend email trigger verification email
+        contents: POST /trigger/email/:id/resend
+        state-history:
+        - state: TODO
+          time: 2022-04-29 12:44:48
+      - header: Delete
+        contents: DELETE /trigger/:id
+        state-history:
+        - state: TODO
+          time: 2022-04-29 12:43:40
   - entry:
       header: Web server
       state-history:
@@ -140,6 +181,7 @@ value:
           time: 2022-04-15 15:01:31
       forest:
       - header: List
+        contents: TriggersR
         state-history:
         - state: TODO
           time: 2022-04-15 15:01:31
@@ -150,14 +192,27 @@ value:
             time: 2022-04-15 15:01:31
         forest:
         - header: Email
+          contents: TriggerAddEmailR
           state-history:
           - state: TODO
             time: 2022-04-15 16:22:03
+        - header: Verify email trigger
+          contents: TriggerEmailVerifyR
+          state-history:
+          - state: TODO
+            time: 2022-04-29 12:49:16
+        - header: Resend email trigger verification
+          contents: TriggerEmailResendR
+          state-history:
+          - state: TODO
+            time: 2022-04-29 12:49:15
         - header: Intray
+          contents: TriggerAddIntrayR
           state-history:
           - state: TODO
             time: 2022-04-15 16:22:03
       - header: Delete
+        contents: TriggerDeleteR
         state-history:
         - state: TODO
           time: 2022-04-15 15:01:31

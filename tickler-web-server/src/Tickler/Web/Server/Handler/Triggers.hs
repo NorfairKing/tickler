@@ -6,9 +6,9 @@
 
 module Tickler.Web.Server.Handler.Triggers
   ( getTriggersR,
-    postAddIntrayTriggerR,
-    postAddEmailTriggerR,
-    postDeleteTriggerR,
+    postTriggerAddIntrayR,
+    postTriggerAddEmailR,
+    postTriggerDeleteR,
   )
 where
 
@@ -116,8 +116,8 @@ addIntrayTriggerForm =
       )
       "access-key"
 
-postAddIntrayTriggerR :: Handler Html
-postAddIntrayTriggerR =
+postTriggerAddIntrayR :: Handler Html
+postTriggerAddIntrayR =
   withLogin $ \t -> do
     ait <- runInputPost addIntrayTriggerForm
     errOrRes <- runClientOrErr $ clientPostAddIntrayTrigger t ait
@@ -141,15 +141,15 @@ addEmailTriggerForm =
   AddEmailTrigger
     <$> ireq (checkMMap (pure . left T.pack . emailValidateFromText) emailAddressText textField) "email"
 
-postAddEmailTriggerR :: Handler Html
-postAddEmailTriggerR =
+postTriggerAddEmailR :: Handler Html
+postTriggerAddEmailR =
   withLogin $ \t -> do
     aet <- runInputPost addEmailTriggerForm
     void $ runClientOrErr $ clientPostAddEmailTrigger t aet
     redirect TriggersR
 
-postDeleteTriggerR :: TriggerUUID -> Handler Html
-postDeleteTriggerR uuid =
+postTriggerDeleteR :: TriggerUUID -> Handler Html
+postTriggerDeleteR uuid =
   withLogin $ \t -> do
     NoContent <- runClientOrErr $ clientDeleteTrigger t uuid
     redirect TriggersR

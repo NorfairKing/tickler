@@ -1,5 +1,5 @@
 module Tickler.Web.Server.Handler.EmailTriggerResend
-  ( postEmailTriggerResendR,
+  ( postTriggerEmailResendR,
   )
 where
 
@@ -9,8 +9,8 @@ import Tickler.Client
 import Tickler.Web.Server.Foundation
 import Yesod
 
-postEmailTriggerResendR :: TriggerUUID -> Handler Html
-postEmailTriggerResendR tuuid =
+postTriggerEmailResendR :: TriggerUUID -> Handler Html
+postTriggerEmailResendR tuuid =
   withLogin $ \t -> do
     NoContent <- runClientOrErr $ clientPostEmailTriggerResendVerificationEmail t tuuid
     redirect TriggersR

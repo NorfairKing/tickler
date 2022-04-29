@@ -1,16 +1,16 @@
 /                                                         HomeR                GET
 
-/add                                                      AddR                 POST GET
-/edit/#ItemUUID                                           EditR                POST GET
-/delete/#ItemUUID                                         DeleteR              POST
-/tickles                                                  TicklesR             GET
-/triggers                                                 TriggersR            GET
+/tickle                                                   TicklesR             GET
+/tickle/add                                               AddR                 POST GET
+/tickle/edit/#ItemUUID                                    EditR                POST GET
+/tickle/delete/#ItemUUID                                  DeleteR              POST
 
-/add-intray-trigger                                       AddIntrayTriggerR    POST
-/add-email-trigger                                        AddEmailTriggerR     POST
-/email-trigger/#TriggerUUID/verify/#EmailVerificationKey  EmailTriggerVerifyR  GET
-/email-trigger/#TriggerUUID/resend                        EmailTriggerResendR  POST
-/delete-trigger/#TriggerUUID                              DeleteTriggerR       POST
+/trigger                                                  TriggersR            GET
+/trigger/intray                                           TriggerAddIntrayR    POST
+/trigger/email                                            TriggerAddEmailR     POST
+/trigger/email/#TriggerUUID/verify/#EmailVerificationKey  TriggerEmailVerifyR  GET
+/trigger/email/#TriggerUUID/resend                        TriggerEmailResendR  POST
+/trigger/delete/#TriggerUUID                              TriggerDeleteR       POST
 
 /account                                                  AccountR             GET
 /account/settings                                         AccountSettingsR     POST
