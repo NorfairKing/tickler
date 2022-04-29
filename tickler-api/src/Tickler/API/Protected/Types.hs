@@ -93,9 +93,9 @@ instance FromHttpApiData EmailVerificationKey where
       Nothing -> Left "Invalid email verification key"
       Just evk -> pure evk
 
-data TriggerInfo a = TriggerInfo
+data TriggerInfo = TriggerInfo
   { triggerInfoIdentifier :: !TriggerUUID,
-    triggerInfo :: !a
+    triggerInfo :: !Trigger
   }
   deriving (Show, Eq, Ord, Generic)
 
@@ -120,6 +120,11 @@ decodeTriggerInfo tt ti = unwrap $ decodeTypedTriggerInfo tt <$> ti
         Nothing -> Nothing
         Just i ->
           Just $ TriggerInfo {triggerInfoIdentifier = triggerInfoIdentifier tmi, triggerInfo = i}
+
+data Trigger
+  = IntrayTrigger EmailTriggerInfo
+  | EmailTrigger EmailTriggerInfo
+  deriving (Show, Eq, Generic)
 
 data TypedTriggerInfo = TypedTriggerInfo
   { typedTriggerInfoType :: !TriggerType,
