@@ -69,6 +69,8 @@ value:
       - header: Delete
         contents: DELETE /item/:id
         state-history:
+        - state: DONE
+          time: 2022-04-29 12:20:09
         - state: TODO
           time: 2022-04-15 16:16:27
   - entry:
@@ -127,6 +129,8 @@ value:
       - header: Delete
         contents: DeleteR
         state-history:
+        - state: DONE
+          time: 2022-04-29 12:20:11
         - state: TODO
           time: 2022-04-18 22:27:28
     - entry:

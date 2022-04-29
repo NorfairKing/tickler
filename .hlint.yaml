@@ -8,3 +8,5 @@
     name: "Use ++"
 - ignore:
     name: "Use ."
+- ignore:
+    name: "Use <$>"

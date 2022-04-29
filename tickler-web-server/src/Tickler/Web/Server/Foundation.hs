@@ -143,7 +143,7 @@ loginFormPostTargetR = PluginR ticklerAuthPluginName ["login"]
 
 postLoginR :: TicklerAuthHandler TypedContent
 postLoginR = do
-  let loginInputForm = LoginData <$> ireq textField "userkey" <*> ireq passwordField "passphrase"
+  let loginInputForm = LoginData <$> ireq textField "username" <*> ireq passwordField "passphrase"
   result <- runInputPostResult loginInputForm
   muser <-
     case result of

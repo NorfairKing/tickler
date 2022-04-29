@@ -15,6 +15,7 @@ import Data.Text as X (Text)
 import Data.UUID.Typed as X
 import Debug.Trace as X
 import GHC.Generics as X hiding (Selector)
+import Network.HTTP.Types.Status as X
 import Path as X
 import Path.IO as X
 import System.Exit as X

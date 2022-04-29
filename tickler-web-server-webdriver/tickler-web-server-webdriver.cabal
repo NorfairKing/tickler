@@ -12,6 +12,7 @@ library
   exposed-modules:
       Tickler.Web.Server.Webdriver.Add.TestUtils
       Tickler.Web.Server.Webdriver.Auth.TestUtils
+      Tickler.Web.Server.Webdriver.Delete.TestUtils
       Tickler.Web.Server.Webdriver.Edit.TestUtils
       Tickler.Web.Server.Webdriver.TestUtils
   other-modules:
@@ -44,6 +45,7 @@ test-suite tickler-web-server-webdriver-test
       Spec
       Tickler.Web.Server.Webdriver.AddSpec
       Tickler.Web.Server.Webdriver.AuthSpec
+      Tickler.Web.Server.Webdriver.DeleteSpec
       Tickler.Web.Server.Webdriver.EditSpec
       Tickler.Web.Server.Webdriver.HomeSpec
       Tickler.Web.Server.Webdriver.TestImport
@@ -56,6 +58,7 @@ test-suite tickler-web-server-webdriver-test
   build-depends:
       base >=4.9 && <5
     , genvalidity-sydtest
+    , http-types
     , sydtest
     , sydtest-webdriver
     , sydtest-webdriver-yesod

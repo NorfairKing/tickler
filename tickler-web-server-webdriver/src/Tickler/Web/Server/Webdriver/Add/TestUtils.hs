@@ -70,6 +70,9 @@ driveFillInTickleForm Tickle {..} = do
         findElem (ByName "month-time-of-day")
           >>= sendKeys (T.pack (formatTime defaultTimeLocale "%I%M%p" tod))
 
+dummyTickle :: Tickle
+dummyTickle = head dummyTickles
+
 dummyTickles :: [Tickle]
 dummyTickles = do
   tickleScheduledDay <- [fromGregorian 2222 04 24]

@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.6.
+-- This file has been generated from package.yaml by hpack version 0.34.7.
 --
 -- see: https://github.com/sol/hpack
 
@@ -50,6 +50,7 @@ test-suite tickler-web-server-test
       Tickler.Web.Server.Handler.AdminRSpec
       Tickler.Web.Server.Handler.AuthRSpec
       Tickler.Web.Server.Handler.DeleteAccountSpec
+      Tickler.Web.Server.Handler.DeleteSpec
       Tickler.Web.Server.Handler.EditSpec
       Tickler.Web.Server.Handler.HomeRSpec
       Tickler.Web.Server.Handler.TicklesSpec

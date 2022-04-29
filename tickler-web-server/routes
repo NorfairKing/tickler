@@ -2,9 +2,9 @@
 
 /add                                                      AddR                 POST GET
 /edit/#ItemUUID                                           EditR                POST GET
+/delete/#ItemUUID                                         DeleteR              POST
 /tickles                                                  TicklesR             GET
 /triggers                                                 TriggersR            GET
-/delete-tickle                                            DeleteTickleR        POST
 
 /add-intray-trigger                                       AddIntrayTriggerR    POST
 /add-email-trigger                                        AddEmailTriggerR     POST

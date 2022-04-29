@@ -1,7 +1,5 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Tickler.Web.Server.Handler.Delete
-  ( postDeleteTickleR,
+  ( postDeleteR,
   )
 where
 
@@ -11,12 +9,8 @@ import Tickler.Client
 import Tickler.Web.Server.Foundation
 import Yesod
 
-deleteItemForm :: FormInput Handler ItemUUID
-deleteItemForm = ireq hiddenField "item"
-
-postDeleteTickleR :: Handler Html
-postDeleteTickleR =
+postDeleteR :: ItemUUID -> Handler Html
+postDeleteR uuid =
   withLogin $ \t -> do
-    deleteItemUUID <- runInputPost deleteItemForm
-    void $ runClientOrErr $ clientDeleteItem t deleteItemUUID
+    void $ runClientOrErr $ clientDeleteItem t uuid
     redirect TicklesR
