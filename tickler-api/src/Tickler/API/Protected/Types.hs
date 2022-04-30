@@ -162,7 +162,7 @@ instance FromJSON AddIntrayTrigger
 instance ToJSON AddIntrayTrigger
 
 data AddEmailTrigger = AddEmailTrigger
-  { addEmailTrigger :: !EmailAddress
+  { addEmailTriggerEmailAddress :: !EmailAddress
   }
   deriving (Show, Eq, Ord, Generic)
 

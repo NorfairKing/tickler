@@ -1,6 +1,8 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# OPTIONS_GHC -fno-warn-unused-pattern-binds #-}
 
 module Tickler.Server.Handler.PostEmailTriggerSpec (spec) where
 
@@ -14,11 +16,16 @@ spec :: Spec
 spec = withTicklerServer $
   describe "GetTrigger and PostEmailTrigger" $
     it "gets the trigger that was just added" $ \cenv ->
-      forAllValid $ \t ->
+      forAllValid $ \addEmailTrigger ->
         withValidNewUser cenv $ \token -> do
-          (uuid, ti) <-
-            runClientOrError cenv $ do
-              uuid <- clientPostEmailTrigger token t
-              ti <- clientGetTrigger token uuid
-              pure (uuid, ti)
-          triggerInfoIdentifier ti `shouldBe` uuid
+          runClientOrError cenv $ do
+            uuid <- clientPostEmailTrigger token addEmailTrigger
+            TriggerInfo {..} <- clientGetTrigger token uuid
+            liftIO $ do
+              triggerInfoIdentifier `shouldBe` uuid
+              let TriggerInfo _ _ = undefined
+              case triggerInfo of
+                TriggerIntray _ -> expectationFailure "should have been an email trigger."
+                TriggerEmail EmailTriggerInfo {..} -> do
+                  emailTriggerInfoVerified `shouldBe` False
+                  emailTriggerInfoEmailAddress `shouldBe` addEmailTriggerEmailAddress addEmailTrigger

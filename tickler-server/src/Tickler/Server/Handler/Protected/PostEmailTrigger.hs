@@ -22,7 +22,7 @@ servePostEmailTrigger AuthCookie {..} AddEmailTrigger {..} = do
     insert_
       EmailTrigger
         { emailTriggerIdentifier = uuid,
-          emailTriggerAddress = addEmailTrigger,
+          emailTriggerAddress = addEmailTriggerEmailAddress,
           emailTriggerVerificationKey = verificationKey,
           emailTriggerVerified = False,
           emailTriggerAdded = now
@@ -35,7 +35,7 @@ servePostEmailTrigger AuthCookie {..} AddEmailTrigger {..} = do
         }
     insert_
       VerificationEmail
-        { verificationEmailTo = addEmailTrigger,
+        { verificationEmailTo = addEmailTriggerEmailAddress,
           verificationEmailKey = verificationKey,
           verificationEmailTrigger = uuid,
           verificationEmailScheduled = now,
