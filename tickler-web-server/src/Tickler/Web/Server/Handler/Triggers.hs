@@ -131,7 +131,7 @@ postTriggerAddIntrayR =
 addEmailTriggerForm :: FormInput Handler AddEmailTrigger
 addEmailTriggerForm =
   AddEmailTrigger
-    <$> ireq (checkMMap (pure . left T.pack . emailValidateFromText) emailAddressText textField) "email"
+    <$> ireq (checkMMap (pure . left T.pack . emailValidateFromText) emailAddressText textField) "email-address"
 
 postTriggerAddEmailR :: Handler Html
 postTriggerAddEmailR =

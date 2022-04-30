@@ -45,6 +45,7 @@ tests:
     - genvalidity-sydtest
     - http-client
     - http-types
+    - intray-data
     - mtl
     - path
     - path-io

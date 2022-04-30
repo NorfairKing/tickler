@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Handler.Protected.GetTrigger where
@@ -22,6 +21,6 @@ serveGetTrigger AuthCookie {..} uuid = do
     Nothing -> do
       mit' <- fmap (makeEmailTriggerInfo . entityVal) <$> runDb (getBy $ UniqueEmailTrigger uuid)
       case mit' of
-        Nothing -> throwAll $ err404 {errBody = "Trigger not found."}
+        Nothing -> throwAll err404
         Just ti' -> pure ti'
     Just ti' -> pure ti'

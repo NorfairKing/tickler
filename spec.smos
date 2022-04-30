@@ -87,16 +87,22 @@ value:
       - header: Get single
         contents: GET /trigger/:id
         state-history:
+        - state: DONE
+          time: 2022-04-30 11:02:28
         - state: TODO
           time: 2022-04-29 12:43:40
       - header: Add intray trigger
         contents: POST /trigger/intray
         state-history:
+        - state: DONE
+          time: 2022-04-30 11:02:27
         - state: TODO
           time: 2022-04-29 12:43:39
       - header: Add email trigger
         contents: POST /trigger/email
         state-history:
+        - state: DONE
+          time: 2022-04-30 11:02:27
         - state: TODO
           time: 2022-04-29 12:44:41
       - header: Verify email trigger

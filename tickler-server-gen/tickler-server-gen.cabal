@@ -84,6 +84,7 @@ test-suite tickler-server-test
       Tickler.Server.Handler.GetAccountSettingsSpec
       Tickler.Server.Handler.GetItemSpec
       Tickler.Server.Handler.GetPricingSpec
+      Tickler.Server.Handler.GetTriggerSpec
       Tickler.Server.Handler.ListItemsSpec
       Tickler.Server.Handler.PostChangePassphraseSpec
       Tickler.Server.Handler.PostEmailTriggerSpec

@@ -10,7 +10,7 @@
         Email Address
       <input .input
         type="email" 
-        name="email" 
+        name="email-address" 
         autofocus>
     ^{token}
     

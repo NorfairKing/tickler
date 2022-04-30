@@ -54,6 +54,8 @@ test-suite tickler-web-server-test
       Tickler.Web.Server.Handler.EditSpec
       Tickler.Web.Server.Handler.HomeRSpec
       Tickler.Web.Server.Handler.TicklesSpec
+      Tickler.Web.Server.Handler.TriggerAddEmailSpec
+      Tickler.Web.Server.Handler.TriggerAddIntraySpec
       Tickler.Web.Server.Handler.TriggersSpec
       Paths_tickler_web_server_gen
   hs-source-dirs:
@@ -67,6 +69,7 @@ test-suite tickler-web-server-test
     , genvalidity-sydtest
     , http-client
     , http-types
+    , intray-data
     , mtl
     , path
     , path-io
