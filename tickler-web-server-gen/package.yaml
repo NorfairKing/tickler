@@ -42,10 +42,13 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - QuickCheck
+    - containers
     - genvalidity-sydtest
     - http-client
     - http-types
+    - intray-client
     - intray-data
+    - intray-server-gen
     - mtl
     - path
     - path-io

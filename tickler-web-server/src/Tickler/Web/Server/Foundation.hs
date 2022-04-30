@@ -307,10 +307,12 @@ withFormFailureNavBar errs body = do
   defaultLayout $(widgetFile "with-nav-bar")
 
 genToken :: MonadHandler m => m Html
-genToken = do
+genToken = genToken_ defaultCsrfParamName
+
+genToken_ :: MonadHandler m => Text -> m Html
+genToken_ tokenKey = do
   alreadyExpired
   req <- getRequest
-  let tokenKey = defaultCsrfParamName
   pure $
     case reqToken req of
       Nothing -> mempty

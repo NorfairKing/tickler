@@ -19,8 +19,8 @@ spec =
             statusIs 200
             request $ do
               setMethod methodPost
-              setUrl TriggerAddIntrayR
-              addToken
+              setUrl TriggerAddEmailR
+              addTokenFromCookie
               addPostParam "email-address" $ emailAddressText emailAddress
             statusIs 303
             locationShouldBe TriggersR
