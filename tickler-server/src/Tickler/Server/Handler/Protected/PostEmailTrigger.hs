@@ -3,10 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Tickler.Server.Handler.Protected.PostAddEmailTrigger
-  ( servePostAddEmailTrigger,
-  )
-where
+module Tickler.Server.Handler.Protected.PostEmailTrigger (servePostEmailTrigger) where
 
 import Data.Time
 import Data.UUID.Typed
@@ -16,8 +13,8 @@ import Tickler.API
 import Tickler.Server.Handler.Utils
 import Tickler.Server.Types
 
-servePostAddEmailTrigger :: AuthCookie -> AddEmailTrigger -> TicklerHandler TriggerUUID
-servePostAddEmailTrigger AuthCookie {..} AddEmailTrigger {..} = do
+servePostEmailTrigger :: AuthCookie -> AddEmailTrigger -> TicklerHandler TriggerUUID
+servePostEmailTrigger AuthCookie {..} AddEmailTrigger {..} = do
   now <- liftIO getCurrentTime
   uuid <- liftIO nextRandomUUID
   verificationKey <- liftIO generateRandomVerificationKey

@@ -109,8 +109,8 @@ ticklerProtectedServer =
       deleteItem = withAuthResult serveDeleteItem,
       getTriggers = withAuthResult serveGetTriggers,
       getTrigger = withAuthResult serveGetTrigger,
-      postAddIntrayTrigger = withAuthResult servePostAddIntrayTrigger,
-      postAddEmailTrigger = withAuthResult servePostAddEmailTrigger,
+      postIntrayTrigger = withAuthResult servePostIntrayTrigger,
+      postEmailTrigger = withAuthResult servePostEmailTrigger,
       postEmailTriggerVerify = withAuthResult servePostEmailTriggerVerify,
       postEmailTriggerResendVerificationEmail =
         withAuthResult servePostEmailTriggerResendVerificationEmail,

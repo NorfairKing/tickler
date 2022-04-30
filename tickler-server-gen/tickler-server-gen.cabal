@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.6.
+-- This file has been generated from package.yaml by hpack version 0.34.7.
 --
 -- see: https://github.com/sol/hpack
 
@@ -85,9 +85,9 @@ test-suite tickler-server-test
       Tickler.Server.Handler.GetItemSpec
       Tickler.Server.Handler.GetPricingSpec
       Tickler.Server.Handler.ListItemsSpec
-      Tickler.Server.Handler.PostAddEmailTriggerSpec
-      Tickler.Server.Handler.PostAddIntrayTriggerSpec
       Tickler.Server.Handler.PostChangePassphraseSpec
+      Tickler.Server.Handler.PostEmailTriggerSpec
+      Tickler.Server.Handler.PostIntrayTriggerSpec
       Tickler.Server.Handler.PostItemSpec
       Tickler.Server.Handler.PostLoginSpec
       Tickler.Server.Handler.PostRegisterSpec

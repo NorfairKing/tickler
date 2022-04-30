@@ -32,8 +32,8 @@ data TicklerProtectedSite route = TicklerProtectedSite
     deleteItem :: !(route :- DeleteItem),
     getTriggers :: !(route :- GetTriggers),
     getTrigger :: !(route :- GetTrigger),
-    postAddIntrayTrigger :: !(route :- PostAddIntrayTrigger),
-    postAddEmailTrigger :: !(route :- PostAddEmailTrigger),
+    postIntrayTrigger :: !(route :- PostIntrayTrigger),
+    postEmailTrigger :: !(route :- PostEmailTrigger),
     postEmailTriggerVerify :: !(route :- PostEmailTriggerVerify),
     postEmailTriggerResendVerificationEmail :: !(route :- PostEmailTriggerResendVerificationEmail),
     deleteTrigger :: !(route :- DeleteTrigger),
@@ -87,14 +87,14 @@ type GetTrigger =
     :> Capture "id" TriggerUUID
     :> Get '[JSON] TriggerInfo
 
-type PostAddIntrayTrigger =
+type PostIntrayTrigger =
   ProtectAPI
     :> "trigger"
     :> "intray"
     :> ReqBody '[JSON] AddIntrayTrigger
     :> Post '[JSON] (Either Text TriggerUUID)
 
-type PostAddEmailTrigger =
+type PostEmailTrigger =
   ProtectAPI
     :> "trigger"
     :> "email"

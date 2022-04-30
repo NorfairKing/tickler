@@ -4,10 +4,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Tickler.Server.Handler.Protected.PostAddIntrayTrigger
-  ( servePostAddIntrayTrigger,
-  )
-where
+module Tickler.Server.Handler.Protected.PostIntrayTrigger (servePostIntrayTrigger) where
 
 import qualified Data.Text as T
 import Data.Time
@@ -23,9 +20,9 @@ import Tickler.API
 import Tickler.Server.Handler.Utils
 import Tickler.Server.Types
 
-servePostAddIntrayTrigger ::
+servePostIntrayTrigger ::
   AuthCookie -> AddIntrayTrigger -> TicklerHandler (Either Text TriggerUUID)
-servePostAddIntrayTrigger AuthCookie {..} AddIntrayTrigger {..} = do
+servePostIntrayTrigger AuthCookie {..} AddIntrayTrigger {..} = do
   now <- liftIO getCurrentTime
   uuid <- liftIO nextRandomUUID
   man <- liftIO $ Http.newManager Http.tlsManagerSettings

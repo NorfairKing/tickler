@@ -25,8 +25,8 @@ clientPutItem :: Token -> ItemUUID -> Tickle -> ClientM NoContent
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
 clientGetTriggers :: Token -> ClientM [TriggerInfo]
 clientGetTrigger :: Token -> TriggerUUID -> ClientM TriggerInfo
-clientPostAddIntrayTrigger :: Token -> AddIntrayTrigger -> ClientM (Either Text TriggerUUID)
-clientPostAddEmailTrigger :: Token -> AddEmailTrigger -> ClientM TriggerUUID
+clientPostIntrayTrigger :: Token -> AddIntrayTrigger -> ClientM (Either Text TriggerUUID)
+clientPostEmailTrigger :: Token -> AddEmailTrigger -> ClientM TriggerUUID
 clientPostEmailTriggerVerify :: Token -> TriggerUUID -> EmailVerificationKey -> ClientM NoContent
 clientPostEmailTriggerResendVerificationEmail :: Token -> TriggerUUID -> ClientM NoContent
 clientDeleteTrigger :: Token -> TriggerUUID -> ClientM NoContent
@@ -41,5 +41,5 @@ clientGetPricing :: ClientM (Maybe Pricing)
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientGetItems :<|> clientPostItem :<|> clientGetItem :<|> clientPutItem :<|> clientDeleteItem :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostAddIntrayTrigger :<|> clientPostAddEmailTrigger :<|> clientPostEmailTriggerVerify :<|> clientPostEmailTriggerResendVerificationEmail :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPostChangePassphrase :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetPricing :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientGetItems :<|> clientPostItem :<|> clientGetItem :<|> clientPutItem :<|> clientDeleteItem :<|> clientGetTriggers :<|> clientGetTrigger :<|> clientPostIntrayTrigger :<|> clientPostEmailTrigger :<|> clientPostEmailTriggerVerify :<|> clientPostEmailTriggerResendVerificationEmail :<|> clientDeleteTrigger :<|> clientGetAccountInfo :<|> clientGetAccountSettings :<|> clientPostChangePassphrase :<|> clientPutAccountSettings :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetPricing :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
   client (flatten ticklerAPI)

@@ -112,7 +112,7 @@ postTriggerAddIntrayR :: Handler Html
 postTriggerAddIntrayR =
   withLogin $ \t -> do
     ait <- runInputPost addIntrayTriggerForm
-    errOrRes <- runClientOrErr $ clientPostAddIntrayTrigger t ait
+    errOrRes <- runClientOrErr $ clientPostIntrayTrigger t ait
     case errOrRes of
       Left err -> do
         addMessage
@@ -137,7 +137,7 @@ postTriggerAddEmailR :: Handler Html
 postTriggerAddEmailR =
   withLogin $ \t -> do
     aet <- runInputPost addEmailTriggerForm
-    void $ runClientOrErr $ clientPostAddEmailTrigger t aet
+    void $ runClientOrErr $ clientPostEmailTrigger t aet
     redirect TriggersR
 
 postTriggerDeleteR :: TriggerUUID -> Handler Html
