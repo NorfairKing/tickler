@@ -103,7 +103,7 @@ ticklerProtectedServer :: TicklerProtectedSite (AsServerT TicklerHandler)
 ticklerProtectedServer =
   TicklerProtectedSite
     { getItems = withAuthResult serveGetItems,
-      postAddItem = withAuthResult servePostItem,
+      postItem = withAuthResult servePostItem,
       putItem = withAuthResult servePutItem,
       getItem = withAuthResult serveGetItem,
       deleteItem = withAuthResult serveDeleteItem,

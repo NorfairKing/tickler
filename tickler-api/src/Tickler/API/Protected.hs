@@ -26,7 +26,7 @@ type TicklerProtectedAPI = ToServantApi TicklerProtectedSite
 
 data TicklerProtectedSite route = TicklerProtectedSite
   { getItems :: !(route :- GetItems),
-    postAddItem :: !(route :- PostItem),
+    postItem :: !(route :- PostItem),
     getItem :: !(route :- GetItem),
     putItem :: !(route :- PutItem),
     deleteItem :: !(route :- DeleteItem),
