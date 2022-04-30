@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.6.
+-- This file has been generated from package.yaml by hpack version 0.34.7.
 --
 -- see: https://github.com/sol/hpack
 
@@ -69,6 +69,9 @@ library
       Tickler.Web.Server.Handler.Pricing
       Tickler.Web.Server.Handler.Reload
       Tickler.Web.Server.Handler.Tickles
+      Tickler.Web.Server.Handler.TriggerAddEmail
+      Tickler.Web.Server.Handler.TriggerAddIntray
+      Tickler.Web.Server.Handler.TriggerDelete
       Tickler.Web.Server.Handler.Triggers
       Tickler.Web.Server.OptParse
       Tickler.Web.Server.OptParse.Types
