@@ -19,7 +19,7 @@
         Username
       <input .input
         type="text"
-        value=#{maybe "" usernameText mun}
+        value=#{usernameText accountInfoUsername}
         name="username">
 
     <div .field .is-horizontal>

@@ -48,12 +48,7 @@ makeAddIntrayTriggerWidget :: Handler Widget
 makeAddIntrayTriggerWidget =
   withLogin $ \t -> do
     defaultIntrayUrl <- getsYesod appDefaultIntrayUrl
-    mun <-
-      do
-        errOrAi <- runClient $ clientGetAccountInfo t
-        case errOrAi of
-          Left _ -> pure Nothing
-          Right AccountInfo {..} -> pure $ Just accountInfoUsername
+    AccountInfo {..} <- runClientOrErr $ clientGetAccountInfo t
     token <- genToken
     pure $(widgetFile "add-intray-trigger")
 

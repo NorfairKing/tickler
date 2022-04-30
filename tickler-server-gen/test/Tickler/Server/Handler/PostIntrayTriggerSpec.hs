@@ -22,13 +22,13 @@ spec = do
       forAllValid $ \intrayUsername ->
         forAllValid $ \intrayAccessKey ->
           withValidNewUser tenv $ \ttoken -> do
-            burl <- parseBaseUrl "intray.example.com"
+            intrayBaseUrl <- parseBaseUrl "intray.example.com"
             errOrUuid <-
               runClientOrError tenv $
                 clientPostIntrayTrigger
                   ttoken
                   AddIntrayTrigger
-                    { addIntrayTriggerUrl = burl,
+                    { addIntrayTriggerUrl = intrayBaseUrl,
                       addIntrayTriggerUsername = intrayUsername,
                       addIntrayTriggerAccessKey = intrayAccessKey
                     }
