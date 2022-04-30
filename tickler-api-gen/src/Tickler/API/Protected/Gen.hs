@@ -13,10 +13,6 @@ instance GenValid Tickle
 
 instance GenValid ItemInfo
 
-instance GenValid a => GenValid (TriggerInfo a)
-
-instance GenValid TypedTriggerInfo
-
 instance GenValid IntrayTriggerInfo
 
 instance GenValid EmailTriggerInfo

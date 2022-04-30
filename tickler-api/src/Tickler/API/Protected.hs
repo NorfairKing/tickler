@@ -79,13 +79,13 @@ type DeleteItem =
 type GetTriggers =
   ProtectAPI
     :> "trigger"
-    :> Get '[JSON] [TriggerInfo TypedTriggerInfo]
+    :> Get '[JSON] [TriggerInfo]
 
 type GetTrigger =
   ProtectAPI
     :> "trigger"
     :> Capture "id" TriggerUUID
-    :> Get '[JSON] (TriggerInfo TypedTriggerInfo)
+    :> Get '[JSON] TriggerInfo
 
 type PostAddIntrayTrigger =
   ProtectAPI

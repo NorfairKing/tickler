@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
@@ -99,52 +100,30 @@ data TriggerInfo = TriggerInfo
   }
   deriving (Show, Eq, Ord, Generic)
 
-instance Validity a => Validity (TriggerInfo a)
+instance Validity TriggerInfo
 
-instance FromJSON a => FromJSON (TriggerInfo a) where
+instance FromJSON TriggerInfo where
   parseJSON = withObject "TriggerInfo" $ \o -> TriggerInfo <$> o .: "uuid" <*> o .: "info"
 
-instance ToJSON a => ToJSON (TriggerInfo a) where
+instance ToJSON TriggerInfo where
   toJSON TriggerInfo {..} = object ["uuid" .= triggerInfoIdentifier, "info" .= triggerInfo]
 
-instance Functor TriggerInfo where
-  fmap f ti = ti {triggerInfo = f $ triggerInfo ti}
-
-decodeTriggerInfo ::
-  FromJSON a => TriggerType -> TriggerInfo TypedTriggerInfo -> Maybe (TriggerInfo a)
-decodeTriggerInfo tt ti = unwrap $ decodeTypedTriggerInfo tt <$> ti
-  where
-    unwrap :: TriggerInfo (Maybe a) -> Maybe (TriggerInfo a)
-    unwrap tmi =
-      case triggerInfo tmi of
-        Nothing -> Nothing
-        Just i ->
-          Just $ TriggerInfo {triggerInfoIdentifier = triggerInfoIdentifier tmi, triggerInfo = i}
-
 data Trigger
-  = IntrayTrigger EmailTriggerInfo
-  | EmailTrigger EmailTriggerInfo
-  deriving (Show, Eq, Generic)
+  = TriggerIntray IntrayTriggerInfo
+  | TriggerEmail EmailTriggerInfo
+  deriving (Show, Eq, Ord, Generic)
 
-data TypedTriggerInfo = TypedTriggerInfo
-  { typedTriggerInfoType :: !TriggerType,
-    typedTriggerInfoValue :: !JSON.Value
-  }
-  deriving (Show, Eq, Generic)
+instance Validity Trigger
 
-instance Validity TypedTriggerInfo
+instance FromJSON Trigger where
+  parseJSON v =
+    TriggerIntray <$> parseJSON v
+      <|> TriggerEmail <$> parseJSON v
 
-instance FromJSON TypedTriggerInfo
-
-instance ToJSON TypedTriggerInfo
-
-decodeTypedTriggerInfo :: FromJSON a => TriggerType -> TypedTriggerInfo -> Maybe a
-decodeTypedTriggerInfo expectedType TypedTriggerInfo {..} =
-  if typedTriggerInfoType == expectedType
-    then case fromJSON typedTriggerInfoValue of
-      JSON.Error _ -> Nothing
-      Success ti -> Just ti
-    else Nothing
+instance ToJSON Trigger where
+  toJSON = \case
+    TriggerIntray iti -> toJSON iti
+    TriggerEmail eti -> toJSON eti
 
 data IntrayTriggerInfo = IntrayTriggerInfo
   { intrayTriggerInfoUrl :: !BaseUrl

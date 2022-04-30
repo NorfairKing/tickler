@@ -15,7 +15,7 @@ import Tickler.Server.Handler.Trigger
 import Tickler.Server.Handler.Utils
 import Tickler.Server.Types
 
-serveGetTrigger :: AuthCookie -> TriggerUUID -> TicklerHandler (TriggerInfo TypedTriggerInfo)
+serveGetTrigger :: AuthCookie -> TriggerUUID -> TicklerHandler TriggerInfo
 serveGetTrigger AuthCookie {..} uuid = do
   mit <- fmap (makeIntrayTriggerInfo . entityVal) <$> runDb (getBy $ UniqueIntrayTrigger uuid)
   case mit of

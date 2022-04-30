@@ -16,10 +16,6 @@ spec = do
   jsonSpec @ItemInfo
   genValidSpec @Tickle
   jsonSpec @Tickle
-  genValidSpec @TypedTriggerInfo
-  jsonSpec @TypedTriggerInfo
-  genValidSpec @(TriggerInfo TypedTriggerInfo)
-  jsonSpec @(TriggerInfo TypedTriggerInfo)
   genValidSpec @IntrayTriggerInfo
   jsonSpec @IntrayTriggerInfo
   genValidSpec @EmailTriggerInfo

@@ -23,8 +23,8 @@ clientPostItem :: Token -> Tickle -> ClientM ItemUUID
 clientGetItem :: Token -> ItemUUID -> ClientM ItemInfo
 clientPutItem :: Token -> ItemUUID -> Tickle -> ClientM NoContent
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
-clientGetTriggers :: Token -> ClientM [TriggerInfo TypedTriggerInfo]
-clientGetTrigger :: Token -> TriggerUUID -> ClientM (TriggerInfo TypedTriggerInfo)
+clientGetTriggers :: Token -> ClientM [TriggerInfo]
+clientGetTrigger :: Token -> TriggerUUID -> ClientM TriggerInfo
 clientPostAddIntrayTrigger :: Token -> AddIntrayTrigger -> ClientM (Either Text TriggerUUID)
 clientPostAddEmailTrigger :: Token -> AddEmailTrigger -> ClientM TriggerUUID
 clientPostEmailTriggerVerify :: Token -> TriggerUUID -> EmailVerificationKey -> ClientM NoContent

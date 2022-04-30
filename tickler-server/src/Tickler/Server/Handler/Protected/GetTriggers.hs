@@ -15,7 +15,7 @@ import Tickler.Server.Handler.Trigger
 import Tickler.Server.Handler.Utils
 import Tickler.Server.Types
 
-serveGetTriggers :: AuthCookie -> TicklerHandler [TriggerInfo TypedTriggerInfo]
+serveGetTriggers :: AuthCookie -> TicklerHandler [TriggerInfo]
 serveGetTriggers AuthCookie {..} = do
   uts <- runDb $ selectList [UserTriggerUserId ==. authCookieUserUUID] []
   runDb $

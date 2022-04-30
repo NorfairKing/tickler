@@ -30,27 +30,19 @@ getTriggersR =
     addEmailTriggerWidget <- makeAddEmailTriggerWidget
     withNavBar $(widgetFile "triggers")
 
-makeTriggerInfoWidget :: TriggerInfo TypedTriggerInfo -> Handler Widget
+makeTriggerInfoWidget :: TriggerInfo -> Handler Widget
 makeTriggerInfoWidget tti =
-  case typedTriggerInfoType $ triggerInfo tti of
-    IntrayTriggerType ->
-      case decodeTriggerInfo IntrayTriggerType tti of
-        Nothing -> pure "Failed to decode intray trigger."
-        Just iti -> makeIntrayTriggerWidget iti
-    EmailTriggerType ->
-      case decodeTriggerInfo EmailTriggerType tti of
-        Nothing -> pure "Failed to decode email trigger."
-        Just eti -> makeEmailTriggerWidget eti
+  case triggerInfo tti of
+    TriggerIntray iti -> makeIntrayTriggerWidget (triggerInfoIdentifier tti) iti
+    TriggerEmail eti -> makeEmailTriggerWidget (triggerInfoIdentifier tti) eti
 
-makeIntrayTriggerWidget :: TriggerInfo IntrayTriggerInfo -> Handler Widget
-makeIntrayTriggerWidget TriggerInfo {..} = do
-  let IntrayTriggerInfo {..} = triggerInfo
+makeIntrayTriggerWidget :: TriggerUUID -> IntrayTriggerInfo -> Handler Widget
+makeIntrayTriggerWidget triggerInfoIdentifier IntrayTriggerInfo {..} = do
   token <- genToken
   pure $(widgetFile "intray-trigger")
 
-makeEmailTriggerWidget :: TriggerInfo EmailTriggerInfo -> Handler Widget
-makeEmailTriggerWidget TriggerInfo {..} = do
-  let EmailTriggerInfo {..} = triggerInfo
+makeEmailTriggerWidget :: TriggerUUID -> EmailTriggerInfo -> Handler Widget
+makeEmailTriggerWidget triggerInfoIdentifier EmailTriggerInfo {..} = do
   token <- genToken
   pure $(widgetFile "email-trigger")
 
