@@ -14,5 +14,5 @@
         autofocus>
     ^{token}
     
-    <button .button .is-primary type="submit">
+    <button .button #submit-email .is-primary type="submit">
       Create Email Trigger

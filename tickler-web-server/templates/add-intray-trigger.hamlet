@@ -31,5 +31,5 @@
 
     ^{token}
 
-    <button .button .is-primary  type="submit">
+    <button .button .is-primary #submit-intray type="submit">
       Create Intray Trigger

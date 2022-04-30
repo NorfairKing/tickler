@@ -43,7 +43,8 @@ servePostIntrayTrigger AuthCookie {..} AddIntrayTrigger {..} = do
   case errOrOk of
     Left err ->
       case err of
-        ConnectionError t -> pure $ Left (T.pack (show t))
+        ConnectionError t -> pure $ Left (T.pack (ppShow t))
+        FailureResponse req resp -> pure $ Left $ T.pack $ unlines [ppShow req, ppShow resp]
         _ -> pure $ Left $ T.pack $ ppShow err
     Right () -> do
       runDb $ do

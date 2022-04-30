@@ -2,6 +2,7 @@
 
 module Tickler.Web.Server.Handler.TriggerAddEmail (postTriggerAddEmailR) where
 
+import qualified Data.Text as T
 import Import
 import Tickler.API
 import Tickler.Client

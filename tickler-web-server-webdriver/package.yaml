@@ -33,11 +33,17 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - bytestring
+    - containers
     - genvalidity-sydtest
+    - http-client
     - http-types
+    - intray-client
+    - intray-server-gen
     - sydtest
     - sydtest-webdriver
     - sydtest-webdriver-yesod
+    - text
     - tickler-api
     - tickler-client
     - tickler-server-gen
@@ -45,3 +51,4 @@ tests:
     - tickler-web-server-gen
     - tickler-web-server-webdriver
     - time
+    - webdriver

@@ -200,6 +200,8 @@ value:
         - header: Email
           contents: TriggerAddEmailR
           state-history:
+          - state: DONE
+            time: 2022-04-30 14:00:22
           - state: TODO
             time: 2022-04-15 16:22:03
         - header: Verify email trigger
@@ -215,6 +217,8 @@ value:
         - header: Intray
           contents: TriggerAddIntrayR
           state-history:
+          - state: DONE
+            time: 2022-04-30 14:00:22
           - state: TODO
             time: 2022-04-15 16:22:03
       - header: Delete
