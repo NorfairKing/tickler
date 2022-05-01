@@ -50,9 +50,9 @@ spec = do
       forAllValid $ \addEmailTrigger ->
         withValidNewUser cenv $ \token -> do
           uuid <- runClientOrError cenv $ clientPostEmailTrigger token addEmailTrigger
-          mVerificationKey <- runPersistentTest pool $ fmap (emailTriggerVerificationKey . entityVal) <$> DB.getBy (UniqueEmailTrigger uuid)
+          mVerificationKey <- runPersistentTest pool $ fmap (verificationEmailKey . entityVal) <$> DB.selectFirst [VerificationEmailTrigger ==. uuid] []
           case mVerificationKey of
-            Nothing -> expectationFailure "Expected to find an email trigger"
+            Nothing -> expectationFailure "Expected to find an trigger verification email"
             Just verificationKey -> do
               TriggerInfo {..} <- runClientOrError cenv $ do
                 NoContent <- clientPostEmailTriggerVerify token uuid verificationKey

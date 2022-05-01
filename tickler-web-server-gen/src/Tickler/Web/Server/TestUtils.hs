@@ -5,6 +5,7 @@
 
 module Tickler.Web.Server.TestUtils
   ( ticklerWebServerSpec,
+    ticklerWebServerAndDatabaseSpec,
     freeTicklerWebServerSpec,
     paidTicklerWebServerSpec,
     appSetupFunc,
@@ -31,6 +32,7 @@ import Data.Maybe
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Time
+import qualified Database.Persist.Sql as DB
 import qualified Network.HTTP.Client as HTTP
 import Test.Syd
 import Test.Syd.Yesod
@@ -45,28 +47,23 @@ import Yesod.Auth
 {-# ANN module ("HLint: ignore Reduce duplication" :: String) #-}
 
 ticklerWebServerSpec :: YesodSpec App -> Spec
-ticklerWebServerSpec = b . a
-  where
-    a :: YesodSpec App -> TestDef '[Manager] ClientEnv
-    a = yesodSpecWithSiteSetupFunc' appSetupFunc
-    b :: TestDef '[Manager] ClientEnv -> Spec
-    b = API.withTicklerServer
+ticklerWebServerSpec = API.withTicklerServer . yesodSpecWithSiteSetupFunc' appSetupFunc
+
+ticklerWebServerAndDatabaseSpec :: TestDef '[HTTP.Manager] (DB.ConnectionPool, YesodClient App) -> Spec
+ticklerWebServerAndDatabaseSpec =
+  API.withTicklerServerAndDatabase
+    . setupAroundWith'
+      ( \man (pool, cenv) -> do
+          app <- appSetupFunc man cenv
+          yc <- yesodClientSetupFunc man app
+          pure (pool, yc)
+      )
 
 freeTicklerWebServerSpec :: YesodSpec App -> Spec
-freeTicklerWebServerSpec = b . a
-  where
-    a :: YesodSpec App -> TestDef '[Manager] ClientEnv
-    a = yesodSpecWithSiteSetupFunc' appSetupFunc
-    b :: TestDef '[Manager] ClientEnv -> Spec
-    b = API.withFreeTicklerServer
+freeTicklerWebServerSpec = API.withFreeTicklerServer . yesodSpecWithSiteSetupFunc' appSetupFunc
 
 paidTicklerWebServerSpec :: Int -> YesodSpec App -> Spec
-paidTicklerWebServerSpec maxItems = b . a
-  where
-    a :: YesodSpec App -> TestDef '[Manager] ClientEnv
-    a = yesodSpecWithSiteSetupFunc' appSetupFunc
-    b :: TestDef '[Manager] ClientEnv -> Spec
-    b = API.withPaidTicklerServer maxItems
+paidTicklerWebServerSpec maxItems = API.withPaidTicklerServer maxItems . yesodSpecWithSiteSetupFunc' appSetupFunc
 
 appSetupFunc :: HTTP.Manager -> ClientEnv -> SetupFunc App
 appSetupFunc _ (ClientEnv _ burl _) = do

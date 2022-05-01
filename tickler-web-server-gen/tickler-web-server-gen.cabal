@@ -25,6 +25,7 @@ library
     , mtl
     , path
     , path-io
+    , persistent
     , pretty-show
     , servant-client
     , sydtest
@@ -56,6 +57,7 @@ test-suite tickler-web-server-test
       Tickler.Web.Server.Handler.TicklesSpec
       Tickler.Web.Server.Handler.TriggerAddEmailSpec
       Tickler.Web.Server.Handler.TriggerAddIntraySpec
+      Tickler.Web.Server.Handler.TriggerEmailVerifySpec
       Tickler.Web.Server.Handler.TriggersSpec
       Paths_tickler_web_server_gen
   hs-source-dirs:
@@ -76,9 +78,11 @@ test-suite tickler-web-server-test
     , mtl
     , path
     , path-io
+    , persistent
     , pretty-show
     , servant-client
     , sydtest
+    , sydtest-persistent
     , sydtest-yesod
     , text
     , tickler-client

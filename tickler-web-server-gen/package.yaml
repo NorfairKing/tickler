@@ -15,6 +15,7 @@ library:
     - mtl
     - path
     - path-io
+    - persistent
     - pretty-show
     - servant-client
     - sydtest
@@ -52,9 +53,11 @@ tests:
     - mtl
     - path
     - path-io
+    - persistent
     - pretty-show
     - servant-client
     - sydtest
+    - sydtest-persistent
     - sydtest-yesod
     - text
     - tickler-client
