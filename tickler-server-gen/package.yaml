@@ -103,9 +103,11 @@ tests:
     - intray-server-gen
     - path
     - path-io
+    - persistent
     - servant
     - servant-client
     - sydtest
+    - sydtest-persistent
     - text
     - tickler-api
     - tickler-api-gen

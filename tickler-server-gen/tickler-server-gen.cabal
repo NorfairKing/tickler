@@ -88,6 +88,7 @@ test-suite tickler-server-test
       Tickler.Server.Handler.ListItemsSpec
       Tickler.Server.Handler.PostChangePassphraseSpec
       Tickler.Server.Handler.PostEmailTriggerSpec
+      Tickler.Server.Handler.PostEmailTriggerVerifySpec
       Tickler.Server.Handler.PostIntrayTriggerSpec
       Tickler.Server.Handler.PostItemSpec
       Tickler.Server.Handler.PostLoginSpec
@@ -117,9 +118,11 @@ test-suite tickler-server-test
     , intray-server-gen
     , path
     , path-io
+    , persistent
     , servant
     , servant-client
     , sydtest
+    , sydtest-persistent
     , text
     , tickler-api
     , tickler-api-gen

@@ -4,10 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Tickler.Server.Handler.Protected.PostEmailTriggerVerify
-  ( servePostEmailTriggerVerify,
-  )
-where
+module Tickler.Server.Handler.Protected.PostEmailTriggerVerify (servePostEmailTriggerVerify) where
 
 import Database.Persist
 import Import
@@ -29,11 +26,11 @@ servePostEmailTriggerVerify AuthCookie {..} tuuid evk = do
         ]
         []
   case mt of
-    Nothing -> throwAll err404 {errBody = "Trigger not found."}
+    Nothing -> throwAll err404
     Just (Entity _ UserTrigger {..}) -> do
       met <- runDb $ selectFirst [EmailTriggerIdentifier ==. tuuid] []
       case met of
-        Nothing -> throwAll err404 {errBody = "Email trigger not found."}
+        Nothing -> throwAll err404
         Just (Entity etid EmailTrigger {..}) ->
           if emailTriggerVerificationKey == evk
             then runDb $ update etid [EmailTriggerVerified =. True]

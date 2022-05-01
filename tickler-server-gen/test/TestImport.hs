@@ -14,6 +14,7 @@ import Data.Maybe as X
 import Data.Monoid as X
 import Data.String as X
 import Data.Text as X (Text)
+import Network.HTTP.Types as X
 import Path as X
 import Path.IO as X
 import System.Exit as X

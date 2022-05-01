@@ -6,6 +6,7 @@
 
 module Tickler.Server.TestUtils
   ( withTicklerServer,
+    withTicklerServerAndDatabase,
     withFreeTicklerServer,
     withPaidTicklerServer,
     withPaidTicklerServer_,
@@ -53,20 +54,40 @@ withTicklerServer specFunc = do
   describe "Free" $ withFreeTicklerServer specFunc
   describe "Paid" $ withPaidTicklerServer_ specFunc
 
+withTicklerServerAndDatabase :: TestDef '[HTTP.Manager] (ConnectionPool, ClientEnv) -> Spec
+withTicklerServerAndDatabase specFunc = do
+  describe "Free" $ withFreeTicklerServerAndDatabase specFunc
+  describe "Paid" $ withPaidTicklerServerAndDatabase_ specFunc
+
 withPaidTicklerServer_ :: TestDef '[HTTP.Manager] ClientEnv -> Spec
 withPaidTicklerServer_ = withPaidTicklerServer 5
 
+withPaidTicklerServerAndDatabase_ :: TestDef '[HTTP.Manager] (ConnectionPool, ClientEnv) -> Spec
+withPaidTicklerServerAndDatabase_ = withPaidTicklerServerAndDatabase 5
+
 withPaidTicklerServer :: Int -> TestDef '[HTTP.Manager] ClientEnv -> Spec
-withPaidTicklerServer maxFree specFunc =
-  managerSpec $
-    setupAroundWith' (\man () -> paidTicklerTestClientEnvSetupFunc maxFree man) $
-      modifyMaxSuccess (`div` 20) specFunc
+withPaidTicklerServer maxFree =
+  managerSpec
+    . setupAroundWith' (\man () -> paidTicklerTestClientEnvSetupFunc maxFree man)
+    . modifyMaxSuccess (`div` 20)
+
+withPaidTicklerServerAndDatabase :: Int -> TestDef '[HTTP.Manager] (ConnectionPool, ClientEnv) -> Spec
+withPaidTicklerServerAndDatabase maxFree =
+  managerSpec
+    . setupAroundWith' (\man () -> paidTicklerTestClientEnvAndDatabaseSetupFunc maxFree man)
+    . modifyMaxSuccess (`div` 20)
 
 withFreeTicklerServer :: TestDef '[HTTP.Manager] ClientEnv -> Spec
-withFreeTicklerServer specFunc =
-  managerSpec $
-    setupAroundWith' (\man () -> ticklerTestClientEnvSetupFunc Nothing man) $
-      modifyMaxSuccess (`div` 20) specFunc
+withFreeTicklerServer =
+  managerSpec
+    . setupAroundWith' (\man () -> ticklerTestClientEnvSetupFunc Nothing man)
+    . modifyMaxSuccess (`div` 20)
+
+withFreeTicklerServerAndDatabase :: TestDef '[HTTP.Manager] (ConnectionPool, ClientEnv) -> Spec
+withFreeTicklerServerAndDatabase =
+  managerSpec
+    . setupAroundWith' (\man () -> ticklerTestClientEnvAndDatabaseSetupFunc Nothing man)
+    . modifyMaxSuccess (`div` 20)
 
 withBothTicklerAndIntrayServer :: TestDef '[HTTP.Manager] (ClientEnv, ClientEnv) -> Spec
 withBothTicklerAndIntrayServer specFunc =
@@ -81,7 +102,10 @@ withBothTicklerAndIntrayServer specFunc =
       pure (tcenv, icenv)
 
 paidTicklerTestClientEnvSetupFunc :: Int -> HTTP.Manager -> SetupFunc ClientEnv
-paidTicklerTestClientEnvSetupFunc maxFree man = do
+paidTicklerTestClientEnvSetupFunc maxFree man = snd <$> paidTicklerTestClientEnvAndDatabaseSetupFunc maxFree man
+
+paidTicklerTestClientEnvAndDatabaseSetupFunc :: Int -> HTTP.Manager -> SetupFunc (ConnectionPool, ClientEnv)
+paidTicklerTestClientEnvAndDatabaseSetupFunc maxFree man = do
   now <- liftIO getCurrentTime
   let planName = PlanId "dummyPlan"
       dummyPlan =
@@ -108,13 +132,14 @@ paidTicklerTestClientEnvSetupFunc maxFree man = do
             stripeSetPublishableKey = "Example, should not be used."
           }
   let monetisationEnvMaxItemsFree = maxFree
-  ticklerTestClientEnvSetupFunc (Just MonetisationEnv {..}) man
+  ticklerTestClientEnvAndDatabaseSetupFunc (Just MonetisationEnv {..}) man
 
 ticklerTestClientEnvSetupFunc :: Maybe MonetisationEnv -> HTTP.Manager -> SetupFunc ClientEnv
-ticklerTestClientEnvSetupFunc menv man = ticklerTestConnectionSetupFunc >>= ticklerTestClientEnvSetupFunc' menv man
+ticklerTestClientEnvSetupFunc mEnv man = snd <$> ticklerTestClientEnvAndDatabaseSetupFunc mEnv man
 
-ticklerTestClientEnvSetupFunc' :: Maybe MonetisationEnv -> HTTP.Manager -> ConnectionPool -> SetupFunc ClientEnv
-ticklerTestClientEnvSetupFunc' menv man pool = do
+ticklerTestClientEnvAndDatabaseSetupFunc :: Maybe MonetisationEnv -> HTTP.Manager -> SetupFunc (ConnectionPool, ClientEnv)
+ticklerTestClientEnvAndDatabaseSetupFunc menv man = do
+  pool <- ticklerTestConnectionSetupFunc
   signingKey <- liftIO Auth.generateKey
   let jwtCfg = defaultJWTSettings signingKey
   let cookieCfg = defaultCookieSettings
@@ -142,7 +167,7 @@ ticklerTestClientEnvSetupFunc' menv man pool = do
           }
   let application = serveWithContext ticklerAPI (ticklerAppContext ticklerEnv) (makeTicklerServer ticklerEnv)
   p <- applicationSetupFunc application
-  pure $ mkClientEnv man (BaseUrl Http "127.0.0.1" (fromIntegral p) "")
+  pure (pool, mkClientEnv man (BaseUrl Http "127.0.0.1" (fromIntegral p) ""))
 
 ticklerTestConnectionSetupFunc :: SetupFunc ConnectionPool
 ticklerTestConnectionSetupFunc = connectionPoolSetupFunc migrateAll

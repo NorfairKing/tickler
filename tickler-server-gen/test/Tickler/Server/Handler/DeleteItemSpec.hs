@@ -3,7 +3,6 @@ module Tickler.Server.Handler.DeleteItemSpec
   )
 where
 
-import Network.HTTP.Types.Status
 import Servant.Client
 import TestImport
 import Tickler.API.Gen ()
