@@ -57,6 +57,7 @@ test-suite tickler-web-server-test
       Tickler.Web.Server.Handler.TicklesSpec
       Tickler.Web.Server.Handler.TriggerAddEmailSpec
       Tickler.Web.Server.Handler.TriggerAddIntraySpec
+      Tickler.Web.Server.Handler.TriggerEmailResendSpec
       Tickler.Web.Server.Handler.TriggerEmailVerifySpec
       Tickler.Web.Server.Handler.TriggersSpec
       Paths_tickler_web_server_gen
