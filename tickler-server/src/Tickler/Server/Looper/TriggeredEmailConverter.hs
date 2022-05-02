@@ -5,6 +5,9 @@
 
 module Tickler.Server.Looper.TriggeredEmailConverter
   ( runTriggeredEmailConverter,
+    triggeredEmailSubject,
+    triggeredEmailTextContent,
+    triggeredEmailHtmlContent,
   )
 where
 
@@ -45,21 +48,14 @@ convertTriggeredEmail tess (Entity tid TriggeredEmail {..}) = do
 
 makeTriggeredEmail ::
   TriggeredEmailConverterSettings -> EmailTrigger -> TriggeredItem -> Render Text -> Looper Email
-makeTriggeredEmail tecs@TriggeredEmailConverterSettings {..} EmailTrigger {..} ti@TriggeredItem {..} render = do
+makeTriggeredEmail tecs@TriggeredEmailConverterSettings {..} EmailTrigger {..} ti render = do
   now <- liftIO getCurrentTime
   pure
     Email
       { emailTo = emailTriggerAddress,
         emailFrom = triggeredEmailConverterSetFromAddress,
         emailFromName = triggeredEmailConverterSetFromName,
-        emailSubject =
-          T.pack $
-            unwords
-              [ "[Tickler]:",
-                take 50 $
-                  filter (\c -> not (Char.isControl c) && c /= '\n' && c /= '\r') $
-                    T.unpack triggeredItemContents
-              ],
+        emailSubject = triggeredEmailSubject ti,
         emailTextContent = triggeredEmailTextContent tecs ti render,
         emailHtmlContent = triggeredEmailHtmlContent tecs ti render,
         emailStatus = EmailUnsent,
@@ -68,6 +64,16 @@ makeTriggeredEmail tecs@TriggeredEmailConverterSettings {..} EmailTrigger {..} t
         emailScheduled = now,
         emailSendAttempt = Nothing
       }
+
+triggeredEmailSubject :: TriggeredItem -> Text
+triggeredEmailSubject TriggeredItem {..} =
+  T.pack $
+    unwords
+      [ "[Tickler]:",
+        take 50 $
+          filter (\c -> not (Char.isControl c) && c /= '\n' && c /= '\r') $
+            T.unpack triggeredItemContents
+      ]
 
 triggeredEmailTextContent :: TriggeredEmailConverterSettings -> TriggeredItem -> Render Text -> Text
 triggeredEmailTextContent TriggeredEmailConverterSettings {..} TriggeredItem {..} render =

@@ -9,24 +9,22 @@ version:        0.0.0.0
 synopsis:       Test utils for tickler-server
 description:    Please see README.md
 category:       Tickler
-homepage:       https://github.com/NorfairKing/tickler-server#readme
-bug-reports:    https://github.com/NorfairKing/tickler-server/issues
 author:         Tom Sydney Kerckhove
 maintainer:     syd.kerckhove@gmail.com
-copyright:      Copyright: (c) 2016-2021 Tom Sydney Kerckhove
+copyright:      Copyright: (c) 2016-2022 Tom Sydney Kerckhove
 license:        AllRightsReserved
 license-file:   LICENSE
 build-type:     Simple
-
-source-repository head
-  type: git
-  location: https://github.com/NorfairKing/tickler-server
+extra-source-files:
+    test_resources/email/triggered.html
+    test_resources/email/triggered.subject
+    test_resources/email/triggered.text
 
 library
   exposed-modules:
+      Import
       Tickler.Server.TestUtils
   other-modules:
-      Import
       Paths_tickler_server_gen
   hs-source-dirs:
       src
@@ -96,6 +94,7 @@ test-suite tickler-server-test
       Tickler.Server.Handler.PostRegisterSpec
       Tickler.Server.Handler.PutAccountSettingsSpec
       Tickler.Server.Handler.PutItemSpec
+      Tickler.Server.Looper.TriggeredEmailConverterSpec
       Tickler.Server.Looper.TriggererSpec
       Paths_tickler_server_gen
   hs-source-dirs:
@@ -133,6 +132,8 @@ test-suite tickler-server-test
     , tickler-server
     , tickler-server-gen
     , time
+    , typed-uuid
+    , uuid
   default-language: Haskell2010
 
 benchmark tickler-server-bench

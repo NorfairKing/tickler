@@ -5,15 +5,15 @@ description: Please see README.md
 category: Tickler
 author: Tom Sydney Kerckhove
 maintainer: syd.kerckhove@gmail.com
-copyright: ! 'Copyright: (c) 2016-2021 Tom Sydney Kerckhove'
+copyright: ! 'Copyright: (c) 2016-2022 Tom Sydney Kerckhove'
 license: AllRightsReserved
-github: NorfairKing/tickler-server
+
+extra-source-files:
+- test_resources/**/*
 
 library:
   source-dirs: src
   ghc-options: -Wall
-  exposed-modules:
-  - Tickler.Server.TestUtils
   default-extensions:
   - NoImplicitPrelude
 
@@ -117,3 +117,5 @@ tests:
     - tickler-server
     - tickler-server-gen
     - time
+    - typed-uuid
+    - uuid
