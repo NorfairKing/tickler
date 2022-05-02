@@ -4,7 +4,6 @@ module Tickler.Web.Server.Handler.TriggerEmailResendSpec where
 
 import qualified Database.Persist as DB
 import Test.Syd.Persistent
-import Test.Syd.Yesod
 import TestImport
 import Tickler.Client
 import Tickler.Web.Server.Foundation
@@ -14,20 +13,10 @@ spec :: Spec
 spec =
   ticklerWebServerAndDatabaseSpec $ do
     it "can ask to resend the verification email" $ \(pool, yc) -> do
-      forAllValid $ \emailAddress ->
+      forAllValid $ \emailTrigger ->
         runYesodClientM yc $
           withExampleAccountAndLogin_ $ do
-            get TriggersR
-            statusIs 200
-            request $ do
-              setMethod methodPost
-              setUrl TriggerAddEmailR
-              addTokenFromCookie
-              addPostParam "email-address" $ emailAddressText emailAddress
-            statusIs 303
-            locationShouldBe TriggersR
-            _ <- followRedirect
-            statusIs 200
+            addEmailTrigger emailTrigger
             -- Find the email trigger to figure out its uuid
             mUuid <- liftIO $ runPersistentTest pool $ fmap (emailTriggerIdentifier . DB.entityVal) <$> DB.selectFirst [] []
             case mUuid of

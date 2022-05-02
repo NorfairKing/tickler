@@ -24,6 +24,7 @@ module Tickler.Web.Server.TestUtils
     addItemRequestBuilder,
     editItem,
     editItemRequestBuilder,
+    addEmailTrigger,
   )
 where
 
@@ -220,3 +221,17 @@ tickleRequestBuilder Tickle {..} = do
         forM_ md $ \d -> addPostParam "day" $ T.pack $ show d
         forM_ mtod $ \tod ->
           addPostParam "month-time-of-day" $ T.pack $ formatTime defaultTimeLocale "%H:%M" tod
+
+addEmailTrigger :: AddEmailTrigger -> YesodExample App ()
+addEmailTrigger AddEmailTrigger {..} = do
+  get TriggersR
+  statusIs 200
+  request $ do
+    setMethod methodPost
+    setUrl TriggerAddEmailR
+    addTokenFromCookie
+    addPostParam "email-address" $ emailAddressText addEmailTriggerEmailAddress
+  statusIs 303
+  locationShouldBe TriggersR
+  _ <- followRedirect
+  statusIs 200
