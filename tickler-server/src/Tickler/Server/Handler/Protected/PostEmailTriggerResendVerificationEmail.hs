@@ -30,23 +30,27 @@ servePostEmailTriggerResendVerificationEmail AuthCookie {..} tuuid = do
         ]
         []
   case mt of
-    Nothing -> throwAll err404 {errBody = "Trigger not found."}
+    Nothing -> throwAll err404
     Just (Entity _ UserTrigger {..}) -> do
       met <- runDb $ selectFirst [EmailTriggerIdentifier ==. tuuid] []
       case met of
-        Nothing -> throwAll err404 {errBody = "Email trigger not found."}
-        Just (Entity _ EmailTrigger {..}) ->
+        Nothing -> throwAll err404
+        Just (Entity _ EmailTrigger {..}) -> do
           if emailTriggerVerified
             then throwAll err400 {errBody = "Email trigger already verified."}
             else do
-              now <- liftIO getCurrentTime
-              runDb $
-                insert_
-                  VerificationEmail
-                    { verificationEmailTo = emailTriggerAddress,
-                      verificationEmailKey = emailTriggerVerificationKey,
-                      verificationEmailTrigger = emailTriggerIdentifier,
-                      verificationEmailScheduled = now,
-                      verificationEmailEmail = Nothing
-                    }
-              pure NoContent
+              emailsAlreadyQueued <- runDb $ count [VerificationEmailTrigger ==. tuuid, VerificationEmailEmail ==. Nothing]
+              if emailsAlreadyQueued >= 1
+                then throwAll err400 {errBody = "Verification email already scheduled."}
+                else do
+                  now <- liftIO getCurrentTime
+                  runDb $
+                    insert_
+                      VerificationEmail
+                        { verificationEmailTo = emailTriggerAddress,
+                          verificationEmailKey = emailTriggerVerificationKey,
+                          verificationEmailTrigger = emailTriggerIdentifier,
+                          verificationEmailScheduled = now,
+                          verificationEmailEmail = Nothing
+                        }
+                  pure NoContent
