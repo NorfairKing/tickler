@@ -9,7 +9,6 @@ import Autodocodec
 import Control.Monad.Logger
 import qualified Control.Monad.Trans.AWS as AWS
 import Data.Aeson (FromJSON, ToJSON)
-import Database.Persist.Sqlite
 import Import
 import Tickler.API
 import Web.Stripe.Client as Stripe
@@ -23,7 +22,7 @@ data Flags = Flags
     flagPort :: Maybe Int,
     flagWebHost :: Maybe Text,
     flagLogLevel :: Maybe LogLevel,
-    flagDb :: Maybe Text,
+    flagDb :: Maybe String,
     flagAdmins :: [Username],
     flagFreeloaders :: [Username],
     flagsMonetisationFlags :: MonetisationFlags,
@@ -78,7 +77,7 @@ data LooperFlagsRetryPolicy = LooperFlagsRetryPolicy
   deriving (Show, Eq)
 
 data Configuration = Configuration
-  { confDb :: !(Maybe Text),
+  { confDb :: !(Maybe String),
     confWebHost :: !(Maybe Text),
     confPort :: !(Maybe Int),
     confLogLevel :: !(Maybe LogLevel),
@@ -265,7 +264,7 @@ instance HasCodec AdminNotificationEmailConverterConf where
 
 data Environment = Environment
   { envConfigFile :: Maybe FilePath,
-    envDb :: Maybe Text,
+    envDb :: Maybe String,
     envWebHost :: Maybe Text,
     envPort :: Maybe Int,
     envLogLevel :: Maybe LogLevel,
@@ -323,7 +322,7 @@ data AdminNotificationEmailConverterEnvironment = AdminNotificationEmailConverte
 data Settings = Settings
   { setPort :: !Int,
     setLogLevel :: !LogLevel,
-    setConnectionInfo :: !SqliteConnectionInfo,
+    setDb :: !(Path Abs File),
     setAdmins :: ![Username],
     setFreeloaders :: ![Username],
     setMonetisationSettings :: !(Maybe MonetisationSettings),

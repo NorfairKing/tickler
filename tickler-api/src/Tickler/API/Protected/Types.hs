@@ -48,7 +48,7 @@ instance FromJSON Tickle where
       Tickle
         <$> o .: "content"
         <*> o .: "scheduled-day"
-        <*> o .: "scheduled-time"
+        <*> o .:? "scheduled-time"
         <*> o .:? "recurrence"
 
 instance ToJSON Tickle where

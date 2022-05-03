@@ -15,7 +15,6 @@ import Control.Monad.Logger
 import qualified Control.Monad.Trans.AWS as AWS
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import Database.Persist.Sqlite
 import Import
 import Options.Applicative as OptParse
 import qualified Options.Applicative.Help as OptParse
@@ -40,7 +39,7 @@ combineToSettings Flags {..} Environment {..} mConf = do
   let setPort = fromMaybe 8000 $ flagPort <|> envPort <|> mc confPort
   let setLogLevel = fromMaybe LevelInfo $ flagLogLevel <|> envLogLevel <|> mc confLogLevel
   let mWebHost = flagWebHost <|> envWebHost <|> mc confWebHost
-  let setConnectionInfo = mkSqliteConnectionInfo $ fromMaybe "tickler.db" $ flagDb <|> envDb <|> mc confDb
+  setDb <- resolveFile' $ fromMaybe "tickler.db" $ flagDb <|> envDb <|> mc confDb
   let setAdmins = flagAdmins ++ fromMaybe [] (mc confAdmins)
   let setFreeloaders = flagFreeloaders ++ fromMaybe [] (mc confFreeloaders)
   setLoopersSettings <-
@@ -285,7 +284,7 @@ getEnvironment :: IO Environment
 getEnvironment = do
   env <- System.getEnvironment
   let envConfigFile = getEnv env "CONFIG_FILE"
-  let envDb = T.pack <$> getEnv env "DATABASE"
+  let envDb = getEnv env "DATABASE"
   let envWebHost = T.pack <$> getEnv env "WEB_HOST"
   envPort <- readEnv env "PORT"
   envLogLevel <- readEnv env "LOG_LEVEL"

@@ -57,7 +57,7 @@ instance HasCodec Recurrence where
           ( object "EveryDaysAtTime" $
               (,)
                 <$> requiredField "days" "days between recurrence" .= fst
-                <*> optionalField "time-of-day" "time of day within the recurring day" .= snd
+                <*> optionalFieldOrNull "time-of-day" "time of day within the recurring day" .= snd
           )
           "every x days"
       everyMonthsOnDayCodec :: JSONObjectCodec (Word, Maybe Word8, Maybe TimeOfDay)
@@ -67,8 +67,8 @@ instance HasCodec Recurrence where
           ( object "EveryMonthsOnDay" $
               (,,)
                 <$> requiredField "months" "months between recurrence" .= (\(a, _, _) -> a)
-                <*> optionalField "day" "day within the recurring month" .= (\(_, a, _) -> a)
-                <*> optionalField "time-of-day" "time of day within the recurring day" .= (\(_, _, a) -> a)
+                <*> optionalFieldOrNull "day" "day within the recurring month" .= (\(_, a, _) -> a)
+                <*> optionalFieldOrNull "time-of-day" "time of day within the recurring day" .= (\(_, _, a) -> a)
           )
           "every x months"
 

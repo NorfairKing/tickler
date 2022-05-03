@@ -35,13 +35,18 @@ runTicklerServer :: Settings -> IO ()
 runTicklerServer Settings {..} =
   runStderrLoggingT $
     filterLogger (\_ ll -> ll >= setLogLevel) $
-      withSqlitePoolInfo setConnectionInfo 1 $
+      withSqlitePoolInfo (mkSqliteConnectionInfo (T.pack (fromAbsFile setDb))) 1 $
         \pool -> do
           runResourceT (runSqlPool (runMigration migrateAll) pool)
-            `catch` ( \pe -> liftIO $
-                        die $ case pe of
-                          PersistError t -> T.unpack t
-                          _ -> show (pe :: PersistException)
+            `catch` ( \pe ->
+                        liftIO $
+                          die $
+                            unlines
+                              [ case pe of
+                                  PersistError t -> T.unpack t
+                                  _ -> show (pe :: PersistException),
+                                unwords ["sqlite3", show setDb]
+                              ]
                     )
           signingKey <- liftIO loadSigningKey
           let jwtCfg = defaultJWTSettings signingKey
