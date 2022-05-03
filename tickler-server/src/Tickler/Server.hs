@@ -14,6 +14,7 @@ where
 import Control.Monad.Logger
 import Control.Monad.Trans.Resource (runResourceT)
 import Data.Cache
+import qualified Data.Text as T
 import Database.Persist.Sqlite
 import Import
 import Network.Wai as Wai
@@ -28,6 +29,7 @@ import Tickler.Server.Looper
 import Tickler.Server.OptParse.Types
 import Tickler.Server.SigningKey
 import Tickler.Server.Types
+import UnliftIO
 
 runTicklerServer :: Settings -> IO ()
 runTicklerServer Settings {..} =
@@ -35,7 +37,12 @@ runTicklerServer Settings {..} =
     filterLogger (\_ ll -> ll >= setLogLevel) $
       withSqlitePoolInfo setConnectionInfo 1 $
         \pool -> do
-          runResourceT $ flip runSqlPool pool $ runMigration migrateAll
+          runResourceT (runSqlPool (runMigration migrateAll) pool)
+            `catch` ( \pe -> liftIO $
+                        die $ case pe of
+                          PersistError t -> T.unpack t
+                          _ -> show (pe :: PersistException)
+                    )
           signingKey <- liftIO loadSigningKey
           let jwtCfg = defaultJWTSettings signingKey
           let cookieCfg = defaultCookieSettings
