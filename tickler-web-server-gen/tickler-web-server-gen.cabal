@@ -39,6 +39,7 @@ library
     , tickler-web-server
     , time
     , typed-uuid
+    , unordered-containers
     , yesod-auth
   default-language: Haskell2010
 

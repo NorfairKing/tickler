@@ -52,7 +52,6 @@ library
       Import
       Tickler.Web.Server
       Tickler.Web.Server.Application
-      Tickler.Web.Server.BootCheck
       Tickler.Web.Server.Constants
       Tickler.Web.Server.Foundation
       Tickler.Web.Server.Handler

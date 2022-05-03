@@ -28,21 +28,24 @@ module Tickler.Web.Server.TestUtils
   )
 where
 
+import Control.Concurrent (newMVar)
 import Control.Monad
+import qualified Data.HashMap.Strict as HM
 import Data.Maybe
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Time
 import qualified Database.Persist.Sql as DB
 import qualified Network.HTTP.Client as HTTP
+import Path.IO
 import Test.Syd
+import Test.Syd.Path
 import Test.Syd.Yesod
 import Tickler.Client
 import Tickler.Data.Gen ()
 import qualified Tickler.Server.TestUtils as API
-import Tickler.Web.Server
+import Tickler.Web.Server.Application ()
 import Tickler.Web.Server.Foundation
-import Tickler.Web.Server.OptParse.Types
 import Yesod.Auth
 
 {-# ANN module ("HLint: ignore Reduce duplication" :: String) #-}
@@ -67,17 +70,18 @@ paidTicklerWebServerSpec :: Int -> YesodSpec App -> Spec
 paidTicklerWebServerSpec maxItems = API.withPaidTicklerServer maxItems . yesodSpecWithSiteSetupFunc' appSetupFunc
 
 appSetupFunc :: HTTP.Manager -> ClientEnv -> SetupFunc App
-appSetupFunc _ (ClientEnv _ burl _) = do
-  liftIO $
-    makeTicklerApp
-      Settings
-        { setPort = 8000,
-          setAPIBaseUrl = burl,
-          setPersistLogins = False,
-          setDefaultIntrayUrl = Nothing,
-          setTracking = Nothing,
-          setVerification = Nothing
-        }
+appSetupFunc man (ClientEnv _ burl _) = do
+  tdir <- tempDirSetupFunc "tickler-web-server"
+  appSessionKeyFile <- resolveFile tdir "client_session_key.aes"
+  let appHTTPManager = man
+  let appStatic = myStatic
+  appLoginTokens <- liftIO $ newMVar HM.empty
+  let appAPIBaseUrl = burl
+  let appTracking = Nothing
+  let appVerification = Nothing
+  let appPersistLogins = False
+  let appDefaultIntrayUrl = Nothing
+  pure App {..}
 
 loginTo :: Username -> Text -> YesodExample App ()
 loginTo username passphrase = do

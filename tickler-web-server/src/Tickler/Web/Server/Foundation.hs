@@ -58,6 +58,7 @@ data App = App
     appTracking :: Maybe Text,
     appVerification :: Maybe Text,
     appLoginTokens :: MVar (HashMap Username Token),
+    appSessionKeyFile :: !(Path Abs File),
     appDefaultIntrayUrl :: Maybe BaseUrl
   }
 
@@ -73,8 +74,7 @@ instance Yesod App where
     withUrlRenderer $(hamletFile "templates/default-page.hamlet")
   yesodMiddleware = defaultCsrfMiddleware . defaultYesodMiddleware
   authRoute _ = Just $ AuthR LoginR
-  makeSessionBackend _ =
-    Just <$> defaultClientSessionBackend (60 * 24 * 365 * 10) "client_session_key.aes"
+  makeSessionBackend a = Just <$> defaultClientSessionBackend (60 * 24 * 365 * 10) (fromAbsFile (appSessionKeyFile a))
   errorHandler NotFound =
     fmap toTypedContent $
       withNavBar $
