@@ -35,14 +35,14 @@ runVerificationEmailConverter vecs@VerificationEmailConverterSettings {..} = do
 
 convertVerificationEmail :: VerificationEmailConverterSettings -> Entity VerificationEmail -> Looper ()
 convertVerificationEmail vecs (Entity vid ve) = do
-  email <- makeVerificationEmail vecs ve (error "unused")
+  email <- makeVerificationEmail vecs ve
   runDb $ do
     emailId <- insert email
     update vid [VerificationEmailEmail =. Just emailId]
 
 makeVerificationEmail ::
-  VerificationEmailConverterSettings -> VerificationEmail -> Render Text -> Looper Email
-makeVerificationEmail vecs@VerificationEmailConverterSettings {..} ve@VerificationEmail {..} render = do
+  VerificationEmailConverterSettings -> VerificationEmail -> Looper Email
+makeVerificationEmail vecs@VerificationEmailConverterSettings {..} ve@VerificationEmail {..} = do
   now <- liftIO getCurrentTime
   pure
     Email
@@ -50,8 +50,8 @@ makeVerificationEmail vecs@VerificationEmailConverterSettings {..} ve@Verificati
         emailFrom = verificationEmailConverterSetFromAddress,
         emailFromName = verificationEmailConverterSetFromName,
         emailSubject = verificationEmailSubject,
-        emailTextContent = verificationEmailTextContent vecs ve render,
-        emailHtmlContent = verificationEmailHtmlContent vecs ve render,
+        emailTextContent = verificationEmailTextContent vecs ve,
+        emailHtmlContent = verificationEmailHtmlContent vecs ve,
         emailStatus = EmailUnsent,
         emailSendError = Nothing,
         emailSesId = Nothing,
@@ -63,24 +63,24 @@ verificationEmailSubject :: Text
 verificationEmailSubject = "Please verify your email trigger"
 
 verificationEmailTextContent ::
-  VerificationEmailConverterSettings -> VerificationEmail -> Render Text -> Text
-verificationEmailTextContent VerificationEmailConverterSettings {..} VerificationEmail {..} render =
+  VerificationEmailConverterSettings -> VerificationEmail -> Text
+verificationEmailTextContent VerificationEmailConverterSettings {..} VerificationEmail {..} =
   let verificationLink =
         makeVerificationLink
           verificationEmailConverterSetWebHost
           verificationEmailTrigger
           verificationEmailKey
-   in LT.toStrict $ LTB.toLazyText $ $(textFile "templates/email/verification-email.txt") render
+   in LT.toStrict $ LTB.toLazyText $ $(textFile "templates/email/verification-email.txt") (error "unused")
 
 verificationEmailHtmlContent ::
-  VerificationEmailConverterSettings -> VerificationEmail -> Render Text -> Text
-verificationEmailHtmlContent VerificationEmailConverterSettings {..} VerificationEmail {..} render =
+  VerificationEmailConverterSettings -> VerificationEmail -> Text
+verificationEmailHtmlContent VerificationEmailConverterSettings {..} VerificationEmail {..} =
   let verificationLink =
         makeVerificationLink
           verificationEmailConverterSetWebHost
           verificationEmailTrigger
           verificationEmailKey
-   in LT.toStrict $ renderHtml $ $(hamletFile "templates/email/verification-email.hamlet") render
+   in LT.toStrict $ renderHtml $ $(hamletFile "templates/email/verification-email.hamlet") (error "unused")
 
 makeVerificationLink :: Text -> TriggerUUID -> EmailVerificationKey -> Text
 makeVerificationLink host tuuid evk =

@@ -19,6 +19,9 @@ extra-source-files:
     test_resources/email/triggered.html
     test_resources/email/triggered.subject
     test_resources/email/triggered.text
+    test_resources/email/verification.html
+    test_resources/email/verification.subject
+    test_resources/email/verification.text
 
 library
   exposed-modules:

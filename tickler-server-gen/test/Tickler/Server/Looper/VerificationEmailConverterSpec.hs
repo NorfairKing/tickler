@@ -26,7 +26,6 @@ spec = do
             verificationEmailScheduled = UTCTime (fromGregorian 2022 05 04) 1234,
             verificationEmailEmail = Nothing
           }
-  let urlRender = error "unused"
 
   it "produces the same subject as last time" $
     pureGoldenTextFile
@@ -35,8 +34,8 @@ spec = do
 
   it "produces the same text content as last time" $
     pureGoldenTextFile "test_resources/email/verification.text" $
-      verificationEmailTextContent sets ve urlRender
+      verificationEmailTextContent sets ve
 
   it "produces the same text content as last time" $
     pureGoldenTextFile "test_resources/email/verification.html" $
-      verificationEmailHtmlContent sets ve urlRender
+      verificationEmailHtmlContent sets ve

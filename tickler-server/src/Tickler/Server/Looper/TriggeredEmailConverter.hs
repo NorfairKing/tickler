@@ -41,14 +41,14 @@ convertTriggeredEmail tess (Entity tid TriggeredEmail {..}) = do
   case (,) <$> meti <*> meet of
     Nothing -> pure ()
     Just (Entity _ ti, Entity _ et) -> do
-      email <- makeTriggeredEmail tess et ti undefined
+      email <- makeTriggeredEmail tess et ti
       runDb $ do
         emailId <- insert email
         update tid [TriggeredEmailEmail =. Just emailId]
 
 makeTriggeredEmail ::
-  TriggeredEmailConverterSettings -> EmailTrigger -> TriggeredItem -> Render Text -> Looper Email
-makeTriggeredEmail tecs@TriggeredEmailConverterSettings {..} EmailTrigger {..} ti render = do
+  TriggeredEmailConverterSettings -> EmailTrigger -> TriggeredItem -> Looper Email
+makeTriggeredEmail tecs@TriggeredEmailConverterSettings {..} EmailTrigger {..} ti = do
   now <- liftIO getCurrentTime
   pure
     Email
@@ -56,8 +56,8 @@ makeTriggeredEmail tecs@TriggeredEmailConverterSettings {..} EmailTrigger {..} t
         emailFrom = triggeredEmailConverterSetFromAddress,
         emailFromName = triggeredEmailConverterSetFromName,
         emailSubject = triggeredEmailSubject ti,
-        emailTextContent = triggeredEmailTextContent tecs ti render,
-        emailHtmlContent = triggeredEmailHtmlContent tecs ti render,
+        emailTextContent = triggeredEmailTextContent tecs ti,
+        emailHtmlContent = triggeredEmailHtmlContent tecs ti,
         emailStatus = EmailUnsent,
         emailSendError = Nothing,
         emailSesId = Nothing,
@@ -75,10 +75,10 @@ triggeredEmailSubject TriggeredItem {..} =
             T.unpack triggeredItemContents
       ]
 
-triggeredEmailTextContent :: TriggeredEmailConverterSettings -> TriggeredItem -> Render Text -> Text
-triggeredEmailTextContent TriggeredEmailConverterSettings {..} TriggeredItem {..} render =
-  LT.toStrict $ LTB.toLazyText $ $(textFile "templates/email/triggered-email.txt") render
+triggeredEmailTextContent :: TriggeredEmailConverterSettings -> TriggeredItem -> Text
+triggeredEmailTextContent TriggeredEmailConverterSettings {..} TriggeredItem {..} =
+  LT.toStrict $ LTB.toLazyText $ $(textFile "templates/email/triggered-email.txt") (error "unused")
 
-triggeredEmailHtmlContent :: TriggeredEmailConverterSettings -> TriggeredItem -> Render Text -> Text
-triggeredEmailHtmlContent TriggeredEmailConverterSettings {..} TriggeredItem {..} render =
-  LT.toStrict $ renderHtml $ $(hamletFile "templates/email/triggered-email.hamlet") render
+triggeredEmailHtmlContent :: TriggeredEmailConverterSettings -> TriggeredItem -> Text
+triggeredEmailHtmlContent TriggeredEmailConverterSettings {..} TriggeredItem {..} =
+  LT.toStrict $ renderHtml $ $(hamletFile "templates/email/triggered-email.hamlet") (error "unused")
