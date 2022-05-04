@@ -96,6 +96,7 @@ test-suite tickler-server-test
       Tickler.Server.Handler.PutItemSpec
       Tickler.Server.Looper.TriggeredEmailConverterSpec
       Tickler.Server.Looper.TriggererSpec
+      Tickler.Server.Looper.VerificationEmailConverterSpec
       Paths_tickler_server_gen
   hs-source-dirs:
       test

@@ -5,6 +5,9 @@
 
 module Tickler.Server.Looper.VerificationEmailConverter
   ( runVerificationEmailConverter,
+    verificationEmailSubject,
+    verificationEmailTextContent,
+    verificationEmailHtmlContent,
   )
 where
 
@@ -46,7 +49,7 @@ makeVerificationEmail vecs@VerificationEmailConverterSettings {..} ve@Verificati
       { emailTo = verificationEmailTo,
         emailFrom = verificationEmailConverterSetFromAddress,
         emailFromName = verificationEmailConverterSetFromName,
-        emailSubject = "Please verify your email trigger",
+        emailSubject = verificationEmailSubject,
         emailTextContent = verificationEmailTextContent vecs ve render,
         emailHtmlContent = verificationEmailHtmlContent vecs ve render,
         emailStatus = EmailUnsent,
@@ -55,6 +58,9 @@ makeVerificationEmail vecs@VerificationEmailConverterSettings {..} ve@Verificati
         emailScheduled = now,
         emailSendAttempt = Nothing
       }
+
+verificationEmailSubject :: Text
+verificationEmailSubject = "Please verify your email trigger"
 
 verificationEmailTextContent ::
   VerificationEmailConverterSettings -> VerificationEmail -> Render Text -> Text
