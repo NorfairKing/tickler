@@ -3,6 +3,7 @@ set -x
 
 cd tickler-web-server
 
+killall tickler-server || true
 killall tickler-web-server || true
 
 set -e
