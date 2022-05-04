@@ -1,12 +1,5 @@
 name: tickler-data-gen
-version: '0.0.0.0'
-synopsis: Generators for tickler-data
-category: Tickler
-author: Tom Sydney Kerckhove
-maintainer: syd.kerckhove@gmail.com
-copyright: ! 'Copyright: (c) 2016-2022 Tom Sydney Kerckhove'
-license: AllRightsReserved
-github: NorfairKing/tickler-server
+
 default-extensions:
 - NoImplicitPrelude
 

@@ -1,5 +1,4 @@
-name:    tickler-web-server-webdriver
-version: "0.0.0.0"
+name: tickler-web-server-webdriver
 
 dependencies:
 - base >= 4.9 && < 5

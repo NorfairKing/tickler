@@ -5,16 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           tickler-server
-version:        0.0.0.0
-synopsis:       Tickler Server
-category:       Tickler
-homepage:       https://github.com/NorfairKing/tickler-server#readme
-bug-reports:    https://github.com/NorfairKing/tickler-server/issues
-author:         Tom Sydney Kerckhove
-maintainer:     syd.kerckhove@gmail.com
-copyright:      Copyright: (c) 2016-2022 Tom Sydney Kerckhove
-license:        AllRightsReserved
-license-file:   LICENSE
+version:        0.0.0
 build-type:     Simple
 extra-source-files:
     templates/email/admin-notification-email.hamlet
@@ -23,10 +14,6 @@ extra-source-files:
     templates/email/triggered-email.txt
     templates/email/verification-email.hamlet
     templates/email/verification-email.txt
-
-source-repository head
-  type: git
-  location: https://github.com/NorfairKing/tickler-server
 
 library
   exposed-modules:

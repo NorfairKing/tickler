@@ -5,15 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           tickler-server-gen
-version:        0.0.0.0
-synopsis:       Test utils for tickler-server
-description:    Please see README.md
-category:       Tickler
-author:         Tom Sydney Kerckhove
-maintainer:     syd.kerckhove@gmail.com
-copyright:      Copyright: (c) 2016-2022 Tom Sydney Kerckhove
-license:        AllRightsReserved
-license-file:   LICENSE
+version:        0.0.0
 build-type:     Simple
 extra-source-files:
     test_resources/email/triggered.html

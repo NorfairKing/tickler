@@ -1,5 +1,4 @@
-name:    tickler-web-server
-version: "0.0.0.0"
+name: tickler-web-server
 
 extra-source-files:
 - routes

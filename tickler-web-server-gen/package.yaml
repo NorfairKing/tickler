@@ -1,5 +1,4 @@
-name:    tickler-web-server-gen
-version: "0.0.0.0"
+name: tickler-web-server-gen
 
 dependencies:
 - base >= 4.9 && < 5

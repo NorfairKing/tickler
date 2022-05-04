@@ -1,12 +1,4 @@
 name: tickler-server
-version: '0.0.0.0'
-synopsis: Tickler Server
-category: Tickler
-author: Tom Sydney Kerckhove
-maintainer: syd.kerckhove@gmail.com
-copyright: ! 'Copyright: (c) 2016-2022 Tom Sydney Kerckhove'
-license: AllRightsReserved
-github: NorfairKing/tickler-server
 
 extra-source-files:
 - templates/**/*

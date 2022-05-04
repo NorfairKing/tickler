@@ -1,24 +1,12 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.6.
+-- This file has been generated from package.yaml by hpack version 0.34.7.
 --
 -- see: https://github.com/sol/hpack
 
 name:           tickler-data-gen
-version:        0.0.0.0
-synopsis:       Generators for tickler-data
-category:       Tickler
-homepage:       https://github.com/NorfairKing/tickler-server#readme
-bug-reports:    https://github.com/NorfairKing/tickler-server/issues
-author:         Tom Sydney Kerckhove
-maintainer:     syd.kerckhove@gmail.com
-copyright:      Copyright: (c) 2016-2022 Tom Sydney Kerckhove
-license:        AllRightsReserved
+version:        0.0.0
 build-type:     Simple
-
-source-repository head
-  type: git
-  location: https://github.com/NorfairKing/tickler-server
 
 library
   exposed-modules:

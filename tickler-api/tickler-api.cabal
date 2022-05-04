@@ -1,24 +1,12 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.6.
+-- This file has been generated from package.yaml by hpack version 0.34.7.
 --
 -- see: https://github.com/sol/hpack
 
 name:           tickler-api
-version:        0.0.0.0
-synopsis:       Tickler API
-category:       Tickler
-homepage:       https://github.com/NorfairKing/tickler#readme
-bug-reports:    https://github.com/NorfairKing/tickler/issues
-author:         Tom Sydney Kerckhove
-maintainer:     syd.kerckhove@gmail.com
-copyright:      Copyright: (c) 2016-2021 Tom Sydney Kerckhove
-license:        AllRightsReserved
+version:        0.0.0
 build-type:     Simple
-
-source-repository head
-  type: git
-  location: https://github.com/NorfairKing/tickler
 
 library
   exposed-modules:
