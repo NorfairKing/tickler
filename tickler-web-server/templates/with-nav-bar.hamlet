@@ -1,7 +1,7 @@
 <nav .navbar role="navigation" aria-label="main navigation">
   <div .navbar-brand>
     <a .navbar-item href=@{HomeR}>
-      <img src=@{StaticR static_tom_sydney_kerckhove_logo_tickler_svg} alt="Logo Tickler" width="100px">
+      <img src=@{StaticR static_tom_sydney_kerckhove_logo_tickler_svg} alt="Logo Tickler" width="30">
 
     <a role="button" .navbar-burger .burger aria-label="menu" aria-expanded="false" data-target="myNavbar">
       <span aria-hidden="true">
