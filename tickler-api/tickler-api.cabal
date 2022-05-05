@@ -15,7 +15,6 @@ library
       Tickler.API.Account
       Tickler.API.Admin
       Tickler.API.Protected
-      Tickler.API.Types
   other-modules:
       Paths_tickler_api
   hs-source-dirs:

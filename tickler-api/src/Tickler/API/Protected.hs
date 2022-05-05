@@ -21,11 +21,30 @@ import Intray.API ()
 import qualified Intray.Data as Intray
 import Servant.API
 import Servant.API.Generic
+import Servant.Auth
+import Servant.Auth.Server
 import Tickler.API.Account
-import Tickler.API.Types
 import Tickler.Data
 
 type TicklerProtectedAPI = ToServantApi TicklerProtectedSite
+
+type ProtectAPI = Auth '[JWT] AuthCookie
+
+newtype AuthCookie = AuthCookie
+  { authCookieUserUUID :: AccountUUID
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving (FromJSON, ToJSON) via (Autodocodec AuthCookie)
+
+instance FromJWT AuthCookie
+
+instance ToJWT AuthCookie
+
+instance HasCodec AuthCookie where
+  codec =
+    object "AuthCookie" $
+      AuthCookie
+        <$> requiredField "id" "identifier" .= authCookieUserUUID
 
 data TicklerProtectedSite route = TicklerProtectedSite
   { getItems :: !(route :- GetItems),
@@ -283,6 +302,22 @@ type PostChangePassphrase =
   ProtectAPI
     :> ReqBody '[JSON] ChangePassphrase
     :> PostNoContent '[JSON] NoContent
+
+data ChangePassphrase = ChangePassphrase
+  { changePassphraseOld :: Text,
+    changePassphraseNew :: Text
+  }
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving (FromJSON, ToJSON) via (Autodocodec ChangePassphrase)
+
+instance Validity ChangePassphrase
+
+instance HasCodec ChangePassphrase where
+  codec =
+    object "ChangePassphrase" $
+      ChangePassphrase
+        <$> requiredField "old-passphrase" "old passphrase" .= changePassphraseOld
+        <*> requiredField "new-passphrase" "new passphrase" .= changePassphraseNew
 
 type PutAccountSettings =
   ProtectAPI

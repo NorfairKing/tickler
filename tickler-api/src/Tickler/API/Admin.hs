@@ -15,7 +15,7 @@ import Import
 import Servant.API
 import Servant.API.Generic
 import Tickler.API.Account
-import Tickler.API.Types
+import Tickler.API.Protected
 import Tickler.Data
 
 type TicklerAdminAPI = ToServantApi TicklerAdminSite

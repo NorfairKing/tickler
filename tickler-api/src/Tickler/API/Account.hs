@@ -11,7 +11,6 @@ module Tickler.API.Account where
 import Data.Aeson as JSON
 import Data.Time
 import Import
-import Tickler.API.Types ()
 import Tickler.Data
 
 data AccountInfo = AccountInfo
