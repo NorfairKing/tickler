@@ -32,7 +32,6 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - bytestring
     - containers
     - genvalidity-sydtest
     - http-client

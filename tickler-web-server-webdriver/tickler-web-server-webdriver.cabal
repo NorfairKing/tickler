@@ -59,7 +59,6 @@ test-suite tickler-web-server-webdriver-test
       sydtest-discover:sydtest-discover
   build-depends:
       base >=4.9 && <5
-    , bytestring
     , containers
     , genvalidity-sydtest
     , http-client

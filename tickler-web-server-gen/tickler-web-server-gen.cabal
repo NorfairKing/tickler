@@ -27,14 +27,12 @@ library
     , path-io
     , persistent
     , pretty-show
-    , servant-client
     , sydtest
     , sydtest-yesod
     , text
     , tickler-client
     , tickler-data
     , tickler-data-gen
-    , tickler-server
     , tickler-server-gen
     , tickler-web-server
     , time
@@ -75,14 +73,12 @@ test-suite tickler-web-server-test
     , http-client
     , http-types
     , intray-client
-    , intray-data
     , intray-server-gen
     , mtl
     , path
     , path-io
     , persistent
     , pretty-show
-    , servant-client
     , sydtest
     , sydtest-persistent
     , sydtest-yesod
@@ -90,7 +86,6 @@ test-suite tickler-web-server-test
     , tickler-client
     , tickler-data
     , tickler-data-gen
-    , tickler-server
     , tickler-server-gen
     , tickler-web-server
     , tickler-web-server-gen

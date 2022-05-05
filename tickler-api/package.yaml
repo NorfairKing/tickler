@@ -10,9 +10,7 @@ library:
   - aeson
   - autodocodec
   - base >=4.7 && <5
-  - base64-bytestring
   - bytestring >=0.10 && <0.11
-  - http-api-data
   - intray-api
   - intray-data
   - servant
