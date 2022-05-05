@@ -14,13 +14,13 @@ spec :: Spec
 spec = do
   let sets =
         VerificationEmailConverterSettings
-          { verificationEmailConverterSetFromAddress = unsafeEmailAddress "tickler" "example.com",
+          { verificationEmailConverterSetFromAddress = emailAddress "tickler@example.com",
             verificationEmailConverterSetFromName = "tickler",
             verificationEmailConverterSetWebHost = "https://tickler.example.com"
           }
   let ve =
         VerificationEmail
-          { verificationEmailTo = unsafeEmailAddress "user" "example.com",
+          { verificationEmailTo = emailAddress "user@example.com",
             verificationEmailKey = EmailVerificationKey "49320818b7a577a41ba727ac511b4e63",
             verificationEmailTrigger = Typed.UUID (UUID.fromWords 1 2 3 4),
             verificationEmailScheduled = UTCTime (fromGregorian 2022 05 04) 1234,

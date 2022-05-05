@@ -41,7 +41,6 @@ library
     , base16-bytestring
     , bcrypt
     , bytestring
-    , email-validate
     , hashable
     , intray-data
     , persistent

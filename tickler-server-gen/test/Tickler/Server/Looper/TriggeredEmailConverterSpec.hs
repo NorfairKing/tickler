@@ -14,7 +14,7 @@ spec :: Spec
 spec = do
   let sets =
         TriggeredEmailConverterSettings
-          { triggeredEmailConverterSetFromAddress = unsafeEmailAddress "tickler" "example.com",
+          { triggeredEmailConverterSetFromAddress = emailAddress "tickler@example.com",
             triggeredEmailConverterSetFromName = "tickler",
             triggeredEmailConverterSetWebHost = "https://tickler.example.com"
           }

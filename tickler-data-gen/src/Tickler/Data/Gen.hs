@@ -10,7 +10,7 @@ module Tickler.Data.Gen where
 import Data.GenValidity
 import Data.GenValidity.ByteString ()
 import Data.GenValidity.Persist ()
-import Data.GenValidity.Text ()
+import Data.GenValidity.Text
 import Data.GenValidity.Time ()
 import Data.GenValidity.UUID ()
 import Data.GenValidity.UUID.Typed ()
@@ -67,17 +67,7 @@ instance GenValid BaseUrl where
 instance GenValid IntrayTrigger
 
 instance GenValid EmailAddress where
-  genValid = do
-    domain <- genS
-    host <- genS
-    let eac = normalizeEmail $ T.pack $ concat [domain, "@", host]
-    case emailAddressFromText eac >>= constructValid of
-      Nothing -> scale (+ 5) genValid
-      Just ea -> pure ea
-    where
-      genS = (:) <$> genChar <*> genListOf genChar
-      genChar = elements $ ['a' .. 'z'] ++ ['A' .. 'Z'] ++ ['0' .. '9'] ++ "-_.~"
-  shrinkValid _ = []
+  genValid = emailAddress <$> (genValid >>= textStartingWith)
 
 instance GenValid EmailVerificationKey
 

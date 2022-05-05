@@ -316,16 +316,16 @@ getLoopersEnv env = do
     getLooperEnvWith env "TRIGGERED_INTRAY_ITEM_SENDER" $ pure ()
   looperEnvVerificationEmailConverterEnv <-
     getLooperEnvWith env "VERIFICATION_EMAIL_CONVERTER" $
-      getEitherEnv env emailValidateFromString "VERIFICATION_EMAIL_ADDRESS"
+      pure $ fromString <$> getEnv env "VERIFICATION_EMAIL_ADDRESS"
   looperEnvTriggeredEmailSchedulerEnv <- getLooperEnvWith env "TRIGGERED_EMAIL_SCHEDULER" $ pure ()
   looperEnvTriggeredEmailConverterEnv <-
     getLooperEnvWith env "TRIGGERED_EMAIL_CONVERTER" $
-      getEitherEnv env emailValidateFromString "TRIGGERED_EMAIL_ADDRESS"
+      pure $ fromString <$> getEnv env "TRIGGERED_EMAIL_ADDRESS"
   looperEnvAdminNotificationEmailConverterEnv <-
-    getLooperEnvWith env "ADMIN_NOTIFICATION_EMAIL_CONVERTER" $
-      AdminNotificationEmailConverterEnvironment
-        <$> getEitherEnv env emailValidateFromString "ADMIN_NOTIFICATION_FROM_EMAIL_ADDRESS"
-        <*> getEitherEnv env emailValidateFromString "ADMIN_NOTIFICATION_TO_EMAIL_ADDRESS"
+    getLooperEnvWith env "ADMIN_NOTIFICATION_EMAIL_CONVERTER" $ do
+      let f = fromString <$> getEnv env "ADMIN_NOTIFICATION_FROM_EMAIL_ADDRESS"
+      let t = fromString <$> getEnv env "ADMIN_NOTIFICATION_TO_EMAIL_ADDRESS"
+      pure $ AdminNotificationEmailConverterEnvironment f t
   pure LoopersEnvironment {..}
 
 getLooperEnvWith :: [(String, String)] -> String -> IO a -> IO (LooperEnvWith a)
@@ -344,6 +344,11 @@ getLooperRetryPolicyEnv env name = do
 
 getEnv :: [(String, String)] -> String -> Maybe String
 getEnv env key = lookup ("TICKLER_SERVER_" <> key) env
+
+requireEnv :: IsString a => [(String, String)] -> String -> IO a
+requireEnv env key = case getEnv env key of
+  Nothing -> die $ "Missing env var: " <> key
+  Just v -> pure $ fromString v
 
 readEnv :: Read a => [(String, String)] -> String -> IO (Maybe a)
 readEnv env key =
@@ -535,27 +540,27 @@ parseLoopersFlags =
     <*> parseLooperFlagsWith "intray-item-sender" (pure ())
     <*> parseLooperFlagsWith
       "verification-email-converter"
-      ( option
-          (Just <$> eitherReader emailValidateFromString)
-          ( mconcat
-              [ long "verification-email-address",
-                value Nothing,
-                metavar "EMAIL_ADDRESS",
-                help "The email address to use to send verification emails from"
-              ]
+      ( optional
+          ( strOption
+              ( mconcat
+                  [ long "verification-email-address",
+                    metavar "EMAIL_ADDRESS",
+                    help "The email address to use to send verification emails from"
+                  ]
+              )
           )
       )
     <*> parseLooperFlagsWith "triggered-email-scheduler" (pure ())
     <*> parseLooperFlagsWith
       "triggered-email-converter"
-      ( option
-          (Just <$> eitherReader emailValidateFromString)
-          ( mconcat
-              [ long "triggered-email-address",
-                value Nothing,
-                metavar "EMAIL_ADDRESS",
-                help "The email address to use to send triggered item emails from"
-              ]
+      ( optional
+          ( strOption
+              ( mconcat
+                  [ long "triggered-email-address",
+                    metavar "EMAIL_ADDRESS",
+                    help "The email address to use to send triggered item emails from"
+                  ]
+              )
           )
       )
     <*> parseLooperFlagsWith
@@ -565,23 +570,23 @@ parseLoopersFlags =
 parseAdminNotificationEmailConverterFlags :: Parser AdminNotificationEmailConverterFlags
 parseAdminNotificationEmailConverterFlags =
   AdminNotificationEmailConverterFlags
-    <$> option
-      (Just <$> eitherReader emailValidateFromString)
-      ( mconcat
-          [ long "admin-notification-from-email-address",
-            value Nothing,
-            metavar "EMAIL_ADDRESS",
-            help "The email address to use to send admin notification emails from"
-          ]
+    <$> optional
+      ( strOption
+          ( mconcat
+              [ long "admin-notification-from-email-address",
+                metavar "EMAIL_ADDRESS",
+                help "The email address to use to send admin notification emails from"
+              ]
+          )
       )
-    <*> option
-      (Just <$> eitherReader emailValidateFromString)
-      ( mconcat
-          [ long "admin-notification-to-email-address",
-            value Nothing,
-            metavar "EMAIL_ADDRESS",
-            help "The email address of the admin to use to send admin notification emails to"
-          ]
+    <*> optional
+      ( strOption
+          ( mconcat
+              [ long "admin-notification-to-email-address",
+                metavar "EMAIL_ADDRESS",
+                help "The email address of the admin to use to send admin notification emails to"
+              ]
+          )
       )
 
 parseLooperFlagsWith :: String -> Parser a -> Parser (LooperFlagsWith a)

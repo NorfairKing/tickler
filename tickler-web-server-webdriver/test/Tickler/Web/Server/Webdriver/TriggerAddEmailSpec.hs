@@ -9,15 +9,15 @@ spec :: WebdriverSpec App
 spec =
   it "can add an email trigger" $ do
     driveAsNewUser dummyUser $ do
-      let emailAddress = "tickler@example.com"
+      let ea = "tickler@example.com"
       findElem (ById "nav-triggers") >>= click
-      findElem (ByName "email-address") >>= sendKeys emailAddress
+      findElem (ByName "email-address") >>= sendKeys ea
       findElem (ById "submit-email") >>= submit
       token <- getUserToken $ testUserUsername dummyUser
       triggers <- driveClientOrErr $ clientGetTriggers token
       liftIO $ case triggers of
         [] -> expectationFailure "Got no triggers."
         [TriggerInfo {..}] -> case triggerInfo of
-          TriggerEmail EmailTriggerInfo {..} -> emailAddressText emailTriggerInfoEmailAddress `shouldBe` emailAddress
+          TriggerEmail EmailTriggerInfo {..} -> emailAddressText emailTriggerInfoEmailAddress `shouldBe` ea
           _ -> expectationFailure "Expected an email trigger."
         _ -> expectationFailure "Got more than one one trigger."

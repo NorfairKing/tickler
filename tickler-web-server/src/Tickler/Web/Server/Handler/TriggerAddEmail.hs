@@ -2,7 +2,6 @@
 
 module Tickler.Web.Server.Handler.TriggerAddEmail (postTriggerAddEmailR) where
 
-import qualified Data.Text as T
 import Import
 import Tickler.API
 import Tickler.Client
@@ -12,7 +11,13 @@ import Yesod
 addEmailTriggerForm :: FormInput Handler AddEmailTrigger
 addEmailTriggerForm =
   AddEmailTrigger
-    <$> ireq (checkMMap (pure . left T.pack . emailValidateFromText) emailAddressText textField) "email-address"
+    <$> ireq
+      ( checkMMap
+          (pure . (Right :: EmailAddress -> Either Text EmailAddress) . emailAddress)
+          emailAddressText
+          textField
+      )
+      "email-address"
 
 postTriggerAddEmailR :: Handler Html
 postTriggerAddEmailR =
