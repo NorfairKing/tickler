@@ -17,7 +17,7 @@ import Import
 data Recurrence
   = EveryDaysAtTime Word (Maybe TimeOfDay)
   | EveryMonthsOnDay Word (Maybe Word8) (Maybe TimeOfDay)
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec Recurrence)
 
 instance Validity Recurrence where

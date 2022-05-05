@@ -18,7 +18,7 @@ import Import
 data TriggerType
   = EmailTriggerType
   | IntrayTriggerType
-  deriving stock (Show, Read, Eq, Ord, Bounded, Enum, Generic)
+  deriving stock (Show, Read, Eq, Bounded, Enum, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec TriggerType)
 
 instance Validity TriggerType

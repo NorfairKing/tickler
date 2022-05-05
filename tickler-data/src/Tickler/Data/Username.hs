@@ -26,7 +26,7 @@ import Import
 newtype Username = Username
   { usernameText :: Text
   }
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving newtype (ToJSONKey)
   deriving (FromJSON, ToJSON) via (Autodocodec Username)
 

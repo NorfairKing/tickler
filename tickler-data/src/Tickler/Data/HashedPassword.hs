@@ -15,7 +15,7 @@ import Import
 
 newtype HashedPassword
   = HashedPassword ByteString
-  deriving (Show, Eq, Ord, Read, Generic, PersistField, PersistFieldSql)
+  deriving (Show, Eq, Read, Generic, PersistField, PersistFieldSql)
 
 instance Validity HashedPassword
 

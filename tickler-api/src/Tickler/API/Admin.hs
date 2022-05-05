@@ -39,7 +39,7 @@ data AdminStats = AdminStats
     adminStatsNbTriggeredItems :: Word,
     adminStatsActiveUsers :: !ActiveUsers
   }
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec AdminStats)
 
 instance Validity AdminStats
@@ -60,7 +60,7 @@ data ActiveUsers = ActiveUsers
     activeUsersMonthly :: !Word,
     activeUsersYearly :: !Word
   }
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec ActiveUsers)
 
 instance Validity ActiveUsers

@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -14,19 +15,24 @@ data EmailStatus
   = EmailUnsent
   | EmailSent
   | EmailError
-  deriving (Show, Read, Eq, Ord, Bounded, Enum, Generic)
+  deriving (Show, Read, Eq, Bounded, Enum, Generic)
 
 instance Validity EmailStatus
 
 instance PersistField EmailStatus where
-  toPersistValue EmailUnsent = PersistByteString "unsent"
-  toPersistValue EmailSent = PersistByteString "sent"
-  toPersistValue EmailError = PersistByteString "error"
-  fromPersistValue (PersistByteString "unsent") = Right EmailUnsent
-  fromPersistValue (PersistByteString "sending") = Right EmailUnsent
-  fromPersistValue (PersistByteString "sent") = Right EmailSent
-  fromPersistValue (PersistByteString "error") = Right EmailError
-  fromPersistValue _ = Left "Not a valid EmailStatus"
+  toPersistValue =
+    toPersistValue . \case
+      EmailUnsent -> "unsent"
+      EmailSent -> "sent"
+      EmailError -> ("error" :: ByteString)
+  fromPersistValue pv = do
+    sb <- fromPersistValue pv
+    case sb :: ByteString of
+      "unsent" -> Right EmailUnsent
+      "sending" -> Right EmailUnsent
+      "sent" -> Right EmailSent
+      "error" -> Right EmailError
+      _ -> Left "Unknown EmailStatus"
 
 instance PersistFieldSql EmailStatus where
   sqlType Proxy = SqlString

@@ -84,7 +84,7 @@ data ItemInfo = ItemInfo
     itemInfoContents :: !Tickle,
     itemInfoCreated :: !UTCTime
   }
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec ItemInfo)
 
 instance Validity ItemInfo
@@ -116,7 +116,7 @@ data Tickle = Tickle
     tickleScheduledTime :: !(Maybe TimeOfDay),
     tickleRecurrence :: !(Maybe Recurrence)
   }
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec Tickle)
 
 instance Validity Tickle where
@@ -156,7 +156,7 @@ data TriggerInfo = TriggerInfo
   { triggerInfoIdentifier :: !TriggerUUID,
     triggerInfo :: !Trigger
   }
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec TriggerInfo)
 
 instance Validity TriggerInfo
@@ -171,7 +171,7 @@ instance HasCodec TriggerInfo where
 data Trigger
   = TriggerIntray IntrayTriggerInfo
   | TriggerEmail EmailTriggerInfo
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec Trigger)
 
 instance Validity Trigger
@@ -190,7 +190,7 @@ instance HasCodec Trigger where
 data IntrayTriggerInfo = IntrayTriggerInfo
   { intrayTriggerInfoUrl :: !BaseUrl
   }
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec IntrayTriggerInfo)
 
 instance Validity IntrayTriggerInfo
@@ -205,7 +205,7 @@ data EmailTriggerInfo = EmailTriggerInfo
   { emailTriggerInfoEmailAddress :: !EmailAddress,
     emailTriggerInfoVerified :: !Bool
   }
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec EmailTriggerInfo)
 
 instance Validity EmailTriggerInfo
@@ -229,7 +229,7 @@ data AddIntrayTrigger = AddIntrayTrigger
     addIntrayTriggerUsername :: !Intray.Username,
     addIntrayTriggerAccessKey :: !Intray.AccessKeySecret
   }
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec AddIntrayTrigger)
 
 instance Validity AddIntrayTrigger
@@ -252,7 +252,7 @@ type PostEmailTrigger =
 data AddEmailTrigger = AddEmailTrigger
   { addEmailTriggerEmailAddress :: !EmailAddress
   }
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec AddEmailTrigger)
 
 instance Validity AddEmailTrigger
@@ -307,7 +307,7 @@ data ChangePassphrase = ChangePassphrase
   { changePassphraseOld :: Text,
     changePassphraseNew :: Text
   }
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec ChangePassphrase)
 
 instance Validity ChangePassphrase

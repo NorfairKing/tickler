@@ -18,7 +18,7 @@ import System.Random
 
 newtype EmailVerificationKey
   = EmailVerificationKey ByteString
-  deriving (Eq, Ord, Generic, PersistField, PersistFieldSql)
+  deriving (Eq, Generic, PersistField, PersistFieldSql)
 
 instance Validity EmailVerificationKey
 

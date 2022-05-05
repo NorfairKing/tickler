@@ -51,7 +51,6 @@ User
 
     deriving Show
     deriving Eq
-    deriving Ord
     deriving Generic
     deriving Typeable
 
@@ -82,7 +81,6 @@ UserSettings
 
     deriving Show
     deriving Eq
-    deriving Ord
     deriving Generic
     deriving Typeable
 
@@ -102,7 +100,6 @@ TicklerItem
 
     deriving Show
     deriving Eq
-    deriving Ord
     deriving Generic
     deriving Typeable
 
@@ -124,7 +121,6 @@ TriggeredItem
 
     deriving Show
     deriving Eq
-    deriving Ord
     deriving Generic
     deriving Typeable
 
@@ -136,7 +132,6 @@ UserTrigger
 
     deriving Show
     deriving Eq
-    deriving Ord
     deriving Generic
     deriving Typeable
 
@@ -152,7 +147,6 @@ IntrayTrigger
 
     deriving Show
     deriving Eq
-    deriving Ord
     deriving Generic
     deriving Typeable
 
@@ -168,7 +162,6 @@ EmailTrigger
 
     deriving Show
     deriving Eq
-    deriving Ord
     deriving Generic
     deriving Typeable
 
@@ -182,7 +175,6 @@ VerificationEmail
 
     deriving Show
     deriving Eq
-    deriving Ord
     deriving Generic
     deriving Typeable
 
@@ -193,7 +185,6 @@ AdminNotificationEmail
 
     deriving Show
     deriving Eq
-    deriving Ord
     deriving Generic
     deriving Typeable
 
@@ -207,7 +198,6 @@ TriggeredIntrayItem
 
     deriving Show
     deriving Eq
-    deriving Ord
     deriving Generic
     deriving Typeable
 
@@ -222,7 +212,6 @@ TriggeredEmail
 
     deriving Show
     deriving Eq
-    deriving Ord
     deriving Generic
     deriving Typeable
 
@@ -242,7 +231,6 @@ Email
 
     deriving Show
     deriving Eq
-    deriving Ord
     deriving Generic
     deriving Typeable
 |]

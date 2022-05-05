@@ -32,7 +32,7 @@ import qualified Text.Email.Validate as Email
 newtype EmailAddress = EmailAddress
   { unEmailAddress :: Email.EmailAddress
   }
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec EmailAddress)
 
 instance Validity EmailAddress where
