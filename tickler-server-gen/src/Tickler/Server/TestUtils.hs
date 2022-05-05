@@ -170,7 +170,7 @@ ticklerTestClientEnvAndDatabaseSetupFunc menv man = do
   pure (pool, mkClientEnv man (BaseUrl Http "127.0.0.1" (fromIntegral p) ""))
 
 ticklerTestConnectionSetupFunc :: SetupFunc ConnectionPool
-ticklerTestConnectionSetupFunc = connectionPoolSetupFunc migrateAll
+ticklerTestConnectionSetupFunc = connectionPoolSetupFunc serverAutoMigration
 
 runClient :: ClientEnv -> ClientM a -> IO (Either ClientError a)
 runClient = flip runClientM

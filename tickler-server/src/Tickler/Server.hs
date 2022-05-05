@@ -37,7 +37,7 @@ runTicklerServer Settings {..} =
     filterLogger (\_ ll -> ll >= setLogLevel) $
       withSqlitePoolInfo (mkSqliteConnectionInfo (T.pack (fromAbsFile setDb))) 1 $
         \pool -> do
-          runResourceT (runSqlPool (runMigration migrateAll) pool)
+          runResourceT (runSqlPool (runMigration serverAutoMigration) pool)
             `catch` ( \pe ->
                         liftIO $
                           die $

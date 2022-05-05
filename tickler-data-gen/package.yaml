@@ -1,5 +1,11 @@
 name: tickler-data-gen
 
+extra-source-files:
+- test_resources/**/*
+
+dependencies:
+- base >=4.7 && <5
+
 default-extensions:
 - NoImplicitPrelude
 
@@ -9,7 +15,6 @@ library:
 
   dependencies:
   - QuickCheck
-  - base >=4.7 && <5
   - bytestring
   - genvalidity
   - genvalidity-bytestring
@@ -39,14 +44,14 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - QuickCheck
-    - base
     - bytestring
     - genvalidity-sydtest
     - genvalidity-sydtest-aeson
     - genvalidity-sydtest-persistent
     - genvalidity-text
-    - sydtest
     - intray-data
+    - sydtest
+    - sydtest-persistent-sqlite
     - text
     - tickler-data
     - tickler-data-gen

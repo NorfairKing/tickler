@@ -36,7 +36,7 @@ import Tickler.Data.Username
 import qualified Web.Stripe.Types as Stripe
 
 share
-  [mkPersist sqlSettings, mkDeleteCascade sqlSettings, mkMigrate "migrateAll"]
+  [mkPersist sqlSettings, mkDeleteCascade sqlSettings, mkMigrate "serverAutoMigration"]
   [persistLowerCase|
 
 User

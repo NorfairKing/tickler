@@ -114,7 +114,7 @@ extra-deps:
     - looper
 
 - github: NorfairKing/sydtest
-  commit: aac96e2e520a4fca97bccd3403721dc0036b026f
+  commit: e55fad0f6b8058a9b44c6c0d66bdd3c3be556d71
   subdirs:
   - sydtest
   - sydtest-discover
