@@ -1,4 +1,6 @@
+{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tickler.Web.Server.Persistence
@@ -7,8 +9,9 @@ module Tickler.Web.Server.Persistence
   )
 where
 
-import Data.Aeson as JSON
-import Data.Aeson.Encode.Pretty as JSON
+import Autodocodec
+import Data.Aeson as JSON (FromJSON, ToJSON, eitherDecode)
+import Data.Aeson.Encode.Pretty as JSON (encodePretty)
 import qualified Data.ByteString.Base16 as Base16
 import qualified Data.ByteString.Lazy as LB
 import Data.HashMap.Strict (HashMap)
@@ -36,15 +39,18 @@ writeLogins m = do
   lf <- loginsFile
   LB.writeFile (toFilePath lf) (JSON.encodePretty m)
 
-instance FromJSON Token where
-  parseJSON =
-    withText "Token" $ \t ->
-      case Base16.decode $ TE.encodeUtf8 t of
-        (h, "") -> pure $ Token h
-        _ -> fail "Invalid token in JSON: could not decode from hex string"
+instance HasCodec Token where
+  codec = bimapCodec f g codec
+    where
+      f t =
+        case Base16.decode $ TE.encodeUtf8 t of
+          (h, "") -> pure $ Token h
+          _ -> Left "Invalid token in JSON: could not decode from hex string"
+      g (Token bs) =
+        case TE.decodeUtf8' $ Base16.encode bs of
+          Left _ -> error "Failed to decode hex string to text, should not happen."
+          Right t -> t
 
-instance ToJSON Token where
-  toJSON (Token bs) =
-    case TE.decodeUtf8' $ Base16.encode bs of
-      Left _ -> error "Failed to decode hex string to text, should not happen."
-      Right t -> JSON.String t
+deriving via (Autodocodec Token) instance (FromJSON Token)
+
+deriving via (Autodocodec Token) instance (ToJSON Token)
