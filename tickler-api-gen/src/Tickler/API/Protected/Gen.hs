@@ -6,7 +6,7 @@ module Tickler.API.Protected.Gen where
 
 import Import
 import Intray.Data.Gen ()
-import Tickler.API.Protected.Types
+import Tickler.API.Protected
 import Tickler.Data.Gen ()
 
 instance GenValid Tickle

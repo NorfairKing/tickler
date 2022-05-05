@@ -7,7 +7,7 @@
 
 module Tickler.API
   ( module Tickler.API,
-    module Tickler.API.Account.Types,
+    module Tickler.API.Account,
     module Tickler.API.Admin,
     module Tickler.API.Protected,
     module Tickler.API.Types,
@@ -20,7 +20,7 @@ import Data.UUID.Typed
 import Import
 import Servant.API
 import Servant.API.Generic
-import Tickler.API.Account.Types
+import Tickler.API.Account
 import Tickler.API.Admin
 import Tickler.API.Protected
 import Tickler.API.Types

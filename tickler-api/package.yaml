@@ -8,6 +8,7 @@ library:
   ghc-options: -Wall
   dependencies:
   - aeson
+  - autodocodec
   - base >=4.7 && <5
   - base64-bytestring
   - bytestring >=0.10 && <0.11

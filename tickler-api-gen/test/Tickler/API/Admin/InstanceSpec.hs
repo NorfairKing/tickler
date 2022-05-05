@@ -7,8 +7,8 @@ where
 
 import Test.Syd.Validity.Aeson
 import TestImport
+import Tickler.API.Admin
 import Tickler.API.Admin.Gen ()
-import Tickler.API.Admin.Types
 
 spec :: Spec
 spec = do

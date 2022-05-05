@@ -6,15 +6,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Tickler.API.Account.Types
-  ( module Tickler.API.Account.Types,
-    module Data.UUID.Typed,
-  )
-where
+module Tickler.API.Account where
 
 import Data.Aeson as JSON
 import Data.Time
-import Data.UUID.Typed
 import Import
 import Tickler.API.Types ()
 import Tickler.Data

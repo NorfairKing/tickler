@@ -12,11 +12,9 @@ library
   exposed-modules:
       Import
       Tickler.API
-      Tickler.API.Account.Types
+      Tickler.API.Account
       Tickler.API.Admin
-      Tickler.API.Admin.Types
       Tickler.API.Protected
-      Tickler.API.Protected.Types
       Tickler.API.Types
   other-modules:
       Paths_tickler_api
@@ -27,6 +25,7 @@ library
   ghc-options: -Wall
   build-depends:
       aeson
+    , autodocodec
     , base >=4.7 && <5
     , base64-bytestring
     , bytestring ==0.10.*

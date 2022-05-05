@@ -1,22 +1,28 @@
+{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tickler.Data.Time where
 
-import Data.Aeson
+import Autodocodec
+import Data.Aeson (FromJSON, ToJSON)
 import Data.Time
 import Database.Persist.Sql
 import Import
 import Text.Printf
 
-instance ToJSON TimeZone where
-  toJSON TimeZone {..} =
-    object ["offset" .= timeZoneMinutes, "summer" .= timeZoneSummerOnly, "name" .= timeZoneName]
+instance HasCodec TimeZone where
+  codec =
+    object "TimeZone" $
+      TimeZone
+        <$> requiredField' "offset" .= timeZoneMinutes
+        <*> requiredField' "summer" .= timeZoneSummerOnly
+        <*> requiredField' "name" .= timeZoneName
 
-instance FromJSON TimeZone where
-  parseJSON =
-    withObject "TimeZone" $ \o -> TimeZone <$> o .: "offset" <*> o .: "summer" <*> o .: "name"
+deriving via (Autodocodec TimeZone) instance (FromJSON TimeZone)
+
+deriving via (Autodocodec TimeZone) instance (ToJSON TimeZone)
 
 instance PersistFieldSql TimeZone where
   sqlType Proxy = SqlString
