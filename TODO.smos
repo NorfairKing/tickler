@@ -1,4 +1,4 @@
-version: 1.0.0
+version: 2.0.0
 value:
 - entry: Features
   forest:
@@ -7,29 +7,12 @@ value:
     - A way to auto-remove triggered tickles
     - Weekly and yearly recurrence
     - Seperate item uuid from triggered item uuid
-    - header: Make the first scheduled date optional?
-      contents: Maybe set it to the next recurrence, maybe set it to today, maybe
-        set it to tomorrow
-    - Make sure that the intray adder continues if one of the additions fails continuously
-    - Golden tests for rendered emails and items
-    - Phase shift options for loopers
-    - The looper overview should show when a looper will run next
-    - A way to fast-forward tickles at the user's request
+    - entry:
+        header: Cleanup looper
+        contents: Remove all things that don't matter anymore
+      forest:
+      - fully delivered triggered items
   - entry: Web server
     forest:
     - Documentation to explain how tickler deals with time zones
-    - Make sure newlnines are preserved in the text
-    - Nicer form failure when adding tickles
-    - Feedback form
-    - Make items' recurrence editable?
-    - Make sure that failing to ad an intray trigger shows a nice error
-    - Comply with GDPR
-- entry: Bug
-  forest:
-  - entry: Server
-    forest:
-    - recurrence happens too often when using multiple days or multiple months but
-      only after the first time
-  - entry: Web server
-    forest:
-    - Deleting a tickler should redirect to tickles, not to triggered
+    - Make sure newlines are preserved in the text
