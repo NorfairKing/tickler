@@ -2,6 +2,7 @@
 
 module Tickler.Server.Looper.Triggerer
   ( runTriggerer,
+    considerTicklerItem,
     shouldBeTriggered,
     ticklerItemLocalScheduledTime,
     makeTriggeredItem,
@@ -22,6 +23,9 @@ runTriggerer = do
   nowZoned <- liftIO getZonedTime
   let nowLocal = zonedTimeToLocalTime nowZoned
       nowDay = localDay nowLocal
+      -- Two days later:
+      -- One day because it might be 23:59,
+      -- and another because timezones.
       later = addDays 2 nowDay
   acqItemsToConsiderSource <-
     runDb $
@@ -47,8 +51,11 @@ triggerTicklerItem now (Entity tii ti) = do
     Nothing -> delete tii -- Delete the tickler item
     Just updates -> update tii updates
 
-shouldBeTriggered :: UTCTime -> TimeZone -> TicklerItem -> Bool
-shouldBeTriggered now tz ti = localTimeToUTC tz (ticklerItemLocalScheduledTime ti) <= now
+ticklerItemUpdates :: TicklerItem -> Maybe [Update TicklerItem]
+ticklerItemUpdates ti = do
+  r <- ticklerItemRecurrence ti
+  let (d, mtod) = nextScheduledTime (ticklerItemScheduledDay ti) (ticklerItemScheduledTime ti) r
+  pure [TicklerItemScheduledDay =. d, TicklerItemScheduledTime =. mtod]
 
 ticklerItemLocalScheduledTime :: TicklerItem -> LocalTime
 ticklerItemLocalScheduledTime TicklerItem {..} =
@@ -67,8 +74,5 @@ makeTriggeredItem uuid now TicklerItem {..} =
       triggeredItemTriggered = now
     }
 
-ticklerItemUpdates :: TicklerItem -> Maybe [Update TicklerItem]
-ticklerItemUpdates ti = do
-  r <- ticklerItemRecurrence ti
-  let (d, mtod) = nextScheduledTime (ticklerItemScheduledDay ti) (ticklerItemScheduledTime ti) r
-  pure [TicklerItemScheduledDay =. d, TicklerItemScheduledTime =. mtod]
+shouldBeTriggered :: UTCTime -> TimeZone -> TicklerItem -> Bool
+shouldBeTriggered now tz ti = localTimeToUTC tz (ticklerItemLocalScheduledTime ti) <= now

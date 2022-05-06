@@ -55,3 +55,4 @@ tests:
     - text
     - tickler-data
     - tickler-data-gen
+    - time

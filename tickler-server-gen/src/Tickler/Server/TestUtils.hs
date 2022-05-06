@@ -14,6 +14,7 @@ module Tickler.Server.TestUtils
     ticklerTestClientEnvSetupFunc,
     runClient,
     runClientOrError,
+    testRunLooper,
     randomRegistration,
     withAdmin,
     withValidNewUser,
@@ -25,6 +26,7 @@ module Tickler.Server.TestUtils
   )
 where
 
+import Control.Monad.Logger
 import Data.Cache as Cache
 import Data.Text.Encoding (encodeUtf8)
 import Data.Time
@@ -43,6 +45,7 @@ import Test.Syd.Wai (applicationSetupFunc, managerSpec)
 import Tickler.API.Gen ()
 import Tickler.Client
 import Tickler.Server
+import Tickler.Server.Looper.Types
 import Tickler.Server.OptParse.Types
 import Tickler.Server.Types
 import Web.Cookie
@@ -221,3 +224,7 @@ login cenv un pw = do
 
 failure :: String -> IO a
 failure = expectationFailure
+
+testRunLooper :: ConnectionPool -> Looper a -> IO a
+testRunLooper pool looper =
+  runStderrLoggingT $ runLooper (LooperEnv {looperEnvPool = pool}) looper
