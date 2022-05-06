@@ -46,7 +46,6 @@ data MonetisationFlags = MonetisationFlags
     monetisationFlagStripeSecretKey :: !(Maybe String),
     monetisationFlagStripePublishableKey :: !(Maybe String),
     monetisationFlagLooperStripeEventsFetcher :: LooperFlags,
-    monetisationFlagLooperStripeEventsRetrier :: LooperFlags,
     monetisationFlagMaxItemsFree :: !(Maybe Int)
   }
   deriving (Show, Eq)
@@ -153,7 +152,6 @@ data MonetisationConfiguration = MonetisationConfiguration
     monetisationConfStripeSecretKey :: !(Maybe String),
     monetisationConfStripePulishableKey :: !(Maybe String),
     monetisationConfLooperStripeEventsFetcher :: !(Maybe LooperConfiguration),
-    monetisationConfLooperStripeEventsRetrier :: !(Maybe LooperConfiguration),
     monetisationConfMaxItemsFree :: !(Maybe Int)
   }
   deriving stock (Show, Eq, Generic)
@@ -179,10 +177,6 @@ instance HasCodec MonetisationConfiguration where
           "stripe-events-fetcher"
           "The configuration for the stripe events fetcher"
           .= monetisationConfLooperStripeEventsFetcher
-        <*> optionalField
-          "stripe-events-retrier"
-          "The configuration for the stripe events fetcher"
-          .= monetisationConfLooperStripeEventsRetrier
         <*> optionalField
           "max-items-free"
           "The number of items a free user can have on the server"
@@ -215,7 +209,6 @@ data MonetisationEnvironment = MonetisationEnvironment
     monetisationEnvStripeSecretKey :: !(Maybe String),
     monetisationEnvStripePulishableKey :: !(Maybe String),
     monetisationEnvLooperStripeEventsFetcher :: LooperEnvironment,
-    monetisationEnvLooperStripeEventsRetrier :: LooperEnvironment,
     monetisationEnvMaxItemsFree :: !(Maybe Int)
   }
   deriving (Show, Eq)
@@ -246,7 +239,6 @@ data Settings = Settings
 data MonetisationSettings = MonetisationSettings
   { monetisationSetStripeSettings :: !StripeSettings,
     monetisationSetStripeEventsFetcher :: !LooperSettings,
-    monetisationSetStripeEventsRetrier :: !LooperSettings,
     monetisationSetMaxItemsFree :: !Int
   }
   deriving (Show)

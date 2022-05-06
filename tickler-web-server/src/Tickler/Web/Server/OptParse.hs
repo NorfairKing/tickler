@@ -11,12 +11,12 @@ where
 import Autodocodec.Yaml
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
+import qualified Env
 import Import
 import Options.Applicative as OptParse
 import qualified Options.Applicative.Help as OptParse
 import Servant.Client.Core
-import qualified System.Environment as System (getArgs, getEnvironment)
-import Text.Read
+import qualified System.Environment as System (getArgs)
 import Tickler.Web.Server.OptParse.Types
 
 getSettings :: IO Settings
@@ -52,30 +52,19 @@ getDefaultConfigFile :: IO (Path Abs File)
 getDefaultConfigFile = resolveFile' "config.yaml"
 
 getEnvironment :: IO Environment
-getEnvironment = do
-  env <- System.getEnvironment
-  let ms k = fromString <$> lookup ("TICKLER_WEB_SERVER_" <> k) env
-      mre k func =
-        forM (ms k) $ \s ->
-          case func s of
-            Left e ->
-              die $
-                unwords ["Unable to read ENV Var:", k, "which has value:", show s, "with error:", e]
-            Right v -> pure v
-      mrf k func =
-        mre k $ \s ->
-          case func s of
-            Nothing -> Left "Parsing failed without a good error message."
-            Just v -> Right v
-      mr k = mrf k readMaybe
-  let envConfigFile = ms "CONFIG_FILE"
-  envPort <- mr "PORT"
-  envAPIBaseUrl <- mre "API_URL" (left show . parseBaseUrl)
-  envPersistLogins <- mr "PERSIST_LOGINS"
-  envDefaultIntrayUrl <- mre "DEFAULT_INTRAY_URL" (left show . parseBaseUrl)
-  let envTracking = ms "TRACKING"
-  let envVerification = ms "SEARCH_CONSOLE_VERIFICATION"
-  pure Environment {..}
+getEnvironment = Env.parse id environmentParser
+
+environmentParser :: Env.Parser Env.Error Environment
+environmentParser =
+  Env.prefixed "TICKLER_SERVER_" $
+    Environment
+      <$> optional (Env.var Env.str "CONFIG_FILE" (Env.help "configuration file"))
+      <*> optional (Env.var (left (Env.UnreadError . show) . parseBaseUrl) "API_URL" (Env.help "base url of the api server"))
+      <*> optional (Env.var Env.auto "PORT" (Env.help "port to run the web server on"))
+      <*> optional (Env.var Env.auto "PERSIST_LOGINS" (Env.help "Whether to persist logins"))
+      <*> optional (Env.var (left (Env.UnreadError . show) . parseBaseUrl) "DEFAULT_INTRAY_URL" (Env.help "Default intray url to suggest when adding intray triggers"))
+      <*> optional (Env.var Env.str "TRACKING" (Env.help "Tracking code"))
+      <*> optional (Env.var Env.str "SEARCH_CONSOLE_VERIFICATION" (Env.help "Search console verification"))
 
 getFlags :: IO Flags
 getFlags = do

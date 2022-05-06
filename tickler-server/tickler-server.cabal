@@ -90,6 +90,7 @@ library
     , cache
     , conduit
     , cookie
+    , envparse
     , esqueleto
     , exceptions
     , http-client

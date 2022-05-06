@@ -24,6 +24,7 @@ library:
   - bytestring
   - cookie
   - data-default
+  - envparse
   - http-client
   - http-client-tls
   - http-types

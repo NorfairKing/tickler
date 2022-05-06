@@ -4,8 +4,8 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Tickler.Server.OptParse
-  ( module Tickler.Server.OptParse,
-    module Tickler.Server.OptParse.Types,
+  ( Settings (..),
+    getSettings,
   )
 where
 
@@ -14,6 +14,7 @@ import Control.Applicative
 import Control.Monad.Logger
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
+import qualified Env
 import Import
 import Looper
 import Options.Applicative as OptParse
@@ -69,24 +70,17 @@ combineToSettings Flags {..} Environment {..} mConf = do
                 )
     let monetisationSetStripeEventsFetcher =
           deriveLooperSettings
-            (minutes 1)
+            (seconds 8)
             (minutes 60)
             monetisationFlagLooperStripeEventsFetcher
             monetisationEnvLooperStripeEventsFetcher
             (mmc monetisationConfLooperStripeEventsFetcher)
-    let monetisationSetStripeEventsRetrier =
-          deriveLooperSettings
-            (minutes 1)
-            (minutes 60)
-            monetisationFlagLooperStripeEventsRetrier
-            monetisationEnvLooperStripeEventsRetrier
-            (mmc monetisationConfLooperStripeEventsRetrier)
     let monetisationSetMaxItemsFree =
           fromMaybe 5 $ monetisationFlagMaxItemsFree <|> monetisationEnvMaxItemsFree
     pure $
-      MonetisationSettings <$> (StripeSettings <$> plan <*> config <*> publicKey)
+      MonetisationSettings
+        <$> (StripeSettings <$> plan <*> config <*> publicKey)
         <*> pure monetisationSetStripeEventsFetcher
-        <*> pure monetisationSetStripeEventsRetrier
         <*> pure monetisationSetMaxItemsFree
 
   setTriggererFromEmailAddress <-
@@ -104,56 +98,56 @@ combineToSettings Flags {..} Environment {..} mConf = do
 
   let setTriggererSets =
         deriveLooperSettings
-          (minutes 1)
+          (seconds 1)
           (minutes 60)
           flagTriggererFlags
           envTriggererEnv
           (mc confTriggererConf)
   let setEmailerSets =
         deriveLooperSettings
-          (minutes 1)
+          (seconds 2)
           (minutes 60)
           flagEmailerFlags
           envEmailerEnv
           (mc confEmailerConf)
   let setTriggeredIntrayItemSchedulerSets =
         deriveLooperSettings
-          (minutes 1)
+          (seconds 3)
           (minutes 60)
           flagTriggeredIntrayItemSchedulerFlags
           envTriggeredIntrayItemSchedulerEnv
           (mc confTriggeredIntrayItemSchedulerConf)
   let setTriggeredIntrayItemSenderSets =
         deriveLooperSettings
-          (minutes 1)
+          (seconds 4)
           (minutes 60)
           flagTriggeredIntrayItemSenderFlags
           envTriggeredIntrayItemSenderEnv
           (mc confTriggeredIntrayItemSenderConf)
   let setVerificationEmailConverterSets =
         deriveLooperSettings
-          (minutes 1)
+          (seconds 5)
           (minutes 60)
           flagVerificationEmailConverterFlags
           envVerificationEmailConverterEnv
           (mc confVerificationEmailConverterConf)
   let setTriggeredEmailSchedulerSets =
         deriveLooperSettings
-          (minutes 1)
+          (seconds 6)
           (minutes 60)
           flagTriggeredEmailSchedulerFlags
           envTriggeredEmailSchedulerEnv
           (mc confTriggeredEmailSchedulerConf)
   let setTriggeredEmailConverterSets =
         deriveLooperSettings
-          (minutes 1)
+          (seconds 7)
           (minutes 60)
           flagTriggeredEmailConverterFlags
           envTriggeredEmailConverterEnv
           (mc confTriggeredEmailConverterConf)
   let setAdminNotificationEmailConverterSets =
         deriveLooperSettings
-          (minutes 1)
+          (seconds 9)
           (minutes 60)
           flagAdminNotificationEmailConverterFlags
           envAdminNotificationEmailConverterEnv
@@ -173,37 +167,39 @@ getDefaultConfigFile :: IO (Path Abs File)
 getDefaultConfigFile = resolveFile' "config.yaml"
 
 getEnvironment :: IO Environment
-getEnvironment = do
-  env <- System.getEnvironment
-  let envConfigFile = getEnv env "CONFIG_FILE"
-  let envDb = getEnv env "DATABASE"
-  let envWebHost = T.pack <$> getEnv env "WEB_HOST"
-  envPort <- readEnv env "PORT"
-  envLogLevel <- readEnv env "LOG_LEVEL"
-  envMonetisationEnvironment <- getMonetisationEnv env
-  let envTriggererFromEmailAddress = fromString <$> getEnv env "VERIFICATION_EMAIL_ADDRESS"
-  let envVerificationFromEmailAddress = fromString <$> getEnv env "VERIFICATION_EMAIL_ADDRESS"
-  let envAdminNotificationFromEmailAddress = fromString <$> getEnv env "ADMIN_NOTIFICATION_FROM_EMAIL_ADDRESS"
-  let envAdminNotificationToEmailAddress = fromString <$> getEnv env "ADMIN_NOTIFICATION_TO_EMAIL_ADDRESS"
-  let getTicklerLooperEnv = readLooperEnvironment "TICKLER_SERVER_LOOPER"
-  let envTriggererEnv = getTicklerLooperEnv "TRIGGERER" env
-  let envEmailerEnv = getTicklerLooperEnv "EMAILER" env
-  let envTriggeredIntrayItemSchedulerEnv = getTicklerLooperEnv "TRIGGERED_INTRAY_ITEM_SCHEDULER" env
-  let envTriggeredIntrayItemSenderEnv = getTicklerLooperEnv "TRIGGERED_INTRAY_ITEM_SENDER" env
-  let envVerificationEmailConverterEnv = getTicklerLooperEnv "VERIFICATION_EMAIL_CONVERTER" env
-  let envTriggeredEmailSchedulerEnv = getTicklerLooperEnv "TRIGGERED_EMAIL_SCHEDULER" env
-  let envTriggeredEmailConverterEnv = getTicklerLooperEnv "TRIGGERED_EMAIL_CONVERTER" env
-  let envAdminNotificationEmailConverterEnv = getTicklerLooperEnv "ADMIN_NOTIFICATION_EMAIL_CONVERTER" env
-  pure Environment {..}
+getEnvironment = Env.parse id environmentParser
 
-getMonetisationEnv :: [(String, String)] -> IO MonetisationEnvironment
-getMonetisationEnv env = do
-  let monetisationEnvStripePlan = getEnv env "STRIPE_PLAN"
-  let monetisationEnvStripeSecretKey = getEnv env "STRIPE_SECRET_KEY"
-  let monetisationEnvStripePulishableKey = getEnv env "STRIPE_PUBLISHABLE_KEY"
-  let monetisationEnvLooperStripeEventsFetcher = readLooperEnvironment "TICKLER_SERVER_LOOPER" "STRIPE_EVENTS_FETCHER" env
-  monetisationEnvMaxItemsFree <- readEnv env "MAX_ITEMS_FREE"
-  pure MonetisationEnvironment {..}
+environmentParser :: Env.Parser Env.Error Environment
+environmentParser =
+  Env.prefixed "TICKLER_SERVER_" $
+    Environment
+      <$> optional (Env.var Env.str "CONFIG_FILE" (Env.help "configuration file"))
+      <*> optional (Env.var Env.str "DATABASE_FILE" (Env.help "database file"))
+      <*> optional (Env.var Env.str "WEB_HOST" (Env.help "host that the web server is running on"))
+      <*> optional (Env.var Env.auto "PORT" (Env.help "port to run the api server on"))
+      <*> optional (Env.var Env.auto "LOG_LEVEL" (Env.help "minimal severity of error messages"))
+      <*> monetisationEnvironmentParser
+      <*> optional (Env.var Env.str "TRIGGERER_FROM_EMAIL_ADDRESS" (Env.help "From email address for triggered emails"))
+      <*> optional (Env.var Env.str "VERIFICATION_FROM_EMAIL_ADDRESS" (Env.help "From email address for verification emails"))
+      <*> optional (Env.var Env.str "ADMIN_NOTIFICATION_FROM_EMAIL_ADDRESS" (Env.help "From email address for admin notifcitaion emails"))
+      <*> optional (Env.var Env.str "ADMIN_NOTIFICATION_TO_EMAIL_ADDRESS" (Env.help "To email address for admin notifcitaion emails"))
+      <*> looperEnvironmentParser "TRIGGERER"
+      <*> looperEnvironmentParser "EMAILER"
+      <*> looperEnvironmentParser "TRIGGERED_INTRAY_ITEM_SCHEDULER"
+      <*> looperEnvironmentParser "TRIGGERED_INTRAY_ITEM_SENDER"
+      <*> looperEnvironmentParser "VERIFICATION_EMAIL_CONVERTER"
+      <*> looperEnvironmentParser "TRIGGERED_EMAIL_SCHEDULER"
+      <*> looperEnvironmentParser "TRIGGERED_EMAIL_CONVERTER"
+      <*> looperEnvironmentParser "ADMIN_NOTIFICATION_EMAIL_CONVERTER"
+
+monetisationEnvironmentParser :: Env.Parser Env.Error MonetisationEnvironment
+monetisationEnvironmentParser =
+  MonetisationEnvironment
+    <$> optional (Env.var Env.str "STRIPE_PLAN" (Env.help "Stripe plan id"))
+    <*> optional (Env.var Env.str "STRIPE_SECRET_KEY" (Env.help "Stripe secret key"))
+    <*> optional (Env.var Env.str "STRIPE_PUBLISHABLE_KEY" (Env.help "Stripe publishable key"))
+    <*> looperEnvironmentParser "STRIPE_EVENTS_FETCHER"
+    <*> optional (Env.var Env.auto "MAX_ITEMS_FREE" (Env.help "Maximum number of free items"))
 
 getEnv :: [(String, String)] -> String -> Maybe String
 getEnv env key = lookup ("TICKLER_SERVER_" <> key) env
@@ -397,7 +393,6 @@ parseMonetisationFlags =
           )
       )
     <*> getLooperFlags "stripe-events-fetcher"
-    <*> getLooperFlags "stripe-events-retrier"
     <*> optional
       ( option
           auto
