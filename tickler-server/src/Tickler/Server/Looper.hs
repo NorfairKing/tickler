@@ -13,6 +13,7 @@ import Control.Concurrent
 import Control.Exception
 import Control.Monad.Catch as Exception
 import Control.Monad.Logger
+import Control.Monad.Trans.AWS as AWS (Credentials (..))
 import Control.Retry
 import Data.Pool
 import qualified Data.Text as T
@@ -47,36 +48,80 @@ data LoopersHandle = LoopersHandle
     stripeEventsRetrierLooperHandle :: LooperHandle
   }
 
-startLoopers :: Pool SqlBackend -> LoopersSettings -> Maybe MonetisationSettings -> LoggingT IO LoopersHandle
-startLoopers pool LoopersSettings {..} mms = do
-  let start :: String -> LooperSetsWith a -> (a -> Looper b) -> LoggingT IO LooperHandle
+startLoopers :: Pool SqlBackend -> Settings -> Maybe MonetisationSettings -> LoggingT IO LoopersHandle
+startLoopers pool Settings {..} mms = do
+  let LoopersSettings {..} = setLoopersSettings
+  let start ::
+        String ->
+        LooperSetsWith a ->
+        (a -> Looper b) ->
+        LoggingT IO LooperHandle
       start = startLooperWithSets pool (monetisationSetStripeSettings <$> mms)
-  emailerLooperHandle <- start "Emailer" looperSetEmailerSets runEmailer
-  triggererLooperHandle <- start "Triggerer" looperSetTriggererSets runTriggerer
+  let emailerSettings = EmailerSettings AWS.Discover
+  emailerLooperHandle <-
+    start
+      "Emailer"
+      looperSetEmailerSets
+      (\() -> runEmailer emailerSettings)
+  triggererLooperHandle <-
+    start
+      "Triggerer"
+      looperSetTriggererSets
+      (\() -> runTriggerer)
+
+  let verificationEmailConverterSettings =
+        VerificationEmailConverterSettings
+          { verificationEmailConverterSetFromAddress = setVerificationFromEmailAddress,
+            verificationEmailConverterSetFromName = "Tickler Verification",
+            verificationEmailConverterSetWebHost = setWebHost
+          }
+
   verificationEmailConverterLooperHandle <-
     start
       "TriggeredVerificationEmailConverter"
       looperSetVerificationEmailConverterSets
-      runVerificationEmailConverter
+      (\() -> runVerificationEmailConverter verificationEmailConverterSettings)
   triggeredIntrayItemSchedulerLooperHandle <-
     start
       "TriggeredIntrayItemScheduler"
       looperSetTriggeredIntrayItemSchedulerSets
-      runTriggeredIntrayItemScheduler
+      (\() -> runTriggeredIntrayItemScheduler)
   triggeredIntrayItemSenderLooperHandle <-
     start
       "TriggeredIntrayItemSender"
       looperSetTriggeredIntrayItemSenderSets
-      runTriggeredIntrayItemSender
+      (\() -> runTriggeredIntrayItemSender)
   triggeredEmailSchedulerLooperHandle <-
-    start "TriggeredEmailScheduler" looperSetTriggeredEmailSchedulerSets runTriggeredEmailScheduler
+    start
+      "TriggeredEmailScheduler"
+      looperSetTriggeredEmailSchedulerSets
+      (\() -> runTriggeredEmailScheduler)
+
+  let triggeredEmailConverterSettings =
+        TriggeredEmailConverterSettings
+          { triggeredEmailConverterSetFromAddress = setTriggererFromEmailAddress,
+            triggeredEmailConverterSetFromName = "Tickler Triggerer",
+            triggeredEmailConverterSetWebHost = setWebHost
+          }
   triggeredEmailConverterLooperHandle <-
-    start "TriggeredEmailConverter" looperSetTriggeredEmailConverterSets runTriggeredEmailConverter
+    start
+      "TriggeredEmailConverter"
+      looperSetTriggeredEmailConverterSets
+      (\() -> runTriggeredEmailConverter triggeredEmailConverterSettings)
+
+  let adminNotificationEmailConverterSettings =
+        AdminNotificationEmailConverterSettings
+          { adminNotificationEmailConverterSetFromAddress = setAdminNotificationFromEmailAddress,
+            adminNotificationEmailConverterSetFromName = "Tickler Admin Notification",
+            adminNotificationEmailConverterSetToAddress = setAdminNotificationToEmailAddress,
+            adminNotificationEmailConverterSetToName = "Tickler Admin",
+            adminNotificationEmailConverterSetWebHost = setWebHost
+          }
   adminNotificationEmailConverterLooperHandle <-
     start
       "AdminNotificationEmailConverter"
       looperSetAdminNotificationEmailConverterSets
-      runAdminNotificationEmailConverter
+      (\() -> runAdminNotificationEmailConverter adminNotificationEmailConverterSettings)
   stripeEventsFetcherLooperHandle <-
     maybe
       (pure LooperHandleDisabled)

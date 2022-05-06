@@ -8,7 +8,6 @@ import Data.UUID.Typed as Typed
 import TestImport
 import Tickler.Data
 import Tickler.Server.Looper.TriggeredEmailConverter
-import Tickler.Server.OptParse.Types
 
 spec :: Spec
 spec = do

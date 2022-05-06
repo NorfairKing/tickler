@@ -1,6 +1,12 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Tickler.Server.Looper.Triggerer where
+module Tickler.Server.Looper.Triggerer
+  ( runTriggerer,
+    shouldBeTriggered,
+    ticklerItemLocalScheduledTime,
+    makeTriggeredItem,
+  )
+where
 
 import Conduit
 import qualified Data.Conduit.Combinators as C
@@ -11,8 +17,8 @@ import Tickler.API
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
 
-runTriggerer :: () -> Looper ()
-runTriggerer () = do
+runTriggerer :: Looper ()
+runTriggerer = do
   nowZoned <- liftIO getZonedTime
   let nowLocal = zonedTimeToLocalTime nowZoned
       nowDay = localDay nowLocal

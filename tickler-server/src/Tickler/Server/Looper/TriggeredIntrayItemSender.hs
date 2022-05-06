@@ -25,8 +25,8 @@ import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
 import Web.Cookie
 
-runTriggeredIntrayItemSender :: () -> Looper ()
-runTriggeredIntrayItemSender _ = do
+runTriggeredIntrayItemSender :: Looper ()
+runTriggeredIntrayItemSender = do
   logInfoNS "TriggeredIntraySender" "Starting sending TriggeredIntrayItems."
   acqTriggeredIntrayItemSource <-
     runDb $

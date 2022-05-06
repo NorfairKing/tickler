@@ -7,7 +7,6 @@ module Tickler.Server.OptParse.Types where
 
 import Autodocodec
 import Control.Monad.Logger
-import qualified Control.Monad.Trans.AWS as AWS
 import Data.Aeson (FromJSON, ToJSON)
 import Import
 import Tickler.API
@@ -26,6 +25,10 @@ data Flags = Flags
     flagAdmins :: [Username],
     flagFreeloaders :: [Username],
     flagsMonetisationFlags :: MonetisationFlags,
+    flagTriggererFromEmailAddress :: !(Maybe EmailAddress),
+    flagVerificationFromEmailAddress :: !(Maybe EmailAddress),
+    flagAdminNotificationFromEmailAddress :: !(Maybe EmailAddress),
+    flagAdminNotificationToEmailAddress :: !(Maybe EmailAddress),
     flagsLooperFlags :: LoopersFlags
   }
   deriving (Show, Eq)
@@ -49,16 +52,10 @@ data LoopersFlags = LoopersFlags
     looperFlagEmailerFlags :: LooperFlagsWith (),
     looperFlagTriggeredIntrayItemSchedulerFlags :: LooperFlagsWith (),
     looperFlagTriggeredIntrayItemSenderFlags :: LooperFlagsWith (),
-    looperFlagVerificationEmailConverterFlags :: LooperFlagsWith (Maybe EmailAddress),
+    looperFlagVerificationEmailConverterFlags :: LooperFlagsWith (),
     looperFlagTriggeredEmailSchedulerFlags :: LooperFlagsWith (),
-    looperFlagTriggeredEmailConverterFlags :: LooperFlagsWith (Maybe EmailAddress),
-    looperFlagAdminNotificationEmailConverterFlags :: LooperFlagsWith AdminNotificationEmailConverterFlags
-  }
-  deriving (Show, Eq)
-
-data AdminNotificationEmailConverterFlags = AdminNotificationEmailConverterFlags
-  { adminNotificationEmailConverterFlagFromAddress :: Maybe EmailAddress,
-    adminNotificationEmailConverterFlagToAddress :: Maybe EmailAddress
+    looperFlagTriggeredEmailConverterFlags :: LooperFlagsWith (),
+    looperFlagAdminNotificationEmailConverterFlags :: LooperFlagsWith ()
   }
   deriving (Show, Eq)
 
@@ -84,6 +81,10 @@ data Configuration = Configuration
     confAdmins :: !(Maybe [Username]),
     confFreeloaders :: !(Maybe [Username]),
     confMonetisationConfiguration :: !(Maybe MonetisationConfiguration),
+    confTriggererFromEmailAddress :: !(Maybe EmailAddress),
+    confVerificationFromEmailAddress :: !(Maybe EmailAddress),
+    confAdminNotificationFromEmailAddress :: !(Maybe EmailAddress),
+    confAdminNotificationToEmailAddress :: !(Maybe EmailAddress),
     confLoopersConfiguration :: !(Maybe LoopersConfiguration)
   }
   deriving stock (Show, Eq, Generic)
@@ -99,15 +100,46 @@ configurationObjectCodec =
       "web-host"
       "The host to serve the web-server on, this is used to to send emails with links to the web interface"
       .= confWebHost
-    <*> optionalField "port" "The port to serve the api-server on" .= confPort
-    <*> optionalField "log-level" "The minimal sevirity of log messages" .= confLogLevel
-    <*> optionalField "admins" "The list of usernames that will be considered administrators" .= confAdmins
-    <*> optionalField "freeloaders" "The list of usernames that won't have to pay" .= confFreeloaders
+    <*> optionalField
+      "port"
+      "The port to serve the api-server on"
+      .= confPort
+    <*> optionalField
+      "log-level"
+      "The minimal sevirity of log messages"
+      .= confLogLevel
+    <*> optionalField
+      "admins"
+      "The list of usernames that will be considered administrators"
+      .= confAdmins
+    <*> optionalField
+      "freeloaders"
+      "The list of usernames that won't have to pay"
+      .= confFreeloaders
     <*> optionalField
       "monetisation"
       "Monetisation configuration. If this is not configured then the server is run for free."
       .= confMonetisationConfiguration
-    <*> optionalField "loopers" "The configuration for all the loopers" .= confLoopersConfiguration
+    <*> optionalField
+      "triggerer-from"
+      "From email address for triggered emails"
+      .= confTriggererFromEmailAddress
+    <*> optionalField
+      "verification-from"
+      "From email address for verification emails"
+      .= confVerificationFromEmailAddress
+    <*> optionalField
+      "admin-notification-from"
+      "From email address for admin notifcitaion emails"
+      .= confAdminNotificationFromEmailAddress
+    <*> optionalField
+      "admin-notification-to"
+      "To email address for admin notifcitaion emails"
+      .= confAdminNotificationToEmailAddress
+    <*> optionalField
+      "loopers"
+      "The configuration for all the loopers"
+      .= confLoopersConfiguration
 
 data MonetisationConfiguration = MonetisationConfiguration
   { monetisationConfStripePlan :: !(Maybe String),
@@ -128,11 +160,26 @@ instance HasCodec MonetisationConfiguration where
           "stripe-plan"
           "The stripe identifier of the stripe plan used to checkout a subscription"
           .= monetisationConfStripePlan
-        <*> optionalField "stripe-secret-key" "The secret key for calling the stripe api" .= monetisationConfStripeSecretKey
-        <*> optionalField "stripe-publishable-key" "The publishable key for calling the stripe api" .= monetisationConfStripePulishableKey
-        <*> optionalField "stripe-events-fetcher" "The configuration for the stripe events fetcher" .= monetisationConfLooperStripeEventsFetcher
-        <*> optionalField "stripe-events-retrier" "The configuration for the stripe events fetcher" .= monetisationConfLooperStripeEventsRetrier
-        <*> optionalField "max-items-free" "The number of items a free user can have on the server" .= monetisationConfMaxItemsFree
+        <*> optionalField
+          "stripe-secret-key"
+          "The secret key for calling the stripe api"
+          .= monetisationConfStripeSecretKey
+        <*> optionalField
+          "stripe-publishable-key"
+          "The publishable key for calling the stripe api"
+          .= monetisationConfStripePulishableKey
+        <*> optionalField
+          "stripe-events-fetcher"
+          "The configuration for the stripe events fetcher"
+          .= monetisationConfLooperStripeEventsFetcher
+        <*> optionalField
+          "stripe-events-retrier"
+          "The configuration for the stripe events fetcher"
+          .= monetisationConfLooperStripeEventsRetrier
+        <*> optionalField
+          "max-items-free"
+          "The number of items a free user can have on the server"
+          .= monetisationConfMaxItemsFree
 
 data LoopersConfiguration = LoopersConfiguration
   { looperConfDefaultEnabled :: !(Maybe Bool),
@@ -143,10 +190,10 @@ data LoopersConfiguration = LoopersConfiguration
     looperConfEmailerConf :: !(Maybe (LooperConfWith ())),
     looperConfTriggeredIntrayItemSchedulerConf :: !(Maybe (LooperConfWith ())),
     looperConfTriggeredIntrayItemSenderConf :: !(Maybe (LooperConfWith ())),
-    looperConfVerificationEmailConverterConf :: !(Maybe (LooperConfWith VerificationEmailConverterConf)),
+    looperConfVerificationEmailConverterConf :: !(Maybe (LooperConfWith ())),
     looperConfTriggeredEmailSchedulerConf :: !(Maybe (LooperConfWith ())),
-    looperConfTriggeredEmailConverterConf :: !(Maybe (LooperConfWith TriggeredEmailConverterConf)),
-    looperConfAdminNotificationEmailConverterConf :: !(Maybe (LooperConfWith AdminNotificationEmailConverterConf))
+    looperConfTriggeredEmailConverterConf :: !(Maybe (LooperConfWith ())),
+    looperConfAdminNotificationEmailConverterConf :: !(Maybe (LooperConfWith ()))
   }
   deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec LoopersConfiguration)
@@ -224,44 +271,6 @@ instance HasCodec LooperConfRetryPolicy where
         <$> optionalField "delay" "The delay to retry the looper (in microseconds)" .= looperConfRetryDelay
         <*> optionalField "amount" "The number of times to retry the looper" .= looperConfRetryAmount
 
-data VerificationEmailConverterConf = VerificationEmailConverterConf
-  { verificationEmailConverterConfFromAddress :: Maybe EmailAddress
-  }
-  deriving stock (Show, Eq, Generic)
-  deriving (FromJSON, ToJSON) via (Autodocodec VerificationEmailConverterConf)
-
-instance HasCodec VerificationEmailConverterConf where
-  codec =
-    object "VerificationEmailConverterConf" $
-      VerificationEmailConverterConf
-        <$> optionalField "from" "The from address for verification emails" .= verificationEmailConverterConfFromAddress
-
-data TriggeredEmailConverterConf = TriggeredEmailConverterConf
-  { triggeredEmailConverterConfFromAddress :: Maybe EmailAddress
-  }
-  deriving stock (Show, Eq, Generic)
-  deriving (FromJSON, ToJSON) via (Autodocodec TriggeredEmailConverterConf)
-
-instance HasCodec TriggeredEmailConverterConf where
-  codec =
-    object "TriggeredEmailConverterConf" $
-      TriggeredEmailConverterConf
-        <$> optionalField "from" "The from address for triggered item emails" .= triggeredEmailConverterConfFromAddress
-
-data AdminNotificationEmailConverterConf = AdminNotificationEmailConverterConf
-  { adminNotificationEmailConverterConfFromAddress :: Maybe EmailAddress,
-    adminNotificationEmailConverterConfToAddress :: Maybe EmailAddress
-  }
-  deriving stock (Show, Eq, Generic)
-  deriving (FromJSON, ToJSON) via (Autodocodec AdminNotificationEmailConverterConf)
-
-instance HasCodec AdminNotificationEmailConverterConf where
-  codec =
-    object "AdminNotificationEmailConverterConf" $
-      AdminNotificationEmailConverterConf
-        <$> optionalField "from" "The 'from' address for admin notification emails" .= adminNotificationEmailConverterConfFromAddress
-        <*> optionalField "to" "The 'to' address for admin notification emails" .= adminNotificationEmailConverterConfToAddress
-
 data Environment = Environment
   { envConfigFile :: Maybe FilePath,
     envDb :: Maybe String,
@@ -269,6 +278,10 @@ data Environment = Environment
     envPort :: Maybe Int,
     envLogLevel :: Maybe LogLevel,
     envMonetisationEnvironment :: MonetisationEnvironment,
+    envTriggererFromEmailAddress :: !(Maybe EmailAddress),
+    envVerificationFromEmailAddress :: !(Maybe EmailAddress),
+    envAdminNotificationFromEmailAddress :: !(Maybe EmailAddress),
+    envAdminNotificationToEmailAddress :: !(Maybe EmailAddress),
     envLoopersEnvironment :: LoopersEnvironment
   }
   deriving (Show, Eq)
@@ -292,10 +305,10 @@ data LoopersEnvironment = LoopersEnvironment
     looperEnvEmailerEnv :: LooperEnvWith (),
     looperEnvTriggeredIntrayItemSchedulerEnv :: LooperEnvWith (),
     looperEnvTriggeredIntrayItemSenderEnv :: LooperEnvWith (),
-    looperEnvVerificationEmailConverterEnv :: LooperEnvWith (Maybe EmailAddress),
+    looperEnvVerificationEmailConverterEnv :: LooperEnvWith (),
     looperEnvTriggeredEmailSchedulerEnv :: LooperEnvWith (),
-    looperEnvTriggeredEmailConverterEnv :: LooperEnvWith (Maybe EmailAddress),
-    looperEnvAdminNotificationEmailConverterEnv :: LooperEnvWith AdminNotificationEmailConverterEnvironment
+    looperEnvTriggeredEmailConverterEnv :: LooperEnvWith (),
+    looperEnvAdminNotificationEmailConverterEnv :: LooperEnvWith ()
   }
   deriving (Show, Eq)
 
@@ -313,19 +326,18 @@ data LooperEnvRetryPolicy = LooperEnvRetryPolicy
   }
   deriving (Show, Eq)
 
-data AdminNotificationEmailConverterEnvironment = AdminNotificationEmailConverterEnvironment
-  { adminNotificationEmailConverterEnvFromAddress :: Maybe EmailAddress,
-    adminNotificationEmailConverterEnvToAddress :: Maybe EmailAddress
-  }
-  deriving (Show, Eq)
-
 data Settings = Settings
   { setPort :: !Int,
+    setWebHost :: !Text,
     setLogLevel :: !LogLevel,
     setDb :: !(Path Abs File),
     setAdmins :: ![Username],
     setFreeloaders :: ![Username],
     setMonetisationSettings :: !(Maybe MonetisationSettings),
+    setTriggererFromEmailAddress :: !EmailAddress,
+    setVerificationFromEmailAddress :: !EmailAddress,
+    setAdminNotificationFromEmailAddress :: !EmailAddress,
+    setAdminNotificationToEmailAddress :: !EmailAddress,
     setLoopersSettings :: !LoopersSettings
   }
   deriving (Show)
@@ -347,13 +359,13 @@ data StripeSettings = StripeSettings
 
 data LoopersSettings = LoopersSettings
   { looperSetTriggererSets :: LooperSetsWith (),
-    looperSetEmailerSets :: LooperSetsWith EmailerSettings,
+    looperSetEmailerSets :: LooperSetsWith (),
     looperSetTriggeredIntrayItemSchedulerSets :: LooperSetsWith (),
     looperSetTriggeredIntrayItemSenderSets :: LooperSetsWith (),
-    looperSetVerificationEmailConverterSets :: LooperSetsWith VerificationEmailConverterSettings,
+    looperSetVerificationEmailConverterSets :: LooperSetsWith (),
     looperSetTriggeredEmailSchedulerSets :: LooperSetsWith (),
-    looperSetTriggeredEmailConverterSets :: LooperSetsWith TriggeredEmailConverterSettings,
-    looperSetAdminNotificationEmailConverterSets :: LooperSetsWith AdminNotificationEmailConverterSettings
+    looperSetTriggeredEmailConverterSets :: LooperSetsWith (),
+    looperSetAdminNotificationEmailConverterSets :: LooperSetsWith ()
   }
   deriving (Show)
 
@@ -373,31 +385,3 @@ data LooperRetryPolicy = LooperRetryPolicy
     looperRetryPolicyAmount :: Int
   }
   deriving (Show, Eq)
-
-data EmailerSettings = EmailerSettings
-  { emailerSetAWSCredentials :: AWS.Credentials
-  }
-  deriving (Show)
-
-data VerificationEmailConverterSettings = VerificationEmailConverterSettings
-  { verificationEmailConverterSetFromAddress :: !EmailAddress,
-    verificationEmailConverterSetFromName :: !Text,
-    verificationEmailConverterSetWebHost :: !Text
-  }
-  deriving (Show)
-
-data TriggeredEmailConverterSettings = TriggeredEmailConverterSettings
-  { triggeredEmailConverterSetFromAddress :: !EmailAddress,
-    triggeredEmailConverterSetFromName :: !Text,
-    triggeredEmailConverterSetWebHost :: !Text
-  }
-  deriving (Show)
-
-data AdminNotificationEmailConverterSettings = AdminNotificationEmailConverterSettings
-  { adminNotificationEmailConverterSetFromAddress :: !EmailAddress,
-    adminNotificationEmailConverterSetFromName :: !Text,
-    adminNotificationEmailConverterSetToAddress :: !EmailAddress,
-    adminNotificationEmailConverterSetToName :: !Text,
-    adminNotificationEmailConverterSetWebHost :: !Text
-  }
-  deriving (Show)

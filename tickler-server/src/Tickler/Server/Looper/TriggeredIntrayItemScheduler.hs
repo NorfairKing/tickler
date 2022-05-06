@@ -11,8 +11,8 @@ import Tickler.Data
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
 
-runTriggeredIntrayItemScheduler :: () -> Looper ()
-runTriggeredIntrayItemScheduler () = do
+runTriggeredIntrayItemScheduler :: Looper ()
+runTriggeredIntrayItemScheduler = do
   acqTriggeredItemsSource <- runDb $ selectSourceRes [] [Asc TriggeredItemScheduledDay, Asc TriggeredItemScheduledTime]
   withAcquire acqTriggeredItemsSource $ \triggeredItemsSource ->
     runConduit $ triggeredItemsSource .| C.mapM_ scheduleTriggeredIntrayItem

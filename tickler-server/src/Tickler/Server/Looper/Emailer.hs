@@ -2,13 +2,14 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Looper.Emailer
-  ( runEmailer,
+  ( EmailerSettings (..),
+    runEmailer,
   )
 where
 
 import Conduit
 import Control.Lens
-import Control.Monad.Trans.AWS
+import Control.Monad.Trans.AWS as AWS (runAWST)
 import qualified Data.Conduit.Combinators as C
 import qualified Data.Text as T
 import Data.Time
@@ -20,7 +21,11 @@ import System.IO
 import Tickler.Data
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
-import Tickler.Server.OptParse.Types
+
+data EmailerSettings = EmailerSettings
+  { emailerSetAWSCredentials :: AWS.Credentials
+  }
+  deriving (Show)
 
 runEmailer :: EmailerSettings -> Looper ()
 runEmailer EmailerSettings {..} = do

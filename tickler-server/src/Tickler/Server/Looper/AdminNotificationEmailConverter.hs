@@ -4,7 +4,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Server.Looper.AdminNotificationEmailConverter
-  ( runAdminNotificationEmailConverter,
+  ( AdminNotificationEmailConverterSettings (..),
+    runAdminNotificationEmailConverter,
   )
 where
 
@@ -21,7 +22,15 @@ import Text.Shakespeare.Text
 import Tickler.Data
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
-import Tickler.Server.OptParse.Types
+
+data AdminNotificationEmailConverterSettings = AdminNotificationEmailConverterSettings
+  { adminNotificationEmailConverterSetFromAddress :: !EmailAddress,
+    adminNotificationEmailConverterSetFromName :: !Text,
+    adminNotificationEmailConverterSetToAddress :: !EmailAddress,
+    adminNotificationEmailConverterSetToName :: !Text,
+    adminNotificationEmailConverterSetWebHost :: !Text
+  }
+  deriving (Show)
 
 runAdminNotificationEmailConverter :: AdminNotificationEmailConverterSettings -> Looper ()
 runAdminNotificationEmailConverter vecs@AdminNotificationEmailConverterSettings {..} = do

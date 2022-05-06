@@ -13,8 +13,8 @@ import Tickler.Data
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
 
-runTriggeredEmailScheduler :: () -> Looper ()
-runTriggeredEmailScheduler () = do
+runTriggeredEmailScheduler :: Looper ()
+runTriggeredEmailScheduler = do
   acqTriggeredItemsSource <- runDb $ selectSourceRes [] [Asc TriggeredItemScheduledDay, Asc TriggeredItemScheduledTime]
   withAcquire acqTriggeredItemsSource $ \triggeredItemsSource ->
     runConduit $ triggeredItemsSource .| C.mapM_ scheduleTriggeredEmail

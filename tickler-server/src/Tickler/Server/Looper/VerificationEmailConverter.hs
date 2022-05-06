@@ -4,7 +4,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Server.Looper.VerificationEmailConverter
-  ( runVerificationEmailConverter,
+  ( VerificationEmailConverterSettings (..),
+    runVerificationEmailConverter,
     verificationEmailSubject,
     verificationEmailTextContent,
     verificationEmailHtmlContent,
@@ -25,7 +26,13 @@ import Text.Shakespeare.Text
 import Tickler.Data
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
-import Tickler.Server.OptParse.Types
+
+data VerificationEmailConverterSettings = VerificationEmailConverterSettings
+  { verificationEmailConverterSetFromAddress :: !EmailAddress,
+    verificationEmailConverterSetFromName :: !Text,
+    verificationEmailConverterSetWebHost :: !Text
+  }
+  deriving (Show)
 
 runVerificationEmailConverter :: VerificationEmailConverterSettings -> Looper ()
 runVerificationEmailConverter vecs@VerificationEmailConverterSettings {..} = do

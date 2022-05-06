@@ -4,7 +4,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Server.Looper.TriggeredEmailConverter
-  ( runTriggeredEmailConverter,
+  ( TriggeredEmailConverterSettings (..),
+    runTriggeredEmailConverter,
     triggeredEmailSubject,
     triggeredEmailTextContent,
     triggeredEmailHtmlContent,
@@ -26,7 +27,13 @@ import Text.Shakespeare.Text
 import Tickler.Data
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
-import Tickler.Server.OptParse.Types
+
+data TriggeredEmailConverterSettings = TriggeredEmailConverterSettings
+  { triggeredEmailConverterSetFromAddress :: !EmailAddress,
+    triggeredEmailConverterSetFromName :: !Text,
+    triggeredEmailConverterSetWebHost :: !Text
+  }
+  deriving (Show)
 
 runTriggeredEmailConverter :: TriggeredEmailConverterSettings -> Looper ()
 runTriggeredEmailConverter tess = do

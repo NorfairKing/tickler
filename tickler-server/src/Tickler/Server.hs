@@ -32,7 +32,7 @@ import Tickler.Server.Types
 import UnliftIO
 
 runTicklerServer :: Settings -> IO ()
-runTicklerServer Settings {..} =
+runTicklerServer settings@Settings {..} =
   runStderrLoggingT $
     filterLogger (\_ ll -> ll >= setLogLevel) $
       withSqlitePoolInfo (mkSqliteConnectionInfo (T.pack (fromAbsFile setDb))) 1 $
@@ -51,7 +51,7 @@ runTicklerServer Settings {..} =
           signingKey <- liftIO loadSigningKey
           let jwtCfg = defaultJWTSettings signingKey
           let cookieCfg = defaultCookieSettings
-          loopersHandle <- startLoopers pool setLoopersSettings setMonetisationSettings
+          loopersHandle <- startLoopers pool settings setMonetisationSettings
           mMonetisationEnv <-
             forM setMonetisationSettings $ \MonetisationSettings {..} -> do
               planCache <- liftIO $ newCache Nothing
