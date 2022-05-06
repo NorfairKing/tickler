@@ -51,7 +51,6 @@ runTicklerServer settings@Settings {..} =
           signingKey <- liftIO loadSigningKey
           let jwtCfg = defaultJWTSettings signingKey
           let cookieCfg = defaultCookieSettings
-          startLoopers pool settings setMonetisationSettings
           mMonetisationEnv <-
             forM setMonetisationSettings $ \MonetisationSettings {..} -> do
               planCache <- liftIO $ newCache Nothing
@@ -70,7 +69,9 @@ runTicklerServer settings@Settings {..} =
                     envFreeloaders = setFreeloaders,
                     envMonetisation = mMonetisationEnv
                   }
-          liftIO $ Warp.run setPort $ ticklerApp ticklerEnv
+          let serverThread = liftIO $ Warp.run setPort $ ticklerApp ticklerEnv
+          let looperThread = runTicklerLoopers pool settings
+          concurrently_ looperThread serverThread
 
 ticklerApp :: TicklerServerEnv -> Wai.Application
 ticklerApp se =

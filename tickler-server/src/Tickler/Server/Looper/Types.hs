@@ -12,12 +12,10 @@ import Control.Monad.Logger
 import Data.Pool
 import Database.Persist.Sqlite
 import Import
-import Tickler.Server.OptParse.Types
 import UnliftIO
 
 data LooperEnv = LooperEnv
-  { looperEnvPool :: Pool SqlBackend,
-    looperEnvStripeSettings :: Maybe StripeSettings
+  { looperEnvPool :: Pool SqlBackend
   }
 
 newtype Looper a = Looper
@@ -36,5 +34,5 @@ newtype Looper a = Looper
       MonadMask
     )
 
-runLooper :: Looper a -> LooperEnv -> LoggingT IO a
-runLooper (Looper func) = runReaderT func
+runLooper :: LooperEnv -> Looper a -> LoggingT IO a
+runLooper looperEnv (Looper func) = runReaderT func looperEnv

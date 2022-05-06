@@ -98,6 +98,7 @@ library
     , intray-server
     , jose
     , lens
+    , looper
     , monad-logger
     , mtl >=2.2
     , optparse-applicative >=0.13
