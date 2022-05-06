@@ -94,13 +94,6 @@ combineToSettings Flags {..} Environment {..} mConf = do
           flagTriggererFlags
           envTriggererEnv
           (mc confTriggererConf)
-  let setEmailerSets =
-        deriveLooperSettings
-          (seconds 2)
-          (minutes 60)
-          flagEmailerFlags
-          envEmailerEnv
-          (mc confEmailerConf)
   let setTriggeredIntrayItemSchedulerSets =
         deriveLooperSettings
           (seconds 3)
@@ -143,6 +136,13 @@ combineToSettings Flags {..} Environment {..} mConf = do
           flagAdminNotificationEmailConverterFlags
           envAdminNotificationEmailConverterEnv
           (mc confAdminNotificationEmailConverterConf)
+  let setEmailerSets =
+        deriveLooperSettings
+          (seconds 10)
+          (minutes 60)
+          flagEmailerFlags
+          envEmailerEnv
+          (mc confEmailerConf)
 
   pure Settings {..}
 
