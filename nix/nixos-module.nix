@@ -45,36 +45,6 @@ in
                 example = "LevelInfo";
                 description = "The minimal severity of log messages";
               };
-            default-looper-enabled =
-              mkOption {
-                type = types.nullOr types.bool;
-                default = null;
-                example = true;
-                description = "Whether loopers are on by default";
-              };
-            default-looper-period =
-              mkOption {
-                type = types.nullOr types.int;
-                default = null;
-                example = 600;
-                description =
-                  "The number of seconds to use as the default period for loopers";
-              };
-            default-looper-retry-delay =
-              mkOption {
-                type = types.nullOr types.int;
-                default = null;
-                example = 1000000;
-                description =
-                  "The number of microseconds to use as the default retry delay";
-              };
-            default-looper-retry-amount =
-              mkOption {
-                type = types.nullOr types.int;
-                default = null;
-                example = 5;
-                description = "The default number of times to retry a looper";
-              };
             admins =
               mkOption {
                 type = types.nullOr (types.listOf types.str);

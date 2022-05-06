@@ -20,7 +20,6 @@ import Looper
 import Options.Applicative as OptParse
 import qualified Options.Applicative.Help as OptParse
 import qualified System.Environment as System
-import Text.Read
 import Tickler.API
 import Tickler.Server.OptParse.Types
 import Web.Stripe.Client as Stripe
@@ -200,29 +199,6 @@ monetisationEnvironmentParser =
     <*> optional (Env.var Env.str "STRIPE_PUBLISHABLE_KEY" (Env.help "Stripe publishable key"))
     <*> looperEnvironmentParser "STRIPE_EVENTS_FETCHER"
     <*> optional (Env.var Env.auto "MAX_ITEMS_FREE" (Env.help "Maximum number of free items"))
-
-getEnv :: [(String, String)] -> String -> Maybe String
-getEnv env key = lookup ("TICKLER_SERVER_" <> key) env
-
-requireEnv :: IsString a => [(String, String)] -> String -> IO a
-requireEnv env key = case getEnv env key of
-  Nothing -> die $ "Missing env var: " <> key
-  Just v -> pure $ fromString v
-
-readEnv :: Read a => [(String, String)] -> String -> IO (Maybe a)
-readEnv env key =
-  forM (getEnv env key) $ \s ->
-    case readMaybe s of
-      Nothing -> die $ unwords ["Un-Read-able value for environment value", key <> ":", s]
-      Just val -> pure val
-
-getEitherEnv :: [(String, String)] -> (String -> Either String a) -> String -> IO (Maybe a)
-getEitherEnv env func key =
-  forM (getEnv env key) $ \s ->
-    case func s of
-      Left err ->
-        die $ unlines [unwords ["Failed to parse environment variable", key <> ":", s], err]
-      Right res -> pure res
 
 getFlags :: IO Flags
 getFlags = do
