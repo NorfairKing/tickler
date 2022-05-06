@@ -30,6 +30,7 @@ where
 
 import Control.Concurrent (newMVar)
 import Control.Monad
+import Control.Monad.Logger
 import qualified Data.HashMap.Strict as HM
 import Data.Maybe
 import Data.Text (Text)
@@ -73,6 +74,7 @@ appSetupFunc :: HTTP.Manager -> ClientEnv -> SetupFunc App
 appSetupFunc man (ClientEnv _ burl _) = do
   tdir <- tempDirSetupFunc "tickler-web-server"
   appSessionKeyFile <- resolveFile tdir "client_session_key.aes"
+  let appLogLevel = LevelWarn
   let appHTTPManager = man
   let appStatic = myStatic
   appLoginTokens <- liftIO $ newMVar HM.empty

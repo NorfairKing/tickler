@@ -29,6 +29,7 @@ library:
   - http-client-tls
   - http-types
   - intray-data
+  - monad-logger
   - mtl
   - optparse-applicative
   - path

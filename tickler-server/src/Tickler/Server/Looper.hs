@@ -65,25 +65,13 @@ runTicklerLoopers pool Settings {..} = do
   runLooper looperEnv $
     runLoopersIgnoreOverrun looperRunner $
       concat
-        [ [ mkLooperDef
-              "Emailer"
-              setEmailerSets
-              $ let emailerSettings = EmailerSettings AWS.Discover
-                 in runEmailer emailerSettings,
+        [ [ mkLooperDef "Emailer" setEmailerSets $
+              let emailerSettings = EmailerSettings AWS.Discover
+               in runEmailer emailerSettings,
             mkLooperDef
               "Triggerer"
               setTriggererSets
               runTriggerer,
-            mkLooperDef
-              "TriggeredVerificationEmailConverter"
-              setVerificationEmailConverterSets
-              $ let verificationEmailConverterSettings =
-                      VerificationEmailConverterSettings
-                        { verificationEmailConverterSetFromAddress = setVerificationFromEmailAddress,
-                          verificationEmailConverterSetFromName = "Tickler Verification",
-                          verificationEmailConverterSetWebHost = setWebHost
-                        }
-                 in runVerificationEmailConverter verificationEmailConverterSettings,
             mkLooperDef
               "TriggeredIntrayItemScheduler"
               setTriggeredIntrayItemSchedulerSets
@@ -95,25 +83,46 @@ runTicklerLoopers pool Settings {..} = do
             mkLooperDef
               "TriggeredEmailScheduler"
               setTriggeredEmailSchedulerSets
-              runTriggeredEmailScheduler,
-            mkLooperDef "TriggeredEmailConverter" setTriggeredEmailConverterSets $
-              let triggeredEmailConverterSettings =
-                    TriggeredEmailConverterSettings
-                      { triggeredEmailConverterSetFromAddress = setTriggererFromEmailAddress,
-                        triggeredEmailConverterSetFromName = "Tickler Triggerer",
-                        triggeredEmailConverterSetWebHost = setWebHost
-                      }
-               in runTriggeredEmailConverter triggeredEmailConverterSettings,
-            mkLooperDef "AdminNotificationEmailConverter" setTriggeredEmailConverterSets $
-              let adminNotificationEmailConverterSettings =
-                    AdminNotificationEmailConverterSettings
-                      { adminNotificationEmailConverterSetFromAddress = setAdminNotificationFromEmailAddress,
-                        adminNotificationEmailConverterSetFromName = "Tickler Admin Notification",
-                        adminNotificationEmailConverterSetToAddress = setAdminNotificationToEmailAddress,
-                        adminNotificationEmailConverterSetToName = "Tickler Admin",
-                        adminNotificationEmailConverterSetWebHost = setWebHost
-                      }
-               in runAdminNotificationEmailConverter adminNotificationEmailConverterSettings
+              runTriggeredEmailScheduler
+          ],
+          [ mkLooperDef "TriggeredVerificationEmailConverter" setVerificationEmailConverterSets $
+              runVerificationEmailConverter verificationEmailConverterSettings
+            | verificationEmailConverterSettings <- maybeToList $ do
+                from <- setVerificationFromEmailAddress
+                webHost <- setWebHost
+                pure
+                  VerificationEmailConverterSettings
+                    { verificationEmailConverterSetFromAddress = from,
+                      verificationEmailConverterSetFromName = "Tickler Verification",
+                      verificationEmailConverterSetWebHost = webHost
+                    }
+          ],
+          [ mkLooperDef "TriggeredEmailConverter" setTriggeredEmailConverterSets $
+              runTriggeredEmailConverter triggeredEmailConverterSettings
+            | triggeredEmailConverterSettings <- maybeToList $ do
+                from <- setTriggererFromEmailAddress
+                webHost <- setWebHost
+                pure
+                  TriggeredEmailConverterSettings
+                    { triggeredEmailConverterSetFromAddress = from,
+                      triggeredEmailConverterSetFromName = "Tickler Triggerer",
+                      triggeredEmailConverterSetWebHost = webHost
+                    }
+          ],
+          [ mkLooperDef "AdminNotificationEmailConverter" setTriggeredEmailConverterSets $
+              runAdminNotificationEmailConverter adminNotificationEmailConverterSettings
+            | adminNotificationEmailConverterSettings <- maybeToList $ do
+                from <- setAdminNotificationFromEmailAddress
+                to <- setAdminNotificationToEmailAddress
+                webHost <- setWebHost
+                pure
+                  AdminNotificationEmailConverterSettings
+                    { adminNotificationEmailConverterSetFromAddress = from,
+                      adminNotificationEmailConverterSetFromName = "Tickler Admin Notification",
+                      adminNotificationEmailConverterSetToAddress = to,
+                      adminNotificationEmailConverterSetToName = "Tickler Admin",
+                      adminNotificationEmailConverterSetWebHost = webHost
+                    }
           ],
           [ mkLooperDef
               "StripeEventsFetcher"

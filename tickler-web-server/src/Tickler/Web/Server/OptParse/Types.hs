@@ -5,28 +5,31 @@
 module Tickler.Web.Server.OptParse.Types where
 
 import Autodocodec
+import Control.Monad.Logger
 import Import
 import Servant.Client.Core
 import Tickler.Server.OptParse.Types ()
 
 data Flags = Flags
-  { flagConfigFile :: Maybe FilePath,
-    flagAPIBaseUrl :: Maybe BaseUrl,
-    flagPort :: Maybe Int,
-    flagPersistLogins :: Maybe Bool,
-    flagDefaultIntrayUrl :: Maybe BaseUrl,
-    flagTracking :: Maybe Text,
-    flagVerification :: Maybe Text
+  { flagConfigFile :: !(Maybe FilePath),
+    flagAPIBaseUrl :: !(Maybe BaseUrl),
+    flagPort :: !(Maybe Int),
+    flagLogLevel :: !(Maybe LogLevel),
+    flagPersistLogins :: !(Maybe Bool),
+    flagDefaultIntrayUrl :: !(Maybe BaseUrl),
+    flagTracking :: !(Maybe Text),
+    flagVerification :: !(Maybe Text)
   }
   deriving (Show, Eq)
 
 data Configuration = Configuration
-  { confPort :: Maybe Int,
-    confAPIBaseUrl :: Maybe BaseUrl,
-    confPersistLogins :: Maybe Bool,
-    confDefaultIntrayUrl :: Maybe BaseUrl,
-    confTracking :: Maybe Text,
-    confVerification :: Maybe Text
+  { confPort :: !(Maybe Int),
+    confLogLevel :: !(Maybe LogLevel),
+    confAPIBaseUrl :: !(Maybe BaseUrl),
+    confPersistLogins :: !(Maybe Bool),
+    confDefaultIntrayUrl :: !(Maybe BaseUrl),
+    confTracking :: !(Maybe Text),
+    confVerification :: !(Maybe Text)
   }
   deriving stock (Show, Eq, Generic)
 
@@ -35,35 +38,32 @@ instance HasCodec Configuration where
     object "Configuration" $
       Configuration
         <$> optionalField "port" "The port to serve web requests on" .= confPort
+        <*> optionalField "log-level" "The minimal sevirity of log messages" .= confLogLevel
         <*> optionalField "api-url" "The url to contact the api server at" .= confAPIBaseUrl
-        <*> optionalField
-          "persist-logins"
-          "Whether to persist logins accross server restarts. Don't use this in production."
-          .= confPersistLogins
-        <*> optionalField
-          "default-intray-url"
-          "The default intray url to fill in for setting up intray triggers"
-          .= confDefaultIntrayUrl
+        <*> optionalField "persist-logins" "Whether to persist logins accross server restarts. Don't use this in production." .= confPersistLogins
+        <*> optionalField "default-intray-url" "The default intray url to fill in for setting up intray triggers" .= confDefaultIntrayUrl
         <*> optionalField "tracking" "The google analytics tracking code" .= confTracking
         <*> optionalField "verification" "The google search console verification code" .= confVerification
 
 data Environment = Environment
-  { envConfigFile :: Maybe FilePath,
-    envAPIBaseUrl :: Maybe BaseUrl,
-    envPort :: Maybe Int,
-    envPersistLogins :: Maybe Bool,
-    envDefaultIntrayUrl :: Maybe BaseUrl,
-    envTracking :: Maybe Text,
-    envVerification :: Maybe Text
+  { envConfigFile :: !(Maybe FilePath),
+    envAPIBaseUrl :: !(Maybe BaseUrl),
+    envPort :: !(Maybe Int),
+    envLogLevel :: !(Maybe LogLevel),
+    envPersistLogins :: !(Maybe Bool),
+    envDefaultIntrayUrl :: !(Maybe BaseUrl),
+    envTracking :: !(Maybe Text),
+    envVerification :: !(Maybe Text)
   }
   deriving (Show, Eq)
 
 data Settings = Settings
-  { setPort :: Int,
-    setAPIBaseUrl :: BaseUrl,
-    setPersistLogins :: Bool,
-    setDefaultIntrayUrl :: Maybe BaseUrl,
-    setTracking :: Maybe Text,
-    setVerification :: Maybe Text
+  { setPort :: !Int,
+    setLogLevel :: !LogLevel,
+    setAPIBaseUrl :: !BaseUrl,
+    setPersistLogins :: !Bool,
+    setDefaultIntrayUrl :: !(Maybe BaseUrl),
+    setTracking :: !(Maybe Text),
+    setVerification :: !(Maybe Text)
   }
   deriving (Show)

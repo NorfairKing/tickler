@@ -10,6 +10,7 @@ let
   cfg = config.services.tickler."${envname}";
   mergeListRecursively = pkgs.callPackage ./merge-lists-recursively.nix { };
   toYamlFile = pkgs.callPackage ./to-yaml.nix { };
+  mkLooperOption = pkgs.callPackage (sources.looper + "/nix/looper-option.nix") { };
 in
 {
   options.services.tickler."${envname}" =
@@ -24,162 +25,95 @@ in
               default = { };
               description = "The contents of the config file, as an attribute set. This will be translated to Yaml and put in the right place along with the rest of the options defined in this submodule.";
             };
-            hosts =
-              mkOption {
-                type = types.listOf types.str;
-                default = [ ];
-                example = [ "api.tickler.cs-syd.eu" ];
-                description = "The host to serve API requests on";
-              };
-            port =
-              mkOption {
-                type = types.int;
-                default = 8101;
-                example = 8101;
-                description = "The port to serve API requests on";
-              };
-            log-level =
-              mkOption {
-                type = types.nullOr types.str;
-                default = null;
-                example = "LevelInfo";
-                description = "The minimal severity of log messages";
-              };
-            admins =
-              mkOption {
-                type = types.nullOr (types.listOf types.str);
-                default = null;
-                example = [ "syd" ];
-                description =
-                  "A list of the usernames that will have admin privileges";
-              };
-            freeloaders =
-              mkOption {
-                type = types.nullOr (types.listOf types.str);
-                default = null;
-                example = [ "freeloaders" ];
-                description =
-                  "A list of the usernames that will have have access without payment";
-              };
-            email-verification-address =
-              mkOption {
-                type = types.nullOr types.str;
-                example = "verification@tickler.cs-syd.eu";
-                default = null;
-                description = "The email address to use for email verification";
-              };
-            email-triggered-address =
-              mkOption {
-                type = types.nullOr types.str;
-                example = "triggered@tickler.cs-syd.eu";
-                default = null;
-                description = "The email address to use for email triggering";
-              };
-            email-admin-notification-from-address =
-              mkOption {
-                type = types.nullOr types.str;
-                example = "admin-notification@tickler.cs-syd.eu";
-                default = null;
-                description =
-                  "The email address to use to send admin notifications from";
-              };
-            email-admin-notification-to-address =
-              mkOption {
-                type = types.nullOr types.str;
-                example = "syd@example.com";
-                default = null;
-                description =
-                  "The email address to use to send admin notifications from";
-              };
-            monetisation =
-              mkOption {
-                default = null;
-                type =
-                  types.nullOr (
-                    types.submodule {
-                      options =
-                        {
-                          stripe-plan =
-                            mkOption {
-                              type = types.str;
-                              example = "plan_XXXXXXXXXXXXXX";
-                              description = "Stripe plan for subscriptions.";
-                            };
-                          stripe-secret-key =
-                            mkOption {
-                              type = types.str;
-                              example = "sk_test_XXXXXXXXXXXXXXXXXXXXXXXX";
-                              description = "Stripe secret key.";
-                            };
-                          stripe-publishable-key =
-                            mkOption {
-                              type = types.str;
-                              example = "pk_test_XXXXXXXXXXXXXXXXXXXXXXXX";
-                              description = "Stripe publishable key.";
-                            };
-                        };
-                    }
-                  );
-              };
-            loopers =
-              mkOption {
-                type =
-                  types.nullOr (
-                    types.submodule {
-                      options =
-                        let
-                          looperOption =
-                            mkOption {
-                              type =
-                                types.nullOr (
-                                  types.submodule {
-                                    options =
-                                      {
-                                        enabled = mkEnableOption "Looper";
-                                        period =
-                                          mkOption {
-                                            type = types.nullOr types.int;
-                                            default = null;
-                                            example = 60;
-                                            description =
-                                              "The number of seconds between running the looper";
-                                          };
-                                        retry-delay =
-                                          mkOption {
-                                            type = types.nullOr types.int;
-                                            default = null;
-                                            example = 1000000;
-                                            description =
-                                              "The number of microseconds between retrying the looper when it fails";
-                                          };
-                                        retry-amount =
-                                          mkOption {
-                                            type = types.nullOr types.int;
-                                            default = null;
-                                            example = 5;
-                                            description =
-                                              "The number of times to retry the looper when it fails";
-                                          };
-                                      };
-                                  }
-                                );
-                              default = null;
-                            };
-                        in
-                        {
-                          triggerer = looperOption;
-                          emailer = looperOption;
-                          triggered-intray-item-scheduler = looperOption;
-                          triggered-intray-item-sender = looperOption;
-                          verification-email-converter = looperOption;
-                          triggered-email-scheduler = looperOption;
-                          triggered-email-converter = looperOption;
-                          admin-notification-email-converter = looperOption;
-                        };
-                    }
-                  );
-                default = null;
-              };
+            hosts = mkOption {
+              type = types.listOf types.str;
+              default = [ ];
+              example = [ "api.tickler.cs-syd.eu" ];
+              description = "The host to serve API requests on";
+            };
+            port = mkOption {
+              type = types.int;
+              default = 8101;
+              example = 8101;
+              description = "The port to serve API requests on";
+            };
+            log-level = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              example = "LevelInfo";
+              description = "The minimal severity of log messages";
+            };
+            admins = mkOption {
+              type = types.nullOr (types.listOf types.str);
+              default = null;
+              example = [ "syd" ];
+              description =
+                "A list of the usernames that will have admin privileges";
+            };
+            freeloaders = mkOption {
+              type = types.nullOr (types.listOf types.str);
+              default = null;
+              example = [ "freeloaders" ];
+              description =
+                "A list of the usernames that will have have access without payment";
+            };
+            verification-from = mkOption {
+              type = types.nullOr types.str;
+              example = "verification@tickler.cs-syd.eu";
+              default = null;
+              description = "The email address to use for email verification";
+            };
+            triggerer-from = mkOption {
+              type = types.nullOr types.str;
+              example = "triggered@tickler.cs-syd.eu";
+              default = null;
+              description = "The email address to use for email triggering";
+            };
+            admin-notification-from = mkOption {
+              type = types.nullOr types.str;
+              example = "admin-notification@tickler.cs-syd.eu";
+              default = null;
+              description = "The email address to use to send admin notifications from";
+            };
+            admin-notification-to = mkOption {
+              type = types.nullOr types.str;
+              example = "syd@example.com";
+              default = null;
+              description = "The email address to use to send admin notifications from";
+            };
+            monetisation = mkOption {
+              default = null;
+              type =
+                types.nullOr (
+                  types.submodule {
+                    options = {
+                      stripe-plan = mkOption {
+                        type = types.str;
+                        example = "plan_XXXXXXXXXXXXXX";
+                        description = "Stripe plan for subscriptions.";
+                      };
+                      stripe-secret-key = mkOption {
+                        type = types.str;
+                        example = "sk_test_XXXXXXXXXXXXXXXXXXXXXXXX";
+                        description = "Stripe secret key.";
+                      };
+                      stripe-publishable-key = mkOption {
+                        type = types.str;
+                        example = "pk_test_XXXXXXXXXXXXXXXXXXXXXXXX";
+                        description = "Stripe publishable key.";
+                      };
+                    };
+                  }
+                );
+            };
+            triggerer = mkLooperOption "triggerer";
+            emailer = mkLooperOption "emailer";
+            triggered-intray-item-scheduler = mkLooperOption "triggered-intray-item-scheduler";
+            triggered-intray-item-sender = mkLooperOption "triggered-intray-item-sender";
+            verification-email-converter = mkLooperOption "verification-email-converter";
+            triggered-email-scheduler = mkLooperOption "triggered-email-scheduler";
+            triggered-email-converter = mkLooperOption "triggered-email-converter";
+            admin-notification-email-converter = mkLooperOption "admin-notification-email-converter";
           };
         });
       };
@@ -253,10 +187,22 @@ in
       api-server-config = with cfg.api-server; mergeListRecursively [
         (attrOrNullHead "host" hosts)
         (attrOrNull "port" port)
+        (attrOrNull "log-level" log-level)
         (attrOrNull "admins" admins)
         (attrOrNull "freeloaders" freeloaders)
-        (attrOrNull "log-level" log-level)
         (attrOrNull "monetisation" monetisation)
+        (attrOrNull "triggerer-from" triggerer-from)
+        (attrOrNull "verification-from" verification-from)
+        (attrOrNull "admin-notification-from" admin-notification-from)
+        (attrOrNull "admin-notification-to" admin-notification-to)
+        (attrOrNull "triggerer" triggerer)
+        (attrOrNull "emailer" emailer)
+        (attrOrNull "triggered-intray-item-scheduler" triggered-intray-item-scheduler)
+        (attrOrNull "triggered-intray-item-sender" triggered-intray-item-sender)
+        (attrOrNull "verification-email-converter" verification-email-converter)
+        (attrOrNull "triggered-email-scheduler" triggered-email-scheduler)
+        (attrOrNull "triggered-email-converter" triggered-email-converter)
+        (attrOrNull "admin-notification-email-converter" admin-notification-email-converter)
         cfg.api-server.config
       ];
       api-server-config-file = toYamlFile "tickler-api-server-config" api-server-config;
@@ -300,6 +246,7 @@ in
         (attrOrNull "port" port)
         (attrOrNull "log-level" log-level)
         (attrOrNull "api-url" api-url)
+        (attrOrNull "default-intray-url" default-intray-url)
         (attrOrNull "tracking" tracking-id)
         (attrOrNull "verification" verification-tag)
         cfg.web-server.config

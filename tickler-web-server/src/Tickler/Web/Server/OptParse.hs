@@ -9,6 +9,7 @@ module Tickler.Web.Server.OptParse
 where
 
 import Autodocodec.Yaml
+import Control.Monad.Logger
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Env
@@ -31,6 +32,7 @@ combineToSettings Flags {..} Environment {..} mConf = do
   let mc :: (Configuration -> Maybe a) -> Maybe a
       mc f = mConf >>= f
   let setPort = fromMaybe 8080 $ flagPort <|> envPort <|> mc confPort
+  let setLogLevel = fromMaybe LevelInfo $ flagLogLevel <|> envLogLevel <|> mc confLogLevel
   setAPIBaseUrl <- case flagAPIBaseUrl <|> envAPIBaseUrl <|> mc confAPIBaseUrl of
     Nothing -> die "No API URL Configured. Try --help to see how to configure it."
     Just burl -> pure burl
@@ -56,11 +58,12 @@ getEnvironment = Env.parse id environmentParser
 
 environmentParser :: Env.Parser Env.Error Environment
 environmentParser =
-  Env.prefixed "TICKLER_SERVER_" $
+  Env.prefixed "TICKLER_WEB_SERVER_" $
     Environment
       <$> optional (Env.var Env.str "CONFIG_FILE" (Env.help "configuration file"))
       <*> optional (Env.var (left (Env.UnreadError . show) . parseBaseUrl) "API_URL" (Env.help "base url of the api server"))
       <*> optional (Env.var Env.auto "PORT" (Env.help "port to run the web server on"))
+      <*> optional (Env.var Env.auto "LOG_LEVEL" (Env.help "minimal severity of log messages"))
       <*> optional (Env.var Env.auto "PERSIST_LOGINS" (Env.help "Whether to persist logins"))
       <*> optional (Env.var (left (Env.UnreadError . show) . parseBaseUrl) "DEFAULT_INTRAY_URL" (Env.help "Default intray url to suggest when adding intray triggers"))
       <*> optional (Env.var Env.str "TRACKING" (Env.help "Tracking code"))
@@ -115,6 +118,16 @@ parseFlags =
               [ long "port",
                 metavar "PORT",
                 help "the port to serve the web interface on"
+              ]
+          )
+      )
+    <*> optional
+      ( option
+          auto
+          ( mconcat
+              [ long "log-level",
+                metavar "LOG_LEVEL",
+                help "minimal severity of log messages"
               ]
           )
       )

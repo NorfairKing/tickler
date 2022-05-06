@@ -22,6 +22,7 @@ library
     , genvalidity-sydtest
     , http-client
     , http-types
+    , monad-logger
     , mtl
     , path
     , path-io

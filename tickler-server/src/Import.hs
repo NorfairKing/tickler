@@ -14,7 +14,7 @@ import Data.Monoid as X
 import Data.String as X
 import Data.Text as X (Text)
 import Debug.Trace as X
-import GHC.Generics as X hiding (Selector)
+import GHC.Generics as X (Generic)
 import Path as X
 import Path.IO as X
 import System.Exit as X

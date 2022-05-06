@@ -51,15 +51,16 @@ type TicklerHandler = HandlerFor App
 type TicklerAuthHandler a = AuthHandler App a
 
 data App = App
-  { appHTTPManager :: HTTP.Manager,
-    appStatic :: EmbeddedStatic,
-    appAPIBaseUrl :: BaseUrl,
-    appPersistLogins :: Bool,
-    appTracking :: Maybe Text,
-    appVerification :: Maybe Text,
-    appLoginTokens :: MVar (HashMap Username Token),
+  { appHTTPManager :: !HTTP.Manager,
+    appLogLevel :: !LogLevel,
+    appStatic :: !EmbeddedStatic,
+    appAPIBaseUrl :: !BaseUrl,
+    appPersistLogins :: !Bool,
+    appTracking :: !(Maybe Text),
+    appVerification :: !(Maybe Text),
+    appLoginTokens :: !(MVar (HashMap Username Token)),
     appSessionKeyFile :: !(Path Abs File),
-    appDefaultIntrayUrl :: Maybe BaseUrl
+    appDefaultIntrayUrl :: !(Maybe BaseUrl)
   }
 
 mkYesodData "App" $(parseRoutesFile "routes")
@@ -75,6 +76,7 @@ instance Yesod App where
   yesodMiddleware = defaultCsrfMiddleware . defaultYesodMiddleware
   authRoute _ = Just $ AuthR LoginR
   makeSessionBackend a = Just <$> defaultClientSessionBackend (60 * 24 * 365 * 10) (fromAbsFile (appSessionKeyFile a))
+  shouldLogIO a _ ll = pure $ ll >= appLogLevel a
   errorHandler NotFound =
     fmap toTypedContent $
       withNavBar $

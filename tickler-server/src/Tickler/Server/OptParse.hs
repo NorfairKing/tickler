@@ -38,7 +38,7 @@ combineToSettings Flags {..} Environment {..} mConf = do
       mc func = mConf >>= func
   let setPort = fromMaybe 8000 $ flagPort <|> envPort <|> mc confPort
   let setLogLevel = fromMaybe LevelInfo $ flagLogLevel <|> envLogLevel <|> mc confLogLevel
-  let setWebHost = fromMaybe (T.pack $ "localhost:" <> show setPort) $ flagWebHost <|> envWebHost <|> mc confWebHost
+  let setWebHost = flagWebHost <|> envWebHost <|> mc confWebHost
   setDb <- resolveFile' $ fromMaybe "tickler.db" $ flagDb <|> envDb <|> mc confDb
   let setAdmins = flagAdmins ++ fromMaybe [] (mc confAdmins)
   let setFreeloaders = flagFreeloaders ++ fromMaybe [] (mc confFreeloaders)
@@ -82,18 +82,10 @@ combineToSettings Flags {..} Environment {..} mConf = do
         <*> pure monetisationSetStripeEventsFetcher
         <*> pure monetisationSetMaxItemsFree
 
-  setTriggererFromEmailAddress <-
-    maybe (die "No from email address for the email triggering configured") pure $
-      flagTriggererFromEmailAddress <|> envTriggererFromEmailAddress <|> mc confTriggererFromEmailAddress
-  setVerificationFromEmailAddress <-
-    maybe (die "No from email address for the email trigger verification configured") pure $
-      flagVerificationFromEmailAddress <|> envVerificationFromEmailAddress <|> mc confVerificationFromEmailAddress
-  setAdminNotificationFromEmailAddress <-
-    maybe (die "No from email address for the admin notifications configured") pure $
-      flagAdminNotificationFromEmailAddress <|> envAdminNotificationFromEmailAddress <|> mc confAdminNotificationFromEmailAddress
-  setAdminNotificationToEmailAddress <-
-    maybe (die "No to email address for the admin notifications configured") pure $
-      flagAdminNotificationToEmailAddress <|> envAdminNotificationToEmailAddress <|> mc confAdminNotificationToEmailAddress
+  let setTriggererFromEmailAddress = flagTriggererFromEmailAddress <|> envTriggererFromEmailAddress <|> mc confTriggererFromEmailAddress
+  let setVerificationFromEmailAddress = flagVerificationFromEmailAddress <|> envVerificationFromEmailAddress <|> mc confVerificationFromEmailAddress
+  let setAdminNotificationFromEmailAddress = flagAdminNotificationFromEmailAddress <|> envAdminNotificationFromEmailAddress <|> mc confAdminNotificationFromEmailAddress
+  let setAdminNotificationToEmailAddress = flagAdminNotificationToEmailAddress <|> envAdminNotificationToEmailAddress <|> mc confAdminNotificationToEmailAddress
 
   let setTriggererSets =
         deriveLooperSettings

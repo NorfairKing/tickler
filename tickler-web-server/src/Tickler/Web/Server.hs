@@ -28,6 +28,7 @@ runTicklerWebServer Settings {..} = do
     setPort
     App
       { appHTTPManager = man,
+        appLogLevel = setLogLevel,
         appStatic = myStatic,
         appLoginTokens = tokens,
         appAPIBaseUrl = setAPIBaseUrl,
