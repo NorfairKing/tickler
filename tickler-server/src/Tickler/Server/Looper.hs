@@ -3,9 +3,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Tickler.Server.Looper
-  ( LoopersHandle (..),
-    LooperHandle (..),
-    startLoopers,
+  ( startLoopers,
   )
 where
 
@@ -35,39 +33,24 @@ import Tickler.Server.Looper.VerificationEmailConverter
 import Tickler.Server.OptParse.Types
 import UnliftIO
 
-data LoopersHandle = LoopersHandle
-  { emailerLooperHandle :: LooperHandle,
-    triggererLooperHandle :: LooperHandle,
-    verificationEmailConverterLooperHandle :: LooperHandle,
-    triggeredIntrayItemSchedulerLooperHandle :: LooperHandle,
-    triggeredIntrayItemSenderLooperHandle :: LooperHandle,
-    triggeredEmailSchedulerLooperHandle :: LooperHandle,
-    triggeredEmailConverterLooperHandle :: LooperHandle,
-    adminNotificationEmailConverterLooperHandle :: LooperHandle,
-    stripeEventsFetcherLooperHandle :: LooperHandle,
-    stripeEventsRetrierLooperHandle :: LooperHandle
-  }
-
-startLoopers :: Pool SqlBackend -> Settings -> Maybe MonetisationSettings -> LoggingT IO LoopersHandle
+startLoopers :: Pool SqlBackend -> Settings -> Maybe MonetisationSettings -> LoggingT IO ()
 startLoopers pool Settings {..} mms = do
   let LoopersSettings {..} = setLoopersSettings
   let start ::
         String ->
         LooperSetsWith a ->
         (a -> Looper b) ->
-        LoggingT IO LooperHandle
+        LoggingT IO ()
       start = startLooperWithSets pool (monetisationSetStripeSettings <$> mms)
   let emailerSettings = EmailerSettings AWS.Discover
-  emailerLooperHandle <-
-    start
-      "Emailer"
-      looperSetEmailerSets
-      (\() -> runEmailer emailerSettings)
-  triggererLooperHandle <-
-    start
-      "Triggerer"
-      looperSetTriggererSets
-      (\() -> runTriggerer)
+  start
+    "Emailer"
+    looperSetEmailerSets
+    (\() -> runEmailer emailerSettings)
+  start
+    "Triggerer"
+    looperSetTriggererSets
+    (\() -> runTriggerer)
 
   let verificationEmailConverterSettings =
         VerificationEmailConverterSettings
@@ -76,26 +59,22 @@ startLoopers pool Settings {..} mms = do
             verificationEmailConverterSetWebHost = setWebHost
           }
 
-  verificationEmailConverterLooperHandle <-
-    start
-      "TriggeredVerificationEmailConverter"
-      looperSetVerificationEmailConverterSets
-      (\() -> runVerificationEmailConverter verificationEmailConverterSettings)
-  triggeredIntrayItemSchedulerLooperHandle <-
-    start
-      "TriggeredIntrayItemScheduler"
-      looperSetTriggeredIntrayItemSchedulerSets
-      (\() -> runTriggeredIntrayItemScheduler)
-  triggeredIntrayItemSenderLooperHandle <-
-    start
-      "TriggeredIntrayItemSender"
-      looperSetTriggeredIntrayItemSenderSets
-      (\() -> runTriggeredIntrayItemSender)
-  triggeredEmailSchedulerLooperHandle <-
-    start
-      "TriggeredEmailScheduler"
-      looperSetTriggeredEmailSchedulerSets
-      (\() -> runTriggeredEmailScheduler)
+  start
+    "TriggeredVerificationEmailConverter"
+    looperSetVerificationEmailConverterSets
+    (\() -> runVerificationEmailConverter verificationEmailConverterSettings)
+  start
+    "TriggeredIntrayItemScheduler"
+    looperSetTriggeredIntrayItemSchedulerSets
+    (\() -> runTriggeredIntrayItemScheduler)
+  start
+    "TriggeredIntrayItemSender"
+    looperSetTriggeredIntrayItemSenderSets
+    (\() -> runTriggeredIntrayItemSender)
+  start
+    "TriggeredEmailScheduler"
+    looperSetTriggeredEmailSchedulerSets
+    (\() -> runTriggeredEmailScheduler)
 
   let triggeredEmailConverterSettings =
         TriggeredEmailConverterSettings
@@ -103,11 +82,10 @@ startLoopers pool Settings {..} mms = do
             triggeredEmailConverterSetFromName = "Tickler Triggerer",
             triggeredEmailConverterSetWebHost = setWebHost
           }
-  triggeredEmailConverterLooperHandle <-
-    start
-      "TriggeredEmailConverter"
-      looperSetTriggeredEmailConverterSets
-      (\() -> runTriggeredEmailConverter triggeredEmailConverterSettings)
+  start
+    "TriggeredEmailConverter"
+    looperSetTriggeredEmailConverterSets
+    (\() -> runTriggeredEmailConverter triggeredEmailConverterSettings)
 
   let adminNotificationEmailConverterSettings =
         AdminNotificationEmailConverterSettings
@@ -117,25 +95,19 @@ startLoopers pool Settings {..} mms = do
             adminNotificationEmailConverterSetToName = "Tickler Admin",
             adminNotificationEmailConverterSetWebHost = setWebHost
           }
-  adminNotificationEmailConverterLooperHandle <-
-    start
-      "AdminNotificationEmailConverter"
-      looperSetAdminNotificationEmailConverterSets
-      (\() -> runAdminNotificationEmailConverter adminNotificationEmailConverterSettings)
-  stripeEventsFetcherLooperHandle <-
-    maybe
-      (pure LooperHandleDisabled)
-      ( \ms ->
-          start "StripeEventsFetcher" (monetisationSetStripeEventsFetcher ms) $ \() ->
-            runStripeEventsFetcher (monetisationSetStripeSettings ms)
-      )
-      mms
-  stripeEventsRetrierLooperHandle <-
-    maybe
-      (pure LooperHandleDisabled)
-      (\ms -> start "StripeEventsRetrier" (monetisationSetStripeEventsRetrier ms) $ \() -> pure ())
-      mms
-  pure LoopersHandle {..}
+  start
+    "AdminNotificationEmailConverter"
+    looperSetAdminNotificationEmailConverterSets
+    (\() -> runAdminNotificationEmailConverter adminNotificationEmailConverterSettings)
+  mapM_
+    ( \ms ->
+        start "StripeEventsFetcher" (monetisationSetStripeEventsFetcher ms) $ \() ->
+          runStripeEventsFetcher (monetisationSetStripeSettings ms)
+    )
+    mms
+  mapM_
+    (\ms -> start "StripeEventsRetrier" (monetisationSetStripeEventsRetrier ms) $ \() -> pure ())
+    mms
 
 startLooperWithSets ::
   Pool SqlBackend ->
@@ -143,22 +115,20 @@ startLooperWithSets ::
   String ->
   LooperSetsWith a ->
   (a -> Looper b) ->
-  LoggingT IO LooperHandle
+  LoggingT IO ()
 startLooperWithSets pool mss name lsw func =
   case lsw of
-    LooperDisabled -> pure LooperHandleDisabled
-    LooperEnabled lsc@LooperStaticConfig {..} sets ->
+    LooperDisabled -> pure ()
+    LooperEnabled LooperStaticConfig {..} sets ->
       let env = LooperEnv {looperEnvPool = pool, looperEnvStripeSettings = mss}
-       in do
-            a <-
-              async $
-                runLooper
-                  ( retryLooperWith name looperStaticConfigRetryPolicy $
-                      runLooperContinuously name looperStaticConfigPeriod $
-                        func sets
-                  )
-                  env
-            pure $ LooperHandleEnabled a lsc
+       in void $
+            async $
+              runLooper
+                ( retryLooperWith name looperStaticConfigRetryPolicy $
+                    runLooperContinuously name looperStaticConfigPeriod $
+                      func sets
+                )
+                env
 
 retryLooperWith :: String -> LooperRetryPolicy -> Looper b -> Looper b
 retryLooperWith name LooperRetryPolicy {..} looperFunc =

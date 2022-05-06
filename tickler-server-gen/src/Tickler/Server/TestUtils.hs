@@ -43,7 +43,6 @@ import Test.Syd.Wai (applicationSetupFunc, managerSpec)
 import Tickler.API.Gen ()
 import Tickler.Client
 import Tickler.Server
-import Tickler.Server.Looper
 import Tickler.Server.OptParse.Types
 import Tickler.Server.Types
 import Web.Cookie
@@ -150,20 +149,7 @@ ticklerTestClientEnvAndDatabaseSetupFunc menv man = do
             envJWTSettings = jwtCfg,
             envAdmins = catMaybes [parseUsername "admin"],
             envFreeloaders = catMaybes [parseUsername "freeloader"],
-            envMonetisation = menv,
-            envLoopersHandle =
-              LoopersHandle
-                { emailerLooperHandle = LooperHandleDisabled,
-                  triggererLooperHandle = LooperHandleDisabled,
-                  verificationEmailConverterLooperHandle = LooperHandleDisabled,
-                  triggeredIntrayItemSchedulerLooperHandle = LooperHandleDisabled,
-                  triggeredIntrayItemSenderLooperHandle = LooperHandleDisabled,
-                  triggeredEmailSchedulerLooperHandle = LooperHandleDisabled,
-                  triggeredEmailConverterLooperHandle = LooperHandleDisabled,
-                  adminNotificationEmailConverterLooperHandle = LooperHandleDisabled,
-                  stripeEventsFetcherLooperHandle = LooperHandleDisabled,
-                  stripeEventsRetrierLooperHandle = LooperHandleDisabled
-                }
+            envMonetisation = menv
           }
   let application = serveWithContext ticklerAPI (ticklerAppContext ticklerEnv) (makeTicklerServer ticklerEnv)
   p <- applicationSetupFunc application

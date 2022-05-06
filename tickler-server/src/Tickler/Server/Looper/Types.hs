@@ -4,11 +4,9 @@ module Tickler.Server.Looper.Types
   ( LooperEnv (..),
     Looper (..),
     runLooper,
-    LooperHandle (..),
   )
 where
 
-import Control.Concurrent.Async
 import Control.Monad.Catch
 import Control.Monad.Logger
 import Data.Pool
@@ -40,7 +38,3 @@ newtype Looper a = Looper
 
 runLooper :: Looper a -> LooperEnv -> LoggingT IO a
 runLooper (Looper func) = runReaderT func
-
-data LooperHandle
-  = LooperHandleDisabled
-  | LooperHandleEnabled (Async ()) LooperStaticConfig
