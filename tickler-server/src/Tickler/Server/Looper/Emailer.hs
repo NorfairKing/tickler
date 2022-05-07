@@ -34,7 +34,8 @@ runEmailer EmailerSettings {..} = do
     runConduit $ emailsToSendSource .| C.mapM_ (handleSingleEmail emailerSetAWSCredentials)
 
 handleSingleEmail :: AWS.Credentials -> Entity Email -> Looper ()
-handleSingleEmail awsCreds (Entity emailId email) =
+handleSingleEmail awsCreds (Entity emailId email) = do
+  logInfoN $ T.pack $ unwords ["Sending email email:", show $ fromSqlKey emailId]
   runDb $ do
     newStatus <- liftIO $ sendSingleEmail awsCreds email
     now <- liftIO getCurrentTime

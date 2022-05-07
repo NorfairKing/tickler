@@ -11,6 +11,7 @@ where
 
 import Conduit
 import qualified Data.Conduit.Combinators as C
+import qualified Data.Text as T
 import qualified Data.Text.Lazy as LT
 import qualified Data.Text.Lazy.Builder as LTB
 import Data.Time
@@ -40,6 +41,7 @@ runAdminNotificationEmailConverter vecs@AdminNotificationEmailConverterSettings 
 
 convertAdminEmail :: AdminNotificationEmailConverterSettings -> Entity AdminNotificationEmail -> Looper ()
 convertAdminEmail vecs (Entity vid ve@AdminNotificationEmail {..}) = do
+  logInfoN $ T.pack $ unwords ["Converting admin notification email to email:", show vid]
   e <- makeAdminNotificationEmail vecs ve undefined
   runDb $ do
     eid <- insert e

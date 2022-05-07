@@ -42,6 +42,7 @@ runVerificationEmailConverter vecs@VerificationEmailConverterSettings {..} = do
 
 convertVerificationEmail :: VerificationEmailConverterSettings -> Entity VerificationEmail -> Looper ()
 convertVerificationEmail vecs (Entity vid ve) = do
+  logInfoN $ T.pack $ unwords ["Converting verification email to email:", show vid]
   email <- makeVerificationEmail vecs ve
   runDb $ do
     emailId <- insert email

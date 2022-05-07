@@ -27,7 +27,6 @@ import Web.Cookie
 
 runTriggeredIntrayItemSender :: Looper ()
 runTriggeredIntrayItemSender = do
-  logInfoNS "TriggeredIntraySender" "Starting sending TriggeredIntrayItems."
   acqTriggeredIntrayItemSource <-
     runDb $
       selectSourceRes
@@ -35,18 +34,17 @@ runTriggeredIntrayItemSender = do
         []
   withAcquire acqTriggeredIntrayItemSource $ \triggeredIntrayItemSource ->
     runConduit $ triggeredIntrayItemSource .| C.mapM_ sendTriggeredIntrayItem
-  logInfoNS "TriggeredIntraySender" "Finished sending TriggeredIntrayItems."
 
 sendTriggeredIntrayItem :: Entity TriggeredIntrayItem -> Looper ()
 sendTriggeredIntrayItem (Entity tii TriggeredIntrayItem {..}) = do
   mtrig <- runDb $ getBy $ UniqueIntrayTrigger triggeredIntrayItemTrigger
   case mtrig of
-    Nothing -> logErrorNS "TriggeredIntraySender" "Trigger does not exist anymore."
+    Nothing -> logErrorN "Trigger does not exist anymore."
     Just (Entity _ IntrayTrigger {..}) -> do
       man <- liftIO $ Http.newManager Http.tlsManagerSettings
       mi <- runDb $ getBy $ UniqueTriggeredItemIdentifier triggeredIntrayItemItem
       case mi of
-        Nothing -> logErrorNS "TriggeredIntraySender" "Triggered item does not exist anymore."
+        Nothing -> logErrorN "Triggered item does not exist anymore."
         Just (Entity _ TriggeredItem {..}) -> do
           let env = ClientEnv man intrayTriggerUrl Nothing
           errOrUuid <-
@@ -83,16 +81,19 @@ sendTriggeredIntrayItem (Entity tii TriggeredIntrayItem {..}) = do
                               Right <$> Intray.clientPostAddItem token item
           case errOrUuid of
             Left (ConnectionError err) -> do
-              logErrorNS "TriggeredIntraySender" $
-                T.unwords ["Failed to add item to intray:", T.pack (show err)]
+              logErrorN $
+                T.pack $
+                  unwords ["Failed to add item to intray:", show err]
               runDb $ update tii [TriggeredIntrayItemError =. Just (T.pack (show err))]
             Left err -> do
-              logErrorNS "TriggeredIntraySender" $
-                T.unwords ["Failed to add item to intray:", T.pack (show err)]
+              logErrorN $
+                T.pack $
+                  unwords ["Failed to add item to intray:", show err]
               runDb $ update tii [TriggeredIntrayItemError =. Just (T.pack (show err))]
             Right (Left err) -> do
-              logErrorNS "TriggeredIntraySender" $
-                T.unwords ["The intray server did something wrong:", T.pack err]
+              logErrorN $
+                T.pack $
+                  unwords ["The intray server did something wrong:", err]
               runDb $ update tii [TriggeredIntrayItemError =. Just (T.pack err)]
             Right (Right uuid) ->
               runDb $ update tii [TriggeredIntrayItemIntrayItemUUID =. Just uuid]

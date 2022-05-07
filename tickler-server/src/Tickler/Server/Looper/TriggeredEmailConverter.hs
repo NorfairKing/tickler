@@ -48,6 +48,7 @@ convertTriggeredEmail tess (Entity tid TriggeredEmail {..}) = do
   case (,) <$> meti <*> meet of
     Nothing -> pure ()
     Just (Entity _ ti, Entity _ et) -> do
+      logInfoN $ T.pack $ unwords ["Converting triggered email to email:", show tid]
       email <- makeTriggeredEmail tess et ti
       runDb $ do
         emailId <- insert email

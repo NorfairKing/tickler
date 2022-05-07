@@ -36,6 +36,7 @@ dealWithEventC = do
   case me of
     Nothing -> pure ()
     Just e -> do
+      logInfoN $ T.pack $ unwords ["Dealing with stripe event:", show e]
       lift $ dealWithEvent e
       dealWithEventC
 
