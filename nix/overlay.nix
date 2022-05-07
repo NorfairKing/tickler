@@ -162,6 +162,7 @@ with final.haskell.lib;
                 # Temporary hack until we can upgrade.
                 sydtest-persistent-sqlite = dontCheck super.sydtest-persistent-sqlite;
                 sydtest-yesod = dontCheck super.sydtest-yesod;
+                looper = dontCheck super.looper;
               } // genAttrs [
                 "stripe-core"
                 "stripe-haskell"
