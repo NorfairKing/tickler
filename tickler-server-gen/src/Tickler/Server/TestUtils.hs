@@ -27,6 +27,7 @@ module Tickler.Server.TestUtils
   )
 where
 
+import Control.Exception
 import Control.Monad.Logger
 import Data.Cache as Cache
 import Data.Text.Encoding (encodeUtf8)
@@ -160,7 +161,7 @@ ticklerTestClientEnvAndDatabaseSetupFunc menv man = do
   pure (pool, mkClientEnv man (BaseUrl Http "127.0.0.1" (fromIntegral p) ""))
 
 withTicklerDatabase :: SpecWith ConnectionPool -> Spec
-withTicklerDatabase = setupAround ticklerTestConnectionSetupFunc
+withTicklerDatabase = modifyMaxSuccess (`div` 5) . setupAround ticklerTestConnectionSetupFunc
 
 ticklerTestConnectionSetupFunc :: SetupFunc ConnectionPool
 ticklerTestConnectionSetupFunc = connectionPoolSetupFunc serverAutoMigration
@@ -231,5 +232,15 @@ failure = expectationFailure
 
 testRunLooper :: ConnectionPool -> Looper a -> IO a
 testRunLooper pool looper = do
-  dontLog <- runNoLoggingT askLoggerIO
-  runLoggingT (runLooper (LooperEnv {looperEnvPool = pool}) looper) dontLog
+  -- When debugging:
+  -- stdErrLog <- runStderrLoggingT askLoggerIO
+  -- Evaluate the log string, but don't print it anywhere.
+  runLoggingT (runLooper (LooperEnv {looperEnvPool = pool}) looper) evaluatingLog
+
+evaluatingLog :: Loc -> LogSource -> LogLevel -> LogStr -> IO ()
+evaluatingLog loc source level str = do
+  _ <- evaluate loc
+  _ <- evaluate source
+  _ <- evaluate level
+  _ <- evaluate str
+  pure ()

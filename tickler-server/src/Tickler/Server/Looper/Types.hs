@@ -29,6 +29,7 @@ newtype Looper a = Looper
       MonadUnliftIO,
       MonadReader LooperEnv,
       MonadLogger,
+      MonadLoggerIO,
       MonadThrow,
       MonadCatch,
       MonadMask

@@ -11,4 +11,5 @@ import Tickler.Server.Looper.Types
 runDb :: SqlPersistT (LoggingT IO) b -> Looper b
 runDb query = do
   pool <- asks looperEnvPool
-  Looper $ lift $ runSqlPool query pool
+  logFunc <- askLoggerIO
+  liftIO $ runLoggingT (runSqlPool query pool) logFunc

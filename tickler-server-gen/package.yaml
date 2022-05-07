@@ -94,6 +94,7 @@ tests:
     - http-types
     - intray-client
     - intray-server-gen
+    - monad-logger
     - path
     - path-io
     - persistent

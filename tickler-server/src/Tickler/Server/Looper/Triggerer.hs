@@ -45,7 +45,7 @@ considerTicklerItem e@(Entity _ ti@TicklerItem {..}) =
     mSets <- getBy $ UniqueUserSettings ticklerItemUserId
     let tz = maybe utc (userSettingsTimeZone . entityVal) mSets
     when (shouldBeTriggered now tz ti) $ do
-      logInfoN $ T.pack $ "Triggering item with id " <> uuidString ticklerItemIdentifier
+      logInfoN $ T.pack $ unwords ["Triggering item with identifier", uuidString ticklerItemIdentifier]
       triggerTicklerItem now e
 
 triggerTicklerItem :: MonadIO m => UTCTime -> Entity TicklerItem -> SqlPersistT m ()

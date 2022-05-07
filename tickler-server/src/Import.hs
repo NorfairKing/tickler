@@ -6,6 +6,7 @@ where
 import Control.Applicative as X
 import Control.Arrow as X
 import Control.Monad as X
+import Control.Monad.Logger as X
 import Control.Monad.Reader as X
 import Data.ByteString as X (ByteString)
 import Data.List as X hiding (delete, deleteBy, head, init, insert, last, tail)
