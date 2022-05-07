@@ -23,12 +23,6 @@ spec = withTicklerDatabase $ do
             runPersistentTest pool $ do
               DB.insert_ (user :: User)
               DB.insert_ (intrayTrigger :: IntrayTrigger)
-              DB.insert_
-                UserTrigger
-                  { userTriggerUserId = userIdentifier user,
-                    userTriggerTriggerType = IntrayTriggerType,
-                    userTriggerTriggerId = intrayTriggerIdentifier intrayTrigger
-                  }
 
             -- Make sure the triggered items have unique uuids and belong to the user
             triggeredItems <- forM triggeredItemPrototypes $ \ti -> do
@@ -82,12 +76,6 @@ spec = withTicklerDatabase $ do
                   DB.insert_ (user1 :: User)
                   DB.insert_ (user2 :: User)
                   DB.insert_ (intrayTrigger :: IntrayTrigger)
-                  DB.insert_
-                    UserTrigger
-                      { userTriggerUserId = userIdentifier user1,
-                        userTriggerTriggerType = IntrayTriggerType,
-                        userTriggerTriggerId = intrayTriggerIdentifier intrayTrigger
-                      }
 
                 -- Make sure the triggered items have unique uuids and belong to the user
                 user1TriggeredItems <- forM user1TriggeredItemPrototypes $ \ti -> do
@@ -122,12 +110,6 @@ spec = withTicklerDatabase $ do
               -- Set up an intray trigger
               DB.insert_ (user :: User)
               DB.insert_ (intrayTrigger :: IntrayTrigger)
-              DB.insert_
-                UserTrigger
-                  { userTriggerUserId = userIdentifier user,
-                    userTriggerTriggerType = IntrayTriggerType,
-                    userTriggerTriggerId = intrayTriggerIdentifier intrayTrigger
-                  }
 
             -- Make sure the triggered item has a unique uuid and belongs to the user
             uuid <- nextRandomUUID
