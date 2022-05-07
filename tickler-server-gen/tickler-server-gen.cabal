@@ -74,6 +74,7 @@ test-suite tickler-server-test
       Tickler.Server.Handler.AdminGetStatsSpec
       Tickler.Server.Handler.DeleteAccountSpec
       Tickler.Server.Handler.DeleteItemSpec
+      Tickler.Server.Handler.DeleteTriggerSpec
       Tickler.Server.Handler.GetAccountInfoSpec
       Tickler.Server.Handler.GetAccountSettingsSpec
       Tickler.Server.Handler.GetItemSpec
