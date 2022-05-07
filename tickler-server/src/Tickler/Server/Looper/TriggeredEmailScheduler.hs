@@ -2,6 +2,7 @@
 
 module Tickler.Server.Looper.TriggeredEmailScheduler
   ( runTriggeredEmailScheduler,
+    scheduleTriggeredEmail,
   )
 where
 
