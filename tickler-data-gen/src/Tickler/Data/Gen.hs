@@ -43,10 +43,6 @@ instance GenValid TicklerItem
 
 instance GenValid TriggeredItem
 
-instance GenValid TriggerType
-
-instance GenValid UserTrigger
-
 instance GenValid Scheme
 
 instance GenValid BaseUrl where

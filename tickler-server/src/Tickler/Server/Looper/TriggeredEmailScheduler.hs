@@ -26,7 +26,7 @@ scheduleTriggeredEmail (Entity _ ti) = do
   acqEmailTriggersSource <-
     runDb $
       selectSourceRes
-        [EmailTriggerUser ==. Just (triggeredItemUserId ti)]
+        [EmailTriggerUser ==. triggeredItemUserId ti]
         []
   withAcquire acqEmailTriggersSource $ \emailTriggersSource ->
     runConduit $ emailTriggersSource .| C.mapM_ (scheduleTriggeredEmailWithEmailTrigger ti)

@@ -20,9 +20,5 @@ serveGetTriggers AuthCookie {..} =
   runDb $
     liftA2
       mplus
-      ( fmap (makeIntrayTriggerInfo . entityVal)
-          <$> selectList [IntrayTriggerUser ==. Just authCookieUserUUID] []
-      )
-      ( fmap (makeEmailTriggerInfo . entityVal)
-          <$> selectList [EmailTriggerUser ==. Just authCookieUserUUID] []
-      )
+      (fmap (makeIntrayTriggerInfo . entityVal) <$> selectList [IntrayTriggerUser ==. authCookieUserUUID] [])
+      (fmap (makeEmailTriggerInfo . entityVal) <$> selectList [EmailTriggerUser ==. authCookieUserUUID] [])

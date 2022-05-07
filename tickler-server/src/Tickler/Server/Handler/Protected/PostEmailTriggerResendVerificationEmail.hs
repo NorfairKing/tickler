@@ -21,7 +21,7 @@ import Tickler.Server.Types
 servePostEmailTriggerResendVerificationEmail ::
   AuthCookie -> TriggerUUID -> TicklerHandler NoContent
 servePostEmailTriggerResendVerificationEmail AuthCookie {..} tuuid = do
-  met <- runDb $ selectFirst [EmailTriggerUser ==. Just authCookieUserUUID, EmailTriggerIdentifier ==. tuuid] []
+  met <- runDb $ selectFirst [EmailTriggerUser ==. authCookieUserUUID, EmailTriggerIdentifier ==. tuuid] []
   case met of
     Nothing -> throwAll err404
     Just (Entity _ EmailTrigger {..}) -> do

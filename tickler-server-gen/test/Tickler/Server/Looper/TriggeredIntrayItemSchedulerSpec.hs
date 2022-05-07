@@ -22,10 +22,7 @@ spec = withTicklerDatabase $ do
             -- Set up an intray trigger
             runPersistentTest pool $ do
               DB.insert_ (user :: User)
-              DB.insert_ $
-                intrayTrigger
-                  { intrayTriggerUser = Just $ userIdentifier user
-                  }
+              DB.insert_ $ intrayTrigger {intrayTriggerUser = userIdentifier user}
 
             -- Make sure the triggered items have unique uuids and belong to the user
             triggeredItems <- forM triggeredItemPrototypes $ \ti -> do
@@ -78,10 +75,7 @@ spec = withTicklerDatabase $ do
                   -- One user with a trigger and the other without
                   DB.insert_ (user1 :: User)
                   DB.insert_ (user2 :: User)
-                  DB.insert_ $
-                    intrayTrigger
-                      { intrayTriggerUser = Just $ userIdentifier user1
-                      }
+                  DB.insert_ $ intrayTrigger {intrayTriggerUser = userIdentifier user1}
 
                 -- Make sure the triggered items have unique uuids and belong to the user
                 user1TriggeredItems <- forM user1TriggeredItemPrototypes $ \ti -> do
@@ -115,7 +109,7 @@ spec = withTicklerDatabase $ do
             runPersistentTest pool $ do
               -- Set up an intray trigger
               DB.insert_ (user :: User)
-              DB.insert_ $ intrayTrigger {intrayTriggerUser = Just $ userIdentifier user}
+              DB.insert_ $ intrayTrigger {intrayTriggerUser = userIdentifier user}
 
             -- Make sure the triggered item has a unique uuid and belongs to the user
             uuid <- nextRandomUUID
@@ -174,7 +168,7 @@ spec = withTicklerDatabase $ do
                 -- Set up an intray trigger
                 DB.insert_ (user1 :: User)
                 DB.insert_ (user2 :: User)
-                DB.insert_ $ intrayTrigger {intrayTriggerUser = Just $ userIdentifier user1}
+                DB.insert_ $ intrayTrigger {intrayTriggerUser = userIdentifier user1}
 
               -- Make sure the triggered item has a unique uuid and belongs to the user
               uuid <- nextRandomUUID

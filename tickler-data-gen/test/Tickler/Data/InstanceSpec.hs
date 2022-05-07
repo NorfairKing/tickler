@@ -25,8 +25,6 @@ spec = do
   persistSpec @User
   genValidSpec @UserSettings
   xdescribe "does not hold" $ persistSpec @UserSettings
-  genValidSpec @TriggerType
-  persistSpec @TriggerType
   genValidSpec @Recurrence
   jsonSpec @Recurrence
   persistSpec @Recurrence
@@ -39,8 +37,6 @@ spec = do
   persistSpec @TicklerItem
   genValidSpec @TriggeredItem
   persistSpec @TriggeredItem
-  genValidSpec @UserTrigger
-  persistSpec @UserTrigger
   genValidSpec @BaseUrl
   jsonSpec @BaseUrl
   persistSpec @BaseUrl

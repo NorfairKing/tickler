@@ -24,7 +24,7 @@ spec = withTicklerDatabase $ do
               DB.insert_ (user :: User)
               DB.insert_ $
                 emailTrigger
-                  { emailTriggerUser = Just $ userIdentifier user,
+                  { emailTriggerUser = userIdentifier user,
                     emailTriggerVerified = True
                   }
 
@@ -81,7 +81,7 @@ spec = withTicklerDatabase $ do
                   DB.insert_ (user2 :: User)
                   DB.insert_ $
                     emailTrigger
-                      { emailTriggerUser = Just $ userIdentifier user1,
+                      { emailTriggerUser = userIdentifier user1,
                         emailTriggerVerified = True
                       }
 
@@ -119,7 +119,7 @@ spec = withTicklerDatabase $ do
               DB.insert_ (user :: User)
               DB.insert_ $
                 emailTrigger
-                  { emailTriggerUser = Just $ userIdentifier user,
+                  { emailTriggerUser = userIdentifier user,
                     emailTriggerVerified = True
                   }
 
@@ -180,7 +180,7 @@ spec = withTicklerDatabase $ do
               DB.insert_ (user :: User)
               DB.insert_ $
                 emailTrigger
-                  { emailTriggerUser = Just $ userIdentifier user,
+                  { emailTriggerUser = userIdentifier user,
                     emailTriggerVerified = False
                   }
 
@@ -215,7 +215,7 @@ spec = withTicklerDatabase $ do
                 DB.insert_ (user2 :: User)
                 DB.insert_
                   ( emailTrigger
-                      { emailTriggerUser = Just $ userIdentifier user1,
+                      { emailTriggerUser = userIdentifier user1,
                         emailTriggerVerified = True
                       }
                   )

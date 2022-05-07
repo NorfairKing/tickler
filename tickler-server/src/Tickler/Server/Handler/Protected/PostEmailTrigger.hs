@@ -21,7 +21,7 @@ servePostEmailTrigger AuthCookie {..} AddEmailTrigger {..} = do
   runDb $ do
     insert_
       EmailTrigger
-        { emailTriggerUser = Just authCookieUserUUID,
+        { emailTriggerUser = authCookieUserUUID,
           emailTriggerIdentifier = uuid,
           emailTriggerAddress = addEmailTriggerEmailAddress,
           emailTriggerVerificationKey = verificationKey,

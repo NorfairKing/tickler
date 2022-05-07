@@ -22,7 +22,6 @@ library
       Tickler.Data.Recurrence
       Tickler.Data.Stripe
       Tickler.Data.Time
-      Tickler.Data.TriggerType
       Tickler.Data.TriggerUUID
       Tickler.Data.Url
       Tickler.Data.Username

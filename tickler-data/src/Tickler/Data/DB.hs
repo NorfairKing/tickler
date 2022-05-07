@@ -29,7 +29,6 @@ import Tickler.Data.ItemUUID
 import Tickler.Data.Recurrence
 import Tickler.Data.Stripe ()
 import Tickler.Data.Time ()
-import Tickler.Data.TriggerType
 import Tickler.Data.TriggerUUID
 import Tickler.Data.Url
 import Tickler.Data.Username
@@ -124,20 +123,8 @@ TriggeredItem
     deriving Generic
     deriving Typeable
 
-
-UserTrigger
-    userId AccountUUID
-    triggerType TriggerType
-    triggerId TriggerUUID
-
-    deriving Show
-    deriving Eq
-    deriving Generic
-    deriving Typeable
-
-
 IntrayTrigger
-    user AccountUUID Maybe default=NULL
+    user AccountUUID
     identifier TriggerUUID
     url BaseUrl
     username Intray.Username
@@ -153,7 +140,7 @@ IntrayTrigger
 
 
 EmailTrigger
-    user AccountUUID Maybe default=NULL
+    user AccountUUID
     identifier TriggerUUID
     address EmailAddress
     verificationKey EmailVerificationKey
@@ -244,8 +231,6 @@ instance Validity UserSettings
 instance Validity TicklerItem
 
 instance Validity TriggeredItem
-
-instance Validity UserTrigger
 
 instance Validity IntrayTrigger
 

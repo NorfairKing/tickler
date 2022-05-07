@@ -20,7 +20,7 @@ servePostEmailTriggerVerify AuthCookie {..} tuuid evk = do
   mt <-
     runDb $
       selectFirst
-        [ EmailTriggerUser ==. Just authCookieUserUUID,
+        [ EmailTriggerUser ==. authCookieUserUUID,
           EmailTriggerIdentifier ==. tuuid
         ]
         []

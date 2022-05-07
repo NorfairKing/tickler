@@ -62,12 +62,12 @@ deleteAccountFully uuid = do
                 E.from $ \intrayTrigger ->
                   E.where_ $
                     (intrayTrigger ^. IntrayTriggerIdentifier E.==. triggeredIntrayItem ^. TriggeredIntrayItemTrigger)
-                      E.&&. (intrayTrigger ^. IntrayTriggerUser E.==. E.just (E.val uuid))
+                      E.&&. (intrayTrigger ^. IntrayTriggerUser E.==. E.val uuid)
 
         E.delete $
           E.from $ \intrayTrigger ->
             E.where_
-              (intrayTrigger ^. IntrayTriggerUser E.==. E.just (E.val uuid))
+              (intrayTrigger ^. IntrayTriggerUser E.==. E.val uuid)
 
         E.delete $
           E.from $ \verificationEmail ->
@@ -76,7 +76,8 @@ deleteAccountFully uuid = do
                 E.from $ \emailTrigger ->
                   E.where_ $
                     (emailTrigger ^. EmailTriggerIdentifier E.==. verificationEmail ^. VerificationEmailTrigger)
-                      E.&&. (emailTrigger ^. EmailTriggerUser E.==. E.just (E.val uuid))
+                      E.&&. (emailTrigger ^. EmailTriggerUser E.==. E.val uuid)
+
         E.delete $
           E.from $ \triggeredEmail ->
             E.where_ $
@@ -84,12 +85,11 @@ deleteAccountFully uuid = do
                 E.from $ \emailTrigger ->
                   E.where_ $
                     (emailTrigger ^. EmailTriggerIdentifier E.==. triggeredEmail ^. TriggeredEmailTrigger)
-                      E.&&. (emailTrigger ^. EmailTriggerUser E.==. E.just (E.val uuid))
+                      E.&&. (emailTrigger ^. EmailTriggerUser E.==. E.val uuid)
+
         E.delete $
           E.from $ \emailTrigger ->
             E.where_
-              (emailTrigger ^. EmailTriggerUser E.==. E.just (E.val uuid))
-
-        deleteWhere [UserTriggerUserId ==. uuid]
+              (emailTrigger ^. EmailTriggerUser E.==. E.val uuid)
 
         delete uid

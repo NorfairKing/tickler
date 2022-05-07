@@ -24,7 +24,7 @@ scheduleTriggeredIntrayItem (Entity _ ti) = do
   acqIntrayTriggersSource <-
     runDb $
       selectSourceRes
-        [IntrayTriggerUser ==. Just (triggeredItemUserId ti)]
+        [IntrayTriggerUser ==. triggeredItemUserId ti]
         []
 
   withAcquire acqIntrayTriggersSource $ \intrayTriggersSource ->
