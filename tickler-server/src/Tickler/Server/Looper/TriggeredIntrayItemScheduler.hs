@@ -24,16 +24,14 @@ scheduleTriggeredIntrayItem (Entity _ ti) = do
   acqUserIntrayTriggersSource <-
     runDb $
       selectSourceRes
-        [ UserTriggerUserId ==. triggeredItemUserId ti,
-          UserTriggerTriggerType ==. IntrayTriggerType
-        ]
+        [IntrayTriggerUser ==. Just (triggeredItemUserId ti)]
         []
 
   withAcquire acqUserIntrayTriggersSource $ \userIntrayTriggersSource ->
     runConduit $ userIntrayTriggersSource .| C.mapM_ (scheduleTriggeredIntrayItemViaUserTrigger ti)
 
-scheduleTriggeredIntrayItemViaUserTrigger :: TriggeredItem -> Entity UserTrigger -> Looper ()
-scheduleTriggeredIntrayItemViaUserTrigger ti (Entity _ ut) = do
+scheduleTriggeredIntrayItemViaUserTrigger :: TriggeredItem -> Entity IntrayTrigger -> Looper ()
+scheduleTriggeredIntrayItemViaUserTrigger ti (Entity _ it) = do
   logDebugN $
     T.pack $
       unwords
@@ -43,7 +41,7 @@ scheduleTriggeredIntrayItemViaUserTrigger ti (Entity _ ut) = do
   mte <-
     runDb $
       getBy $
-        UniqueTriggeredIntrayItem (triggeredItemIdentifier ti) (userTriggerTriggerId ut)
+        UniqueTriggeredIntrayItem (triggeredItemIdentifier ti) (intrayTriggerIdentifier it)
   case mte of
     Nothing -> do
       logInfoN $
@@ -56,7 +54,7 @@ scheduleTriggeredIntrayItemViaUserTrigger ti (Entity _ ut) = do
         insert_
           TriggeredIntrayItem
             { triggeredIntrayItemItem = triggeredItemIdentifier ti,
-              triggeredIntrayItemTrigger = userTriggerTriggerId ut,
+              triggeredIntrayItemTrigger = intrayTriggerIdentifier it,
               triggeredIntrayItemIntrayItemUUID = Nothing,
               triggeredIntrayItemError = Nothing
             }
