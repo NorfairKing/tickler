@@ -23,13 +23,13 @@ runTriggeredEmailScheduler = do
 
 scheduleTriggeredEmail :: Entity TriggeredItem -> Looper ()
 scheduleTriggeredEmail (Entity _ ti) = do
-  acqUserTriggersSource <-
+  acqEmailTriggersSource <-
     runDb $
       selectSourceRes
         [EmailTriggerUser ==. Just (triggeredItemUserId ti)]
         []
-  withAcquire acqUserTriggersSource $ \userTriggersSource ->
-    runConduit $ userTriggersSource .| C.mapM_ (scheduleTriggeredEmailWithEmailTrigger ti)
+  withAcquire acqEmailTriggersSource $ \emailTriggersSource ->
+    runConduit $ emailTriggersSource .| C.mapM_ (scheduleTriggeredEmailWithEmailTrigger ti)
 
 scheduleTriggeredEmailWithEmailTrigger :: TriggeredItem -> Entity EmailTrigger -> Looper ()
 scheduleTriggeredEmailWithEmailTrigger ti (Entity _ EmailTrigger {..}) = do

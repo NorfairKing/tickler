@@ -47,7 +47,7 @@ servePostIntrayTrigger AuthCookie {..} AddIntrayTrigger {..} = do
         FailureResponse req resp -> pure $ Left $ T.pack $ unlines [ppShow req, ppShow resp]
         _ -> pure $ Left $ T.pack $ ppShow err
     Right () -> do
-      runDb $ do
+      runDb $
         insert_
           IntrayTrigger
             { intrayTriggerUser = Just authCookieUserUUID,
@@ -56,11 +56,5 @@ servePostIntrayTrigger AuthCookie {..} AddIntrayTrigger {..} = do
               intrayTriggerUsername = addIntrayTriggerUsername,
               intrayTriggerAccessKey = addIntrayTriggerAccessKey,
               intrayTriggerAdded = now
-            }
-        insert_
-          UserTrigger
-            { userTriggerUserId = authCookieUserUUID,
-              userTriggerTriggerType = IntrayTriggerType,
-              userTriggerTriggerId = uuid
             }
       pure $ Right uuid

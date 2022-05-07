@@ -20,19 +20,14 @@ servePostEmailTriggerVerify AuthCookie {..} tuuid evk = do
   mt <-
     runDb $
       selectFirst
-        [ UserTriggerUserId ==. authCookieUserUUID,
-          UserTriggerTriggerType ==. EmailTriggerType,
-          UserTriggerTriggerId ==. tuuid
+        [ EmailTriggerUser ==. Just authCookieUserUUID,
+          EmailTriggerIdentifier ==. tuuid
         ]
         []
   case mt of
     Nothing -> throwAll err404
-    Just (Entity _ UserTrigger {..}) -> do
-      met <- runDb $ selectFirst [EmailTriggerIdentifier ==. tuuid] []
-      case met of
-        Nothing -> throwAll err404
-        Just (Entity etid EmailTrigger {..}) ->
-          if emailTriggerVerificationKey == evk
-            then runDb $ update etid [EmailTriggerVerified =. True]
-            else throwAll err400 {errBody = "Incorrect verification key."}
+    Just (Entity etid EmailTrigger {..}) ->
+      if emailTriggerVerificationKey == evk
+        then runDb $ update etid [EmailTriggerVerified =. True]
+        else throwAll err400 {errBody = "Incorrect verification key."}
   pure NoContent

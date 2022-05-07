@@ -29,12 +29,6 @@ servePostEmailTrigger AuthCookie {..} AddEmailTrigger {..} = do
           emailTriggerAdded = now
         }
     insert_
-      UserTrigger
-        { userTriggerUserId = authCookieUserUUID,
-          userTriggerTriggerType = EmailTriggerType,
-          userTriggerTriggerId = uuid
-        }
-    insert_
       VerificationEmail
         { verificationEmailTo = addEmailTriggerEmailAddress,
           verificationEmailKey = verificationKey,

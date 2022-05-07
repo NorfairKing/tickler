@@ -16,17 +16,13 @@ import Tickler.Server.Handler.Utils
 import Tickler.Server.Types
 
 serveGetTriggers :: AuthCookie -> TicklerHandler [TriggerInfo]
-serveGetTriggers AuthCookie {..} = do
-  uts <- runDb $ selectList [UserTriggerUserId ==. authCookieUserUUID] []
+serveGetTriggers AuthCookie {..} =
   runDb $
-    fmap catMaybes $
-      forM uts $
-        \(Entity _ UserTrigger {..}) ->
-          liftA2
-            mplus
-            ( fmap (makeIntrayTriggerInfo . entityVal)
-                <$> selectFirst [IntrayTriggerIdentifier ==. userTriggerTriggerId] []
-            )
-            ( fmap (makeEmailTriggerInfo . entityVal)
-                <$> selectFirst [EmailTriggerIdentifier ==. userTriggerTriggerId] []
-            )
+    liftA2
+      mplus
+      ( fmap (makeIntrayTriggerInfo . entityVal)
+          <$> selectList [IntrayTriggerUser ==. Just authCookieUserUUID] []
+      )
+      ( fmap (makeEmailTriggerInfo . entityVal)
+          <$> selectList [EmailTriggerUser ==. Just authCookieUserUUID] []
+      )

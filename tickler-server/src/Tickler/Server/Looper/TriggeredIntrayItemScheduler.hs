@@ -21,17 +21,17 @@ runTriggeredIntrayItemScheduler = do
 
 scheduleTriggeredIntrayItem :: Entity TriggeredItem -> Looper ()
 scheduleTriggeredIntrayItem (Entity _ ti) = do
-  acqUserIntrayTriggersSource <-
+  acqIntrayTriggersSource <-
     runDb $
       selectSourceRes
         [IntrayTriggerUser ==. Just (triggeredItemUserId ti)]
         []
 
-  withAcquire acqUserIntrayTriggersSource $ \userIntrayTriggersSource ->
-    runConduit $ userIntrayTriggersSource .| C.mapM_ (scheduleTriggeredIntrayItemViaUserTrigger ti)
+  withAcquire acqIntrayTriggersSource $ \intrayTriggersSource ->
+    runConduit $ intrayTriggersSource .| C.mapM_ (scheduleTriggeredIntrayItemViaIntrayTrigger ti)
 
-scheduleTriggeredIntrayItemViaUserTrigger :: TriggeredItem -> Entity IntrayTrigger -> Looper ()
-scheduleTriggeredIntrayItemViaUserTrigger ti (Entity _ it) = do
+scheduleTriggeredIntrayItemViaIntrayTrigger :: TriggeredItem -> Entity IntrayTrigger -> Looper ()
+scheduleTriggeredIntrayItemViaIntrayTrigger ti (Entity _ it) = do
   logDebugN $
     T.pack $
       unwords
