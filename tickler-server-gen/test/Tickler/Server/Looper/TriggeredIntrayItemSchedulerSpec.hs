@@ -78,6 +78,7 @@ spec = withTicklerDatabase $ do
               forAllValid $ \user2TriggeredItemPrototypes -> do
                 -- Set up an intray trigger
                 runPersistentTest pool $ do
+                  -- One user with a trigger and the other without
                   DB.insert_ (user1 :: User)
                   DB.insert_ (user2 :: User)
                   DB.insert_ (intrayTrigger :: IntrayTrigger)
@@ -175,3 +176,42 @@ spec = withTicklerDatabase $ do
           case mTriggeredIntrayItem of
             Nothing -> pure ()
             Just (_ :: DB.Entity TriggeredIntrayItem) -> expectationFailure "Should not have found a triggered intray item."
+
+    it "it does not schedule another user's item" $ \pool ->
+      forAllValid $ \user1 ->
+        forAllValid $ \user2 ->
+          forAllValid $ \intrayTrigger ->
+            forAllValid $ \triggeredItemPrototype -> do
+              runPersistentTest pool $ do
+                -- Set up an intray trigger
+                DB.insert_ (user1 :: User)
+                DB.insert_ (user2 :: User)
+                DB.insert_ (intrayTrigger :: IntrayTrigger)
+                DB.insert_
+                  UserTrigger
+                    { userTriggerUserId = userIdentifier user1,
+                      userTriggerTriggerType = IntrayTriggerType,
+                      userTriggerTriggerId = intrayTriggerIdentifier intrayTrigger
+                    }
+
+              -- Make sure the triggered item has a unique uuid and belongs to the user
+              uuid <- nextRandomUUID
+              let triggeredItem =
+                    triggeredItemPrototype
+                      { triggeredItemIdentifier = uuid,
+                        triggeredItemUserId = userIdentifier user2
+                      }
+
+              -- Set up the triggered item
+              triggeredItemId <- runPersistentTest pool $ DB.insert (triggeredItem :: TriggeredItem)
+
+              -- Run the looper
+              testRunLooper pool $ scheduleTriggeredIntrayItem $ DB.Entity triggeredItemId triggeredItem
+
+              -- Check that the intray items were scheduled to be sent.
+              mTriggeredIntrayItem <-
+                runPersistentTest pool $
+                  DB.selectFirst [TriggeredIntrayItemTrigger DB.==. intrayTriggerIdentifier intrayTrigger] []
+              case mTriggeredIntrayItem of
+                Nothing -> pure ()
+                Just _ -> expectationFailure "Should not have triggered this item."
