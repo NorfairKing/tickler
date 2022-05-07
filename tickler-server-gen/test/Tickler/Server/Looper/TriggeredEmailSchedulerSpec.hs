@@ -22,12 +22,10 @@ spec = withTicklerDatabase $ do
             -- Set up an email trigger
             runPersistentTest pool $ do
               DB.insert_ (user :: User)
-              DB.insert_ (emailTrigger {emailTriggerVerified = True})
-              DB.insert_
-                UserTrigger
-                  { userTriggerUserId = userIdentifier user,
-                    userTriggerTriggerType = EmailTriggerType,
-                    userTriggerTriggerId = emailTriggerIdentifier emailTrigger
+              DB.insert_ $
+                emailTrigger
+                  { emailTriggerUser = Just $ userIdentifier user,
+                    emailTriggerVerified = True
                   }
 
             -- Make sure the triggered items have unique uuids and belong to the user
@@ -81,12 +79,10 @@ spec = withTicklerDatabase $ do
                   -- One user with a trigger and the other without
                   DB.insert_ (user1 :: User)
                   DB.insert_ (user2 :: User)
-                  DB.insert_ (emailTrigger {emailTriggerVerified = True})
-                  DB.insert_
-                    UserTrigger
-                      { userTriggerUserId = userIdentifier user1,
-                        userTriggerTriggerType = EmailTriggerType,
-                        userTriggerTriggerId = emailTriggerIdentifier emailTrigger
+                  DB.insert_ $
+                    emailTrigger
+                      { emailTriggerUser = Just $ userIdentifier user1,
+                        emailTriggerVerified = True
                       }
 
                 -- Make sure the triggered items have unique uuids and belong to the user
@@ -121,12 +117,10 @@ spec = withTicklerDatabase $ do
             runPersistentTest pool $ do
               -- Set up an email trigger
               DB.insert_ (user :: User)
-              DB.insert_ (emailTrigger {emailTriggerVerified = True})
-              DB.insert_
-                UserTrigger
-                  { userTriggerUserId = userIdentifier user,
-                    userTriggerTriggerType = EmailTriggerType,
-                    userTriggerTriggerId = emailTriggerIdentifier emailTrigger
+              DB.insert_ $
+                emailTrigger
+                  { emailTriggerUser = Just $ userIdentifier user,
+                    emailTriggerVerified = True
                   }
 
             -- Make sure the triggered item has a unique uuid and belongs to the user
@@ -184,12 +178,10 @@ spec = withTicklerDatabase $ do
             -- Set up an email trigger
             runPersistentTest pool $ do
               DB.insert_ (user :: User)
-              DB.insert_ (emailTrigger {emailTriggerVerified = False})
-              DB.insert_
-                UserTrigger
-                  { userTriggerUserId = userIdentifier user,
-                    userTriggerTriggerType = EmailTriggerType,
-                    userTriggerTriggerId = emailTriggerIdentifier emailTrigger
+              DB.insert_ $
+                emailTrigger
+                  { emailTriggerUser = Just $ userIdentifier user,
+                    emailTriggerVerified = False
                   }
 
             -- Make sure the triggered item has a unique uuid and belongs to the user
@@ -221,13 +213,12 @@ spec = withTicklerDatabase $ do
                 -- Set up an email trigger
                 DB.insert_ (user1 :: User)
                 DB.insert_ (user2 :: User)
-                DB.insert_ (emailTrigger {emailTriggerVerified = True})
                 DB.insert_
-                  UserTrigger
-                    { userTriggerUserId = userIdentifier user1,
-                      userTriggerTriggerType = EmailTriggerType,
-                      userTriggerTriggerId = emailTriggerIdentifier emailTrigger
-                    }
+                  ( emailTrigger
+                      { emailTriggerUser = Just $ userIdentifier user1,
+                        emailTriggerVerified = True
+                      }
+                  )
 
               -- Make sure the triggered item has a unique uuid and belongs to the user
               uuid <- nextRandomUUID

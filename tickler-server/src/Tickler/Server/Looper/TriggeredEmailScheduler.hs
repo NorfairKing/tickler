@@ -26,46 +26,40 @@ scheduleTriggeredEmail (Entity _ ti) = do
   acqUserTriggersSource <-
     runDb $
       selectSourceRes
-        [ UserTriggerUserId ==. triggeredItemUserId ti,
-          UserTriggerTriggerType ==. EmailTriggerType
-        ]
+        [EmailTriggerUser ==. Just (triggeredItemUserId ti)]
         []
   withAcquire acqUserTriggersSource $ \userTriggersSource ->
-    runConduit $ userTriggersSource .| C.mapM_ (scheduleTriggeredEmailWithUserTrigger ti)
+    runConduit $ userTriggersSource .| C.mapM_ (scheduleTriggeredEmailWithEmailTrigger ti)
 
-scheduleTriggeredEmailWithUserTrigger :: TriggeredItem -> Entity UserTrigger -> Looper ()
-scheduleTriggeredEmailWithUserTrigger ti (Entity _ ut) = do
+scheduleTriggeredEmailWithEmailTrigger :: TriggeredItem -> Entity EmailTrigger -> Looper ()
+scheduleTriggeredEmailWithEmailTrigger ti (Entity _ EmailTrigger {..}) = do
   logDebugN $
     T.pack $
       unwords
         [ "Considering scheduling a triggered email item for triggered item with identifier",
           uuidString $ triggeredItemIdentifier ti
         ]
-  met <- runDb $ selectFirst [EmailTriggerIdentifier ==. userTriggerTriggerId ut] []
-  case met of
-    Nothing -> pure ()
-    Just (Entity _ EmailTrigger {..}) ->
-      if emailTriggerVerified
-        then do
-          mte <-
-            runDb $
-              getBy $
-                UniqueTriggeredEmail (triggeredItemIdentifier ti) (userTriggerTriggerId ut)
-          case mte of
-            Nothing -> do
-              logInfoN $
-                T.pack $
-                  unwords
-                    [ "Scheduling a triggered email item for triggered item with identifier",
-                      uuidString $ triggeredItemIdentifier ti
-                    ]
-              runDb $
-                insert_
-                  TriggeredEmail
-                    { triggeredEmailItem = triggeredItemIdentifier ti,
-                      triggeredEmailTrigger = userTriggerTriggerId ut,
-                      triggeredEmailEmail = Nothing,
-                      triggeredEmailError = Nothing
-                    }
-            Just _ -> pure ()
-        else pure ()
+  if emailTriggerVerified
+    then do
+      mte <-
+        runDb $
+          getBy $
+            UniqueTriggeredEmail (triggeredItemIdentifier ti) emailTriggerIdentifier
+      case mte of
+        Nothing -> do
+          logInfoN $
+            T.pack $
+              unwords
+                [ "Scheduling a triggered email item for triggered item with identifier",
+                  uuidString $ triggeredItemIdentifier ti
+                ]
+          runDb $
+            insert_
+              TriggeredEmail
+                { triggeredEmailItem = triggeredItemIdentifier ti,
+                  triggeredEmailTrigger = emailTriggerIdentifier,
+                  triggeredEmailEmail = Nothing,
+                  triggeredEmailError = Nothing
+                }
+        Just _ -> pure ()
+    else pure ()
