@@ -70,10 +70,11 @@ combineToSettings Flags {..} Environment {..} mConf = do
     let monetisationSetStripeEventsFetcher =
           deriveLooperSettings
             (seconds 8)
-            (minutes 60)
+            (minutes 1)
             monetisationFlagLooperStripeEventsFetcher
             monetisationEnvLooperStripeEventsFetcher
             (mmc monetisationConfLooperStripeEventsFetcher)
+
     let monetisationSetMaxItemsFree =
           fromMaybe 5 $ monetisationFlagMaxItemsFree <|> monetisationEnvMaxItemsFree
     pure $
@@ -90,56 +91,63 @@ combineToSettings Flags {..} Environment {..} mConf = do
   let setTriggererSets =
         deriveLooperSettings
           (seconds 1)
-          (minutes 60)
+          (minutes 1)
           flagTriggererFlags
           envTriggererEnv
           (mc confTriggererConf)
+
   let setTriggeredIntrayItemSchedulerSets =
         deriveLooperSettings
           (seconds 3)
-          (minutes 60)
+          (minutes 1)
           flagTriggeredIntrayItemSchedulerFlags
           envTriggeredIntrayItemSchedulerEnv
           (mc confTriggeredIntrayItemSchedulerConf)
+
   let setTriggeredIntrayItemSenderSets =
         deriveLooperSettings
           (seconds 4)
-          (minutes 60)
+          (minutes 1)
           flagTriggeredIntrayItemSenderFlags
           envTriggeredIntrayItemSenderEnv
           (mc confTriggeredIntrayItemSenderConf)
+
   let setVerificationEmailConverterSets =
         deriveLooperSettings
-          (seconds 5)
-          (minutes 60)
+          (seconds 3)
+          (minutes 1)
           flagVerificationEmailConverterFlags
           envVerificationEmailConverterEnv
           (mc confVerificationEmailConverterConf)
+
   let setTriggeredEmailSchedulerSets =
         deriveLooperSettings
-          (seconds 6)
-          (minutes 60)
+          (seconds 4)
+          (minutes 1)
           flagTriggeredEmailSchedulerFlags
           envTriggeredEmailSchedulerEnv
           (mc confTriggeredEmailSchedulerConf)
+
   let setTriggeredEmailConverterSets =
         deriveLooperSettings
-          (seconds 7)
-          (minutes 60)
+          (seconds 5)
+          (minutes 1)
           flagTriggeredEmailConverterFlags
           envTriggeredEmailConverterEnv
           (mc confTriggeredEmailConverterConf)
+
   let setAdminNotificationEmailConverterSets =
         deriveLooperSettings
           (seconds 9)
-          (minutes 60)
+          (minutes 1)
           flagAdminNotificationEmailConverterFlags
           envAdminNotificationEmailConverterEnv
           (mc confAdminNotificationEmailConverterConf)
+
   let setEmailerSets =
         deriveLooperSettings
           (seconds 10)
-          (minutes 60)
+          (minutes 1)
           flagEmailerFlags
           envEmailerEnv
           (mc confEmailerConf)
