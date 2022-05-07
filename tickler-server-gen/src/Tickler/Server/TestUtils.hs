@@ -12,6 +12,7 @@ module Tickler.Server.TestUtils
     withPaidTicklerServer_,
     withBothTicklerAndIntrayServer,
     ticklerTestClientEnvSetupFunc,
+    withTicklerDatabase,
     runClient,
     runClientOrError,
     testRunLooper,
@@ -158,6 +159,9 @@ ticklerTestClientEnvAndDatabaseSetupFunc menv man = do
   p <- applicationSetupFunc application
   pure (pool, mkClientEnv man (BaseUrl Http "127.0.0.1" (fromIntegral p) ""))
 
+withTicklerDatabase :: SpecWith ConnectionPool -> Spec
+withTicklerDatabase = setupAround ticklerTestConnectionSetupFunc
+
 ticklerTestConnectionSetupFunc :: SetupFunc ConnectionPool
 ticklerTestConnectionSetupFunc = connectionPoolSetupFunc serverAutoMigration
 
@@ -226,5 +230,6 @@ failure :: String -> IO a
 failure = expectationFailure
 
 testRunLooper :: ConnectionPool -> Looper a -> IO a
-testRunLooper pool looper =
-  runStderrLoggingT $ runLooper (LooperEnv {looperEnvPool = pool}) looper
+testRunLooper pool looper = do
+  dontLog <- runNoLoggingT askLoggerIO
+  runLoggingT (runLooper (LooperEnv {looperEnvPool = pool}) looper) dontLog

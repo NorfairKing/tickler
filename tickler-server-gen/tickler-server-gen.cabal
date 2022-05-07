@@ -91,6 +91,7 @@ test-suite tickler-server-test
       Tickler.Server.Handler.PutAccountSettingsSpec
       Tickler.Server.Handler.PutItemSpec
       Tickler.Server.Looper.TriggeredEmailConverterSpec
+      Tickler.Server.Looper.TriggeredIntrayItemSchedulerSpec
       Tickler.Server.Looper.TriggererSpec
       Tickler.Server.Looper.VerificationEmailConverterSpec
       Paths_tickler_server_gen

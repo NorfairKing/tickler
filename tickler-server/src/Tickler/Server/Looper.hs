@@ -33,101 +33,113 @@ import Tickler.Server.OptParse.Types
 runTicklerLoopers :: Pool SqlBackend -> Settings -> LoggingT IO ()
 runTicklerLoopers pool Settings {..} = do
   let looperEnv = LooperEnv {looperEnvPool = pool}
-      looperRunner LooperDef {..} = do
-        begin <- liftIO getMonotonicTimeNSec
-        recovering
-          retryPolicyDefault
-          ( skipAsyncExceptions
-              ++ [ \_ -> Catch.Handler $ \(se :: SomeException) -> do
-                     runDb $
-                       insert_
-                         AdminNotificationEmail
-                           { adminNotificationEmailEmail = Nothing,
-                             adminNotificationEmailContents =
-                               T.pack $
-                                 unlines
-                                   [ unwords ["The following exception occurred in the", T.unpack looperDefName, "looper:"],
-                                     displayException se
-                                   ]
-                           }
-                     pure True
-                 ]
-          )
-          (const looperDefFunc)
-        end <- liftIO getMonotonicTimeNSec
-        logInfoNS looperDefName $
-          T.pack $
-            formatTime
-              defaultTimeLocale
-              "Done, took %Hh%Mm%Ss"
-              (realToFrac (fromIntegral (end - begin) / (1_000_000_000 :: Double)) :: NominalDiffTime)
+      looperRunner LooperDef {..} =
+        addLooperNameToLog looperDefName $
+          runLooper looperEnv $ do
+            logInfoN "Starting"
+            begin <- liftIO getMonotonicTimeNSec
+            recovering
+              retryPolicyDefault
+              ( skipAsyncExceptions
+                  ++ [ \_ -> Catch.Handler $ \(se :: SomeException) -> do
+                         runDb $
+                           insert_
+                             AdminNotificationEmail
+                               { adminNotificationEmailEmail = Nothing,
+                                 adminNotificationEmailContents =
+                                   T.pack $
+                                     unlines
+                                       [ unwords ["The following exception occurred in the", T.unpack looperDefName, "looper:"],
+                                         displayException se
+                                       ]
+                               }
+                         pure True
+                     ]
+              )
+              (const looperDefFunc)
+            end <- liftIO getMonotonicTimeNSec
+            logInfoN $
+              T.pack $
+                formatTime
+                  defaultTimeLocale
+                  "Done, took %Hh%Mm%Ss"
+                  (realToFrac (fromIntegral (end - begin) / (1_000_000_000 :: Double)) :: NominalDiffTime)
 
-  runLooper looperEnv $
-    runLoopersIgnoreOverrun looperRunner $
-      concat
-        [ [ mkLooperDef "Emailer" setEmailerSets $
-              let emailerSettings = EmailerSettings AWS.Discover
-               in runEmailer emailerSettings,
-            mkLooperDef
-              "Triggerer"
-              setTriggererSets
-              runTriggerer,
-            mkLooperDef
-              "TriggeredIntrayItemScheduler"
-              setTriggeredIntrayItemSchedulerSets
-              runTriggeredIntrayItemScheduler,
-            mkLooperDef
-              "TriggeredIntrayItemSender"
-              setTriggeredIntrayItemSenderSets
-              runTriggeredIntrayItemSender,
-            mkLooperDef
-              "TriggeredEmailScheduler"
-              setTriggeredEmailSchedulerSets
-              runTriggeredEmailScheduler
-          ],
-          [ mkLooperDef "TriggeredVerificationEmailConverter" setVerificationEmailConverterSets $
-              runVerificationEmailConverter verificationEmailConverterSettings
-            | verificationEmailConverterSettings <- maybeToList $ do
-                from <- setVerificationFromEmailAddress
-                webHost <- setWebHost
-                pure
-                  VerificationEmailConverterSettings
-                    { verificationEmailConverterSetFromAddress = from,
-                      verificationEmailConverterSetFromName = "Tickler Verification",
-                      verificationEmailConverterSetWebHost = webHost
-                    }
-          ],
-          [ mkLooperDef "TriggeredEmailConverter" setTriggeredEmailConverterSets $
-              runTriggeredEmailConverter triggeredEmailConverterSettings
-            | triggeredEmailConverterSettings <- maybeToList $ do
-                from <- setTriggererFromEmailAddress
-                webHost <- setWebHost
-                pure
-                  TriggeredEmailConverterSettings
-                    { triggeredEmailConverterSetFromAddress = from,
-                      triggeredEmailConverterSetFromName = "Tickler Triggerer",
-                      triggeredEmailConverterSetWebHost = webHost
-                    }
-          ],
-          [ mkLooperDef "AdminNotificationEmailConverter" setTriggeredEmailConverterSets $
-              runAdminNotificationEmailConverter adminNotificationEmailConverterSettings
-            | adminNotificationEmailConverterSettings <- maybeToList $ do
-                from <- setAdminNotificationFromEmailAddress
-                to <- setAdminNotificationToEmailAddress
-                webHost <- setWebHost
-                pure
-                  AdminNotificationEmailConverterSettings
-                    { adminNotificationEmailConverterSetFromAddress = from,
-                      adminNotificationEmailConverterSetFromName = "Tickler Admin Notification",
-                      adminNotificationEmailConverterSetToAddress = to,
-                      adminNotificationEmailConverterSetToName = "Tickler Admin",
-                      adminNotificationEmailConverterSetWebHost = webHost
-                    }
-          ],
-          [ mkLooperDef
-              "StripeEventsFetcher"
-              (monetisationSetStripeEventsFetcher ms)
-              (runStripeEventsFetcher (monetisationSetStripeSettings ms))
-            | ms <- maybeToList setMonetisationSettings
-          ]
+  runLoopersIgnoreOverrun looperRunner $
+    concat
+      [ [ mkLooperDef "Emailer" setEmailerSets $
+            let emailerSettings = EmailerSettings AWS.Discover
+             in runEmailer emailerSettings,
+          mkLooperDef
+            "Triggerer"
+            setTriggererSets
+            runTriggerer,
+          mkLooperDef
+            "TriggeredIntrayItemScheduler"
+            setTriggeredIntrayItemSchedulerSets
+            runTriggeredIntrayItemScheduler,
+          mkLooperDef
+            "TriggeredIntrayItemSender"
+            setTriggeredIntrayItemSenderSets
+            runTriggeredIntrayItemSender,
+          mkLooperDef
+            "TriggeredEmailScheduler"
+            setTriggeredEmailSchedulerSets
+            runTriggeredEmailScheduler
+        ],
+        [ mkLooperDef "TriggeredVerificationEmailConverter" setVerificationEmailConverterSets $
+            runVerificationEmailConverter verificationEmailConverterSettings
+          | verificationEmailConverterSettings <- maybeToList $ do
+              from <- setVerificationFromEmailAddress
+              webHost <- setWebHost
+              pure
+                VerificationEmailConverterSettings
+                  { verificationEmailConverterSetFromAddress = from,
+                    verificationEmailConverterSetFromName = "Tickler Verification",
+                    verificationEmailConverterSetWebHost = webHost
+                  }
+        ],
+        [ mkLooperDef "TriggeredEmailConverter" setTriggeredEmailConverterSets $
+            runTriggeredEmailConverter triggeredEmailConverterSettings
+          | triggeredEmailConverterSettings <- maybeToList $ do
+              from <- setTriggererFromEmailAddress
+              webHost <- setWebHost
+              pure
+                TriggeredEmailConverterSettings
+                  { triggeredEmailConverterSetFromAddress = from,
+                    triggeredEmailConverterSetFromName = "Tickler Triggerer",
+                    triggeredEmailConverterSetWebHost = webHost
+                  }
+        ],
+        [ mkLooperDef "AdminNotificationEmailConverter" setTriggeredEmailConverterSets $
+            runAdminNotificationEmailConverter adminNotificationEmailConverterSettings
+          | adminNotificationEmailConverterSettings <- maybeToList $ do
+              from <- setAdminNotificationFromEmailAddress
+              to <- setAdminNotificationToEmailAddress
+              webHost <- setWebHost
+              pure
+                AdminNotificationEmailConverterSettings
+                  { adminNotificationEmailConverterSetFromAddress = from,
+                    adminNotificationEmailConverterSetFromName = "Tickler Admin Notification",
+                    adminNotificationEmailConverterSetToAddress = to,
+                    adminNotificationEmailConverterSetToName = "Tickler Admin",
+                    adminNotificationEmailConverterSetWebHost = webHost
+                  }
+        ],
+        [ mkLooperDef
+            "StripeEventsFetcher"
+            (monetisationSetStripeEventsFetcher ms)
+            (runStripeEventsFetcher (monetisationSetStripeSettings ms))
+          | ms <- maybeToList setMonetisationSettings
         ]
+      ]
+
+addLooperNameToLog :: Text -> LoggingT m a -> LoggingT m a
+addLooperNameToLog looperName = modLogSource $ \source -> if source == "" then looperName else source
+
+modLogSource :: (LogSource -> LogSource) -> LoggingT m a -> LoggingT m a
+modLogSource func (LoggingT mFunc) = LoggingT $ \logFunc ->
+  let newLogFunc loc source level str =
+        let source' = func source
+         in logFunc loc source' level str
+   in mFunc newLogFunc

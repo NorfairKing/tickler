@@ -109,7 +109,7 @@ extra-deps:
     - safe-coloured-text-terminfo
 
 - github: NorfairKing/looper
-  commit: e01054970b47d9eaab8b9314a1400c231ac4a960
+  commit: 6f7d44f563a7e21c3ca5fa24ebe01ed1665426ca
   subdirs:
     - looper
 

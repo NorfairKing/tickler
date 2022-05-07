@@ -10,7 +10,9 @@ module Tickler.Server.Looper.Triggerer
 where
 
 import Conduit
+import Control.Monad.Logger
 import qualified Data.Conduit.Combinators as C
+import qualified Data.Text as T
 import Data.Time
 import Database.Persist.Sqlite
 import Import
@@ -38,12 +40,15 @@ runTriggerer = do
 considerTicklerItem :: Entity TicklerItem -> Looper ()
 considerTicklerItem e@(Entity _ ti@TicklerItem {..}) =
   runDb $ do
+    logDebugN $ T.pack $ "Considering triggering item with id " <> uuidString ticklerItemIdentifier
     now <- liftIO getCurrentTime
     mSets <- getBy $ UniqueUserSettings ticklerItemUserId
     let tz = maybe utc (userSettingsTimeZone . entityVal) mSets
-    when (shouldBeTriggered now tz ti) $ triggerTicklerItem now e
+    when (shouldBeTriggered now tz ti) $ do
+      logInfoN $ T.pack $ "Triggering item with id " <> uuidString ticklerItemIdentifier
+      triggerTicklerItem now e
 
-triggerTicklerItem :: UTCTime -> Entity TicklerItem -> SqlPersistT IO ()
+triggerTicklerItem :: MonadIO m => UTCTime -> Entity TicklerItem -> SqlPersistT m ()
 triggerTicklerItem now (Entity tii ti) = do
   uuid <- nextRandomUUID
   insert_ $ makeTriggeredItem uuid now ti -- Make the triggered item
