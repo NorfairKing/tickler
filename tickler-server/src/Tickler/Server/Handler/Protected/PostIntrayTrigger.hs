@@ -50,7 +50,8 @@ servePostIntrayTrigger AuthCookie {..} AddIntrayTrigger {..} = do
       runDb $ do
         insert_
           IntrayTrigger
-            { intrayTriggerIdentifier = uuid,
+            { intrayTriggerUser = Just authCookieUserUUID,
+              intrayTriggerIdentifier = uuid,
               intrayTriggerUrl = addIntrayTriggerUrl,
               intrayTriggerUsername = addIntrayTriggerUsername,
               intrayTriggerAccessKey = addIntrayTriggerAccessKey,

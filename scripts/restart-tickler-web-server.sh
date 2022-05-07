@@ -20,5 +20,5 @@ export TICKLER_WEB_SERVER_API_URL=http://localhost:${TICKLER_SERVER_PORT}
 export TICKLER_WEB_SERVER_DEFAULT_INTRAY_URL="https://api.intray.cs-syd.eu"
 
 tickler-server &
-sleep 0.1
-tickler-web-server --persist-logins $@ &
+# sleep 0.1
+# tickler-web-server --persist-logins $@ &

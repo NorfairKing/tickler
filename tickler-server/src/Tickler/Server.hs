@@ -11,10 +11,12 @@ module Tickler.Server
   )
 where
 
+import Conduit
 import Control.Monad.Logger
-import Control.Monad.Trans.Resource (runResourceT)
 import Data.Cache
+import qualified Data.Conduit.Combinators as C
 import qualified Data.Text as T
+import Database.Persist
 import Database.Persist.Sqlite
 import Import
 import Network.Wai as Wai
@@ -37,7 +39,7 @@ runTicklerServer settings@Settings {..} =
     filterLogger (\_ ll -> ll >= setLogLevel) $
       withSqlitePoolInfo (mkSqliteConnectionInfo (T.pack (fromAbsFile setDb))) 1 $
         \pool -> do
-          runResourceT (runSqlPool (runMigration serverAutoMigration) pool)
+          runResourceT (runSqlPool (runMigration serverAutoMigration >> customMigrations) pool)
             `catch` ( \pe ->
                         liftIO $
                           die $
@@ -155,3 +157,52 @@ withAuthResult func ar =
   case ar of
     Authenticated ac -> func ac
     _ -> throwAll err401
+
+customMigrations :: SqlPersistT (ResourceT (LoggingT IO)) ()
+customMigrations = do
+  userTriggerEntities <- selectList [] [Asc UserTriggerId]
+  liftIO $ mapM_ print userTriggerEntities
+  runConduit $
+    selectSource [EmailTriggerUser ==. Nothing] []
+      .| C.mapM_ migrateEmailTrigger
+  runConduit $
+    selectSource [IntrayTriggerUser ==. Nothing] []
+      .| C.mapM_ migrateIntrayTrigger
+
+migrateEmailTrigger :: Entity EmailTrigger -> SqlPersistT (ResourceT (LoggingT IO)) ()
+migrateEmailTrigger (Entity etid et@EmailTrigger {..}) = do
+  mUserTrigger <-
+    selectFirst
+      [ UserTriggerTriggerType ==. EmailTriggerType,
+        UserTriggerTriggerId ==. emailTriggerIdentifier
+      ]
+      []
+  case mUserTrigger of
+    Nothing ->
+      liftIO $
+        die $
+          unlines
+            [ unwords ["Migration of email trigger failed:", show etid],
+              "No UserTrigger found that matches it.",
+              ppShow et
+            ]
+    Just (Entity _ UserTrigger {..}) -> update etid [EmailTriggerUser =. Just userTriggerUserId]
+
+migrateIntrayTrigger :: Entity IntrayTrigger -> SqlPersistT (ResourceT (LoggingT IO)) ()
+migrateIntrayTrigger (Entity itid it@IntrayTrigger {..}) = do
+  mUserTrigger <-
+    selectFirst
+      [ UserTriggerTriggerType ==. IntrayTriggerType,
+        UserTriggerTriggerId ==. intrayTriggerIdentifier
+      ]
+      []
+  case mUserTrigger of
+    Nothing ->
+      liftIO $
+        die $
+          unlines
+            [ unwords ["Migration of Intray trigger failed:", show itid],
+              "No UserTrigger found that matches it.",
+              ppShow it
+            ]
+    Just (Entity _ UserTrigger {..}) -> update itid [IntrayTriggerUser =. Just userTriggerUserId]

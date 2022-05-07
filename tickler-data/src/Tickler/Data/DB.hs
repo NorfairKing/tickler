@@ -137,6 +137,7 @@ UserTrigger
 
 
 IntrayTrigger
+    user AccountUUID Maybe default=NULL
     identifier TriggerUUID
     url BaseUrl
     username Intray.Username
@@ -152,6 +153,7 @@ IntrayTrigger
 
 
 EmailTrigger
+    user AccountUUID Maybe default=NULL
     identifier TriggerUUID
     address EmailAddress
     verificationKey EmailVerificationKey
