@@ -1,4 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Tickler.Server.Looper.TriggeredEmailSchedulerSpec (spec) where
@@ -64,9 +63,84 @@ spec = withTicklerDatabase $ do
           -- Run the looper
           testRunLooper pool runTriggeredEmailScheduler
 
-          -- Check that the email items were scheduled to be sent.
+          -- Check that the email items were not scheduled to be sent.
           triggeredEmails <- runPersistentTest pool $ DB.selectList [] []
           map (triggeredEmailItem . DB.entityVal) triggeredEmails `shouldBe` []
+
+    it "it does not schedule these items because the trigger is unverified" $ \pool ->
+      forAllValid $ \user ->
+        forAllValid $ \emailTrigger ->
+          forAllValid $ \triggeredItemPrototypes -> do
+            -- Set up a user without an email trigger
+            runPersistentTest pool $ do
+              DB.insert_ (user :: User)
+              DB.insert_ $
+                emailTrigger
+                  { emailTriggerUser = userIdentifier user,
+                    emailTriggerVerified = False
+                  }
+
+            -- Make sure the triggered items have unique uuids and belong to the user
+            triggeredItems <- forM triggeredItemPrototypes $ \ti -> do
+              uuid <- nextRandomUUID
+              pure $
+                ti
+                  { triggeredItemIdentifier = uuid,
+                    triggeredItemUserId = userIdentifier user
+                  }
+
+            -- Set up the triggered items
+            runPersistentTest pool $ DB.insertMany_ (triggeredItems :: [TriggeredItem])
+
+            -- Run the looper
+            testRunLooper pool runTriggeredEmailScheduler
+
+            -- Check that the email items were not scheduled to be sent.
+            triggeredEmails <- runPersistentTest pool $ DB.selectList [] []
+            map (triggeredEmailItem . DB.entityVal) triggeredEmails `shouldBe` []
+
+    it "does not schedule other users' tickles" $ \pool ->
+      forAllValid $ \user1 ->
+        forAllValid $ \user2 ->
+          forAllValid $ \user1EmailTrigger ->
+            forAllValid $ \user2EmailTrigger ->
+              forAllValid $ \user1TriggeredItemPrototypes -> do
+                forAllValid $ \user2TriggeredItemPrototypes -> do
+                  -- Set up an email trigger
+                  runPersistentTest pool $ do
+                    -- One user with a trigger and the other without
+                    DB.insert_ (user1 :: User)
+                    DB.insert_ (user2 :: User)
+                    DB.insert_ $
+                      user1EmailTrigger
+                        { emailTriggerUser = userIdentifier user1,
+                          emailTriggerVerified = True
+                        }
+                    DB.insert_ $
+                      user2EmailTrigger
+                        { emailTriggerUser = userIdentifier user2,
+                          emailTriggerVerified = True
+                        }
+
+                  -- Make sure the triggered items have unique uuids and belong to the user
+                  user1TriggeredItems <- forM user1TriggeredItemPrototypes $ \ti -> do
+                    uuid <- nextRandomUUID
+                    pure $ ti {triggeredItemIdentifier = uuid, triggeredItemUserId = userIdentifier user1}
+                  user2TriggeredItems <- forM user2TriggeredItemPrototypes $ \ti -> do
+                    uuid <- nextRandomUUID
+                    pure $ ti {triggeredItemIdentifier = uuid, triggeredItemUserId = userIdentifier user2}
+
+                  -- Set up the triggered items
+                  runPersistentTest pool $ do
+                    DB.insertMany_ (user1TriggeredItems :: [TriggeredItem])
+                    DB.insertMany_ (user2TriggeredItems :: [TriggeredItem])
+
+                  -- Run the looper
+                  testRunLooper pool runTriggeredEmailScheduler
+
+                  -- Check that the email items were scheduled to be sent, each to their own user
+                  user1TriggeredEmails <- runPersistentTest pool $ DB.selectList [TriggeredEmailTrigger DB.==. emailTriggerIdentifier user1EmailTrigger] []
+                  sort (map (triggeredEmailItem . DB.entityVal) user1TriggeredEmails) `shouldBe` sort (map triggeredItemIdentifier user1TriggeredItems)
 
     it "is idempotent" $ \pool ->
       forAllValid $ \user1 ->
@@ -88,7 +162,7 @@ spec = withTicklerDatabase $ do
                 -- Make sure the triggered items have unique uuids and belong to the user
                 user1TriggeredItems <- forM user1TriggeredItemPrototypes $ \ti -> do
                   uuid <- nextRandomUUID
-                  pure $ ti {triggeredItemIdentifier = uuid, triggeredItemUserId = userIdentifier user2}
+                  pure $ ti {triggeredItemIdentifier = uuid, triggeredItemUserId = userIdentifier user1}
                 user2TriggeredItems <- forM user2TriggeredItemPrototypes $ \ti -> do
                   uuid <- nextRandomUUID
                   pure $ ti {triggeredItemIdentifier = uuid, triggeredItemUserId = userIdentifier user2}
@@ -104,140 +178,10 @@ spec = withTicklerDatabase $ do
                 triggeredEmailsAfterFirstRun <-
                   runPersistentTest pool $
                     DB.selectList [] []
+
+                testRunLooper pool runTriggeredEmailScheduler
                 triggeredEmailsAfterSecondRun <-
                   runPersistentTest pool $
                     DB.selectList [] []
+
                 triggeredEmailsAfterSecondRun `shouldBe` (triggeredEmailsAfterFirstRun :: [DB.Entity TriggeredEmail])
-
-  describe "scheduleTriggeredEmail" $ do
-    it "it schedules this item" $ \pool ->
-      forAllValid $ \user ->
-        forAllValid $ \emailTrigger ->
-          forAllValid $ \triggeredItemPrototype -> do
-            runPersistentTest pool $ do
-              -- Set up an email trigger
-              DB.insert_ (user :: User)
-              DB.insert_ $
-                emailTrigger
-                  { emailTriggerUser = userIdentifier user,
-                    emailTriggerVerified = True
-                  }
-
-            -- Make sure the triggered item has a unique uuid and belongs to the user
-            uuid <- nextRandomUUID
-            let triggeredItem =
-                  triggeredItemPrototype
-                    { triggeredItemIdentifier = uuid,
-                      triggeredItemUserId = userIdentifier user
-                    }
-
-            -- Set up the triggered item
-            triggeredItemId <- runPersistentTest pool $ DB.insert (triggeredItem :: TriggeredItem)
-
-            -- Run the looper
-            testRunLooper pool $ scheduleTriggeredEmail $ DB.Entity triggeredItemId triggeredItem
-
-            -- Check that the email items were scheduled to be sent.
-            mTriggeredEmail <-
-              runPersistentTest pool $
-                DB.selectFirst [TriggeredEmailTrigger DB.==. emailTriggerIdentifier emailTrigger] []
-            case mTriggeredEmail of
-              Nothing -> expectationFailure "Should have found a triggered email item."
-              Just (DB.Entity _ TriggeredEmail {..}) -> triggeredEmailItem `shouldBe` triggeredItemIdentifier triggeredItem
-
-    it "it does not schedule an item without a trigger" $ \pool ->
-      forAllValid $ \user ->
-        forAllValid $ \triggeredItemPrototype -> do
-          -- Set up an email trigger
-          runPersistentTest pool $ DB.insert_ (user :: User)
-
-          -- Make sure the triggered item has a unique uuid and belongs to the user
-          uuid <- nextRandomUUID
-          let triggeredItem =
-                triggeredItemPrototype
-                  { triggeredItemIdentifier = uuid,
-                    triggeredItemUserId = userIdentifier user
-                  }
-
-          -- Set up the triggered item
-          triggeredItemId <- runPersistentTest pool $ DB.insert (triggeredItem :: TriggeredItem)
-
-          -- Run the looper
-          testRunLooper pool $ scheduleTriggeredEmail $ DB.Entity triggeredItemId triggeredItem
-
-          -- Check that the email items were scheduled to be sent.
-          mTriggeredEmail <- runPersistentTest pool $ DB.selectFirst [] []
-          case mTriggeredEmail of
-            Nothing -> pure ()
-            Just (_ :: DB.Entity TriggeredEmail) -> expectationFailure "Should not have found a triggered email item."
-
-    it "it does not schedule an item with an unverified trigger" $ \pool ->
-      forAllValid $ \user ->
-        forAllValid $ \emailTrigger ->
-          forAllValid $ \triggeredItemPrototype -> do
-            -- Set up an email trigger
-            runPersistentTest pool $ do
-              DB.insert_ (user :: User)
-              DB.insert_ $
-                emailTrigger
-                  { emailTriggerUser = userIdentifier user,
-                    emailTriggerVerified = False
-                  }
-
-            -- Make sure the triggered item has a unique uuid and belongs to the user
-            uuid <- nextRandomUUID
-            let triggeredItem =
-                  triggeredItemPrototype
-                    { triggeredItemIdentifier = uuid,
-                      triggeredItemUserId = userIdentifier user
-                    }
-
-            -- Set up the triggered item
-            triggeredItemId <- runPersistentTest pool $ DB.insert (triggeredItem :: TriggeredItem)
-
-            -- Run the looper
-            testRunLooper pool $ scheduleTriggeredEmail $ DB.Entity triggeredItemId triggeredItem
-
-            -- Check that the email items were scheduled to be sent.
-            mTriggeredEmail <- runPersistentTest pool $ DB.selectFirst [] []
-            case mTriggeredEmail of
-              Nothing -> pure ()
-              Just (_ :: DB.Entity TriggeredEmail) -> expectationFailure "Should not have found a triggered email item."
-
-    it "it does not schedule another user's item" $ \pool ->
-      forAllValid $ \user1 ->
-        forAllValid $ \user2 ->
-          forAllValid $ \emailTrigger ->
-            forAllValid $ \triggeredItemPrototype -> do
-              runPersistentTest pool $ do
-                -- Set up an email trigger
-                DB.insert_ (user1 :: User)
-                DB.insert_ (user2 :: User)
-                DB.insert_
-                  ( emailTrigger
-                      { emailTriggerUser = userIdentifier user1,
-                        emailTriggerVerified = True
-                      }
-                  )
-
-              -- Make sure the triggered item has a unique uuid and belongs to the user
-              uuid <- nextRandomUUID
-              let triggeredItem =
-                    triggeredItemPrototype
-                      { triggeredItemIdentifier = uuid,
-                        triggeredItemUserId = userIdentifier user2
-                      }
-
-              -- Set up the triggered item
-              triggeredItemId <- runPersistentTest pool $ DB.insert (triggeredItem :: TriggeredItem)
-
-              -- Run the looper
-              testRunLooper pool $ scheduleTriggeredEmail $ DB.Entity triggeredItemId triggeredItem
-
-              -- Check that the email items were scheduled to be sent.
-              mTriggeredEmail <-
-                runPersistentTest pool $
-                  DB.selectFirst [TriggeredEmailTrigger DB.==. emailTriggerIdentifier emailTrigger] []
-              case mTriggeredEmail of
-                Nothing -> pure ()
-                Just _ -> expectationFailure "Should not have triggered this item."

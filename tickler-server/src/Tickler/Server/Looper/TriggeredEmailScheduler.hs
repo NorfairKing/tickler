@@ -2,14 +2,13 @@
 
 module Tickler.Server.Looper.TriggeredEmailScheduler
   ( runTriggeredEmailScheduler,
-    scheduleTriggeredEmail,
   )
 where
 
 import Conduit
 import qualified Data.Conduit.Combinators as C
 import qualified Data.Text as T
-import Database.Persist
+import Database.Esqueleto
 import Import
 import Tickler.Data
 import Tickler.Server.Looper.DB
@@ -17,49 +16,34 @@ import Tickler.Server.Looper.Types
 
 runTriggeredEmailScheduler :: Looper ()
 runTriggeredEmailScheduler = do
-  acqTriggeredItemsSource <- runDb $ selectSourceRes [] [Asc TriggeredItemScheduledDay, Asc TriggeredItemScheduledTime]
-  withAcquire acqTriggeredItemsSource $ \triggeredItemsSource ->
-    runConduit $ triggeredItemsSource .| C.mapM_ scheduleTriggeredEmail
+  let source =
+        selectSource $
+          from $ \((triggeredItem `InnerJoin` user) `CrossJoin` emailTrigger) -> do
+            where_ (user ^. UserIdentifier ==. emailTrigger ^. EmailTriggerUser)
+            where_ (emailTrigger ^. EmailTriggerVerified ==. val True)
+            on (triggeredItem ^. TriggeredItemUserId ==. user ^. UserIdentifier)
+            where_ $
+              notExists $
+                from $ \triggeredEmail ->
+                  where_ $
+                    (triggeredEmail ^. TriggeredEmailTrigger ==. emailTrigger ^. EmailTriggerIdentifier)
+                      &&. (triggeredEmail ^. TriggeredEmailItem ==. triggeredItem ^. TriggeredItemIdentifier)
+            pure (triggeredItem, emailTrigger)
 
-scheduleTriggeredEmail :: Entity TriggeredItem -> Looper ()
-scheduleTriggeredEmail (Entity _ ti) = do
-  acqEmailTriggersSource <-
-    runDb $
-      selectSourceRes
-        [EmailTriggerUser ==. triggeredItemUserId ti]
-        []
-  withAcquire acqEmailTriggersSource $ \emailTriggersSource ->
-    runConduit $ emailTriggersSource .| C.mapM_ (scheduleTriggeredEmailWithEmailTrigger ti)
+  runDb $ runConduit $ source .| C.mapM_ (uncurry scheduleTriggeredEmailWithEmailTrigger)
 
-scheduleTriggeredEmailWithEmailTrigger :: TriggeredItem -> Entity EmailTrigger -> Looper ()
-scheduleTriggeredEmailWithEmailTrigger ti (Entity _ EmailTrigger {..}) = do
-  logDebugN $
+scheduleTriggeredEmailWithEmailTrigger :: (MonadIO m, MonadLogger m) => Entity TriggeredItem -> Entity EmailTrigger -> SqlPersistT m ()
+scheduleTriggeredEmailWithEmailTrigger (Entity _ ti) (Entity _ EmailTrigger {..}) = do
+  logInfoN $
     T.pack $
       unwords
-        [ "Considering scheduling a triggered email item for triggered item with identifier",
+        [ "Scheduling a triggered email item for triggered item with identifier",
           uuidString $ triggeredItemIdentifier ti
         ]
-  if emailTriggerVerified
-    then do
-      mte <-
-        runDb $
-          getBy $
-            UniqueTriggeredEmail (triggeredItemIdentifier ti) emailTriggerIdentifier
-      case mte of
-        Nothing -> do
-          logInfoN $
-            T.pack $
-              unwords
-                [ "Scheduling a triggered email item for triggered item with identifier",
-                  uuidString $ triggeredItemIdentifier ti
-                ]
-          runDb $
-            insert_
-              TriggeredEmail
-                { triggeredEmailItem = triggeredItemIdentifier ti,
-                  triggeredEmailTrigger = emailTriggerIdentifier,
-                  triggeredEmailEmail = Nothing,
-                  triggeredEmailError = Nothing
-                }
-        Just _ -> pure ()
-    else pure ()
+  insert_
+    TriggeredEmail
+      { triggeredEmailItem = triggeredItemIdentifier ti,
+        triggeredEmailTrigger = emailTriggerIdentifier,
+        triggeredEmailEmail = Nothing,
+        triggeredEmailError = Nothing
+      }
