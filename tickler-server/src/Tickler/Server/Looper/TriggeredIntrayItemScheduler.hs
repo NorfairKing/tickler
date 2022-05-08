@@ -1,13 +1,12 @@
 module Tickler.Server.Looper.TriggeredIntrayItemScheduler
   ( runTriggeredIntrayItemScheduler,
-    scheduleTriggeredIntrayItem,
   )
 where
 
 import Conduit
 import qualified Data.Conduit.Combinators as C
 import qualified Data.Text as T
-import Database.Persist.Sqlite
+import Database.Esqueleto
 import Import
 import Tickler.Data
 import Tickler.Server.Looper.DB
@@ -15,47 +14,33 @@ import Tickler.Server.Looper.Types
 
 runTriggeredIntrayItemScheduler :: Looper ()
 runTriggeredIntrayItemScheduler = do
-  acqTriggeredItemsSource <- runDb $ selectSourceRes [] [Desc TriggeredItemTriggered]
-  withAcquire acqTriggeredItemsSource $ \triggeredItemsSource ->
-    runConduit $ triggeredItemsSource .| C.mapM_ scheduleTriggeredIntrayItem
+  let source =
+        selectSource $
+          from $ \((triggeredItem `InnerJoin` user) `CrossJoin` intrayTrigger) -> do
+            where_ (user ^. UserIdentifier ==. intrayTrigger ^. IntrayTriggerUser)
+            on (triggeredItem ^. TriggeredItemUserId ==. user ^. UserIdentifier)
+            where_ $
+              notExists $
+                from $ \triggeredIntrayItem ->
+                  where_ $
+                    (triggeredIntrayItem ^. TriggeredIntrayItemTrigger ==. intrayTrigger ^. IntrayTriggerIdentifier)
+                      &&. (triggeredIntrayItem ^. TriggeredIntrayItemItem ==. triggeredItem ^. TriggeredItemIdentifier)
+            pure (triggeredItem, intrayTrigger)
 
-scheduleTriggeredIntrayItem :: Entity TriggeredItem -> Looper ()
-scheduleTriggeredIntrayItem (Entity _ ti) = do
-  acqIntrayTriggersSource <-
-    runDb $
-      selectSourceRes
-        [IntrayTriggerUser ==. triggeredItemUserId ti]
-        []
+  runDb $ runConduit $ source .| C.mapM_ (uncurry scheduleTriggeredIntrayItemViaIntrayTrigger)
 
-  withAcquire acqIntrayTriggersSource $ \intrayTriggersSource ->
-    runConduit $ intrayTriggersSource .| C.mapM_ (scheduleTriggeredIntrayItemViaIntrayTrigger ti)
-
-scheduleTriggeredIntrayItemViaIntrayTrigger :: TriggeredItem -> Entity IntrayTrigger -> Looper ()
-scheduleTriggeredIntrayItemViaIntrayTrigger ti (Entity _ it) = do
-  logDebugN $
+scheduleTriggeredIntrayItemViaIntrayTrigger :: (MonadIO m, MonadLogger m) => Entity TriggeredItem -> Entity IntrayTrigger -> SqlPersistT m ()
+scheduleTriggeredIntrayItemViaIntrayTrigger (Entity _ ti) (Entity _ it) = do
+  logInfoN $
     T.pack $
       unwords
-        [ "Considering scheduling a triggered intray item for triggered item with identifier",
+        [ "Scheduling a triggered intray item for triggered item with identifier",
           uuidString $ triggeredItemIdentifier ti
         ]
-  mte <-
-    runDb $
-      getBy $
-        UniqueTriggeredIntrayItem (triggeredItemIdentifier ti) (intrayTriggerIdentifier it)
-  case mte of
-    Nothing -> do
-      logInfoN $
-        T.pack $
-          unwords
-            [ "Scheduling a triggered intray item for triggered item with identifier",
-              uuidString $ triggeredItemIdentifier ti
-            ]
-      runDb $
-        insert_
-          TriggeredIntrayItem
-            { triggeredIntrayItemItem = triggeredItemIdentifier ti,
-              triggeredIntrayItemTrigger = intrayTriggerIdentifier it,
-              triggeredIntrayItemIntrayItemUUID = Nothing,
-              triggeredIntrayItemError = Nothing
-            }
-    Just _ -> pure ()
+  insert_
+    TriggeredIntrayItem
+      { triggeredIntrayItemItem = triggeredItemIdentifier ti,
+        triggeredIntrayItemTrigger = intrayTriggerIdentifier it,
+        triggeredIntrayItemIntrayItemUUID = Nothing,
+        triggeredIntrayItemError = Nothing
+      }

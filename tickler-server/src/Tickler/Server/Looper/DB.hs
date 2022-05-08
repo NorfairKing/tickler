@@ -7,9 +7,10 @@ import Control.Monad.Logger
 import Database.Persist.Sqlite
 import Import
 import Tickler.Server.Looper.Types
+import UnliftIO.Resource
 
-runDb :: SqlPersistT (LoggingT IO) b -> Looper b
+runDb :: SqlPersistT (LoggingT (ResourceT IO)) b -> Looper b
 runDb query = do
   pool <- asks looperEnvPool
   logFunc <- askLoggerIO
-  liftIO $ runLoggingT (runSqlPool query pool) logFunc
+  liftIO $ runResourceT $ runLoggingT (runSqlPool query pool) logFunc

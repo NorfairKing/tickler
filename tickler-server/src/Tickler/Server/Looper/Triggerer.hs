@@ -28,11 +28,11 @@ runTriggerer = do
       -- Two days later:
       -- One day because it might be 23:59,
       -- and another because timezones.
-      later = addDays 2 nowDay
+      inTwoDays = addDays 2 nowDay
   acqItemsToConsiderSource <-
     runDb $
       selectSourceRes
-        [TicklerItemScheduledDay <=. later]
+        [TicklerItemScheduledDay <=. inTwoDays]
         [Asc TicklerItemScheduledDay, Asc TicklerItemScheduledTime]
   withAcquire acqItemsToConsiderSource $ \itemsToConsiderSource ->
     runConduit $ itemsToConsiderSource .| C.mapM_ considerTicklerItem
