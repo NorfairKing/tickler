@@ -54,14 +54,25 @@ User
     deriving Typeable
 
 Customer
-    user AccountUUID
-    stripeCustomer Stripe.CustomerId
-    UniqueCustomerUser user
-    UniqueUserCustomer stripeCustomer
-    deriving Show
-    deriving Eq
-    deriving Generic
+  user AccountUUID
+  stripeCustomer Stripe.CustomerId
+  UniqueCustomerUser user
+  UniqueUserCustomer stripeCustomer
 
+  deriving Show
+  deriving Eq
+  deriving Generic
+
+
+Subscription
+  user AccountUUID
+  end UTCTime
+
+  UniqueSubscriptionUser user
+
+  deriving Show
+  deriving Eq
+  deriving Generic
 
 StripeEvent
     event Stripe.EventId

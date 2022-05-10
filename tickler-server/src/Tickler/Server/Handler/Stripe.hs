@@ -82,7 +82,7 @@ getUserPaidStatus userId = do
 hasSubscribed :: StripeSettings -> AccountUUID -> TicklerHandler (Maybe UTCTime)
 hasSubscribed ss uuid = do
   mc <- runDb $ getBy $ UniqueCustomerUser uuid
-  case mc of
+  mt <- case mc of
     Nothing -> pure Nothing -- No such customer on the stripe end, definitely hasn't subscribed then.
     Just (Entity _ Customer {..}) -> do
       sl <-
@@ -100,3 +100,11 @@ hasSubscribed ss uuid = do
         case sortOn Down $ map Stripe.subscriptionCurrentPeriodEnd relevantSubs of
           [] -> Nothing
           (end : _) -> Just end
+  -- Put it in our db
+  forM_ mt $ \t ->
+    runDb $
+      upsertBy
+        (UniqueSubscriptionUser uuid)
+        (Subscription {subscriptionUser = uuid, subscriptionEnd = t})
+        [SubscriptionEnd =. t]
+  pure mt
