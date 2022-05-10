@@ -1,5 +1,6 @@
 CREATE TABLE "user"("id" INTEGER PRIMARY KEY,"identifier" BLOB NOT NULL,"username" VARCHAR NOT NULL,"hashed_password" BLOB NOT NULL,"created" TIMESTAMP NOT NULL,"last_login" TIMESTAMP NULL,CONSTRAINT "unique_user_identifier" UNIQUE ("identifier"),CONSTRAINT "unique_username" UNIQUE ("username"));
-CREATE TABLE "customer"("id" INTEGER PRIMARY KEY,"user" BLOB NOT NULL,"stripe_customer" VARCHAR NOT NULL,CONSTRAINT "unique_customer_user" UNIQUE ("user"),CONSTRAINT "unique_user_customer" UNIQUE ("stripe_customer"));
+CREATE TABLE "customer"("id" INTEGER PRIMARY KEY,"user" BLOB NOT NULL,"stripe_customer" VARCHAR NOT NULL,CONSTRAINT "unique_stripe_customer" UNIQUE ("user","stripe_customer"));
+CREATE TABLE "subscription"("id" INTEGER PRIMARY KEY,"user" BLOB NOT NULL,"end" TIMESTAMP NOT NULL,CONSTRAINT "unique_subscription_user" UNIQUE ("user"));
 CREATE TABLE "stripe_event"("id" INTEGER PRIMARY KEY,"event" VARCHAR NOT NULL,"error" VARCHAR NULL,CONSTRAINT "unique_stripe_event" UNIQUE ("event"));
 CREATE TABLE "user_settings"("id" INTEGER PRIMARY KEY,"user_id" BLOB NOT NULL,"time_zone" VARCHAR NOT NULL,CONSTRAINT "unique_user_settings" UNIQUE ("user_id"));
 CREATE TABLE "tickler_item"("id" INTEGER PRIMARY KEY,"identifier" BLOB NOT NULL,"user_id" BLOB NOT NULL,"contents" VARCHAR NOT NULL,"created" TIMESTAMP NOT NULL,"scheduled_day" DATE NOT NULL,"scheduled_time" TIME NULL,"recurrence" VARCHAR NULL,CONSTRAINT "unique_item_identifier" UNIQUE ("user_id","identifier"));

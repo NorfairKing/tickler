@@ -20,7 +20,6 @@ library
       Tickler.Data.HashedPassword
       Tickler.Data.ItemUUID
       Tickler.Data.Recurrence
-      Tickler.Data.Stripe
       Tickler.Data.Time
       Tickler.Data.TriggerUUID
       Tickler.Data.Url

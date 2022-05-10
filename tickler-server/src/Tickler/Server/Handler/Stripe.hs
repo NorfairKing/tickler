@@ -14,6 +14,7 @@ where
 import Control.Exception
 import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as LB8
+import qualified Data.List.NonEmpty as NE
 import Data.Ord
 import Data.Time
 import Database.Persist
@@ -81,25 +82,27 @@ getUserPaidStatus userId = do
 
 hasSubscribed :: StripeSettings -> AccountUUID -> TicklerHandler (Maybe UTCTime)
 hasSubscribed ss uuid = do
-  mc <- runDb $ getBy $ UniqueCustomerUser uuid
-  mt <- case mc of
-    Nothing -> pure Nothing -- No such customer on the stripe end, definitely hasn't subscribed then.
-    Just (Entity _ Customer {..}) -> do
-      sl <-
-        runStripeHandlerOrErrorWith ss (Stripe.getSubscriptionsByCustomerId customerStripeCustomer)
-      let relevantSubs =
-            filter
-              ( \s ->
-                  Stripe.planId (Stripe.subscriptionPlan s) == stripeSetPlan ss
-                    && ( Stripe.subscriptionStatus s == Stripe.Active
-                           || Stripe.subscriptionStatus s == Stripe.Trialing
-                       )
-              )
-              $ Stripe.list sl
-      pure $
-        case sortOn Down $ map Stripe.subscriptionCurrentPeriodEnd relevantSubs of
-          [] -> Nothing
-          (end : _) -> Just end
+  cs <- runDb $ selectList [StripeCustomerUser ==. uuid] []
+  ends <- forM cs $ \(Entity _ StripeCustomer {..}) -> do
+    sl <-
+      runStripeHandlerOrErrorWith ss (Stripe.getSubscriptionsByCustomerId stripeCustomerCustomer)
+    let relevantSubs =
+          filter
+            ( \s ->
+                Stripe.planId (Stripe.subscriptionPlan s) == stripeSetPlan ss
+                  && ( Stripe.subscriptionStatus s == Stripe.Active
+                         || Stripe.subscriptionStatus s == Stripe.Trialing
+                     )
+            )
+            $ Stripe.list sl
+    pure $
+      case sortOn Down $ map Stripe.subscriptionCurrentPeriodEnd relevantSubs of
+        [] -> Nothing
+        (end : _) -> Just end
+  let mt = do
+        ne <- NE.nonEmpty $ catMaybes ends
+        pure $ NE.head $ NE.sortWith Down ne
+
   -- Put it in our db
   forM_ mt $ \t ->
     runDb $

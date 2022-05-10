@@ -27,7 +27,6 @@ import Tickler.Data.EmailVerificationKey
 import Tickler.Data.HashedPassword
 import Tickler.Data.ItemUUID
 import Tickler.Data.Recurrence
-import Tickler.Data.Stripe ()
 import Tickler.Data.Time ()
 import Tickler.Data.TriggerUUID
 import Tickler.Data.Url
@@ -53,11 +52,11 @@ User
     deriving Generic
     deriving Typeable
 
-Customer
+
+StripeCustomer sql=customer
   user AccountUUID
-  stripeCustomer Stripe.CustomerId
-  UniqueCustomerUser user
-  UniqueUserCustomer stripeCustomer
+  customer Stripe.CustomerId sql=stripe_customer
+  UniqueStripeCustomer user customer
 
   deriving Show
   deriving Eq
