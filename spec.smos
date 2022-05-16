@@ -120,6 +120,28 @@ value:
         state-history:
         - state: TODO
           time: 2022-04-29 12:43:40
+    - entry:
+        header: Subscription
+        state-history:
+        - state: TODO
+          time: 2022-05-10 23:12:47
+      forest:
+      - header: Start session
+        state-history:
+        - state: TODO
+          time: 2022-05-10 23:12:47
+      - header: Checkout
+        state-history:
+        - state: TODO
+          time: 2022-05-10 23:13:06
+      - header: Webhook & fulfillment
+        state-history:
+        - state: TODO
+          time: 2022-05-10 23:13:00
+      - header: 'Admin: set subscription end'
+        state-history:
+        - state: TODO
+          time: 2022-05-10 23:13:15
   - entry:
       header: Web server
       state-history:
@@ -241,6 +263,20 @@ value:
         - state: TODO
           time: 2022-04-15 15:01:31
     - entry:
+        header: Subscription
+        state-history:
+        - state: TODO
+          time: 2022-05-10 23:13:44
+      forest:
+      - header: Start session
+        state-history:
+        - state: TODO
+          time: 2022-05-10 23:13:44
+      - header: Checkout redirect
+        state-history:
+        - state: TODO
+          time: 2022-05-10 23:13:44
+    - entry:
         header: Admin
         state-history:
         - state: TODO
@@ -250,3 +286,7 @@ value:
         state-history:
         - state: TODO
           time: 2022-04-15 15:01:31
+      - header: Set subscription end
+        state-history:
+        - state: TODO
+          time: 2022-05-10 23:13:24

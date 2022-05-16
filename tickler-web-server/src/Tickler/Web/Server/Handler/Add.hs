@@ -35,9 +35,9 @@ postAddR =
           case responseStatusCode resp of
             c
               | c == Http.paymentRequired402 -> do
-                sendResponseStatus
-                  Http.status402
-                  "You have reached the limit of the free plan, subscribe to be able to add more items. Click 'Account' to get started."
+                  sendResponseStatus
+                    Http.status402
+                    "You have reached the limit of the free plan, subscribe to be able to add more items. Click 'Account' to get started."
               | otherwise ->
-                sendResponseStatus Http.status500 $ show resp
+                  sendResponseStatus Http.status500 $ show resp
       Right uuid -> redirect $ EditR uuid

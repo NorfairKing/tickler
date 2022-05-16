@@ -119,7 +119,7 @@ adminSegment mai =
     Nothing -> mempty
     Just AccountInfo {..}
       | accountInfoAdmin ->
-        [whamlet|
+          [whamlet|
             <div .ui .segment>
                 <h3>
                   Admin
