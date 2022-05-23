@@ -31,6 +31,7 @@ where
 import Control.Concurrent (newMVar)
 import Control.Monad
 import Control.Monad.Logger
+import Control.Monad.Reader
 import qualified Data.HashMap.Strict as HM
 import Data.Maybe
 import Data.Text (Text)
@@ -172,7 +173,17 @@ addItem tickle = do
   statusIs 303
   errOrLoc <- getLocation
   case errOrLoc of
-    Right (EditR uuid) -> do
+    Right AddR -> do
+      mResponse <- getResponse
+      uuid <- case mResponse of
+        Nothing -> liftIO $ expectationFailure "should have had a response by now."
+        Just response -> do
+          let headers = HTTP.responseHeaders response
+          case lookup "tickler_uuid" headers of
+            Nothing -> liftIO $ expectationFailure $ unlines ("Should have had a uuid header." : map show headers)
+            Just bs -> case parseUUIDAsciiBytes bs of
+              Nothing -> liftIO $ expectationFailure "Should have had a valid uuid header."
+              Just uuid -> pure uuid
       _ <- followRedirect
       statusIs 200
       pure uuid

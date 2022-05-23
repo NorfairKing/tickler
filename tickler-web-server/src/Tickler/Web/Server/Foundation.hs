@@ -427,7 +427,7 @@ addInfoMessage :: Html -> Handler ()
 addInfoMessage = addMessage ""
 
 addNegativeMessage :: Html -> Handler ()
-addNegativeMessage = addMessage "negative"
+addNegativeMessage = addMessage "danger"
 
 addPositiveMessage :: Html -> Handler ()
-addPositiveMessage = addMessage "positive"
+addPositiveMessage = addMessage "success"

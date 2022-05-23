@@ -140,7 +140,7 @@ postAccountSettingsR =
     case result of
       FormSuccess as -> do
         NoContent <- runClientOrErr $ clientPutAccountSettings t as
-        addMessage "success" "Account Settings Saved"
+        addPositiveMessage "Account Settings Saved"
         redirect AccountR
       fr -> getAccountPage $ Just fr
 

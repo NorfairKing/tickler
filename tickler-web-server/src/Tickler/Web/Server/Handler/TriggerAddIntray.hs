@@ -66,8 +66,7 @@ postTriggerAddIntrayR =
     errOrRes <- runClientOrErr $ clientPostIntrayTrigger t ait
     case errOrRes of
       Left err -> do
-        addMessage
-          "error"
+        addNegativeMessage
           [shamlet|
             <div .ui .segment>
                 Failed to login to the intray instance:
@@ -76,5 +75,5 @@ postTriggerAddIntrayR =
                     |]
         redirect TriggersR
       Right _ -> do
-        addMessage "success" "New intray trigger added."
+        addPositiveMessage "New intray trigger added."
         redirect TriggersR

@@ -40,4 +40,7 @@ postAddR =
                     "You have reached the limit of the free plan, subscribe to be able to add more items. Click 'Account' to get started."
               | otherwise ->
                   sendResponseStatus Http.status500 $ show resp
-      Right uuid -> redirect $ EditR uuid
+      Right uuid -> do
+        addPositiveMessage $ fromString "Tickle added succesfully."
+        addHeader (fromString "tickler_uuid") (uuidText uuid)
+        redirect AddR
