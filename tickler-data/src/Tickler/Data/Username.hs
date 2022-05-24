@@ -28,8 +28,8 @@ import Web.PathPieces
 newtype Username = Username
   { usernameText :: Text
   }
-  deriving stock (Show, Eq, Generic)
-  deriving newtype (ToJSONKey)
+  deriving stock (Show, Read, Eq, Ord, Generic)
+  deriving newtype (Hashable, ToJSONKey)
   deriving (FromJSON, ToJSON) via (Autodocodec Username)
 
 instance Validity Username where
@@ -42,8 +42,6 @@ instance Validity Username where
             \(ix, uc@(UsernameChar c)) ->
               annotate uc $ unwords ["character number", show (ix :: Int), "of the username:", show c]
       ]
-
-instance Hashable Username
 
 instance PersistField Username where
   toPersistValue = toPersistValue . usernameText

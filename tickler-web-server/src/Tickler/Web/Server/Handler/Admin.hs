@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tickler.Web.Server.Handler.Admin
-  ( getAdminR,
+  ( getAdminPanelR,
     postAdminAccountDeleteR,
   )
 where
@@ -16,8 +16,8 @@ import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.Time
 import Yesod
 
-getAdminR :: Handler Html
-getAdminR =
+getAdminPanelR :: Handler Html
+getAdminPanelR =
   withAdminCreds $ \t -> do
     mPricing <- runClientOrErr clientGetPricing
     AdminStats {..} <- runClientOrErr $ clientAdminGetStats t
@@ -27,11 +27,11 @@ getAdminR =
     let ActiveUsers {..} = adminStatsActiveUsers
     withNavBar $(widgetFile "admin")
 
-postAdminAccountDeleteR :: AccountUUID -> Handler Html
-postAdminAccountDeleteR uuid =
+postAdminAccountDeleteR :: Username -> Handler Html
+postAdminAccountDeleteR username =
   withAdminCreds $ \t -> do
-    NoContent <- runClientOrErr $ clientAdminDeleteAccount t uuid
-    redirect AdminR
+    NoContent <- runClientOrErr $ clientAdminDeleteAccount t username
+    redirect $ AdminR AdminPanelR
 
 withAdminCreds :: (Token -> Handler Html) -> Handler Html
 withAdminCreds func =

@@ -126,7 +126,7 @@ adminSegment mai =
                 <p>
                   This account is an administrator.
                 <p>
-                  <a .ui .positive .button href=@{AdminR}>
+                  <a .ui .positive .button href=@{AdminR AdminPanelR}>
                     The Admin Panel|]
       | otherwise -> mempty
 

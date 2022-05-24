@@ -26,5 +26,6 @@
 /static                                                   StaticR EmbeddedStatic  appStatic
 
 -- Admin pages
-/admin                                                    AdminR               GET
-/admin/account/delete/#AccountUUID                        AdminAccountDeleteR  POST
+/admin AdminR:
+  / AdminPanelR GET
+  /admin/account/delete/#{Username} AdminAccountDeleteR  POST

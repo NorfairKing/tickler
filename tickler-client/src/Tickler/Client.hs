@@ -40,7 +40,7 @@ clientPostRegister :: Registration -> ClientM NoContent
 clientPostLogin :: LoginForm -> ClientM (Headers '[Header "Set-Cookie" Text] NoContent)
 clientGetPricing :: ClientM (Maybe Pricing)
 clientAdminGetStats :: Token -> ClientM AdminStats
-clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
+clientAdminDeleteAccount :: Token -> Username -> ClientM NoContent
 clientAdminGetAccount :: Token -> Username -> ClientM AccountInfo
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
 clientAdminPutAccountSubscription :: Token -> Username -> UTCTime -> ClientM NoContent

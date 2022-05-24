@@ -127,7 +127,7 @@
           <td>
             <form
               method=post
-              action=@{AdminAccountDeleteR $ accountInfoUUID u}>
+              action=@{AdminR $ AdminAccountDeleteR $ accountInfoUsername u}>
              ^{token}
              <button
                .negative .ui .button

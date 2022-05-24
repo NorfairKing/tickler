@@ -80,7 +80,7 @@ instance HasCodec ActiveUsers where
 type AdminDeleteAccount =
   ProtectAPI
     :> "account"
-    :> Capture "id" AccountUUID
+    :> Capture "username" Username
     :> Delete '[JSON] NoContent
 
 type AdminGetAccount =
