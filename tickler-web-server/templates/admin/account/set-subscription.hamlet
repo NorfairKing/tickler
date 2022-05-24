@@ -1,0 +1,33 @@
+<section .section>
+  <div .container>
+    <div .box .content>
+
+      <h3 .title .is-3>
+        Override subscription of : #{usernameText username}
+
+
+      <p>
+        $case accountInfoStatus
+          $of HasPaid end
+            Subscribed until #{formatTime defaultTimeLocale "%F" end} (#{prettyTimeAuto now end})
+          $of NoPaymentNecessary
+            No subscription necessary
+          $of HasNotPaid left
+            Not subscribed, #{left} items left.
+
+      <form .form
+        method=post
+        action=@{AdminR $ AdminAccountSetSubscriptionR username}>
+        <div .field>
+          <label .label>
+            New end date
+          <div .control>
+            <input required type="date" name="end-date">
+        <div .field>
+          <div .control>
+            ^{token}
+          <button .button .is-danger
+            type=submit>
+            Override
+
+

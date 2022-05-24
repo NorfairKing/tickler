@@ -25,7 +25,9 @@ extra-source-files:
     templates/add-email-trigger.hamlet
     templates/add-intray-trigger.hamlet
     templates/add.hamlet
-    templates/admin.hamlet
+    templates/admin/account.hamlet
+    templates/admin/account/set-subscription.hamlet
+    templates/admin/panel.hamlet
     templates/auth/change-password.hamlet
     templates/auth/login.hamlet
     templates/auth/register.hamlet

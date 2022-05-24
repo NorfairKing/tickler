@@ -28,4 +28,7 @@
 -- Admin pages
 /admin AdminR:
   / AdminPanelR GET
-  /admin/account/delete/#{Username} AdminAccountDeleteR  POST
+  /account/#{Username} AdminAccountR GET
+  /account/#{Username}/delete AdminAccountDeleteR POST
+  /account/#{Username}/set-subscription AdminAccountSetSubscriptionR GET POST
+

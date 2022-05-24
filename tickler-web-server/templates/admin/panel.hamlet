@@ -1,0 +1,135 @@
+<div .box .content>
+  <h3>
+    Main stats:
+  $maybe _ <- mPricing
+    <div .level>
+      <div .level-item .has-text-centered>
+        <div>
+          <p .heading>
+            Subscribed Accounts
+          <p .title>
+            #{adminStatsNbSubscribers}
+
+      <div .level-item .has-text-centered>
+        <div>
+          <p .heading>
+            Accounts
+          <p .title>
+            #{adminStatsNbUsers}
+
+      <div .level-item .has-text-centered>
+        <div>
+          <p .heading>
+            Tickles
+          <p .title>
+            #{adminStatsNbTicklerItems}
+  $nothing
+    <div .level>
+      <div .level-item .has-text-centered>
+        <div>
+          <p .heading>
+            Accounts
+          <p .title>
+            #{adminStatsNbUsers}
+
+      <div .level-item .has-text-centered>
+        <div>
+          <p .heading>
+            Tickles
+          <p .title>
+            #{adminStatsNbTicklerItems}
+
+
+<div .box .content>
+  <h3>
+    Active users:
+  <div .level>
+    <div .level-item .has-text-centered>
+      <div>
+        <p .heading>
+          Daily
+        <p .title>
+          #{activeUsersDaily}
+
+    <div .level-item .has-text-centered>
+      <div>
+        <p .heading>
+          Weekly
+        <p .title>
+          #{activeUsersWeekly}
+
+    <div .level-item .has-text-centered>
+      <div>
+        <p .heading>
+          Monthly
+        <p .title>
+          #{activeUsersMonthly}
+
+    <div .level-item .has-text-centered>
+      <div>
+        <p .heading>
+          Yearly
+        <p .title>
+          #{activeUsersYearly}
+        
+<div .box .content>
+  <table .table>
+    <thead>
+      <tr>
+        <th>
+          Username
+        <th>
+          Created
+        <th>
+          Last Login
+        <th>
+          Tickles
+        <th>
+          Triggered items
+        $maybe _ <- mPricing
+          <th>
+            Status
+        <th>
+          Admin
+        <th>
+          Delete
+    <tbody>
+      $forall u <- users
+        <tr>
+          <td>
+            <a href=@{AdminR $ AdminAccountR $ accountInfoUsername u}>
+              <div data-tooltip="#{uuidText $ accountInfoUUID u}">
+                #{usernameText $ accountInfoUsername u}
+          <td>
+            <div data-tooltip="#{prettyTimestamp now $ accountInfoCreated u}">
+              #{prettyTimeAuto now $ accountInfoCreated u}
+          <td>
+            $maybe ll <- accountInfoLastLogin u
+              <div data-tooltip="#{prettyTimestamp now ll}">
+                #{prettyTimeAuto now ll}
+          <td>
+            #{accountInfoTicklerItemCount u}
+          <td>
+            #{accountInfoTriggeredItemCount u}
+          $maybe _ <- mPricing
+            <td>
+              $case accountInfoStatus u
+                $of NoPaymentNecessary
+                  No Payment Necessary
+                $of HasPaid end
+                  Subscribed until
+                  <div data-tooltip="#{prettyTimestamp now end}">
+                    #{prettyTimeAuto now end}
+                $of HasNotPaid _
+                  Not Subscribed
+          <td>
+            #{accountInfoAdmin u}
+          <td>
+            <form
+              method=post
+              action=@{AdminR $ AdminAccountDeleteR $ accountInfoUsername u}>
+             ^{token}
+             <button
+               .is-danger .button
+               onclick="return confirm('Are you sure you want to delete this account? This cannot be undone.');">
+               Delete

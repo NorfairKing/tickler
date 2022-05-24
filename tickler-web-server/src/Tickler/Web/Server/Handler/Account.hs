@@ -120,7 +120,8 @@ adminSegment mai =
     Just AccountInfo {..}
       | accountInfoAdmin ->
           [whamlet|
-            <div .ui .segment>
+            <div .columns .is-centered>
+              <div .column .is-half .content>
                 <h3>
                   Admin
                 <p>

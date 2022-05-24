@@ -1,0 +1,61 @@
+<section .section>
+  <div .container>
+    <div .box .content>
+
+      <h3 .title .is-3>
+        Account: #{usernameText username}
+
+      <p>
+        Admin: #{accountInfoAdmin}
+
+      <p>
+        Created:
+
+        #{formatTime defaultTimeLocale "%F" accountInfoCreated}
+        (#{prettyTimeAuto now accountInfoCreated})
+
+      <p>
+        Last login: 
+
+        $maybe lastLogin <- accountInfoLastLogin
+          #{formatTime defaultTimeLocale "%F" lastLogin}
+          (#{prettyTimeAuto now lastLogin})
+        $nothing
+          Never
+
+      <p>
+        Tickle count:
+        #{accountInfoTicklerItemCount}
+
+      <p>
+        Triggered items count:
+        #{accountInfoTriggeredItemCount}
+
+      <p>
+        $case accountInfoStatus
+          $of HasPaid end
+            Subscribed until #{formatTime defaultTimeLocale "%F" end} (#{prettyTimeAuto now end})
+          $of NoPaymentNecessary
+            No subscription necessary
+          $of HasNotPaid left
+            Not subscribed, #{left} items left.
+
+
+      <a .button href=@{AdminR $ AdminAccountSetSubscriptionR username}>
+        Override Subscription
+
+      <p>
+
+      <h4 .title .is-4>
+        Delete Account
+
+      <form .form
+        method=post
+        action=@{AdminR $ AdminAccountDeleteR username}>
+        <div .field>
+          <div .control>
+            ^{token}
+          <button .button .is-danger
+            type=submit>
+            Override
+

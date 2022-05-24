@@ -19,6 +19,6 @@ export TICKLER_SERVER_LOOPER_TRIGGERER_ENABLED=True
 export TICKLER_WEB_SERVER_API_URL=http://localhost:${TICKLER_SERVER_PORT}
 export TICKLER_WEB_SERVER_DEFAULT_INTRAY_URL="https://api.intray.cs-syd.eu"
 
-tickler-server &
+tickler-server --admin admin &
 sleep 0.1
 tickler-web-server --persist-logins $@ &
