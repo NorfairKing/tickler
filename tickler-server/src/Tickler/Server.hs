@@ -150,7 +150,7 @@ ticklerAdminServer =
       adminDeleteAccount = withAuthResult serveAdminDeleteAccount,
       adminGetAccount = withAuthResult serveAdminGetAccount,
       adminGetAccounts = withAuthResult serveAdminGetAccounts,
-      adminPutUserSubscription = withAuthResult serveAdminPutUserSubscription
+      adminPutAccountSubscription = withAuthResult serveAdminPutAccountSubscription
     }
 
 withAuthResult :: ThrowAll a => (AuthCookie -> a) -> (AuthResult AuthCookie -> a)

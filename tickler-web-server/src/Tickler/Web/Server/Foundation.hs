@@ -88,10 +88,6 @@ instance Yesod App where
       |]
   errorHandler other = defaultErrorHandler other
 
-instance PathPiece Username where
-  fromPathPiece = parseUsername
-  toPathPiece = usernameText
-
 instance PathPiece EmailVerificationKey where
   fromPathPiece = parseEmailVerificationKeyText
   toPathPiece = emailVerificationKeyText

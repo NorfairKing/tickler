@@ -1,9 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Tickler.Server.Handler.Admin.PutUserSubscription
-  ( serveAdminPutUserSubscription,
-  )
-where
+module Tickler.Server.Handler.Admin.PutAccountSubscription (serveAdminPutAccountSubscription) where
 
 import Data.Time
 import Database.Persist
@@ -13,8 +10,8 @@ import Tickler.API
 import Tickler.Server.Handler.Utils
 import Tickler.Server.Types
 
-serveAdminPutUserSubscription :: AuthCookie -> Username -> UTCTime -> TicklerHandler NoContent
-serveAdminPutUserSubscription AuthCookie {..} username end = withAdminCreds authCookieUserUUID $ do
+serveAdminPutAccountSubscription :: AuthCookie -> Username -> UTCTime -> TicklerHandler NoContent
+serveAdminPutAccountSubscription AuthCookie {..} username end = withAdminCreds authCookieUserUUID $ do
   mUserEntity <- runDb $ getBy (UniqueUsername username)
   case mUserEntity of
     Nothing -> throwError err404

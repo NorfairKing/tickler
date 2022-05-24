@@ -70,8 +70,10 @@ test-suite tickler-server-test
   other-modules:
       TestImport
       Tickler.Server.Handler.AdminDeleteAccountSpec
+      Tickler.Server.Handler.AdminGetAccountSpec
       Tickler.Server.Handler.AdminGetAccountsSpec
       Tickler.Server.Handler.AdminGetStatsSpec
+      Tickler.Server.Handler.AdminPutAccountSubscriptionSpec
       Tickler.Server.Handler.DeleteAccountSpec
       Tickler.Server.Handler.DeleteItemSpec
       Tickler.Server.Handler.DeleteTriggerSpec

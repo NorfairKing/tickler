@@ -82,32 +82,36 @@ getUserPaidStatus userId = do
 
 hasSubscribed :: StripeSettings -> AccountUUID -> TicklerHandler (Maybe UTCTime)
 hasSubscribed ss uuid = do
-  cs <- runDb $ selectList [StripeCustomerUser ==. uuid] []
-  ends <- forM cs $ \(Entity _ StripeCustomer {..}) -> do
-    sl <-
-      runStripeHandlerOrErrorWith ss (Stripe.getSubscriptionsByCustomerId stripeCustomerCustomer)
-    let relevantSubs =
-          filter
-            ( \s ->
-                Stripe.planId (Stripe.subscriptionPlan s) == stripeSetPlan ss
-                  && ( Stripe.subscriptionStatus s == Stripe.Active
-                         || Stripe.subscriptionStatus s == Stripe.Trialing
-                     )
-            )
-            $ Stripe.list sl
-    pure $
-      case sortOn Down $ map Stripe.subscriptionCurrentPeriodEnd relevantSubs of
-        [] -> Nothing
-        (end : _) -> Just end
-  let mt = do
-        ne <- NE.nonEmpty $ catMaybes ends
-        pure $ NE.head $ NE.sortWith Down ne
+  mSubscription <- runDb $ getBy $ UniqueSubscriptionUser uuid
+  case mSubscription of
+    Just (Entity _ Subscription {..}) -> pure $ Just subscriptionEnd
+    Nothing -> do
+      cs <- runDb $ selectList [StripeCustomerUser ==. uuid] []
+      ends <- forM cs $ \(Entity _ StripeCustomer {..}) -> do
+        sl <-
+          runStripeHandlerOrErrorWith ss (Stripe.getSubscriptionsByCustomerId stripeCustomerCustomer)
+        let relevantSubs =
+              filter
+                ( \s ->
+                    Stripe.planId (Stripe.subscriptionPlan s) == stripeSetPlan ss
+                      && ( Stripe.subscriptionStatus s == Stripe.Active
+                             || Stripe.subscriptionStatus s == Stripe.Trialing
+                         )
+                )
+                $ Stripe.list sl
+        pure $
+          case sortOn Down $ map Stripe.subscriptionCurrentPeriodEnd relevantSubs of
+            [] -> Nothing
+            (end : _) -> Just end
+      let mt = do
+            ne <- NE.nonEmpty $ catMaybes ends
+            pure $ NE.head $ NE.sortWith Down ne
 
-  -- Put it in our db
-  forM_ mt $ \t ->
-    runDb $
-      upsertBy
-        (UniqueSubscriptionUser uuid)
-        (Subscription {subscriptionUser = uuid, subscriptionEnd = t})
-        [SubscriptionEnd =. t]
-  pure mt
+      -- Put it in our db
+      forM_ mt $ \t ->
+        runDb $
+          upsertBy
+            (UniqueSubscriptionUser uuid)
+            (Subscription {subscriptionUser = uuid, subscriptionEnd = t})
+            [SubscriptionEnd =. t]
+      pure mt

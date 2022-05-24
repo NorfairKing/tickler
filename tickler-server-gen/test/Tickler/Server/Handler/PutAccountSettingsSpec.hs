@@ -2,10 +2,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Tickler.Server.Handler.PutAccountSettingsSpec
-  ( spec,
-  )
-where
+module Tickler.Server.Handler.PutAccountSettingsSpec (spec) where
 
 import TestImport
 import Tickler.API.Gen ()
@@ -16,12 +13,11 @@ spec :: Spec
 spec =
   withTicklerServer $
     describe "PutAccountSettings" $
-      it "replace the previous account settings" $
-        \cenv ->
-          forAllValid $ \sets ->
-            withValidNewUser cenv $ \token -> do
-              sets' <-
-                runClientOrError cenv $ do
-                  NoContent <- clientPutAccountSettings token sets
-                  clientGetAccountSettings token
-              sets' `shouldBe` sets
+      it "replace the previous account settings" $ \cenv ->
+        forAllValid $ \sets ->
+          withValidNewUser cenv $ \token -> do
+            sets' <-
+              runClientOrError cenv $ do
+                NoContent <- clientPutAccountSettings token sets
+                clientGetAccountSettings token
+            sets' `shouldBe` sets

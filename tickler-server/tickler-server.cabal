@@ -27,7 +27,7 @@ library
       Tickler.Server.Handler.Admin.GetAccount
       Tickler.Server.Handler.Admin.GetAccounts
       Tickler.Server.Handler.Admin.GetStats
-      Tickler.Server.Handler.Admin.PutUserSubscription
+      Tickler.Server.Handler.Admin.PutAccountSubscription
       Tickler.Server.Handler.Protected
       Tickler.Server.Handler.Protected.DeleteAccount
       Tickler.Server.Handler.Protected.DeleteItem

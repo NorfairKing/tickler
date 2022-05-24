@@ -26,7 +26,7 @@ data TicklerAdminSite route = TicklerAdminSite
     adminDeleteAccount :: route :- AdminDeleteAccount,
     adminGetAccount :: !(route :- AdminGetAccount),
     adminGetAccounts :: route :- AdminGetAccounts,
-    adminPutUserSubscription :: !(route :- PutUserSubscription)
+    adminPutAccountSubscription :: !(route :- PutAccountSubscription)
   }
   deriving (Generic)
 
@@ -94,7 +94,7 @@ type AdminGetAccounts =
     :> "accounts"
     :> Get '[JSON] [AccountInfo]
 
-type PutUserSubscription =
+type PutAccountSubscription =
   ProtectAPI
     :> "accounts"
     :> Capture "username" Username

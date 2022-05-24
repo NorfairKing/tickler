@@ -43,7 +43,7 @@ clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccount :: Token -> Username -> ClientM AccountInfo
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientAdminPutUserSubscription :: Token -> Username -> UTCTime -> ClientM NoContent
+clientAdminPutAccountSubscription :: Token -> Username -> UTCTime -> ClientM NoContent
 clientGetItems
   :<|> clientPostItem
   :<|> clientGetItem
@@ -68,5 +68,5 @@ clientGetItems
   :<|> clientAdminDeleteAccount
   :<|> clientAdminGetAccount
   :<|> clientAdminGetAccounts
-  :<|> clientAdminPutUserSubscription =
+  :<|> clientAdminPutAccountSubscription =
     client (flatten ticklerAPI)
