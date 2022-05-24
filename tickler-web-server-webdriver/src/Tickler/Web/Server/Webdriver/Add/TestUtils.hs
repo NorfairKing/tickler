@@ -5,25 +5,35 @@
 module Tickler.Web.Server.Webdriver.Add.TestUtils where
 
 import Control.Monad
+import Data.List as List ((\\))
 import Data.Maybe
 import qualified Data.Text as T
 import Data.Time
 import Test.Syd
 import Test.Syd.Webdriver
-import Test.Syd.Webdriver.Yesod
 import Test.WebDriver
 import Tickler.API
+import Tickler.Client
 import Tickler.Web.Server.Foundation
+import Tickler.Web.Server.Webdriver.TestUtils
 
-driveAddTickle :: Tickle -> WebdriverTestM App ItemUUID
-driveAddTickle tickle = do
+driveAddTickle :: Username -> Tickle -> WebdriverTestM App ItemUUID
+driveAddTickle username tickle = do
+  token <- getUserToken username
+
+  itemsBefore <- driveClientOrErr $ clientGetItems token
+
+  -- Add the item
   findElem (ById "nav-add") >>= click
   driveFillInTickleForm tickle
   findElem (ById "submit") >>= submit
-  route <- getCurrentRoute
-  liftIO $ case route of
-    EditR uuid -> pure uuid
-    _ -> expectationFailure "Expected to be on an EditR"
+
+  itemsAfter <- driveClientOrErr $ clientGetItems token
+
+  -- Find the item that was added
+  liftIO $ case itemsAfter List.\\ itemsBefore of
+    [ItemInfo {..}] -> pure itemInfoIdentifier
+    _ -> expectationFailure "Expected to find exactly one new item."
 
 driveFillInTickleForm :: Tickle -> WebdriverTestM App ()
 driveFillInTickleForm Tickle {..} = do

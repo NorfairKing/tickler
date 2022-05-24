@@ -20,7 +20,7 @@ editSpec originalTickle newTickle =
      in context ctx $
           runWebdriverTestM wte $
             driveAsNewUser dummyUser $ do
-              uuid <- driveAddTickle originalTickle
+              uuid <- driveAddTickle (testUserUsername dummyUser) originalTickle
               driveEditTickle uuid newTickle
               token <- getUserToken $ testUserUsername dummyUser
               ItemInfo {..} <- driveClientOrErr $ clientGetItem token uuid
