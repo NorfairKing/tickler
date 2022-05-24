@@ -40,7 +40,9 @@ library
     , bcrypt
     , bytestring
     , hashable
+    , http-api-data
     , intray-data
+    , path-pieces
     , persistent
     , persistent-template
     , random

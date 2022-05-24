@@ -22,6 +22,8 @@ import Data.Hashable
 import qualified Data.Text as T
 import Database.Persist.Sql
 import Import
+import Web.HttpApiData
+import Web.PathPieces
 
 newtype Username = Username
   { usernameText :: Text
@@ -44,12 +46,10 @@ instance Validity Username where
 instance Hashable Username
 
 instance PersistField Username where
-  toPersistValue (Username t) = PersistText t
-  fromPersistValue (PersistText t) =
-    case parseUsername t of
-      Nothing -> Left "Text isn't a valid username"
-      Just un -> Right un
-  fromPersistValue _ = Left "Not text"
+  toPersistValue = toPersistValue . usernameText
+  fromPersistValue pv = do
+    t <- fromPersistValue pv
+    left T.pack $ parseUsernameWithError t
 
 instance PersistFieldSql Username where
   sqlType _ = SqlString
@@ -60,6 +60,18 @@ instance FromJSONKey Username where
 instance HasCodec Username where
   codec = bimapCodec parseUsernameWithError usernameText codec
 
+instance PathPiece Username where
+  fromPathPiece = parseUsername
+  toPathPiece = usernameText
+
+instance ToHttpApiData Username where
+  toUrlPiece = usernameText
+  toQueryParam = usernameText
+
+instance FromHttpApiData Username where
+  parseUrlPiece = left T.pack . parseUsernameWithError
+  parseQueryParam = left T.pack . parseUsernameWithError
+
 parseUsername :: MonadFail m => Text -> m Username
 parseUsername t =
   case parseUsernameWithError t of
@@ -67,10 +79,7 @@ parseUsername t =
     Right un -> pure un
 
 parseUsernameWithError :: Text -> Either String Username
-parseUsernameWithError t =
-  case prettyValidate $ Username t of
-    Right un -> Right un
-    Left err -> Left err
+parseUsernameWithError = prettyValidate . Username
 
 newtype UsernameChar
   = UsernameChar Char

@@ -19,12 +19,15 @@ library
   exposed-modules:
       Import
       Tickler.Server
+      Tickler.Server.AccountInfo
       Tickler.Server.Handler
       Tickler.Server.Handler.Account
       Tickler.Server.Handler.Admin
       Tickler.Server.Handler.Admin.DeleteAccount
+      Tickler.Server.Handler.Admin.GetAccount
       Tickler.Server.Handler.Admin.GetAccounts
       Tickler.Server.Handler.Admin.GetStats
+      Tickler.Server.Handler.Admin.PutUserSubscription
       Tickler.Server.Handler.Protected
       Tickler.Server.Handler.Protected.DeleteAccount
       Tickler.Server.Handler.Protected.DeleteItem

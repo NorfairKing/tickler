@@ -18,6 +18,7 @@ library:
   - text
   - tickler-api
   - tickler-data
+  - time
   - typed-uuid
   - validity >=0.4
   - validity-bytestring >=0.2

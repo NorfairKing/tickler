@@ -11,6 +11,7 @@ module Tickler.API.Admin where
 
 import Autodocodec
 import Data.Aeson (FromJSON, ToJSON)
+import Data.Time
 import Import
 import Servant.API
 import Servant.API.Generic
@@ -23,7 +24,9 @@ type TicklerAdminAPI = ToServantApi TicklerAdminSite
 data TicklerAdminSite route = TicklerAdminSite
   { adminGetStats :: route :- AdminGetStats,
     adminDeleteAccount :: route :- AdminDeleteAccount,
-    adminGetAccounts :: route :- AdminGetAccounts
+    adminGetAccount :: !(route :- AdminGetAccount),
+    adminGetAccounts :: route :- AdminGetAccounts,
+    adminPutUserSubscription :: !(route :- PutUserSubscription)
   }
   deriving (Generic)
 
@@ -80,7 +83,20 @@ type AdminDeleteAccount =
     :> Capture "id" AccountUUID
     :> Delete '[JSON] NoContent
 
+type AdminGetAccount =
+  ProtectAPI
+    :> "account"
+    :> Capture "username" Username
+    :> Get '[JSON] AccountInfo
+
 type AdminGetAccounts =
   ProtectAPI
     :> "accounts"
     :> Get '[JSON] [AccountInfo]
+
+type PutUserSubscription =
+  ProtectAPI
+    :> "accounts"
+    :> Capture "username" Username
+    :> ReqBody '[JSON] UTCTime
+    :> Verb 'PUT 204 '[JSON] NoContent

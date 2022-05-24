@@ -10,6 +10,7 @@ module Tickler.Client
   )
 where
 
+import Data.Time
 import qualified Data.UUID.Typed
 import Import
 import Servant.API
@@ -40,7 +41,9 @@ clientPostLogin :: LoginForm -> ClientM (Headers '[Header "Set-Cookie" Text] NoC
 clientGetPricing :: ClientM (Maybe Pricing)
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
+clientAdminGetAccount :: Token -> Username -> ClientM AccountInfo
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
+clientAdminPutUserSubscription :: Token -> Username -> UTCTime -> ClientM NoContent
 clientGetItems
   :<|> clientPostItem
   :<|> clientGetItem
@@ -63,5 +66,7 @@ clientGetItems
   :<|> clientGetPricing
   :<|> clientAdminGetStats
   :<|> clientAdminDeleteAccount
-  :<|> clientAdminGetAccounts =
+  :<|> clientAdminGetAccount
+  :<|> clientAdminGetAccounts
+  :<|> clientAdminPutUserSubscription =
     client (flatten ticklerAPI)
