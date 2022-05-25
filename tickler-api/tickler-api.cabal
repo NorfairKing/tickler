@@ -32,7 +32,6 @@ library
     , servant
     , servant-auth
     , servant-auth-server
-    , stripe-core
     , text
     , tickler-data
     , time

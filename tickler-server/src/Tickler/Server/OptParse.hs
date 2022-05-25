@@ -22,8 +22,6 @@ import qualified Options.Applicative.Help as OptParse
 import qualified System.Environment as System
 import Tickler.API
 import Tickler.Server.OptParse.Types
-import Web.Stripe.Client as Stripe
-import Web.Stripe.Types as Stripe
 
 getSettings :: IO Settings
 getSettings = do

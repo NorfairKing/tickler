@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE FlexibleInstances #-}
@@ -31,10 +32,9 @@ import Tickler.Data.Time ()
 import Tickler.Data.TriggerUUID
 import Tickler.Data.Url
 import Tickler.Data.Username
-import qualified Web.Stripe.Types as Stripe
 
 share
-  [mkPersist sqlSettings, mkDeleteCascade sqlSettings, mkMigrate "serverAutoMigration"]
+  [mkPersist sqlSettings, mkMigrate "serverAutoMigration"]
   [persistLowerCase|
 
 User
@@ -55,7 +55,7 @@ User
 
 StripeCustomer sql=customer
   user AccountUUID
-  customer Stripe.CustomerId sql=stripe_customer
+  customer Text sql=stripe_customer -- Stripe customer id
   UniqueStripeCustomer user customer
 
   deriving Show
@@ -72,15 +72,6 @@ Subscription
   deriving Show
   deriving Eq
   deriving Generic
-
-StripeEvent
-    event Stripe.EventId
-    error Text Maybe
-    UniqueStripeEvent event
-    deriving Show
-    deriving Eq
-    deriving Generic
-
 
 UserSettings
     userId AccountUUID

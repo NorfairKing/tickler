@@ -47,7 +47,6 @@ library
     , persistent-template
     , random
     , servant-client-core
-    , stripe-core
     , text
     , time
     , typed-uuid

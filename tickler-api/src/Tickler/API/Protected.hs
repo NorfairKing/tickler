@@ -301,7 +301,7 @@ type GetAccountSettings =
 type PostChangePassphrase =
   ProtectAPI
     :> ReqBody '[JSON] ChangePassphrase
-    :> PostNoContent '[JSON] NoContent
+    :> PostNoContent
 
 data ChangePassphrase = ChangePassphrase
   { changePassphraseOld :: Text,

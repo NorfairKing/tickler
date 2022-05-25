@@ -51,8 +51,6 @@ library:
   - servant-client
   - servant-server
   - shakespeare
-  - stripe-core
-  - stripe-haskell
   - text
   - tickler-api
   - tickler-client

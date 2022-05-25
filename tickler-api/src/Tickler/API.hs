@@ -28,7 +28,6 @@ import Tickler.API.Account
 import Tickler.API.Admin
 import Tickler.API.Protected
 import Tickler.Data
-import qualified Web.Stripe.Plan as Stripe
 
 ticklerAPI :: Proxy TicklerAPI
 ticklerAPI = Proxy
@@ -64,7 +63,9 @@ data TicklerPublicSite route = TicklerPublicSite
 type PostRegister = "register" :> ReqBody '[JSON] Registration :> Post '[JSON] NoContent
 
 type PostLogin =
-  "login" :> ReqBody '[JSON] LoginForm :> PostNoContent '[JSON] (Headers '[Header "Set-Cookie" Text] NoContent)
+  "login"
+    :> ReqBody '[JSON] LoginForm
+    :> Verb 'POST 204 '[JSON] (Headers '[Header "Set-Cookie" Text] NoContent)
 
 type GetPricing = "pricing" :> Get '[JSON] (Maybe Pricing)
 
@@ -101,10 +102,8 @@ instance HasCodec LoginForm where
         <*> requiredField "password" "password" .= loginFormPassword
 
 data Pricing = Pricing
-  { pricingPlan :: !Stripe.PlanId,
-    pricingTrialPeriod :: !(Maybe Int),
-    pricingPrice :: !Stripe.Amount,
-    pricingCurrency :: !Stripe.Currency,
+  { pricingPlan :: !Text, -- Stripe plan id
+    pricingPrice :: !Text,
     pricingStripePublishableKey :: !Text,
     pricingMaxItemsFree :: !Int
   }
@@ -118,8 +117,6 @@ instance HasCodec Pricing where
     object "Pricing" $
       Pricing
         <$> requiredField "plan" "stripe plan" .= pricingPlan
-        <*> optionalField "trial-period" "trial period" .= pricingTrialPeriod
         <*> requiredField "price" "price" .= pricingPrice
-        <*> requiredField "currency" "currency" .= pricingCurrency
         <*> requiredField "publishable-key" "publishable key" .= pricingStripePublishableKey
         <*> requiredField "max-items-free" "maximum number of free items" .= pricingMaxItemsFree

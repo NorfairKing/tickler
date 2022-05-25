@@ -115,54 +115,6 @@ in
           composeExtensions (old.overrides or (_: _: { })) (
             self: super:
               let
-                servantAuthRepo =
-                  final.fetchFromGitHub {
-                    owner = "haskell-servant";
-                    repo = "servant-auth";
-                    rev = "23971e889f8cbe8790305bda8915f00aa8be5ad9";
-                    sha256 =
-                      "sha256:0q1n0s126ywqw3g9xiiaw59s9jn2543v7p4zgxw99p68pihdlysv";
-                  };
-                persistentRepo =
-                  final.fetchFromGitHub {
-                    owner = "yesodweb";
-                    repo = "persistent";
-                    rev = "333be4996eb6eea2dc37d3a14858b668f0b9e381";
-                    sha256 =
-                      "sha256:1j76s7666vadm4q1ma73crkrks6q6nskzb3jqaf6rp2qmw1phfpr";
-                  };
-
-                stripeHaskellRepo =
-                  final.fetchFromGitHub {
-                    owner = "NorfairKing";
-                    repo = "stripe";
-                    rev = "008e992cae9c9bdb025bcf575c1bdf1037632a8a";
-                    sha256 =
-                      "sha256:1sxp8phdw1ahndy6h9q4ad0hdfraxyy5qnjd7w80v6m83py419gk";
-                  };
-                stripeHaskellPkg =
-                  name:
-                  dontCheck (
-                    self.callCabal2nix name (stripeHaskellRepo + "/${name}") { }
-                  );
-                servantAuthPkg =
-                  name:
-                  doJailbreak (
-                    self.callCabal2nix name (servantAuthRepo + "/${name}") { }
-                  );
-                persistentPkg =
-                  name:
-                  overrideCabal
-                    (
-                      # Because there is some nastiness that makes nix think we need the haskell sqlite library.
-                      self.callCabal2nix name (persistentRepo + "/${name}") { }
-                    )
-                    (
-                      old:
-                      {
-                        librarySystemDepends = [ final.sqlite ];
-                      }
-                    );
                 yesodAutoReloadRepo = builtins.fetchGit {
                   url = "https://github.com/NorfairKing/yesod-autoreload";
                   rev = "f4f03bae0b9c1916838bb1c52a7182ac5afb28e0";
@@ -177,25 +129,7 @@ in
                 sydtest-yesod = dontCheck super.sydtest-yesod;
                 looper = dontCheck super.looper;
                 tickler-stripe-client = generatedTicklerStripe.package;
-              } // genAttrs [
-                "stripe-core"
-                "stripe-haskell"
-                "stripe-http-client"
-                "stripe-http-streams"
-              ]
-                stripeHaskellPkg // genAttrs [
-                "servant-auth"
-                "servant-auth-client"
-                "servant-auth-docs"
-                "servant-auth-swagger"
-                "servant-auth-server"
-              ]
-                servantAuthPkg // genAttrs [
-                "persistent"
-                "persistent-sqlite"
-                "persistent-template"
-              ]
-                persistentPkg // final.ticklerPackages
+              } // final.ticklerPackages
           );
       }
     );

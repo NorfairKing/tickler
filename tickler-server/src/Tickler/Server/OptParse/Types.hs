@@ -11,8 +11,6 @@ import Data.Aeson (FromJSON, ToJSON)
 import Import
 import Looper
 import Tickler.API
-import Web.Stripe.Client as Stripe
-import Web.Stripe.Types as Stripe hiding (object)
 
 instance HasCodec () where
   codec = nullCodec
@@ -244,8 +242,8 @@ data MonetisationSettings = MonetisationSettings
   deriving (Show)
 
 data StripeSettings = StripeSettings
-  { stripeSetPlan :: !Stripe.PlanId,
-    stripeSetStripeConfig :: StripeConfig,
+  { stripeSetPlan :: !Text,
+    stripeSetSecretKey :: Text,
     stripeSetPublishableKey :: !Text
   }
   deriving (Show)

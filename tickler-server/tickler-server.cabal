@@ -58,7 +58,6 @@ library
       Tickler.Server.Looper.AdminNotificationEmailConverter
       Tickler.Server.Looper.DB
       Tickler.Server.Looper.Emailer
-      Tickler.Server.Looper.StripeEventsFetcher
       Tickler.Server.Looper.TriggeredEmailConverter
       Tickler.Server.Looper.TriggeredEmailScheduler
       Tickler.Server.Looper.TriggeredIntrayItemScheduler
@@ -69,7 +68,6 @@ library
       Tickler.Server.OptParse
       Tickler.Server.OptParse.Types
       Tickler.Server.SigningKey
-      Tickler.Server.Stripe
       Tickler.Server.Types
       TicklerServer
   other-modules:
@@ -119,8 +117,6 @@ library
     , servant-client
     , servant-server
     , shakespeare
-    , stripe-core
-    , stripe-haskell
     , text
     , tickler-api
     , tickler-client

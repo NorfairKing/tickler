@@ -41,10 +41,10 @@
         "homepage": "https://intray.eu",
         "owner": "NorfairKing",
         "repo": "intray",
-        "rev": "2f2228e15606b4473336b041d40e312d4868c134",
-        "sha256": "1z76mjzp2dbw6zd85lp5475cfblj416dzxqp0d0q84js4vhli8ia",
+        "rev": "98e3dad0c1ff7b5ef8c1db636b02511148c51198",
+        "sha256": "0di37i01x2y3x9wy2jdj4c8fp7clz0azrwrcwsha336yyzkabsg7",
         "type": "tarball",
-        "url": "https://github.com/NorfairKing/intray/archive/2f2228e15606b4473336b041d40e312d4868c134.tar.gz",
+        "url": "https://github.com/NorfairKing/intray/archive/98e3dad0c1ff7b5ef8c1db636b02511148c51198.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "looper": {
@@ -84,15 +84,15 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "nixpkgs": {
-        "branch": "20.09",
+        "branch": "nixos-21.11",
         "description": "Nix Packages collection",
         "homepage": "",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "cd63096d6d887d689543a0b97743d28995bc9bc3",
-        "sha256": "1wg61h4gndm3vcprdcg7rc4s1v3jkm5xd7lw8r2f67w502y94gcy",
+        "rev": "cbd40c72b2603ab54e7208f99f9b35fc158bc009",
+        "sha256": "09ffmjs9lwm97p8v8977p319kc8ys2fjnyv08gb99kgbr7gfiyfd",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/cd63096d6d887d689543a0b97743d28995bc9bc3.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs/archive/cbd40c72b2603ab54e7208f99f9b35fc158bc009.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "openapi-code-generator": {

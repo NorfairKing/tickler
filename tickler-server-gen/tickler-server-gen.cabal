@@ -49,7 +49,6 @@ library
     , servant-auth-server
     , servant-client
     , servant-server
-    , stripe-core
     , sydtest
     , sydtest-persistent-sqlite
     , sydtest-wai

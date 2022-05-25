@@ -1,4 +1,4 @@
-resolver: lts-16.12
+resolver: lts-18.16
 packages:
 - tickler-api
 - tickler-api-gen
@@ -11,38 +11,27 @@ packages:
 - tickler-web-server-gen
 - tickler-web-server-webdriver
 
+- stripe-client # Intray
 - tickler-stripe-client
 
 # These are duplicated in nix/overlay.nix 
 ghc-options:
   "$locals": -Wall -Wincomplete-uni-patterns -Wincomplete-record-updates -Wpartial-fields -Widentities -Wredundant-constraints -Wcpp-undef
   tickler-stripe-client: -w # Turn off warnings for the generated code.
+  stripe-client: -w # Turn off warnings for the generated code.
 
 extra-deps:
+- amazonka-1.6.1@sha256:f58b63e83876f93aa03c54e54b3eb8ba9358af93819d41f4a5a8f8b7d8b8399c,3544
+- unliftio-core-0.1.2.0@sha256:b0a7652ffce2284a6cebe05c99eb60573a8fb6631163f34b0b30a80b4a78cb23,1081
+
 - servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
 - envparse-0.4.1@sha256:989902e6368532548f61de1fa245ad2b39176cddd8743b20071af519a709ce30,2842
-
-- github: haskell-servant/servant-auth
-  commit: 23971e889f8cbe8790305bda8915f00aa8be5ad9
-  subdirs:
-    - servant-auth-client
-    - servant-auth-docs
-    - servant-auth-swagger
-    - servant-auth-server
 
 - github: NorfairKing/yesod-static-remote
   commit: 22c0a92c1d62f1b8d432003844ef0636a9131b08
 
-- github: NorfairKing/stripe
-  commit: 008e992cae9c9bdb025bcf575c1bdf1037632a8a
-  subdirs:
-    - stripe-core
-    - stripe-haskell
-    - stripe-http-client
-    - stripe-http-streams
-
 - github: NorfairKing/intray
-  commit: 2f2228e15606b4473336b041d40e312d4868c134
+  commit: 98e3dad0c1ff7b5ef8c1db636b02511148c51198
   subdirs:
     - intray-data
     - intray-data-gen
