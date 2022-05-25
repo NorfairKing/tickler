@@ -104,7 +104,7 @@
                     Subscription
 
                   <p .has-text-centered .has-text-weight-bold .is-size-2>
-                    #{pricingShowAmountPerMonth p}
+                    #{pricingPrice p}
                   <p .has-text-centered .has-text-weight-bold .is-size-6>
                     PER YEAR
 

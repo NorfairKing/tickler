@@ -26,7 +26,6 @@ getAddR =
 postAddR :: Handler Html
 postAddR =
   withLogin $ \t -> do
-    AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
     tickle <- handleEditItemForm
     errOrRes <- runClient $ clientPostItem t tickle
     case errOrRes of

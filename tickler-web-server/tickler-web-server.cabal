@@ -67,7 +67,6 @@ library
       Tickler.Web.Server.Handler.EmailTriggerVerify
       Tickler.Web.Server.Handler.Home
       Tickler.Web.Server.Handler.Item
-      Tickler.Web.Server.Handler.Pricing
       Tickler.Web.Server.Handler.Reload
       Tickler.Web.Server.Handler.Tickles
       Tickler.Web.Server.Handler.TriggerAddEmail

@@ -1,5 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
-
 module Tickler.Web.Server.Handler.Edit
   ( getEditR,
     postEditR,
@@ -31,7 +29,6 @@ getEditR uuid =
 postEditR :: ItemUUID -> Handler Html
 postEditR uuid =
   withLogin $ \t -> do
-    AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
     tickle <- handleEditItemForm
     errOrRes <- runClient $ clientPutItem t uuid tickle
     case errOrRes of

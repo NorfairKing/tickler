@@ -27,8 +27,6 @@ extra-deps:
 - servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
 - envparse-0.4.1@sha256:989902e6368532548f61de1fa245ad2b39176cddd8743b20071af519a709ce30,2842
 
-- github: NorfairKing/yesod-static-remote
-  commit: 22c0a92c1d62f1b8d432003844ef0636a9131b08
 
 - github: NorfairKing/intray
   commit: 98e3dad0c1ff7b5ef8c1db636b02511148c51198
@@ -42,14 +40,14 @@ extra-deps:
     - intray-server-gen
       
 - github: NorfairKing/mergeless
-  commit: 9a10547aba61f10a32ba2a54dbe7301ced48f9fc
+  commit: 639cdca0dc7cce53a62cf40aa856b156e2ab1f32
   subdirs:
     - mergeless
     - mergeless-persistent
     - genvalidity-mergeless
 
 - github: NorfairKing/validity
-  commit: e1750f9d29c64705a4b9ccddf9f5afd5275e7d75
+  commit: 160e846cc5de8e92e6758172da341f5d81fe037
   subdirs:
     - genvalidity
     - genvalidity-aeson
@@ -100,7 +98,7 @@ extra-deps:
   commit: a634358ff274380a12360f7814c3aea46ea35b1b
 
 - github: NorfairKing/safe-coloured-text
-  commit: f30fe0e4d2a0fa036967ffe17538b60e5f9861f5
+  commit: 71c5940a3b84eeb498304d8e584e7638f875d51b
   subdirs:
     - safe-coloured-text
     - safe-coloured-text-terminfo
@@ -111,7 +109,7 @@ extra-deps:
     - looper
 
 - github: NorfairKing/sydtest
-  commit: e55fad0f6b8058a9b44c6c0d66bdd3c3be556d71
+  commit: 984542f1302794eaf31cc5c999602f68d7c90b1d
   subdirs:
   - sydtest
   - sydtest-discover
@@ -125,11 +123,14 @@ extra-deps:
   - sydtest-yesod
 
 - github: NorfairKing/autodocodec
-  commit: f0cb2ead0985b4394db0627e6befd7ce23c54c22
+  commit: 38bd4865ff2dd40d342141b7fde9319f835d98c6
   subdirs:
   - autodocodec
   - autodocodec-yaml
   - autodocodec-schema
+
+- github: NorfairKing/yesod-static-remote
+  commit: ed6bf8ef434d49b160429028613a1f6882fccfdf
 
 - github: NorfairKing/yesod-autoreload
   commit: 7135e864c0d4a48efeae473ee2761f5168946e58

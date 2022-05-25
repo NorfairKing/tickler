@@ -16,9 +16,7 @@ import Import
 import Text.Julius
 import Tickler.Client
 import Tickler.Web.Server.Foundation
-import Tickler.Web.Server.Handler.Pricing
 import Tickler.Web.Server.Time
-import Web.Stripe.Plan as Stripe
 import Yesod
 import Yesod.Auth
 
@@ -91,7 +89,7 @@ accountInfoSegment mai mp =
 
 pricingStripeForm :: AccountInfo -> Pricing -> Widget
 pricingStripeForm AccountInfo {..} p =
-  let Stripe.PlanId planText = pricingPlan p
+  let planText = pricingPlan p
       clientReferenceId = uuidText accountInfoUUID
       sf = $(widgetFile "stripe-form")
    in [whamlet|
@@ -101,14 +99,11 @@ pricingStripeForm AccountInfo {..} p =
           <p>
             <ul>
               <li>
-                #{pricingShowAmountPerMonth p} per month, billed anually
+                #{pricingPrice p} per year
               <li>
                 Unlimited items
               <li>
                 Full API access
-              $maybe tp <- pricingTrialPeriod p
-                <li>
-                  #{show tp} day Trial period
           <p>
             ^{sf}
     |]

@@ -44,8 +44,8 @@ instance HasCodec Token where
     where
       f t =
         case Base16.decode $ TE.encodeUtf8 t of
-          (h, "") -> pure $ Token h
-          _ -> Left "Invalid token in JSON: could not decode from hex string"
+          Right h -> pure $ Token h
+          Left err -> Left err
       g (Token bs) =
         case TE.decodeUtf8' $ Base16.encode bs of
           Left _ -> error "Failed to decode hex string to text, should not happen."

@@ -9,7 +9,6 @@ where
 import Import
 import Tickler.Client
 import Tickler.Web.Server.Foundation
-import Tickler.Web.Server.Handler.Pricing
 import Yesod
 
 getHomeR :: Handler Html

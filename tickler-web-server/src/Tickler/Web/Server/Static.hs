@@ -27,11 +27,13 @@ mkEmbeddedStatic
     embedFile "static/tom-sydney-kerckhove_twitter-icon.svg",
     embedFile "static/tom-sydney-kerckhove_youtube-icon.svg",
     embedFile "static/tom-sydney-kerckhove_logo-tickler.svg",
-    embedRemoteFileAt "static/jquery/jquery.min.js" "https://code.jquery.com/jquery-3.1.1.min.js",
-    embedRemoteFileAt
+    embedRemoteFile
+      "static/jquery/jquery.min.js"
+      "https://code.jquery.com/jquery-3.1.1.min.js",
+    embedRemoteFile
       "static/bulma/bulma.min.css"
       "https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css",
-    embedRemoteFileAt
+    embedRemoteFile
       "static/bulma/bulma-tooltip.min.css"
       "https://cdn.jsdelivr.net/npm/bulma-tooltip@3.0.2/dist/css/bulma-tooltip.min.css"
   ]

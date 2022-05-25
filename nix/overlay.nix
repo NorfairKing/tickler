@@ -114,20 +114,10 @@ in
         overrides =
           composeExtensions (old.overrides or (_: _: { })) (
             self: super:
-              let
-                yesodAutoReloadRepo = builtins.fetchGit {
-                  url = "https://github.com/NorfairKing/yesod-autoreload";
-                  rev = "f4f03bae0b9c1916838bb1c52a7182ac5afb28e0";
-                };
-
-              in
               {
                 envparse = self.callHackage "envparse" "0.4.1" { };
-                yesod-autoreload = self.callCabal2nix "yesod-autoreload" yesodAutoReloadRepo { };
-                # Temporary hack until we can upgrade.
-                sydtest-persistent-sqlite = dontCheck super.sydtest-persistent-sqlite;
-                sydtest-yesod = dontCheck super.sydtest-yesod;
-                looper = dontCheck super.looper;
+                yesod-autoreload = self.callCabal2nix "yesod-autoreload" sources.yesod-autoreload { };
+                yesod-static-remote = dontCheck (self.callCabal2nix "yesod-static-remote" sources.yesod-static-remote { });
                 tickler-stripe-client = generatedTicklerStripe.package;
               } // final.ticklerPackages
           );

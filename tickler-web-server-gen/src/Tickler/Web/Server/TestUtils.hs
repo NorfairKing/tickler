@@ -72,14 +72,14 @@ paidTicklerWebServerSpec :: Int -> YesodSpec App -> Spec
 paidTicklerWebServerSpec maxItems = API.withPaidTicklerServer maxItems . yesodSpecWithSiteSetupFunc' appSetupFunc
 
 appSetupFunc :: HTTP.Manager -> ClientEnv -> SetupFunc App
-appSetupFunc man (ClientEnv _ burl _) = do
+appSetupFunc man cenv = do
   tdir <- tempDirSetupFunc "tickler-web-server"
   appSessionKeyFile <- resolveFile tdir "client_session_key.aes"
   let appLogLevel = LevelWarn
   let appHTTPManager = man
   let appStatic = myStatic
   appLoginTokens <- liftIO $ newMVar HM.empty
-  let appAPIBaseUrl = burl
+  let appAPIBaseUrl = baseUrl cenv
   let appTracking = Nothing
   let appVerification = Nothing
   let appPersistLogins = False
