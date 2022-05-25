@@ -51,9 +51,11 @@ runTicklerServer settings@Settings {..} =
           signingKey <- liftIO loadSigningKey
           let jwtCfg = defaultJWTSettings signingKey
           let cookieCfg = defaultCookieSettings
+          logFunc <- askLoggerIO
           let ticklerEnv =
                 TicklerServerEnv
-                  { envConnectionPool = pool,
+                  { envLogFunc = logFunc,
+                    envConnectionPool = pool,
                     envCookieSettings = cookieCfg,
                     envJWTSettings = jwtCfg,
                     envAdmins = setAdmins,
@@ -80,7 +82,7 @@ makeTicklerServer cfg =
   hoistServerWithContext
     ticklerAPI
     (Proxy :: Proxy TicklerContext)
-    (`runReaderT` cfg)
+    (\func -> runLoggingT (runReaderT func cfg) (envLogFunc cfg))
     (genericServerT ticklerServer)
 
 ticklerAppContext :: TicklerServerEnv -> Context TicklerContext
@@ -130,7 +132,8 @@ ticklerPublicServer =
   TicklerPublicSite
     { postRegister = servePostRegister,
       postLogin = servePostLogin,
-      getPricing = serveGetPricing
+      getPricing = serveGetPricing,
+      postStripeHook = servePostStripeHook
     }
 
 ticklerAdminServer :: TicklerAdminSite (AsServerT TicklerHandler)

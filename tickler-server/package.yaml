@@ -56,9 +56,11 @@ library:
   - tickler-api
   - tickler-client
   - tickler-data
+  - tickler-stripe-client
   - time
   - typed-uuid
   - unliftio
+  - unordered-containers
   - wai
   - wai-cors
   - warp >=3.2

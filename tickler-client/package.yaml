@@ -3,12 +3,15 @@ name: tickler-client
 default-extensions:
 - NoImplicitPrelude
 
+dependencies:
+- base >=4.7 && <5
+
 library:
   source-dirs: src
   ghc-options: -Wall
 
   dependencies:
-  - base >=4.7 && <5
+  - aeson
   - bytestring >=0.10 && <0.11
   - containers
   - servant

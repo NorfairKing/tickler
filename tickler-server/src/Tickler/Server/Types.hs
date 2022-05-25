@@ -7,8 +7,11 @@ import Servant.Auth.Server
 import Tickler.API
 import Tickler.Server.OptParse.Types
 
+type LF = Loc -> LogSource -> LogLevel -> LogStr -> IO ()
+
 data TicklerServerEnv = TicklerServerEnv
-  { envConnectionPool :: !ConnectionPool,
+  { envLogFunc :: !LF,
+    envConnectionPool :: !ConnectionPool,
     envCookieSettings :: !CookieSettings,
     envJWTSettings :: !JWTSettings,
     envAdmins :: ![Username],
@@ -16,4 +19,4 @@ data TicklerServerEnv = TicklerServerEnv
     envMonetisation :: !(Maybe MonetisationSettings)
   }
 
-type TicklerHandler = ReaderT TicklerServerEnv Handler
+type TicklerHandler = ReaderT TicklerServerEnv (LoggingT Handler)

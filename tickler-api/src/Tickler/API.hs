@@ -19,6 +19,7 @@ where
 
 import Autodocodec
 import Data.Aeson (FromJSON, ToJSON)
+import qualified Data.Aeson as JSON
 import Data.UUID.Typed
 import Import
 import Intray.API ()
@@ -56,7 +57,8 @@ type TicklerPublicAPI = ToServantApi TicklerPublicSite
 data TicklerPublicSite route = TicklerPublicSite
   { postRegister :: route :- PostRegister,
     postLogin :: route :- PostLogin,
-    getPricing :: route :- GetPricing
+    getPricing :: route :- GetPricing,
+    postStripeHook :: !(route :- PostStripeHook)
   }
   deriving (Generic)
 
@@ -123,3 +125,8 @@ instance HasCodec Pricing where
         <*> requiredField "price" "price" .= pricingPrice
         <*> requiredField "publishable-key" "publishable key" .= pricingStripePublishableKey
         <*> requiredField "max-items-free" "maximum number of free items" .= pricingMaxItemsFree
+
+type PostStripeHook =
+  "stripe"
+    :> ReqBody '[JSON] JSON.Value
+    :> Verb 'POST 204 '[JSON] NoContent

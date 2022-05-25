@@ -11,6 +11,7 @@ pkgs.haskell.lib.buildStackProject {
     haskellPackages.autoexporter
     killall
     selenium-server-standalone
+    stripe-cli
     unzip
     zlib
   ] ++ pre-commit.tools;

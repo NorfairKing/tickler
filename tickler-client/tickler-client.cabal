@@ -20,7 +20,8 @@ library
       NoImplicitPrelude
   ghc-options: -Wall
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
     , bytestring ==0.10.*
     , containers
     , servant

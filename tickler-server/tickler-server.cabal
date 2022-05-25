@@ -28,6 +28,7 @@ library
       Tickler.Server.Handler.Admin.GetAccounts
       Tickler.Server.Handler.Admin.GetStats
       Tickler.Server.Handler.Admin.PutAccountSubscription
+      Tickler.Server.Handler.PostStripeHook
       Tickler.Server.Handler.Protected
       Tickler.Server.Handler.Protected.DeleteAccount
       Tickler.Server.Handler.Protected.DeleteItem
@@ -122,9 +123,11 @@ library
     , tickler-api
     , tickler-client
     , tickler-data
+    , tickler-stripe-client
     , time
     , typed-uuid
     , unliftio
+    , unordered-containers
     , wai
     , wai-cors
     , warp >=3.2

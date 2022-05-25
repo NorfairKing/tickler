@@ -10,6 +10,7 @@ module Tickler.Client
   )
 where
 
+import Data.Aeson as JSON
 import Data.Time
 import qualified Data.UUID.Typed
 import Import
@@ -39,6 +40,7 @@ clientDeleteAccount :: Token -> ClientM NoContent
 clientPostRegister :: Registration -> ClientM NoContent
 clientPostLogin :: LoginForm -> ClientM (Headers '[Header "Set-Cookie" Text] NoContent)
 clientGetPricing :: ClientM (Maybe Pricing)
+clientPostStripeHook :: JSON.Value -> ClientM NoContent
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> Username -> ClientM NoContent
 clientAdminGetAccount :: Token -> Username -> ClientM AccountInfo
@@ -64,6 +66,7 @@ clientGetItems
   :<|> clientPostRegister
   :<|> clientPostLogin
   :<|> clientGetPricing
+  :<|> clientPostStripeHook
   :<|> clientAdminGetStats
   :<|> clientAdminDeleteAccount
   :<|> clientAdminGetAccount
