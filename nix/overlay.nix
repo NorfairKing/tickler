@@ -1,6 +1,17 @@
 final: previous:
 with final.lib;
 with final.haskell.lib;
+let
+  sources = import ./sources.nix;
+  generateOpenAPIClient = import (sources.openapi-code-generator + "/nix/generate-client.nix") { pkgs = final; };
+  generatedTicklerStripe = generateOpenAPIClient {
+    name = "tickler-stripe-client";
+    configFile = ../stripe-client-gen.yaml;
+    src = sources.stripe-spec + "/openapi/spec3.yaml";
+  };
+  generatedTicklerStripeCode = generatedTicklerStripe.code;
+
+in
 {
   ticklerPackages =
     let
@@ -94,6 +105,8 @@ with final.haskell.lib;
       paths = attrValues final.ticklerReleasePackages;
     };
 
+  inherit generatedTicklerStripeCode;
+
   haskellPackages =
     previous.haskellPackages.override (
       old:
@@ -163,6 +176,7 @@ with final.haskell.lib;
                 sydtest-persistent-sqlite = dontCheck super.sydtest-persistent-sqlite;
                 sydtest-yesod = dontCheck super.sydtest-yesod;
                 looper = dontCheck super.looper;
+                tickler-stripe-client = generatedTicklerStripe.package;
               } // genAttrs [
                 "stripe-core"
                 "stripe-haskell"

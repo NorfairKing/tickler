@@ -95,6 +95,18 @@
         "url": "https://github.com/NixOS/nixpkgs/archive/cd63096d6d887d689543a0b97743d28995bc9bc3.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "openapi-code-generator": {
+        "branch": "master",
+        "description": "Generate Haskell client code from an OpenAPI 3 specification",
+        "homepage": "",
+        "owner": "Haskell-OpenAPI-Code-Generator",
+        "repo": "Haskell-OpenAPI-Client-Code-Generator",
+        "rev": "d3e9c7db4d8b15de9136007a9b9519a7bd8e2199",
+        "sha256": "17db2bypz2p7kil6xpvlh6vgz4bb1drc3ci9p62810xr5bd34a6d",
+        "type": "tarball",
+        "url": "https://github.com/Haskell-OpenAPI-Code-Generator/Haskell-OpenAPI-Client-Code-Generator/archive/d3e9c7db4d8b15de9136007a9b9519a7bd8e2199.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "pre-commit-hooks": {
         "branch": "master",
         "description": "Seamless integration of https://pre-commit.com git hooks with Nix.",
@@ -129,6 +141,18 @@
         "sha256": "0lgq503wa3ws5cci82kmaz4ws6bl9fz11i73kkqmmrldsr0gsvs0",
         "type": "tarball",
         "url": "https://github.com/NorfairKing/safe-coloured-text/archive/f30fe0e4d2a0fa036967ffe17538b60e5f9861f5.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "stripe-spec": {
+        "branch": "master",
+        "description": "An OpenAPI specification for the Stripe API.        ",
+        "homepage": null,
+        "owner": "stripe",
+        "repo": "openapi",
+        "rev": "84b6744117d7a6ceb31d251df81c970c4eaba142",
+        "sha256": "0jmn0svdsdq7nk72jsq6mvgx6yizhwz3h9irhijzawncnhj8mbw5",
+        "type": "tarball",
+        "url": "https://github.com/stripe/openapi/archive/84b6744117d7a6ceb31d251df81c970c4eaba142.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "sydtest": {

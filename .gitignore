@@ -1,4 +1,4 @@
-.shake/
+tickler-stripe-client/
 .stack-work/
 stack.yaml.lock
 result*
