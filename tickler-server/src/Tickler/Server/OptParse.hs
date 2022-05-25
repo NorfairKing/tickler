@@ -46,40 +46,29 @@ combineToSettings Flags {..} Environment {..} mConf = do
     let mmc :: (MonetisationConfiguration -> Maybe a) -> Maybe a
         mmc func = mc confMonetisationConfiguration >>= func
     let plan =
-          Stripe.PlanId . T.pack
-            <$> ( monetisationFlagStripePlan <|> monetisationEnvStripePlan
-                    <|> mmc monetisationConfStripePlan
-                )
-    let config =
-          ( \sk ->
-              StripeConfig
-                { Stripe.secretKey = StripeKey $ TE.encodeUtf8 $ T.pack sk,
-                  stripeEndpoint = Nothing
-                }
-          )
-            <$> ( monetisationFlagStripeSecretKey <|> monetisationEnvStripeSecretKey
-                    <|> mmc monetisationConfStripeSecretKey
-                )
+          monetisationFlagStripePlan
+            <|> monetisationEnvStripePlan
+            <|> mmc monetisationConfStripePlan
+    let secretKey =
+          monetisationFlagStripeSecretKey
+            <|> monetisationEnvStripeSecretKey
+            <|> mmc monetisationConfStripeSecretKey
     let publicKey =
-          T.pack
-            <$> ( monetisationFlagStripePublishableKey <|> monetisationEnvStripePulishableKey
-                    <|> mmc monetisationConfStripePulishableKey
-                )
-    let monetisationSetStripeEventsFetcher =
-          deriveLooperSettings
-            (seconds 8)
-            (minutes 1)
-            monetisationFlagLooperStripeEventsFetcher
-            monetisationEnvLooperStripeEventsFetcher
-            (mmc monetisationConfLooperStripeEventsFetcher)
+          monetisationFlagStripePublishableKey
+            <|> monetisationEnvStripePulishableKey
+            <|> mmc monetisationConfStripePulishableKey
 
-    let monetisationSetMaxItemsFree =
+    let maxItemsFree =
           fromMaybe 5 $ monetisationFlagMaxItemsFree <|> monetisationEnvMaxItemsFree
-    pure $
-      MonetisationSettings
-        <$> (StripeSettings <$> plan <*> config <*> publicKey)
-        <*> pure monetisationSetStripeEventsFetcher
-        <*> pure monetisationSetMaxItemsFree
+    pure $ do
+      ss <- StripeSettings <$> plan <*> secretKey <*> publicKey
+      price <- monetisationFlagPrice <|> monetisationEnvPrice <|> mmc monetisationConfPrice
+      pure $
+        MonetisationSettings
+          { monetisationSetStripeSettings = ss,
+            monetisationSetMaxItemsFree = maxItemsFree,
+            monetisationSetPrice = price
+          }
 
   let setTriggererFromEmailAddress = flagTriggererFromEmailAddress <|> envTriggererFromEmailAddress <|> mc confTriggererFromEmailAddress
   let setVerificationFromEmailAddress = flagVerificationFromEmailAddress <|> envVerificationFromEmailAddress <|> mc confVerificationFromEmailAddress
@@ -195,8 +184,8 @@ monetisationEnvironmentParser =
     <$> optional (Env.var Env.str "STRIPE_PLAN" (Env.help "Stripe plan id"))
     <*> optional (Env.var Env.str "STRIPE_SECRET_KEY" (Env.help "Stripe secret key"))
     <*> optional (Env.var Env.str "STRIPE_PUBLISHABLE_KEY" (Env.help "Stripe publishable key"))
-    <*> looperEnvironmentParser "STRIPE_EVENTS_FETCHER"
     <*> optional (Env.var Env.auto "MAX_ITEMS_FREE" (Env.help "Maximum number of free items"))
+    <*> optional (Env.var Env.auto "PRICE" (Env.help "A string description of the price"))
 
 getFlags :: IO Flags
 getFlags = do
@@ -366,7 +355,6 @@ parseMonetisationFlags =
               ]
           )
       )
-    <*> getLooperFlags "stripe-events-fetcher"
     <*> optional
       ( option
           auto
@@ -374,6 +362,15 @@ parseMonetisationFlags =
               [ long "max-items-free",
                 metavar "INT",
                 help "How many items a user can sync in the free plan"
+              ]
+          )
+      )
+    <*> optional
+      ( strOption
+          ( mconcat
+              [ long "price",
+                metavar "PRICE",
+                help "A string description of the price"
               ]
           )
       )

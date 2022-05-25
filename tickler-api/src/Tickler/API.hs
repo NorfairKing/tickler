@@ -60,7 +60,10 @@ data TicklerPublicSite route = TicklerPublicSite
   }
   deriving (Generic)
 
-type PostRegister = "register" :> ReqBody '[JSON] Registration :> Post '[JSON] NoContent
+type PostRegister =
+  "register"
+    :> ReqBody '[JSON] Registration
+    :> Verb 'POST 204 '[JSON] NoContent
 
 type PostLogin =
   "login"

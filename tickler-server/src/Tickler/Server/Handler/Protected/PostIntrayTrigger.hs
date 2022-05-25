@@ -28,7 +28,7 @@ servePostIntrayTrigger AuthCookie {..} AddIntrayTrigger {..} = do
   man <- liftIO $ Http.newManager Http.tlsManagerSettings
   errOrOk <-
     do
-      let env = ClientEnv man addIntrayTriggerUrl Nothing
+      let env = mkClientEnv man addIntrayTriggerUrl
       liftIO $
         flip runClientM env $
           do

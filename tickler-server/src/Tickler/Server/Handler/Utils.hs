@@ -11,8 +11,8 @@ module Tickler.Server.Handler.Utils
   )
 where
 
-import Database.Esqueleto ((^.))
-import qualified Database.Esqueleto as E
+import Database.Esqueleto.Legacy ((^.))
+import qualified Database.Esqueleto.Legacy as E
 import Database.Persist
 import Database.Persist.Sqlite
 import Import

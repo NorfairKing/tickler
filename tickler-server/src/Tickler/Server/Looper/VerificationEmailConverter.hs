@@ -35,7 +35,7 @@ data VerificationEmailConverterSettings = VerificationEmailConverterSettings
   deriving (Show)
 
 runVerificationEmailConverter :: VerificationEmailConverterSettings -> Looper ()
-runVerificationEmailConverter vecs@VerificationEmailConverterSettings {..} = do
+runVerificationEmailConverter vecs = do
   acqVerificationEmailSource <- runDb $ selectSourceRes [VerificationEmailEmail ==. Nothing] []
   withAcquire acqVerificationEmailSource $ \verificationEmailSource ->
     runConduit $ verificationEmailSource .| C.mapM_ (convertVerificationEmail vecs)

@@ -13,7 +13,6 @@ where
 
 import Conduit
 import Control.Monad.Logger
-import Data.Cache
 import qualified Data.Text as T
 import Database.Persist
 import Database.Persist.Sqlite
@@ -52,15 +51,6 @@ runTicklerServer settings@Settings {..} =
           signingKey <- liftIO loadSigningKey
           let jwtCfg = defaultJWTSettings signingKey
           let cookieCfg = defaultCookieSettings
-          mMonetisationEnv <-
-            forM setMonetisationSettings $ \MonetisationSettings {..} -> do
-              planCache <- liftIO $ newCache Nothing
-              pure
-                MonetisationEnv
-                  { monetisationEnvStripeSettings = monetisationSetStripeSettings,
-                    monetisationEnvMaxItemsFree = monetisationSetMaxItemsFree,
-                    monetisationEnvPlanCache = planCache
-                  }
           let ticklerEnv =
                 TicklerServerEnv
                   { envConnectionPool = pool,
@@ -68,7 +58,7 @@ runTicklerServer settings@Settings {..} =
                     envJWTSettings = jwtCfg,
                     envAdmins = setAdmins,
                     envFreeloaders = setFreeloaders,
-                    envMonetisation = mMonetisationEnv
+                    envMonetisation = setMonetisationSettings
                   }
           let serverThread = liftIO $ Warp.run setPort $ ticklerApp ticklerEnv
           let looperThread = runTicklerLoopers pool settings

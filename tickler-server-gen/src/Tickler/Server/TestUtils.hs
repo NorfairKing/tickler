@@ -29,9 +29,7 @@ where
 
 import Control.Exception
 import Control.Monad.Logger
-import Data.Cache as Cache
 import Data.Text.Encoding (encodeUtf8)
-import Data.Time
 import Data.UUID.Typed
 import Database.Persist.Sqlite
 import Import
@@ -51,7 +49,6 @@ import Tickler.Server.Looper.Types
 import Tickler.Server.OptParse.Types
 import Tickler.Server.Types
 import Web.Cookie
-import Web.Stripe.Plan as Stripe
 
 withTicklerServer :: TestDef '[HTTP.Manager] ClientEnv -> Spec
 withTicklerServer specFunc = do
@@ -110,38 +107,20 @@ paidTicklerTestClientEnvSetupFunc maxFree man = snd <$> paidTicklerTestClientEnv
 
 paidTicklerTestClientEnvAndDatabaseSetupFunc :: Int -> HTTP.Manager -> SetupFunc (ConnectionPool, ClientEnv)
 paidTicklerTestClientEnvAndDatabaseSetupFunc maxFree man = do
-  now <- liftIO getCurrentTime
-  let planName = PlanId "dummyPlan"
-      dummyPlan =
-        Stripe.Plan
-          { planInterval = Year,
-            planName = "dummy plan",
-            planCreated = now,
-            planAmount = 1200,
-            planCurrency = CHF,
-            planId = planName,
-            planObject = "plan",
-            planLiveMode = False,
-            planIntervalCount = Nothing,
-            planTrialPeriodDays = Nothing,
-            planMetaData = MetaData [],
-            planDescription = Nothing
-          }
-  monetisationEnvPlanCache <- liftIO $ newCache Nothing
-  liftIO $ Cache.insert monetisationEnvPlanCache planName dummyPlan
-  let monetisationEnvStripeSettings =
+  let monetisationSetStripeSettings =
         StripeSettings
-          { stripeSetPlan = planName,
-            stripeSetStripeConfig = error "should not try to access stripe during testing",
+          { stripeSetPlan = "dummy-plan",
+            stripeSetSecretKey = error "should not try to access stripe during testing",
             stripeSetPublishableKey = "Example, should not be used."
           }
-  let monetisationEnvMaxItemsFree = maxFree
-  ticklerTestClientEnvAndDatabaseSetupFunc (Just MonetisationEnv {..}) man
+  let monetisationSetPrice = "dummy price"
+  let monetisationSetMaxItemsFree = maxFree
+  ticklerTestClientEnvAndDatabaseSetupFunc (Just MonetisationSettings {..}) man
 
-ticklerTestClientEnvSetupFunc :: Maybe MonetisationEnv -> HTTP.Manager -> SetupFunc ClientEnv
+ticklerTestClientEnvSetupFunc :: Maybe MonetisationSettings -> HTTP.Manager -> SetupFunc ClientEnv
 ticklerTestClientEnvSetupFunc mEnv man = snd <$> ticklerTestClientEnvAndDatabaseSetupFunc mEnv man
 
-ticklerTestClientEnvAndDatabaseSetupFunc :: Maybe MonetisationEnv -> HTTP.Manager -> SetupFunc (ConnectionPool, ClientEnv)
+ticklerTestClientEnvAndDatabaseSetupFunc :: Maybe MonetisationSettings -> HTTP.Manager -> SetupFunc (ConnectionPool, ClientEnv)
 ticklerTestClientEnvAndDatabaseSetupFunc menv man = do
   pool <- ticklerTestConnectionSetupFunc
   signingKey <- liftIO Auth.generateKey

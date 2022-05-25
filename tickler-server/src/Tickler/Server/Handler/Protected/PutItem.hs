@@ -20,7 +20,7 @@ servePutItem AuthCookie {..} uuid Tickle {..} = do
   mI <- runDb $ getBy (UniqueItemIdentifier authCookieUserUUID uuid)
   case mI of
     Nothing -> throwError err404
-    Just (Entity i TicklerItem {..}) -> do
+    Just (Entity i _) -> do
       runDb $
         update
           i

@@ -20,7 +20,6 @@ import Tickler.Data
 import Tickler.Server.Looper.AdminNotificationEmailConverter
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Emailer
-import Tickler.Server.Looper.StripeEventsFetcher
 import Tickler.Server.Looper.TriggeredEmailConverter
 import Tickler.Server.Looper.TriggeredEmailScheduler
 import Tickler.Server.Looper.TriggeredIntrayItemScheduler
@@ -125,12 +124,6 @@ runTicklerLoopers pool Settings {..} = do
                     adminNotificationEmailConverterSetToName = "Tickler Admin",
                     adminNotificationEmailConverterSetWebHost = webHost
                   }
-        ],
-        [ mkLooperDef
-            "StripeEventsFetcher"
-            (monetisationSetStripeEventsFetcher ms)
-            (runStripeEventsFetcher (monetisationSetStripeSettings ms))
-          | ms <- maybeToList setMonetisationSettings
         ]
       ]
 

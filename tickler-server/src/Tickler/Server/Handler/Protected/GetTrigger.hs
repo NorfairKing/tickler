@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Handler.Protected.GetTrigger where
 
@@ -15,7 +14,7 @@ import Tickler.Server.Handler.Utils
 import Tickler.Server.Types
 
 serveGetTrigger :: AuthCookie -> TriggerUUID -> TicklerHandler TriggerInfo
-serveGetTrigger AuthCookie {..} uuid = do
+serveGetTrigger _ uuid = do
   mit <- fmap (makeIntrayTriggerInfo . entityVal) <$> runDb (getBy $ UniqueIntrayTrigger uuid)
   case mit of
     Nothing -> do

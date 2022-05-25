@@ -46,39 +46,37 @@ sendTriggeredIntrayItem (Entity tii TriggeredIntrayItem {..}) = do
       case mi of
         Nothing -> logErrorN "Triggered item does not exist anymore."
         Just (Entity _ TriggeredItem {..}) -> do
-          let env = ClientEnv man intrayTriggerUrl Nothing
-          errOrUuid <-
-            liftIO $
-              flip runClientM env $
-                do
-                  let loginForm =
-                        Intray.LoginForm
-                          { Intray.loginFormUsername = intrayTriggerUsername,
-                            Intray.loginFormPassword =
-                              Intray.accessKeySecretText intrayTriggerAccessKey
-                          }
-                  res <- Intray.clientPostLogin loginForm
-                  case res of
-                    Headers Intray.NoContent (HCons sessionHeader HNil) ->
-                      case sessionHeader of
-                        MissingHeader -> pure $ Left "Login should return a session header"
-                        UndecodableHeader _ ->
-                          pure $ Left "Login should return a decodable session header"
-                        Header setCookieText -> do
-                          let cookies = parseSetCookie . TE.encodeUtf8 <$> T.lines setCookieText
-                              jwtCookie = find ((== "JWT-Cookie") . setCookieName) cookies
-                          case jwtCookie of
-                            Nothing ->
-                              pure $
-                                Left "No JWT-Cookie was found in the Set-Cookie session header."
-                            Just session -> do
-                              let token = Token $ setCookieValue session
-                              let item =
-                                    Intray.TypedItem
-                                      { Intray.itemType = Intray.TextItem,
-                                        Intray.itemData = TE.encodeUtf8 triggeredItemContents
-                                      }
-                              Right <$> Intray.clientPostAddItem token item
+          let env = mkClientEnv man intrayTriggerUrl
+          errOrUuid <- liftIO $
+            flip runClientM env $ do
+              let loginForm =
+                    Intray.LoginForm
+                      { Intray.loginFormUsername = intrayTriggerUsername,
+                        Intray.loginFormPassword =
+                          Intray.accessKeySecretText intrayTriggerAccessKey
+                      }
+              res <- Intray.clientPostLogin loginForm
+              case res of
+                Headers Intray.NoContent (HCons sessionHeader HNil) ->
+                  case sessionHeader of
+                    MissingHeader -> pure $ Left "Login should return a session header"
+                    UndecodableHeader _ ->
+                      pure $ Left "Login should return a decodable session header"
+                    Header setCookieText -> do
+                      let cookies = parseSetCookie . TE.encodeUtf8 <$> T.lines setCookieText
+                          jwtCookie = find ((== "JWT-Cookie") . setCookieName) cookies
+                      case jwtCookie of
+                        Nothing ->
+                          pure $
+                            Left "No JWT-Cookie was found in the Set-Cookie session header."
+                        Just session -> do
+                          let token = Token $ setCookieValue session
+                          let item =
+                                Intray.TypedItem
+                                  { Intray.itemType = Intray.TextItem,
+                                    Intray.itemData = TE.encodeUtf8 triggeredItemContents
+                                  }
+                          Right <$> Intray.clientPostAddItem token item
           case errOrUuid of
             Left (ConnectionError err) -> do
               logErrorN $

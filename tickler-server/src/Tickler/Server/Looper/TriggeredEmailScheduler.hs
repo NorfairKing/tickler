@@ -8,7 +8,7 @@ where
 import Conduit
 import qualified Data.Conduit.Combinators as C
 import qualified Data.Text as T
-import Database.Esqueleto
+import Database.Esqueleto.Legacy
 import Import
 import Tickler.Data
 import Tickler.Server.Looper.DB

@@ -46,6 +46,7 @@ library:
   - resource-pool
   - resourcet
   - retry
+  - servant
   - servant-auth-client
   - servant-auth-server
   - servant-client

@@ -34,13 +34,13 @@ data AdminNotificationEmailConverterSettings = AdminNotificationEmailConverterSe
   deriving (Show)
 
 runAdminNotificationEmailConverter :: AdminNotificationEmailConverterSettings -> Looper ()
-runAdminNotificationEmailConverter vecs@AdminNotificationEmailConverterSettings {..} = do
+runAdminNotificationEmailConverter vecs = do
   acqAdminEmailSource <- runDb $ selectSourceRes [AdminNotificationEmailEmail ==. Nothing] []
   withAcquire acqAdminEmailSource $ \adminEmailSource ->
     runConduit $ adminEmailSource .| C.mapM_ (convertAdminEmail vecs)
 
 convertAdminEmail :: AdminNotificationEmailConverterSettings -> Entity AdminNotificationEmail -> Looper ()
-convertAdminEmail vecs (Entity vid ve@AdminNotificationEmail {..}) = do
+convertAdminEmail vecs (Entity vid ve) = do
   logInfoN $ T.pack $ unwords ["Converting admin notification email to email:", show vid]
   e <- makeAdminNotificationEmail vecs ve undefined
   runDb $ do
@@ -52,7 +52,7 @@ makeAdminNotificationEmail ::
   AdminNotificationEmail ->
   Render Text ->
   Looper Email
-makeAdminNotificationEmail vecs@AdminNotificationEmailConverterSettings {..} ve@AdminNotificationEmail {..} render = do
+makeAdminNotificationEmail vecs@AdminNotificationEmailConverterSettings {..} ve render = do
   now <- liftIO getCurrentTime
   pure
     Email

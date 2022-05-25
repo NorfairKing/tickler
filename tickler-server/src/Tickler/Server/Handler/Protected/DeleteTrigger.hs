@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Handler.Protected.DeleteTrigger
   ( serveDeleteTrigger,
@@ -15,13 +14,13 @@ import Tickler.Server.Handler.Utils
 import Tickler.Server.Types
 
 serveDeleteTrigger :: AuthCookie -> TriggerUUID -> TicklerHandler NoContent
-serveDeleteTrigger AuthCookie {..} uuid = do
+serveDeleteTrigger _ uuid = do
   ment1 <- runDb $ getBy $ UniqueIntrayTrigger uuid
   case ment1 of
     Nothing -> do
       ment2 <- runDb $ getBy $ UniqueEmailTrigger uuid
       case ment2 of
-        Nothing -> throwAll err404 {errBody = "Trigger not found."}
+        Nothing -> throwAll err404
         Just (Entity i _) -> runDb $ delete i
     Just (Entity i _) -> runDb $ delete i
   pure NoContent

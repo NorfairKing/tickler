@@ -40,11 +40,11 @@ data Flags = Flags
   deriving (Show, Eq)
 
 data MonetisationFlags = MonetisationFlags
-  { monetisationFlagStripePlan :: !(Maybe String),
-    monetisationFlagStripeSecretKey :: !(Maybe String),
-    monetisationFlagStripePublishableKey :: !(Maybe String),
-    monetisationFlagLooperStripeEventsFetcher :: LooperFlags,
-    monetisationFlagMaxItemsFree :: !(Maybe Int)
+  { monetisationFlagStripePlan :: !(Maybe Text),
+    monetisationFlagStripeSecretKey :: !(Maybe Text),
+    monetisationFlagStripePublishableKey :: !(Maybe Text),
+    monetisationFlagMaxItemsFree :: !(Maybe Int),
+    monetisationFlagPrice :: !(Maybe Text)
   }
   deriving (Show, Eq)
 
@@ -146,11 +146,11 @@ configurationObjectCodec =
       .= confAdminNotificationEmailConverterConf
 
 data MonetisationConfiguration = MonetisationConfiguration
-  { monetisationConfStripePlan :: !(Maybe String),
-    monetisationConfStripeSecretKey :: !(Maybe String),
-    monetisationConfStripePulishableKey :: !(Maybe String),
-    monetisationConfLooperStripeEventsFetcher :: !(Maybe LooperConfiguration),
-    monetisationConfMaxItemsFree :: !(Maybe Int)
+  { monetisationConfStripePlan :: !(Maybe Text),
+    monetisationConfStripeSecretKey :: !(Maybe Text),
+    monetisationConfStripePulishableKey :: !(Maybe Text),
+    monetisationConfMaxItemsFree :: !(Maybe Int),
+    monetisationConfPrice :: !(Maybe Text)
   }
   deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec MonetisationConfiguration)
@@ -172,13 +172,10 @@ instance HasCodec MonetisationConfiguration where
           "The publishable key for calling the stripe api"
           .= monetisationConfStripePulishableKey
         <*> optionalField
-          "stripe-events-fetcher"
-          "The configuration for the stripe events fetcher"
-          .= monetisationConfLooperStripeEventsFetcher
-        <*> optionalField
           "max-items-free"
           "The number of items a free user can have on the server"
           .= monetisationConfMaxItemsFree
+        <*> optionalFieldOrNull "price" "A string description of the price" .= monetisationConfPrice
 
 data Environment = Environment
   { envConfigFile :: Maybe FilePath,
@@ -203,11 +200,11 @@ data Environment = Environment
   deriving (Show, Eq)
 
 data MonetisationEnvironment = MonetisationEnvironment
-  { monetisationEnvStripePlan :: !(Maybe String),
-    monetisationEnvStripeSecretKey :: !(Maybe String),
-    monetisationEnvStripePulishableKey :: !(Maybe String),
-    monetisationEnvLooperStripeEventsFetcher :: LooperEnvironment,
-    monetisationEnvMaxItemsFree :: !(Maybe Int)
+  { monetisationEnvStripePlan :: !(Maybe Text),
+    monetisationEnvStripeSecretKey :: !(Maybe Text),
+    monetisationEnvStripePulishableKey :: !(Maybe Text),
+    monetisationEnvMaxItemsFree :: !(Maybe Int),
+    monetisationEnvPrice :: !(Maybe Text)
   }
   deriving (Show, Eq)
 
@@ -236,8 +233,8 @@ data Settings = Settings
 
 data MonetisationSettings = MonetisationSettings
   { monetisationSetStripeSettings :: !StripeSettings,
-    monetisationSetStripeEventsFetcher :: !LooperSettings,
-    monetisationSetMaxItemsFree :: !Int
+    monetisationSetMaxItemsFree :: !Int,
+    monetisationSetPrice :: !Text
   }
   deriving (Show)
 

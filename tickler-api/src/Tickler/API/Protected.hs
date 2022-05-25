@@ -270,7 +270,7 @@ type PostEmailTriggerVerify =
     :> Capture "id" TriggerUUID
     :> "verify"
     :> Capture "key" EmailVerificationKey
-    :> Post '[JSON] NoContent
+    :> Verb 'POST 204 '[JSON] NoContent
 
 type PostEmailTriggerResendVerificationEmail =
   ProtectAPI
@@ -278,7 +278,7 @@ type PostEmailTriggerResendVerificationEmail =
     :> "email"
     :> Capture "id" TriggerUUID
     :> "resend"
-    :> Post '[JSON] NoContent
+    :> Verb 'POST 204 '[JSON] NoContent
 
 type DeleteTrigger =
   ProtectAPI
@@ -301,7 +301,7 @@ type GetAccountSettings =
 type PostChangePassphrase =
   ProtectAPI
     :> ReqBody '[JSON] ChangePassphrase
-    :> PostNoContent
+    :> Verb 'POST 204 '[JSON] NoContent
 
 data ChangePassphrase = ChangePassphrase
   { changePassphraseOld :: Text,
