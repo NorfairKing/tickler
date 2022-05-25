@@ -63,7 +63,8 @@ data TicklerProtectedSite route = TicklerProtectedSite
     getAccountSettings :: !(route :- GetAccountSettings),
     postChangePassphrase :: route :- PostChangePassphrase,
     putAccountSettings :: !(route :- PutAccountSettings),
-    deleteAccount :: !(route :- DeleteAccount)
+    deleteAccount :: !(route :- DeleteAccount),
+    postInitiateStripeCheckoutSession :: !(route :- PostInitiateStripeCheckoutSession)
   }
   deriving (Generic)
 
@@ -272,6 +273,15 @@ type PostEmailTriggerVerify =
     :> Capture "key" EmailVerificationKey
     :> Verb 'POST 204 '[JSON] NoContent
 
+instance ToHttpApiData EmailVerificationKey where
+  toUrlPiece = emailVerificationKeyText
+
+instance FromHttpApiData EmailVerificationKey where
+  parseUrlPiece t =
+    case parseEmailVerificationKeyText t of
+      Nothing -> Left "Invalid email verification key"
+      Just evk -> pure evk
+
 type PostEmailTriggerResendVerificationEmail =
   ProtectAPI
     :> "trigger"
@@ -331,11 +341,42 @@ type DeleteAccount =
     :> "account"
     :> Delete '[JSON] NoContent
 
-instance ToHttpApiData EmailVerificationKey where
-  toUrlPiece = emailVerificationKeyText
+type PostInitiateStripeCheckoutSession =
+  ProtectAPI
+    :> "checkout"
+    :> "stripe"
+    :> "session"
+    :> ReqBody '[JSON] InitiateStripeCheckoutSession
+    :> Post '[JSON] InitiatedCheckoutSession
 
-instance FromHttpApiData EmailVerificationKey where
-  parseUrlPiece t =
-    case parseEmailVerificationKeyText t of
-      Nothing -> Left "Invalid email verification key"
-      Just evk -> pure evk
+data InitiateStripeCheckoutSession = InitiateStripeCheckoutSession
+  { initiateStripeCheckoutSessionSuccessUrl :: Text,
+    initiateStripeCheckoutSessionCanceledUrl :: Text
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving (FromJSON, ToJSON) via (Autodocodec InitiateStripeCheckoutSession)
+
+instance Validity InitiateStripeCheckoutSession
+
+instance HasCodec InitiateStripeCheckoutSession where
+  codec =
+    object "InitiateStripeCheckoutSession" $
+      InitiateStripeCheckoutSession
+        <$> requiredField "success" "success url" .= initiateStripeCheckoutSessionSuccessUrl
+        <*> requiredField "canceled" "canceled url" .= initiateStripeCheckoutSessionCanceledUrl
+
+data InitiatedCheckoutSession = InitiatedCheckoutSession
+  { initiatedCheckoutSessionId :: Text,
+    initiatedCheckoutSessionCustomerId :: Maybe Text
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving (FromJSON, ToJSON) via (Autodocodec InitiatedCheckoutSession)
+
+instance Validity InitiatedCheckoutSession
+
+instance HasCodec InitiatedCheckoutSession where
+  codec =
+    object "InitiatedCheckoutSession" $
+      InitiatedCheckoutSession
+        <$> requiredField "session" "session identifier" .= initiatedCheckoutSessionId
+        <*> optionalField "customer" "customer identifier" .= initiatedCheckoutSessionCustomerId

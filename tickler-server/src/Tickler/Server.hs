@@ -124,7 +124,8 @@ ticklerProtectedServer =
       getAccountSettings = withAuthResult serveGetAccountSettings,
       postChangePassphrase = withAuthResult servePostChangePassphrase,
       putAccountSettings = withAuthResult servePutAccountSettings,
-      deleteAccount = withAuthResult serveDeleteAccount
+      deleteAccount = withAuthResult serveDeleteAccount,
+      postInitiateStripeCheckoutSession = withAuthResult servePostInitiateStripeCheckoutSession
     }
 
 ticklerPublicServer :: TicklerPublicSite (AsServerT TicklerHandler)

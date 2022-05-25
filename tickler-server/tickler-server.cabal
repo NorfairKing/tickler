@@ -28,6 +28,7 @@ library
       Tickler.Server.Handler.Admin.GetAccounts
       Tickler.Server.Handler.Admin.GetStats
       Tickler.Server.Handler.Admin.PutAccountSubscription
+      Tickler.Server.Handler.PostInitiateStripeCheckoutSession
       Tickler.Server.Handler.PostStripeHook
       Tickler.Server.Handler.Protected
       Tickler.Server.Handler.Protected.DeleteAccount

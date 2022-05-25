@@ -37,6 +37,7 @@ clientGetAccountSettings :: Token -> ClientM AccountSettings
 clientPostChangePassphrase :: Token -> ChangePassphrase -> ClientM NoContent
 clientPutAccountSettings :: Token -> AccountSettings -> ClientM NoContent
 clientDeleteAccount :: Token -> ClientM NoContent
+clientPostInitiateStripeCheckoutSession :: Token -> InitiateStripeCheckoutSession -> ClientM InitiatedCheckoutSession
 clientPostRegister :: Registration -> ClientM NoContent
 clientPostLogin :: LoginForm -> ClientM (Headers '[Header "Set-Cookie" Text] NoContent)
 clientGetPricing :: ClientM (Maybe Pricing)
@@ -63,6 +64,7 @@ clientGetItems
   :<|> clientPostChangePassphrase
   :<|> clientPutAccountSettings
   :<|> clientDeleteAccount
+  :<|> clientPostInitiateStripeCheckoutSession
   :<|> clientPostRegister
   :<|> clientPostLogin
   :<|> clientGetPricing
