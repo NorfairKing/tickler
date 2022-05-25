@@ -1,5 +1,5 @@
-outputDir: stripe-client
-packageName: stripe-client
+outputDir: tickler-stripe-client
+packageName: tickler-stripe-client
 moduleName: StripeClient
 logLevel: INFO
 force: true
