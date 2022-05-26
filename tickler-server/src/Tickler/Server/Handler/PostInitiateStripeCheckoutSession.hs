@@ -3,7 +3,7 @@
 
 module Tickler.Server.Handler.PostInitiateStripeCheckoutSession
   ( servePostInitiateStripeCheckoutSession,
-    mkMetadata,
+    metadata,
   )
 where
 
@@ -46,7 +46,6 @@ servePostInitiateStripeCheckoutSession AuthCookie {..} iscs = do
           -- Get or create the stripe customer
           customerId <- getOrCreateCustomerId config user
 
-          let metadata = mkMetadata userUsername
           -- Make the request to create a checkout session
           let successUrl = initiateStripeCheckoutSessionSuccessUrl iscs
               cancelUrl = initiateStripeCheckoutSessionCanceledUrl iscs
@@ -89,7 +88,7 @@ getOrCreateCustomerId config User {..} = do
       let postCustomersRequest =
             mkPostCustomersRequestBody
               { postCustomersRequestBodyDescription = Just $ usernameText userUsername,
-                postCustomersRequestBodyMetadata = Just $ PostCustomersRequestBodyMetadata'Object $ mkMetadata userUsername
+                postCustomersRequestBodyMetadata = Just $ PostCustomersRequestBodyMetadata'Object metadata
               }
       resp <- liftIO $ runWithConfiguration config $ postCustomers $ Just postCustomersRequest
       case responseBody resp of
@@ -105,10 +104,9 @@ getOrCreateCustomerId config User {..} = do
                 [StripeCustomerCustomer =. customerId]
           pure customerId
 
-mkMetadata :: Username -> JSON.Object
-mkMetadata username =
+metadata :: JSON.Object
+metadata =
   HM.fromList
     [ ("product", "tickler"),
-      ("tickler-server-version", toJSON $ showVersion version),
-      ("username", toJSON username)
+      ("tickler-server-version", toJSON $ showVersion version)
     ]

@@ -71,6 +71,5 @@ fullfillSubscription subscription = do
           upsertBy
             (UniqueSubscriptionUser uid)
             (Tickler.Subscription {subscriptionUser = uid, subscriptionEnd = end})
-            [ SubscriptionEnd =. end
-            ]
+            [SubscriptionEnd =. end]
     Just otherProduct -> logInfoNS "stripe-hook" $ "Not fulfilling subscription for other product: " <> TE.decodeUtf8 (LB.toStrict (JSON.encodePretty otherProduct))
