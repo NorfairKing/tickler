@@ -1,0 +1,160 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.5.
+--
+-- see: https://github.com/sol/hpack
+
+name:           tickler-server
+version:        0.0.0
+build-type:     Simple
+extra-source-files:
+    templates/email/admin-notification-email.hamlet
+    templates/email/admin-notification-email.txt
+    templates/email/triggered-email.hamlet
+    templates/email/triggered-email.txt
+    templates/email/verification-email.hamlet
+    templates/email/verification-email.txt
+
+library
+  exposed-modules:
+      Import
+      Tickler.Server
+      Tickler.Server.AccountInfo
+      Tickler.Server.Handler
+      Tickler.Server.Handler.Account
+      Tickler.Server.Handler.Admin
+      Tickler.Server.Handler.Admin.DeleteAccount
+      Tickler.Server.Handler.Admin.GetAccount
+      Tickler.Server.Handler.Admin.GetAccounts
+      Tickler.Server.Handler.Admin.GetStats
+      Tickler.Server.Handler.Admin.PutAccountSubscription
+      Tickler.Server.Handler.PostInitiateStripeCheckoutSession
+      Tickler.Server.Handler.PostStripeHook
+      Tickler.Server.Handler.Protected
+      Tickler.Server.Handler.Protected.DeleteAccount
+      Tickler.Server.Handler.Protected.DeleteItem
+      Tickler.Server.Handler.Protected.DeleteTrigger
+      Tickler.Server.Handler.Protected.GetAccountInfo
+      Tickler.Server.Handler.Protected.GetAccountSettings
+      Tickler.Server.Handler.Protected.GetItem
+      Tickler.Server.Handler.Protected.GetItems
+      Tickler.Server.Handler.Protected.GetTrigger
+      Tickler.Server.Handler.Protected.GetTriggers
+      Tickler.Server.Handler.Protected.PostChangePassphrase
+      Tickler.Server.Handler.Protected.PostEmailTrigger
+      Tickler.Server.Handler.Protected.PostEmailTriggerResendVerificationEmail
+      Tickler.Server.Handler.Protected.PostEmailTriggerVerify
+      Tickler.Server.Handler.Protected.PostIntrayTrigger
+      Tickler.Server.Handler.Protected.PostItem
+      Tickler.Server.Handler.Protected.PutAccountSettings
+      Tickler.Server.Handler.Protected.PutItem
+      Tickler.Server.Handler.Public
+      Tickler.Server.Handler.Public.GetPricing
+      Tickler.Server.Handler.Public.PostLogin
+      Tickler.Server.Handler.Public.PostRegister
+      Tickler.Server.Handler.Stripe
+      Tickler.Server.Handler.Trigger
+      Tickler.Server.Handler.Utils
+      Tickler.Server.Item
+      Tickler.Server.Looper
+      Tickler.Server.Looper.AdminNotificationEmailConverter
+      Tickler.Server.Looper.DB
+      Tickler.Server.Looper.Emailer
+      Tickler.Server.Looper.TriggeredEmailConverter
+      Tickler.Server.Looper.TriggeredEmailScheduler
+      Tickler.Server.Looper.TriggeredIntrayItemScheduler
+      Tickler.Server.Looper.TriggeredIntrayItemSender
+      Tickler.Server.Looper.Triggerer
+      Tickler.Server.Looper.Types
+      Tickler.Server.Looper.VerificationEmailConverter
+      Tickler.Server.OptParse
+      Tickler.Server.OptParse.Types
+      Tickler.Server.SigningKey
+      Tickler.Server.Types
+      TicklerServer
+  other-modules:
+      Paths_tickler_server
+  hs-source-dirs:
+      src
+  default-extensions:
+      NoImplicitPrelude
+  ghc-options: -Wall
+  build-depends:
+      aeson
+    , aeson-pretty
+    , amazonka
+    , amazonka-ses
+    , async
+    , autodocodec
+    , autodocodec-yaml
+    , base
+    , blaze-html
+    , bytestring
+    , cache
+    , conduit
+    , cookie
+    , envparse
+    , esqueleto
+    , exceptions
+    , http-client
+    , http-client-tls
+    , intray-client
+    , intray-server
+    , jose
+    , lens
+    , looper
+    , monad-logger
+    , mtl >=2.2
+    , optparse-applicative >=0.13
+    , path
+    , path-io
+    , persistent
+    , persistent-sqlite
+    , pretty-show
+    , resource-pool
+    , resourcet
+    , retry
+    , servant
+    , servant-auth-client
+    , servant-auth-server
+    , servant-client
+    , servant-server
+    , shakespeare
+    , text
+    , tickler-api
+    , tickler-client
+    , tickler-data
+    , tickler-stripe-client
+    , time
+    , typed-uuid
+    , unliftio
+    , unordered-containers
+    , wai
+    , wai-cors
+    , warp >=3.2
+  default-language: Haskell2010
+
+executable tickler-server
+  main-is: Main.hs
+  other-modules:
+      Paths_tickler_server
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base
+    , tickler-server
+  default-language: Haskell2010
+
+test-suite tickler-server-dummy
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Paths_tickler_server
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base
+    , tickler-server
+  default-language: Haskell2010

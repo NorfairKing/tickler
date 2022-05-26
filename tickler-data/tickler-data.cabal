@@ -1,0 +1,58 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.5.
+--
+-- see: https://github.com/sol/hpack
+
+name:           tickler-data
+version:        0.0.0
+build-type:     Simple
+
+library
+  exposed-modules:
+      Import
+      Tickler.Data
+      Tickler.Data.AccountUUID
+      Tickler.Data.DB
+      Tickler.Data.EmailAddress
+      Tickler.Data.EmailStatus
+      Tickler.Data.EmailVerificationKey
+      Tickler.Data.HashedPassword
+      Tickler.Data.ItemUUID
+      Tickler.Data.Recurrence
+      Tickler.Data.Time
+      Tickler.Data.TriggerUUID
+      Tickler.Data.Url
+      Tickler.Data.Username
+      Tickler.Data.UUID
+  other-modules:
+      Paths_tickler_data
+  hs-source-dirs:
+      src
+  default-extensions:
+      NoImplicitPrelude
+  ghc-options: -Wall
+  build-depends:
+      aeson
+    , autodocodec
+    , base >=4.7 && <5
+    , base16-bytestring
+    , bcrypt
+    , bytestring
+    , hashable
+    , http-api-data
+    , intray-data
+    , path-pieces
+    , persistent
+    , persistent-template
+    , random
+    , servant-client-core
+    , text
+    , time
+    , typed-uuid
+    , validity
+    , validity-bytestring
+    , validity-text
+    , validity-time
+    , validity-uuid
+  default-language: Haskell2010

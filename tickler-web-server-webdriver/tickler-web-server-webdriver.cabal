@@ -1,0 +1,80 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.5.
+--
+-- see: https://github.com/sol/hpack
+
+name:           tickler-web-server-webdriver
+version:        0.0.0
+build-type:     Simple
+
+library
+  exposed-modules:
+      Tickler.Web.Server.Webdriver.Add.TestUtils
+      Tickler.Web.Server.Webdriver.Auth.TestUtils
+      Tickler.Web.Server.Webdriver.Delete.TestUtils
+      Tickler.Web.Server.Webdriver.Edit.TestUtils
+      Tickler.Web.Server.Webdriver.TestUtils
+  other-modules:
+      Paths_tickler_web_server_webdriver
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  build-depends:
+      base >=4.9 && <5
+    , mtl
+    , servant-auth-client
+    , sydtest
+    , sydtest-webdriver
+    , sydtest-webdriver-yesod
+    , text
+    , tickler-api
+    , tickler-client
+    , tickler-server-gen
+    , tickler-web-server
+    , tickler-web-server-gen
+    , time
+    , unordered-containers
+    , webdriver
+  default-language: Haskell2010
+
+test-suite tickler-web-server-webdriver-test
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Spec
+      Tickler.Web.Server.Webdriver.AddSpec
+      Tickler.Web.Server.Webdriver.AuthSpec
+      Tickler.Web.Server.Webdriver.DeleteSpec
+      Tickler.Web.Server.Webdriver.EditSpec
+      Tickler.Web.Server.Webdriver.HomeSpec
+      Tickler.Web.Server.Webdriver.TestImport
+      Tickler.Web.Server.Webdriver.TriggerAddEmailSpec
+      Tickler.Web.Server.Webdriver.TriggerAddIntraySpec
+      Paths_tickler_web_server_webdriver
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends:
+      sydtest-discover:sydtest-discover
+  build-depends:
+      base >=4.9 && <5
+    , containers
+    , genvalidity-sydtest
+    , http-client
+    , http-types
+    , intray-client
+    , intray-server-gen
+    , sydtest
+    , sydtest-webdriver
+    , sydtest-webdriver-yesod
+    , text
+    , tickler-api
+    , tickler-client
+    , tickler-server-gen
+    , tickler-web-server
+    , tickler-web-server-gen
+    , tickler-web-server-webdriver
+    , time
+    , webdriver
+  default-language: Haskell2010

@@ -1,0 +1,157 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.5.
+--
+-- see: https://github.com/sol/hpack
+
+name:           tickler-web-server
+version:        0.0.0
+build-type:     Simple
+extra-source-files:
+    routes
+    static/gtd_flowchart.jpg
+    static/favicon.ico
+    static/tom-sydney-kerckhove_faq.svg
+    static/tom-sydney-kerckhove_flowchart-gtd.svg
+    static/tom-sydney-kerckhove_github-icon.svg
+    static/tom-sydney-kerckhove_linkedin-icon.svg
+    static/tom-sydney-kerckhove_logo-tickler.svg
+    static/tom-sydney-kerckhove_tasks.svg
+    static/tom-sydney-kerckhove_thinking.svg
+    static/tom-sydney-kerckhove_tiktok-icon.svg
+    static/tom-sydney-kerckhove_twitter-icon.svg
+    static/tom-sydney-kerckhove_youtube-icon.svg
+    templates/account.hamlet
+    templates/add-email-trigger.hamlet
+    templates/add-intray-trigger.hamlet
+    templates/add.hamlet
+    templates/admin/account.hamlet
+    templates/admin/account/set-subscription.hamlet
+    templates/admin/panel.hamlet
+    templates/auth/change-password.hamlet
+    templates/auth/login.hamlet
+    templates/auth/register.hamlet
+    templates/checkout.hamlet
+    templates/default-body.hamlet
+    templates/default-body.lucius
+    templates/default-page.hamlet
+    templates/email-trigger.hamlet
+    templates/home.hamlet
+    templates/intray-trigger.hamlet
+    templates/item.hamlet
+    templates/item.julius
+    templates/item.lucius
+    templates/stripe-form.hamlet
+    templates/stripe-form.julius
+    templates/tickle.hamlet
+    templates/tickles.hamlet
+    templates/timestamp.hamlet
+    templates/triggers.hamlet
+    templates/with-nav-bar.hamlet
+    templates/with-nav-bar.julius
+
+library
+  exposed-modules:
+      Import
+      Tickler.Web.Server
+      Tickler.Web.Server.Application
+      Tickler.Web.Server.Constants
+      Tickler.Web.Server.Foundation
+      Tickler.Web.Server.Handler
+      Tickler.Web.Server.Handler.Account
+      Tickler.Web.Server.Handler.Add
+      Tickler.Web.Server.Handler.Admin
+      Tickler.Web.Server.Handler.Checkout
+      Tickler.Web.Server.Handler.Delete
+      Tickler.Web.Server.Handler.Edit
+      Tickler.Web.Server.Handler.EmailTriggerResend
+      Tickler.Web.Server.Handler.EmailTriggerVerify
+      Tickler.Web.Server.Handler.Home
+      Tickler.Web.Server.Handler.Item
+      Tickler.Web.Server.Handler.Reload
+      Tickler.Web.Server.Handler.Tickles
+      Tickler.Web.Server.Handler.TriggerAddEmail
+      Tickler.Web.Server.Handler.TriggerAddIntray
+      Tickler.Web.Server.Handler.TriggerDelete
+      Tickler.Web.Server.Handler.Triggers
+      Tickler.Web.Server.OptParse
+      Tickler.Web.Server.OptParse.Types
+      Tickler.Web.Server.Persistence
+      Tickler.Web.Server.Static
+      Tickler.Web.Server.Time
+      Tickler.Web.Server.Widget
+  other-modules:
+      Paths_tickler_web_server
+  hs-source-dirs:
+      src
+  default-extensions:
+      NoImplicitPrelude
+  ghc-options: -Wall
+  build-depends:
+      aeson
+    , aeson-pretty
+    , autodocodec
+    , autodocodec-yaml
+    , base >=4.9 && <5
+    , base16-bytestring
+    , bytestring
+    , cookie
+    , data-default
+    , envparse
+    , http-client
+    , http-client-tls
+    , http-types
+    , intray-data
+    , monad-logger
+    , mtl
+    , optparse-applicative
+    , path
+    , path-io
+    , pretty-relative-time
+    , pretty-show
+    , servant
+    , servant-auth-client
+    , servant-client
+    , servant-client-core
+    , shakespeare
+    , template-haskell
+    , text
+    , tickler-api
+    , tickler-client
+    , tickler-data
+    , tickler-server
+    , time
+    , transformers
+    , typed-uuid
+    , unordered-containers
+    , yesod
+    , yesod-auth
+    , yesod-autoreload
+    , yesod-static
+    , yesod-static-remote
+  default-language: Haskell2010
+
+executable tickler-web-server
+  main-is: Main.hs
+  other-modules:
+      Paths_tickler_web_server
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.9 && <5
+    , tickler-web-server
+  default-language: Haskell2010
+
+test-suite tickler-web-server-dummy-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_tickler_web_server
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.9 && <5
+    , tickler-web-server
+  default-language: Haskell2010
