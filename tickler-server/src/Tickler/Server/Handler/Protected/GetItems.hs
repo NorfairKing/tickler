@@ -15,7 +15,7 @@ import Tickler.Server.Types
 serveGetItems :: AuthCookie -> TicklerHandler [ItemInfo]
 serveGetItems AuthCookie {..} = do
   itemsEnts <-
-    runDb $
+    runDB $
       selectList
         [TicklerItemUserId ==. authCookieUserUUID]
         [Asc TicklerItemCreated]

@@ -35,7 +35,7 @@ data AdminNotificationEmailConverterSettings = AdminNotificationEmailConverterSe
 
 runAdminNotificationEmailConverter :: AdminNotificationEmailConverterSettings -> Looper ()
 runAdminNotificationEmailConverter vecs = do
-  acqAdminEmailSource <- runDb $ selectSourceRes [AdminNotificationEmailEmail ==. Nothing] []
+  acqAdminEmailSource <- runDB $ selectSourceRes [AdminNotificationEmailEmail ==. Nothing] []
   withAcquire acqAdminEmailSource $ \adminEmailSource ->
     runConduit $ adminEmailSource .| C.mapM_ (convertAdminEmail vecs)
 
@@ -43,7 +43,7 @@ convertAdminEmail :: AdminNotificationEmailConverterSettings -> Entity AdminNoti
 convertAdminEmail vecs (Entity vid ve) = do
   logInfoN $ T.pack $ unwords ["Converting admin notification email to email:", show vid]
   e <- makeAdminNotificationEmail vecs ve undefined
-  runDb $ do
+  runDB $ do
     eid <- insert e
     update vid [AdminNotificationEmailEmail =. Just eid]
 

@@ -17,7 +17,7 @@ import Tickler.Server.Types
 
 serveGetAccountSettings :: AuthCookie -> TicklerHandler AccountSettings
 serveGetAccountSettings AuthCookie {..} = do
-  mSets <- runDb $ getBy $ UniqueUserSettings authCookieUserUUID
+  mSets <- runDB $ getBy $ UniqueUserSettings authCookieUserUUID
   pure $
     case mSets of
       Nothing -> defaultAccountSettings

@@ -17,7 +17,7 @@ import Tickler.Server.Types
 
 serveAdminDeleteAccount :: AuthCookie -> Username -> TicklerHandler NoContent
 serveAdminDeleteAccount AuthCookie {..} username = withAdminCreds authCookieUserUUID $ do
-  mUserEntity <- runDb $ getBy $ UniqueUsername username
+  mUserEntity <- runDB $ getBy $ UniqueUsername username
   case mUserEntity of
     Nothing -> throwError err404
     Just (Entity _ User {..}) -> do

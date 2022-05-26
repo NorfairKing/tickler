@@ -18,7 +18,7 @@ import Tickler.Server.Types
 
 serveGetItem :: AuthCookie -> ItemUUID -> TicklerHandler ItemInfo
 serveGetItem AuthCookie {..} id_ = do
-  mIItem <- runDb $ getBy $ UniqueItemIdentifier authCookieUserUUID id_
+  mIItem <- runDB $ getBy $ UniqueItemIdentifier authCookieUserUUID id_
   case mIItem of
     Nothing -> throwError err404
     Just item -> pure $ makeTicklerItemInfo $ entityVal item

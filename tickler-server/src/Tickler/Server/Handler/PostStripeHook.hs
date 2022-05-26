@@ -55,7 +55,7 @@ fullfillSubscription subscription = do
         SubscriptionCustomer'DeletedCustomer _ -> throwError err400 {errBody = "Customer in subscription was a deleted customer."}
 
       -- Try to find the corresponding stripe customer so that we can figure out the user that this subscription belongs to
-      mStripeCustomer <- runDb $ selectFirst [StripeCustomerCustomer ==. customerId_] [Desc StripeCustomerId]
+      mStripeCustomer <- runDB $ selectFirst [StripeCustomerCustomer ==. customerId_] [Desc StripeCustomerId]
       uid <- case mStripeCustomer of
         Nothing -> throwError err404 {errBody = LB.fromStrict $ TE.encodeUtf8 $ "No stripe customer with this id found in the database: " <> customerId_}
         Just (Entity _ sc) -> pure $ stripeCustomerUser sc
@@ -67,7 +67,7 @@ fullfillSubscription subscription = do
 
       let end = posixSecondsToUTCTime $ fromIntegral endtime
       void $
-        runDb $
+        runDB $
           upsertBy
             (UniqueSubscriptionUser uid)
             (Tickler.Subscription {subscriptionUser = uid, subscriptionEnd = end})

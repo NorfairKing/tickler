@@ -19,7 +19,7 @@ import Tickler.Server.Types
 
 serveGetAccountInfo :: AuthCookie -> TicklerHandler AccountInfo
 serveGetAccountInfo AuthCookie {..} = do
-  mUser <- runDb $ getBy $ UniqueUserIdentifier authCookieUserUUID
+  mUser <- runDB $ getBy $ UniqueUserIdentifier authCookieUserUUID
   case mUser of
     Nothing -> throwError err404 {errBody = "User not found."}
     Just (Entity _ u) -> getUserAccountInfo u

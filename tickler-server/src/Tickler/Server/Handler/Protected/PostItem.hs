@@ -30,5 +30,5 @@ servePostItem AuthCookie {..} ti = do
     goAhead = do
       now <- liftIO getCurrentTime
       uuid <- liftIO nextRandomUUID
-      runDb $ insert_ $ makeTicklerItem authCookieUserUUID uuid now ti
+      runDB $ insert_ $ makeTicklerItem authCookieUserUUID uuid now ti
       pure uuid

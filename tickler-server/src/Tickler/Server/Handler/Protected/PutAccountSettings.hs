@@ -18,7 +18,7 @@ import Tickler.Server.Types
 servePutAccountSettings :: AuthCookie -> AccountSettings -> TicklerHandler NoContent
 servePutAccountSettings AuthCookie {..} AccountSettings {..} = do
   void $
-    runDb $
+    runDB $
       upsert
         UserSettings
           { userSettingsUserId = authCookieUserUUID,

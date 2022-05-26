@@ -1,5 +1,5 @@
 module Tickler.Server.Looper.DB
-  ( runDb,
+  ( runDB,
   )
 where
 
@@ -9,8 +9,8 @@ import Import
 import Tickler.Server.Looper.Types
 import UnliftIO.Resource
 
-runDb :: SqlPersistT (LoggingT (ResourceT IO)) b -> Looper b
-runDb query = do
+runDB :: SqlPersistT (LoggingT (ResourceT IO)) b -> Looper b
+runDB query = do
   pool <- asks looperEnvPool
   logFunc <- askLoggerIO
   liftIO $ runResourceT $ runLoggingT (runSqlPool query pool) logFunc

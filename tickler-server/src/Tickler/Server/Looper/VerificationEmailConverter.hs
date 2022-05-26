@@ -36,7 +36,7 @@ data VerificationEmailConverterSettings = VerificationEmailConverterSettings
 
 runVerificationEmailConverter :: VerificationEmailConverterSettings -> Looper ()
 runVerificationEmailConverter vecs = do
-  acqVerificationEmailSource <- runDb $ selectSourceRes [VerificationEmailEmail ==. Nothing] []
+  acqVerificationEmailSource <- runDB $ selectSourceRes [VerificationEmailEmail ==. Nothing] []
   withAcquire acqVerificationEmailSource $ \verificationEmailSource ->
     runConduit $ verificationEmailSource .| C.mapM_ (convertVerificationEmail vecs)
 
@@ -44,7 +44,7 @@ convertVerificationEmail :: VerificationEmailConverterSettings -> Entity Verific
 convertVerificationEmail vecs (Entity vid ve) = do
   logInfoN $ T.pack $ unwords ["Converting verification email to email:", show vid]
   email <- makeVerificationEmail vecs ve
-  runDb $ do
+  runDB $ do
     emailId <- insert email
     update vid [VerificationEmailEmail =. Just emailId]
 

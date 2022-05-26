@@ -41,7 +41,7 @@ runTicklerLoopers pool Settings {..} = do
               retryPolicyDefault
               ( skipAsyncExceptions
                   ++ [ \_ -> Catch.Handler $ \(se :: SomeException) -> do
-                         runDb $
+                         runDB $
                            insert_
                              AdminNotificationEmail
                                { adminNotificationEmailEmail = Nothing,

@@ -18,7 +18,7 @@ servePostEmailTrigger AuthCookie {..} AddEmailTrigger {..} = do
   now <- liftIO getCurrentTime
   uuid <- liftIO nextRandomUUID
   verificationKey <- liftIO generateRandomVerificationKey
-  runDb $ do
+  runDB $ do
     insert_
       EmailTrigger
         { emailTriggerUser = authCookieUserUUID,

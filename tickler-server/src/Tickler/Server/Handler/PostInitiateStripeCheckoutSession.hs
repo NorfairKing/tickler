@@ -41,7 +41,7 @@ servePostInitiateStripeCheckoutSession AuthCookie {..} iscs = do
             Stripe.defaultConfiguration
               { configSecurityScheme = bearerAuthenticationSecurityScheme stripeSetSecretKey
               }
-      mAccount <- runDb $ getBy $ UniqueUserIdentifier authCookieUserUUID
+      mAccount <- runDB $ getBy $ UniqueUserIdentifier authCookieUserUUID
       case mAccount of
         Nothing -> throwError err404 {errBody = "User not found."}
         Just (Entity _ user@User {..}) -> do
@@ -84,7 +84,7 @@ mkPostCheckoutSessionsRequestBodyForUser InitiateStripeCheckoutSession {..} user
 
 getOrCreateCustomerId :: Stripe.Configuration -> User -> TicklerHandler Text
 getOrCreateCustomerId config User {..} = do
-  mStripeCustomer <- runDb $ selectFirst [StripeCustomerUser ==. userIdentifier] [Desc StripeCustomerId]
+  mStripeCustomer <- runDB $ selectFirst [StripeCustomerUser ==. userIdentifier] [Desc StripeCustomerId]
   case mStripeCustomer of
     Just (Entity _ sce) -> pure $ stripeCustomerCustomer sce
     Nothing -> do
@@ -96,7 +96,7 @@ getOrCreateCustomerId config User {..} = do
         PostCustomersResponse200 Customer {..} -> do
           -- Keep track of it in our database for later
           _ <-
-            runDb $
+            runDB $
               upsertBy
                 (UniqueStripeCustomer userIdentifier customerId)
                 (StripeCustomer {stripeCustomerUser = userIdentifier, stripeCustomerCustomer = customerId})

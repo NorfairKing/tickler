@@ -30,7 +30,7 @@ runTriggerer = do
       -- and another because timezones.
       inTwoDays = addDays 2 nowDay
   acqItemsToConsiderSource <-
-    runDb $
+    runDB $
       selectSourceRes
         [TicklerItemScheduledDay <=. inTwoDays]
         [Asc TicklerItemScheduledDay, Asc TicklerItemScheduledTime]
@@ -39,7 +39,7 @@ runTriggerer = do
 
 considerTicklerItem :: Entity TicklerItem -> Looper ()
 considerTicklerItem e@(Entity _ ti@TicklerItem {..}) =
-  runDb $ do
+  runDB $ do
     logDebugN $ T.pack $ "Considering triggering item with id " <> uuidString ticklerItemIdentifier
     now <- liftIO getCurrentTime
     mSets <- getBy $ UniqueUserSettings ticklerItemUserId

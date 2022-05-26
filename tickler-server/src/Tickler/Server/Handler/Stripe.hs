@@ -24,7 +24,7 @@ getUserPaidStatus userId = do
   case mss of
     Nothing -> pure NoPaymentNecessary
     Just MonetisationSettings {..} -> do
-      mu <- runDb $ getBy $ UniqueUserIdentifier userId
+      mu <- runDB $ getBy $ UniqueUserIdentifier userId
       case mu of
         Nothing -> throwAll err404
         Just (Entity _ User {..}) -> do
@@ -40,8 +40,8 @@ getUserPaidStatus userId = do
                   case mSub of
                     Just u -> pure $ HasPaid u
                     Nothing -> do
-                      c <- runDb $ count [TicklerItemUserId ==. userId]
+                      c <- runDB $ count [TicklerItemUserId ==. userId]
                       pure $ HasNotPaid (monetisationSetMaxItemsFree - c)
 
 hasSubscribed :: AccountUUID -> TicklerHandler (Maybe UTCTime)
-hasSubscribed uuid = runDb $ fmap (fmap (subscriptionEnd . entityVal)) $ getBy $ UniqueSubscriptionUser uuid
+hasSubscribed uuid = runDB $ fmap (fmap (subscriptionEnd . entityVal)) $ getBy $ UniqueSubscriptionUser uuid

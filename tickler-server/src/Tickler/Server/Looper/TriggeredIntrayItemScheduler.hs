@@ -27,7 +27,7 @@ runTriggeredIntrayItemScheduler = do
                       &&. (triggeredIntrayItem ^. TriggeredIntrayItemItem ==. triggeredItem ^. TriggeredItemIdentifier)
             pure (triggeredItem, intrayTrigger)
 
-  runDb $ runConduit $ source .| C.mapM_ (uncurry scheduleTriggeredIntrayItemViaIntrayTrigger)
+  runDB $ runConduit $ source .| C.mapM_ (uncurry scheduleTriggeredIntrayItemViaIntrayTrigger)
 
 scheduleTriggeredIntrayItemViaIntrayTrigger :: (MonadIO m, MonadLogger m) => Entity TriggeredItem -> Entity IntrayTrigger -> SqlPersistT m ()
 scheduleTriggeredIntrayItemViaIntrayTrigger (Entity _ ti) (Entity _ it) = do

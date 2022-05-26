@@ -18,8 +18,8 @@ import Tickler.Server.Types
 getUserAccountInfo :: User -> TicklerHandler AccountInfo
 getUserAccountInfo User {..} = do
   admins <- asks envAdmins
-  ticklerItemCount <- runDb $ count [TicklerItemUserId ==. userIdentifier]
-  triggeredItemCount <- runDb $ count [TriggeredItemUserId ==. userIdentifier]
+  ticklerItemCount <- runDB $ count [TicklerItemUserId ==. userIdentifier]
+  triggeredItemCount <- runDB $ count [TriggeredItemUserId ==. userIdentifier]
   ups <- getUserPaidStatus userIdentifier
   pure
     AccountInfo

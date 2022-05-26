@@ -18,7 +18,7 @@ servePostEmailTriggerVerify ::
   AuthCookie -> TriggerUUID -> EmailVerificationKey -> TicklerHandler NoContent
 servePostEmailTriggerVerify AuthCookie {..} tuuid evk = do
   mt <-
-    runDb $
+    runDB $
       selectFirst
         [ EmailTriggerUser ==. authCookieUserUUID,
           EmailTriggerIdentifier ==. tuuid
@@ -28,6 +28,6 @@ servePostEmailTriggerVerify AuthCookie {..} tuuid evk = do
     Nothing -> throwAll err404
     Just (Entity etid EmailTrigger {..}) ->
       if emailTriggerVerificationKey == evk
-        then runDb $ update etid [EmailTriggerVerified =. True]
+        then runDB $ update etid [EmailTriggerVerified =. True]
         else throwAll err400 {errBody = "Incorrect verification key."}
   pure NoContent

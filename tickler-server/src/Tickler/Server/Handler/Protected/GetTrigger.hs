@@ -15,10 +15,10 @@ import Tickler.Server.Types
 
 serveGetTrigger :: AuthCookie -> TriggerUUID -> TicklerHandler TriggerInfo
 serveGetTrigger _ uuid = do
-  mit <- fmap (makeIntrayTriggerInfo . entityVal) <$> runDb (getBy $ UniqueIntrayTrigger uuid)
+  mit <- fmap (makeIntrayTriggerInfo . entityVal) <$> runDB (getBy $ UniqueIntrayTrigger uuid)
   case mit of
     Nothing -> do
-      mit' <- fmap (makeEmailTriggerInfo . entityVal) <$> runDb (getBy $ UniqueEmailTrigger uuid)
+      mit' <- fmap (makeEmailTriggerInfo . entityVal) <$> runDB (getBy $ UniqueEmailTrigger uuid)
       case mit' of
         Nothing -> throwAll err404
         Just ti' -> pure ti'

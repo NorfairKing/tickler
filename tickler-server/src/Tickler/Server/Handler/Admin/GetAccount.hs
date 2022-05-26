@@ -16,7 +16,7 @@ import Tickler.Server.Types
 
 serveAdminGetAccount :: AuthCookie -> Username -> TicklerHandler AccountInfo
 serveAdminGetAccount AuthCookie {..} username = withAdminCreds authCookieUserUUID $ do
-  mUserEntity <- runDb $ getBy $ UniqueUsername username
+  mUserEntity <- runDB $ getBy $ UniqueUsername username
   case mUserEntity of
     Nothing -> throwError err404
     Just (Entity _ user) -> getAccountInfoForUser user

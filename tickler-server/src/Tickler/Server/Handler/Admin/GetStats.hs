@@ -19,12 +19,12 @@ import Tickler.Server.Types
 serveAdminGetStats :: AuthCookie -> TicklerHandler AdminStats
 serveAdminGetStats AuthCookie {..} =
   withAdminCreds authCookieUserUUID $ do
-    adminStatsNbUsers <- fromIntegral <$> runDb (count ([] :: [Filter User]))
-    adminStatsNbTicklerItems <- fromIntegral <$> runDb (count ([] :: [Filter TicklerItem]))
-    adminStatsNbTriggeredItems <- fromIntegral <$> runDb (count ([] :: [Filter TriggeredItem]))
+    adminStatsNbUsers <- fromIntegral <$> runDB (count ([] :: [Filter User]))
+    adminStatsNbTicklerItems <- fromIntegral <$> runDB (count ([] :: [Filter TicklerItem]))
+    adminStatsNbTriggeredItems <- fromIntegral <$> runDB (count ([] :: [Filter TriggeredItem]))
     adminStatsNbSubscribers <-
       do
-        us <- runDb $ selectList [] []
+        us <- runDB $ selectList [] []
         fmap (fromIntegral . length . catMaybes) $
           forM us $
             \(Entity _ u) -> do
@@ -38,7 +38,7 @@ serveAdminGetStats AuthCookie {..} =
     let day :: NominalDiffTime
         day = 86400
     let activeUsers time =
-          fmap fromIntegral $ runDb $ count [UserLastLogin >=. Just (addUTCTime (-time) now)]
+          fmap fromIntegral $ runDB $ count [UserLastLogin >=. Just (addUTCTime (-time) now)]
     activeUsersDaily <- activeUsers day
     activeUsersWeekly <- activeUsers $ 7 * day
     activeUsersMonthly <- activeUsers $ 30 * day

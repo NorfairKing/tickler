@@ -37,9 +37,9 @@ servePostRegister Registration {..} = do
                 userCreated = now,
                 userLastLogin = Nothing
               }
-      maybeUserEntity <- runDb . getBy $ UniqueUsername $ userUsername user
+      maybeUserEntity <- runDB . getBy $ UniqueUsername $ userUsername user
       case maybeUserEntity of
-        Nothing -> runDb $ insert_ user
+        Nothing -> runDB $ insert_ user
         Just _ ->
           throwError
             err409

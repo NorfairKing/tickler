@@ -29,14 +29,14 @@ data EmailerSettings = EmailerSettings
 
 runEmailer :: EmailerSettings -> Looper ()
 runEmailer EmailerSettings {..} = do
-  acqEmailsToSendSource <- runDb $ selectSourceRes [EmailStatus ==. EmailUnsent] [Asc EmailScheduled]
+  acqEmailsToSendSource <- runDB $ selectSourceRes [EmailStatus ==. EmailUnsent] [Asc EmailScheduled]
   withAcquire acqEmailsToSendSource $ \emailsToSendSource -> do
     runConduit $ emailsToSendSource .| C.mapM_ (handleSingleEmail emailerSetAWSCredentials)
 
 handleSingleEmail :: AWS.Credentials -> Entity Email -> Looper ()
 handleSingleEmail awsCreds (Entity emailId email) = do
   logInfoN $ T.pack $ unwords ["Sending email email:", show $ fromSqlKey emailId]
-  runDb $ do
+  runDB $ do
     newStatus <- liftIO $ sendSingleEmail awsCreds email
     now <- liftIO getCurrentTime
     update emailId $

@@ -14,5 +14,5 @@ import Tickler.Server.Types
 
 serveAdminGetAccounts :: AuthCookie -> TicklerHandler [AccountInfo]
 serveAdminGetAccounts AuthCookie {..} = withAdminCreds authCookieUserUUID $ do
-  users <- runDb $ selectList [] [Desc UserLastLogin]
+  users <- runDB $ selectList [] [Desc UserLastLogin]
   forM users $ \(Entity _ user) -> getAccountInfoForUser user

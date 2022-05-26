@@ -15,12 +15,12 @@ import Tickler.Server.Types
 
 serveDeleteTrigger :: AuthCookie -> TriggerUUID -> TicklerHandler NoContent
 serveDeleteTrigger _ uuid = do
-  ment1 <- runDb $ getBy $ UniqueIntrayTrigger uuid
+  ment1 <- runDB $ getBy $ UniqueIntrayTrigger uuid
   case ment1 of
     Nothing -> do
-      ment2 <- runDb $ getBy $ UniqueEmailTrigger uuid
+      ment2 <- runDB $ getBy $ UniqueEmailTrigger uuid
       case ment2 of
         Nothing -> throwAll err404
-        Just (Entity i _) -> runDb $ delete i
-    Just (Entity i _) -> runDb $ delete i
+        Just (Entity i _) -> runDB $ delete i
+    Just (Entity i _) -> runDB $ delete i
   pure NoContent

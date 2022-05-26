@@ -30,7 +30,7 @@ runTriggeredEmailScheduler = do
                       &&. (triggeredEmail ^. TriggeredEmailItem ==. triggeredItem ^. TriggeredItemIdentifier)
             pure (triggeredItem, emailTrigger)
 
-  runDb $ runConduit $ source .| C.mapM_ (uncurry scheduleTriggeredEmailWithEmailTrigger)
+  runDB $ runConduit $ source .| C.mapM_ (uncurry scheduleTriggeredEmailWithEmailTrigger)
 
 scheduleTriggeredEmailWithEmailTrigger :: (MonadIO m, MonadLogger m) => Entity TriggeredItem -> Entity EmailTrigger -> SqlPersistT m ()
 scheduleTriggeredEmailWithEmailTrigger (Entity _ ti) (Entity _ EmailTrigger {..}) = do

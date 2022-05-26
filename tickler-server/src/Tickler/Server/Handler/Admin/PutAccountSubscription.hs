@@ -12,12 +12,12 @@ import Tickler.Server.Types
 
 serveAdminPutAccountSubscription :: AuthCookie -> Username -> UTCTime -> TicklerHandler NoContent
 serveAdminPutAccountSubscription AuthCookie {..} username end = withAdminCreds authCookieUserUUID $ do
-  mUserEntity <- runDb $ getBy (UniqueUsername username)
+  mUserEntity <- runDB $ getBy (UniqueUsername username)
   case mUserEntity of
     Nothing -> throwError err404
     Just (Entity _ user) ->
       let uuid = userIdentifier user
-       in runDb $
+       in runDB $
             void $
               upsertBy
                 (UniqueSubscriptionUser uuid)

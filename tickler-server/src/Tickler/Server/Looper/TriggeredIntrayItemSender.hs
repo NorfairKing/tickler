@@ -28,7 +28,7 @@ import Web.Cookie
 runTriggeredIntrayItemSender :: Looper ()
 runTriggeredIntrayItemSender = do
   acqTriggeredIntrayItemSource <-
-    runDb $
+    runDB $
       selectSourceRes
         [TriggeredIntrayItemIntrayItemUUID ==. Nothing, TriggeredIntrayItemError ==. Nothing]
         []
@@ -37,12 +37,12 @@ runTriggeredIntrayItemSender = do
 
 sendTriggeredIntrayItem :: Entity TriggeredIntrayItem -> Looper ()
 sendTriggeredIntrayItem (Entity tii TriggeredIntrayItem {..}) = do
-  mtrig <- runDb $ getBy $ UniqueIntrayTrigger triggeredIntrayItemTrigger
+  mtrig <- runDB $ getBy $ UniqueIntrayTrigger triggeredIntrayItemTrigger
   case mtrig of
     Nothing -> logErrorN "Trigger does not exist anymore."
     Just (Entity _ IntrayTrigger {..}) -> do
       man <- liftIO $ Http.newManager Http.tlsManagerSettings
-      mi <- runDb $ getBy $ UniqueTriggeredItemIdentifier triggeredIntrayItemItem
+      mi <- runDB $ getBy $ UniqueTriggeredItemIdentifier triggeredIntrayItemItem
       case mi of
         Nothing -> logErrorN "Triggered item does not exist anymore."
         Just (Entity _ TriggeredItem {..}) -> do
@@ -82,16 +82,16 @@ sendTriggeredIntrayItem (Entity tii TriggeredIntrayItem {..}) = do
               logErrorN $
                 T.pack $
                   unwords ["Failed to add item to intray:", show err]
-              runDb $ update tii [TriggeredIntrayItemError =. Just (T.pack (show err))]
+              runDB $ update tii [TriggeredIntrayItemError =. Just (T.pack (show err))]
             Left err -> do
               logErrorN $
                 T.pack $
                   unwords ["Failed to add item to intray:", show err]
-              runDb $ update tii [TriggeredIntrayItemError =. Just (T.pack (show err))]
+              runDB $ update tii [TriggeredIntrayItemError =. Just (T.pack (show err))]
             Right (Left err) -> do
               logErrorN $
                 T.pack $
                   unwords ["The intray server did something wrong:", err]
-              runDb $ update tii [TriggeredIntrayItemError =. Just (T.pack err)]
+              runDB $ update tii [TriggeredIntrayItemError =. Just (T.pack err)]
             Right (Right uuid) ->
-              runDb $ update tii [TriggeredIntrayItemIntrayItemUUID =. Just uuid]
+              runDB $ update tii [TriggeredIntrayItemIntrayItemUUID =. Just uuid]

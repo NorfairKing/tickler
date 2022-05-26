@@ -37,20 +37,20 @@ data TriggeredEmailConverterSettings = TriggeredEmailConverterSettings
 
 runTriggeredEmailConverter :: TriggeredEmailConverterSettings -> Looper ()
 runTriggeredEmailConverter tess = do
-  acqTriggeredEmailSource <- runDb $ selectSourceRes [TriggeredEmailEmail ==. Nothing] []
+  acqTriggeredEmailSource <- runDB $ selectSourceRes [TriggeredEmailEmail ==. Nothing] []
   withAcquire acqTriggeredEmailSource $ \triggeredEmailSource -> do
     runConduit $ triggeredEmailSource .| C.mapM_ (convertTriggeredEmail tess)
 
 convertTriggeredEmail :: TriggeredEmailConverterSettings -> Entity TriggeredEmail -> Looper ()
 convertTriggeredEmail tess (Entity tid TriggeredEmail {..}) = do
-  meti <- runDb $ getBy $ UniqueTriggeredItemIdentifier triggeredEmailItem
-  meet <- runDb $ getBy $ UniqueEmailTrigger triggeredEmailTrigger
+  meti <- runDB $ getBy $ UniqueTriggeredItemIdentifier triggeredEmailItem
+  meet <- runDB $ getBy $ UniqueEmailTrigger triggeredEmailTrigger
   case (,) <$> meti <*> meet of
     Nothing -> pure ()
     Just (Entity _ ti, Entity _ et) -> do
       logInfoN $ T.pack $ unwords ["Converting triggered email to email:", show tid]
       email <- makeTriggeredEmail tess et ti
-      runDb $ do
+      runDB $ do
         emailId <- insert email
         update tid [TriggeredEmailEmail =. Just emailId]
 
