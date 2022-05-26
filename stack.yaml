@@ -11,14 +11,14 @@ packages:
 - tickler-web-server-gen
 - tickler-web-server-webdriver
 
-- stripe-client # Intray
+- intray-stripe-client
 - tickler-stripe-client
 
 # These are duplicated in nix/overlay.nix 
 ghc-options:
   "$locals": -Wall -Wincomplete-uni-patterns -Wincomplete-record-updates -Wpartial-fields -Widentities -Wredundant-constraints -Wcpp-undef
+  intray-stripe-client: -w # Turn off warnings for the generated code.
   tickler-stripe-client: -w # Turn off warnings for the generated code.
-  stripe-client: -w # Turn off warnings for the generated code.
 
 extra-deps:
 - amazonka-1.6.1@sha256:f58b63e83876f93aa03c54e54b3eb8ba9358af93819d41f4a5a8f8b7d8b8399c,3544
@@ -29,7 +29,7 @@ extra-deps:
 
 
 - github: NorfairKing/intray
-  commit: 98e3dad0c1ff7b5ef8c1db636b02511148c51198
+  commit: be749bd66a5d9859826b4854bf9d1da5f15e3517
   subdirs:
     - intray-data
     - intray-data-gen

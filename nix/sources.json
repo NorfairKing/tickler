@@ -41,10 +41,10 @@
         "homepage": "https://intray.eu",
         "owner": "NorfairKing",
         "repo": "intray",
-        "rev": "98e3dad0c1ff7b5ef8c1db636b02511148c51198",
-        "sha256": "0di37i01x2y3x9wy2jdj4c8fp7clz0azrwrcwsha336yyzkabsg7",
+        "rev": "be749bd66a5d9859826b4854bf9d1da5f15e3517",
+        "sha256": "1x4399bx046mxrhi6k4ig0rcpq72wdgc89ddv46k7iw96sikqfqk",
         "type": "tarball",
-        "url": "https://github.com/NorfairKing/intray/archive/98e3dad0c1ff7b5ef8c1db636b02511148c51198.tar.gz",
+        "url": "https://github.com/NorfairKing/intray/archive/be749bd66a5d9859826b4854bf9d1da5f15e3517.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "looper": {
@@ -89,10 +89,10 @@
         "homepage": "",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "cbd40c72b2603ab54e7208f99f9b35fc158bc009",
-        "sha256": "09ffmjs9lwm97p8v8977p319kc8ys2fjnyv08gb99kgbr7gfiyfd",
+        "rev": "06db2e2197401b74fcf82d4e84be15b0b5851c7b",
+        "sha256": "0p3c9gjjdr1gz55al2s5yhh59kx8fqbgzhw4cab3mqair9h84m4j",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/cbd40c72b2603ab54e7208f99f9b35fc158bc009.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs/archive/06db2e2197401b74fcf82d4e84be15b0b5851c7b.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "openapi-code-generator": {
@@ -149,10 +149,10 @@
         "homepage": null,
         "owner": "stripe",
         "repo": "openapi",
-        "rev": "84b6744117d7a6ceb31d251df81c970c4eaba142",
-        "sha256": "0jmn0svdsdq7nk72jsq6mvgx6yizhwz3h9irhijzawncnhj8mbw5",
+        "rev": "76b4aab882726aa607b425ce34eaaa58a04e6803",
+        "sha256": "18cazr898i03vvk42v6c49qa4n3rx8az729gdizgn70qfx0rj4by",
         "type": "tarball",
-        "url": "https://github.com/stripe/openapi/archive/84b6744117d7a6ceb31d251df81c970c4eaba142.tar.gz",
+        "url": "https://github.com/stripe/openapi/archive/76b4aab882726aa607b425ce34eaaa58a04e6803.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "sydtest": {

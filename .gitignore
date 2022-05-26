@@ -1,5 +1,5 @@
+intray-stripe-client/
 tickler-stripe-client/
-stripe-client
 .stack-work/
 stack.yaml.lock
 result*
