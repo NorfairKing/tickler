@@ -5,10 +5,11 @@ let
 in
 {
   release = pkgs.ticklerRelease;
-  nixos-module-test = import ./nix/nixos-module-test.nix { inherit pkgs; };
   pre-commit-check = pre-commit.run;
+  hoogle = pkgs.ticklerHoogle;
   shell = pkgs.symlinkJoin {
     name = "shell";
     paths = (import ./shell.nix { inherit sources pkgs pre-commit; }).buildInputs;
   };
+  nixos-module-test = import ./nix/nixos-module-test.nix { inherit pkgs; };
 }

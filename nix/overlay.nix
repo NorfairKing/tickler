@@ -95,6 +95,11 @@ in
       "tickler-web-server-webdriver" = final.haskellPackages.sydtest-webdriver.enableWebdriver (ticklerPkg "tickler-web-server-webdriver");
     };
 
+  ticklerHoogle = final.buildEnv {
+    name = "hoogle";
+    paths = [ (final.haskellPackages.ghcWithHoogle (_: final.lib.attrValues final.ticklerPackages)) ];
+  };
+
   ticklerReleasePackages = mapAttrs
     (_: pkg: justStaticExecutables (doCheck pkg))
     final.ticklerPackages;

@@ -8,6 +8,7 @@ propertyTypeSuffix: "'"
 operationsToGenerate:
   - GetEvents
   - GetPricesPrice
+  - GetCustomers
   - PostCustomers
   - PostCheckoutSessions
 whiteListedSchemas:
