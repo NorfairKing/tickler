@@ -13,7 +13,6 @@ where
 import qualified Data.Text as T
 import Data.Time
 import Import
-import Text.Julius
 import Tickler.Client
 import Tickler.Web.Server.Foundation
 import Tickler.Web.Server.Time
@@ -61,7 +60,7 @@ accountInfoSegment mai mp =
           <div .ui .negative .message>
               You are not authorised to view account info.
               |]
-    Just ai@AccountInfo {..} -> do
+    Just AccountInfo {..} -> do
       now <- liftIO getCurrentTime
       let subbedWidget =
             case accountInfoStatus of
@@ -82,17 +81,14 @@ accountInfoSegment mai mp =
                 Status: ^{subbedWidget}
           |],
             case accountInfoStatus of
-              HasNotPaid _ -> maybe mempty (pricingStripeForm ai) mp
+              HasNotPaid _ -> maybe mempty pricingStripeForm mp
               HasPaid _ -> mempty -- already bubscribed
               NoPaymentNecessary -> mempty
           ]
 
-pricingStripeForm :: AccountInfo -> Pricing -> Widget
-pricingStripeForm AccountInfo {..} p =
-  let planText = pricingPlan p
-      clientReferenceId = uuidText accountInfoUUID
-      sf = $(widgetFile "stripe-form")
-   in [whamlet|
+pricingStripeForm :: Pricing -> Widget
+pricingStripeForm p =
+  [whamlet|
         <div .ui .segment>
           <h2> Subscribe
 
@@ -105,7 +101,8 @@ pricingStripeForm AccountInfo {..} p =
               <li>
                 Full API access
           <p>
-            ^{sf}
+            <a .button .is-primary href=@{CheckoutR}>
+              Checkout
     |]
 
 adminSegment :: Maybe AccountInfo -> Widget

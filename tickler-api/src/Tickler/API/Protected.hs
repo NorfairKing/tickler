@@ -310,6 +310,8 @@ type GetAccountSettings =
 
 type PostChangePassphrase =
   ProtectAPI
+    :> "account"
+    :> "change-passphrase"
     :> ReqBody '[JSON] ChangePassphrase
     :> Verb 'POST 204 '[JSON] NoContent
 

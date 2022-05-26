@@ -10,3 +10,4 @@ dist/
 *.db*
 .pre-commit-hooks
 .pre-commit-config.yaml
+.direnv/

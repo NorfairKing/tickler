@@ -16,8 +16,9 @@
 /account/settings                                         AccountSettingsR     POST
 /account/delete                                           AccountDeleteR       POST
 
-/checkout/success                                         CheckoutSuccessR     GET
-/checkout/canceled                                        CheckoutCanceledR    GET
+/checkout/stripe                                          CheckoutR            GET
+/checkout/stripe/success                                  CheckoutSuccessR     GET
+/checkout/stripe/canceled                                 CheckoutCanceledR    GET
 
 /reload                                                   ReloadR              GET
 

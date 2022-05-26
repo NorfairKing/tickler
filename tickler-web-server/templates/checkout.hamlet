@@ -1,0 +1,22 @@
+<section .section>
+  <div .container>
+    <div .box .content>
+      <h3 .title .is-3>
+        Subscribe
+
+      $case accountInfoStatus
+        $of HasPaid end
+          <p>
+            Already subscribed until
+            #{formatTime defaultTimeLocale "%F" end}
+            (#{prettyTimeAuto now end})
+
+        $of NoPaymentNecessary
+          No subscription necessary
+
+        $of HasNotPaid freeItemsLeft
+          <p>
+            Not subscribed, #{freeItemsLeft} free items left.
+
+          $maybe p <- mPricing
+            ^{stripeForm p}

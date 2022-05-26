@@ -45,6 +45,7 @@ combineToSettings Flags {..} Environment {..} mConf = do
     let MonetisationEnvironment {..} = envMonetisationEnvironment
     let mmc :: (MonetisationConfiguration -> Maybe a) -> Maybe a
         mmc func = mc confMonetisationConfiguration >>= func
+
     let plan =
           monetisationFlagStripePlan
             <|> monetisationEnvStripePlan
@@ -185,7 +186,7 @@ monetisationEnvironmentParser =
     <*> optional (Env.var Env.str "STRIPE_SECRET_KEY" (Env.help "Stripe secret key"))
     <*> optional (Env.var Env.str "STRIPE_PUBLISHABLE_KEY" (Env.help "Stripe publishable key"))
     <*> optional (Env.var Env.auto "MAX_ITEMS_FREE" (Env.help "Maximum number of free items"))
-    <*> optional (Env.var Env.auto "PRICE" (Env.help "A string description of the price"))
+    <*> optional (Env.var Env.str "PRICE" (Env.help "A string description of the price"))
 
 getFlags :: IO Flags
 getFlags = do
