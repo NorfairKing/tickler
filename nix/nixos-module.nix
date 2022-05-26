@@ -87,6 +87,16 @@ in
                 types.nullOr (
                   types.submodule {
                     options = {
+                      price = mkOption {
+                        type = types.str;
+                        example = "24 CHF";
+                        description = "String description of the price";
+                      };
+                      max-items-free = mkOption {
+                        type = types.nullOr types.int;
+                        example = 5;
+                        description = "Maximum number of free items";
+                      };
                       stripe-plan = mkOption {
                         type = types.str;
                         example = "plan_XXXXXXXXXXXXXX";

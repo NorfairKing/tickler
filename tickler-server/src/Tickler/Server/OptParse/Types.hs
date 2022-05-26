@@ -171,7 +171,7 @@ instance HasCodec MonetisationConfiguration where
           "stripe-publishable-key"
           "The publishable key for calling the stripe api"
           .= monetisationConfStripePulishableKey
-        <*> optionalField
+        <*> optionalFieldOrNull
           "max-items-free"
           "The number of items a free user can have on the server"
           .= monetisationConfMaxItemsFree
