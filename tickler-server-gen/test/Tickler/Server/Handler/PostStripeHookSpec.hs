@@ -16,6 +16,7 @@ import TestImport
 import Tickler.API.Gen ()
 import Tickler.Client
 import Tickler.Data
+import Tickler.Server.Handler.PostInitiateStripeCheckoutSession
 import Tickler.Server.TestUtils
 
 spec :: Spec
@@ -63,10 +64,7 @@ spec =
                           subscriptionItems = mkSubscriptionItems' [] False "url",
                           subscriptionLatestInvoice = Nothing,
                           subscriptionLivemode = False,
-                          subscriptionMetadata =
-                            HM.fromList
-                              [ ("product", "tickler")
-                              ],
+                          subscriptionMetadata = mkMetadata username,
                           subscriptionNextPendingInvoiceItemInvoice = Nothing,
                           subscriptionPauseCollection = Nothing,
                           subscriptionPaymentSettings = Nothing,

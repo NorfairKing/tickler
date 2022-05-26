@@ -3,6 +3,7 @@
 
 module Tickler.Server.Handler.PostInitiateStripeCheckoutSession
   ( servePostInitiateStripeCheckoutSession,
+    mkMetadata,
   )
 where
 
@@ -44,11 +45,7 @@ servePostInitiateStripeCheckoutSession AuthCookie {..} iscs = do
         Just (Entity _ User {..}) -> do
           -- Get or create the stripe customer
           mStripeCustomer <- runDb $ selectFirst [StripeCustomerUser ==. authCookieUserUUID] [Desc StripeCustomerId]
-          let metadata =
-                HM.fromList
-                  [ ("product", "tickler"),
-                    ("tickler-server-version", toJSON $ showVersion version)
-                  ]
+          let metadata = mkMetadata userUsername
           Entity _ stripeCustomer <- case mStripeCustomer of
             Just sce -> pure sce
             Nothing -> do
@@ -108,3 +105,11 @@ servePostInitiateStripeCheckoutSession AuthCookie {..} iscs = do
                       Just (NonNull (Checkout'sessionCustomer'NonNullableCustomer c)) -> Just (customerId c)
                       Just (NonNull (Checkout'sessionCustomer'NonNullableDeletedCustomer _)) -> Nothing
                   }
+
+mkMetadata :: Username -> JSON.Object
+mkMetadata username =
+  HM.fromList
+    [ ("product", "tickler"),
+      ("tickler-server-version", toJSON $ showVersion version),
+      ("username", toJSON username)
+    ]

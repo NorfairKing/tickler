@@ -129,10 +129,9 @@ ticklerTestClientEnvAndDatabaseSetupFunc menv man = do
   signingKey <- liftIO Auth.generateKey
   let jwtCfg = defaultJWTSettings signingKey
   let cookieCfg = defaultCookieSettings
-  logFunc <- runNoLoggingT askLoggerIO
   let ticklerEnv =
         TicklerServerEnv
-          { envLogFunc = logFunc,
+          { envLogFunc = evaluatingLog,
             envConnectionPool = pool,
             envCookieSettings = cookieCfg,
             envJWTSettings = jwtCfg,
