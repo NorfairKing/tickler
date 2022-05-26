@@ -102,6 +102,7 @@ tests:
     - servant
     - servant-client
     - sydtest
+    - sydtest-aeson
     - sydtest-persistent
     - text
     - tickler-api

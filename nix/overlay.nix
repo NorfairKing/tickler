@@ -56,6 +56,7 @@ in
       "tickler-api" = ticklerPkg "tickler-api";
       "tickler-api-gen" = ticklerPkg "tickler-api-gen";
       "tickler-client" = ticklerPkg "tickler-client";
+      "tickler-stripe-client" = generatedTicklerStripe.package;
       "tickler-server" = ticklerPkgWithOwnComp "tickler-server";
       "tickler-server-gen" = ticklerPkg "tickler-server-gen";
       "tickler-web-server" =
@@ -96,7 +97,7 @@ in
     };
 
   ticklerHoogle = final.buildEnv {
-    name = "hoogle";
+    name = "tickler-hoogle";
     paths = [ (final.haskellPackages.ghcWithHoogle (_: final.lib.attrValues final.ticklerPackages)) ];
   };
 
@@ -123,7 +124,6 @@ in
                 envparse = self.callHackage "envparse" "0.4.1" { };
                 yesod-autoreload = self.callCabal2nix "yesod-autoreload" sources.yesod-autoreload { };
                 yesod-static-remote = dontCheck (self.callCabal2nix "yesod-static-remote" sources.yesod-static-remote { });
-                tickler-stripe-client = generatedTicklerStripe.package;
               } // final.ticklerPackages
           );
       }

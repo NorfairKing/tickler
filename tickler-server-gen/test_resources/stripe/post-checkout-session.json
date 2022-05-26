@@ -1,0 +1,22 @@
+{
+    "client_reference_id": "username",
+    "success_url": "http://tickler.example.com/stripe/cancel",
+    "cancel_url": "http://tickler.example.com/stripe/success",
+    "mode": "subscription",
+    "customer": "customer-id",
+    "subscription_data": {
+        "items": [
+            {
+                "plan": "plan-id"
+            }
+        ],
+        "metadata": {
+            "product": "tickler",
+            "tickler-server-version": "0.0.0"
+        }
+    },
+    "metadata": {
+        "product": "tickler",
+        "tickler-server-version": "0.0.0"
+    }
+}

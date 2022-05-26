@@ -14,6 +14,8 @@ extra-source-files:
     test_resources/email/verification.html
     test_resources/email/verification.subject
     test_resources/email/verification.text
+    test_resources/stripe/post-checkout-session.json
+    test_resources/stripe/post-customer.json
 
 library
   exposed-modules:
@@ -87,6 +89,7 @@ test-suite tickler-server-test
       Tickler.Server.Handler.PostEmailTriggerResendVerificationEmailSpec
       Tickler.Server.Handler.PostEmailTriggerSpec
       Tickler.Server.Handler.PostEmailTriggerVerifySpec
+      Tickler.Server.Handler.PostInitiateStripeCheckoutSessionSpec
       Tickler.Server.Handler.PostIntrayTriggerSpec
       Tickler.Server.Handler.PostItemSpec
       Tickler.Server.Handler.PostLoginSpec
@@ -127,6 +130,7 @@ test-suite tickler-server-test
     , servant
     , servant-client
     , sydtest
+    , sydtest-aeson
     , sydtest-persistent
     , text
     , tickler-api

@@ -3,6 +3,8 @@
 
 module Tickler.Server.Handler.PostInitiateStripeCheckoutSession
   ( servePostInitiateStripeCheckoutSession,
+    mkPostCheckoutSessionsRequestBodyForUser,
+    mkPostCustomersRequestBodyForUser,
     metadata,
   )
 where
@@ -47,25 +49,7 @@ servePostInitiateStripeCheckoutSession AuthCookie {..} iscs = do
           customerId <- getOrCreateCustomerId config user
 
           -- Make the request to create a checkout session
-          let successUrl = initiateStripeCheckoutSessionSuccessUrl iscs
-              cancelUrl = initiateStripeCheckoutSessionCanceledUrl iscs
-          let request =
-                (mkPostCheckoutSessionsRequestBody cancelUrl successUrl)
-                  { postCheckoutSessionsRequestBodyCustomer = Just customerId,
-                    postCheckoutSessionsRequestBodyClientReferenceId = Just $ usernameText userUsername,
-                    postCheckoutSessionsRequestBodyLineItems = Nothing,
-                    postCheckoutSessionsRequestBodyMode = Just PostCheckoutSessionsRequestBodyMode'EnumSubscription,
-                    postCheckoutSessionsRequestBodyMetadata = Just metadata,
-                    postCheckoutSessionsRequestBodySubscriptionData =
-                      Just $
-                        mkPostCheckoutSessionsRequestBodySubscriptionData'
-                          { postCheckoutSessionsRequestBodySubscriptionData'Metadata = Just metadata,
-                            postCheckoutSessionsRequestBodySubscriptionData'Items =
-                              Just
-                                [ mkPostCheckoutSessionsRequestBodySubscriptionData'Items' stripeSetPlan
-                                ]
-                          }
-                  }
+          let request = mkPostCheckoutSessionsRequestBodyForUser iscs userUsername customerId stripeSetPlan
 
           -- Actually perform the request
           resp <- liftIO $ runWithConfiguration config $ postCheckoutSessions request :: TicklerHandler (HTTP.Response PostCheckoutSessionsResponse)
@@ -79,17 +63,32 @@ servePostInitiateStripeCheckoutSession AuthCookie {..} iscs = do
                     initiatedCheckoutSessionCustomerId = customerId
                   }
 
+mkPostCheckoutSessionsRequestBodyForUser :: InitiateStripeCheckoutSession -> Username -> Text -> Text -> PostCheckoutSessionsRequestBody
+mkPostCheckoutSessionsRequestBodyForUser InitiateStripeCheckoutSession {..} username customerId planId =
+  (mkPostCheckoutSessionsRequestBody initiateStripeCheckoutSessionSuccessUrl initiateStripeCheckoutSessionCanceledUrl)
+    { postCheckoutSessionsRequestBodyCustomer = Just customerId,
+      postCheckoutSessionsRequestBodyClientReferenceId = Just $ usernameText username,
+      postCheckoutSessionsRequestBodyLineItems = Nothing,
+      postCheckoutSessionsRequestBodyMode = Just PostCheckoutSessionsRequestBodyMode'EnumSubscription,
+      postCheckoutSessionsRequestBodyMetadata = Just metadata,
+      postCheckoutSessionsRequestBodySubscriptionData =
+        Just $
+          mkPostCheckoutSessionsRequestBodySubscriptionData'
+            { postCheckoutSessionsRequestBodySubscriptionData'Metadata = Just metadata,
+              postCheckoutSessionsRequestBodySubscriptionData'Items =
+                Just
+                  [ mkPostCheckoutSessionsRequestBodySubscriptionData'Items' planId
+                  ]
+            }
+    }
+
 getOrCreateCustomerId :: Stripe.Configuration -> User -> TicklerHandler Text
 getOrCreateCustomerId config User {..} = do
   mStripeCustomer <- runDb $ selectFirst [StripeCustomerUser ==. userIdentifier] [Desc StripeCustomerId]
   case mStripeCustomer of
     Just (Entity _ sce) -> pure $ stripeCustomerCustomer sce
     Nothing -> do
-      let postCustomersRequest =
-            mkPostCustomersRequestBody
-              { postCustomersRequestBodyDescription = Just $ usernameText userUsername,
-                postCustomersRequestBodyMetadata = Just $ PostCustomersRequestBodyMetadata'Object metadata
-              }
+      let postCustomersRequest = mkPostCustomersRequestBodyForUser userUsername
       resp <- liftIO $ runWithConfiguration config $ postCustomers $ Just postCustomersRequest
       case responseBody resp of
         PostCustomersResponseError err -> throwError err500 {errBody = LB.fromStrict $ TE.encodeUtf8 $ "Something went wrong while parsing stripe's response:\n" <> T.pack err}
@@ -103,6 +102,13 @@ getOrCreateCustomerId config User {..} = do
                 (StripeCustomer {stripeCustomerUser = userIdentifier, stripeCustomerCustomer = customerId})
                 [StripeCustomerCustomer =. customerId]
           pure customerId
+
+mkPostCustomersRequestBodyForUser :: Username -> PostCustomersRequestBody
+mkPostCustomersRequestBodyForUser username =
+  mkPostCustomersRequestBody
+    { postCustomersRequestBodyDescription = Just $ usernameText username,
+      postCustomersRequestBodyMetadata = Just $ PostCustomersRequestBodyMetadata'Object metadata
+    }
 
 metadata :: JSON.Object
 metadata =
