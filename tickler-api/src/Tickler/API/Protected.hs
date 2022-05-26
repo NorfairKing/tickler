@@ -367,7 +367,7 @@ instance HasCodec InitiateStripeCheckoutSession where
 
 data InitiatedCheckoutSession = InitiatedCheckoutSession
   { initiatedCheckoutSessionId :: Text,
-    initiatedCheckoutSessionCustomerId :: Maybe Text
+    initiatedCheckoutSessionCustomerId :: Text
   }
   deriving stock (Show, Eq, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec InitiatedCheckoutSession)
@@ -379,4 +379,4 @@ instance HasCodec InitiatedCheckoutSession where
     object "InitiatedCheckoutSession" $
       InitiatedCheckoutSession
         <$> requiredField "session" "session identifier" .= initiatedCheckoutSessionId
-        <*> optionalField "customer" "customer identifier" .= initiatedCheckoutSessionCustomerId
+        <*> requiredField "customer" "customer identifier" .= initiatedCheckoutSessionCustomerId

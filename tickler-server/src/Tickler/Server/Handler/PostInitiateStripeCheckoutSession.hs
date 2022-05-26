@@ -42,38 +42,17 @@ servePostInitiateStripeCheckoutSession AuthCookie {..} iscs = do
       mAccount <- runDb $ getBy $ UniqueUserIdentifier authCookieUserUUID
       case mAccount of
         Nothing -> throwError err404 {errBody = "User not found."}
-        Just (Entity _ User {..}) -> do
+        Just (Entity _ user@User {..}) -> do
           -- Get or create the stripe customer
-          mStripeCustomer <- runDb $ selectFirst [StripeCustomerUser ==. authCookieUserUUID] [Desc StripeCustomerId]
-          let metadata = mkMetadata userUsername
-          Entity _ stripeCustomer <- case mStripeCustomer of
-            Just sce -> pure sce
-            Nothing -> do
-              let postCustomersRequest =
-                    mkPostCustomersRequestBody
-                      { postCustomersRequestBodyDescription = Just $ usernameText userUsername,
-                        postCustomersRequestBodyMetadata =
-                          Just $
-                            PostCustomersRequestBodyMetadata'Object metadata
-                      }
-              resp <- liftIO $ runWithConfiguration config $ postCustomers $ Just postCustomersRequest
-              case responseBody resp of
-                PostCustomersResponseError err -> throwError err500 {errBody = LB.fromStrict $ TE.encodeUtf8 $ "Something went wrong while parsing stripe's response:\n" <> T.pack err}
-                PostCustomersResponseDefault err -> throwError err500 {errBody = "Error while calling stripe:\n" <> JSON.encodePretty err}
-                PostCustomersResponse200 Customer {..} ->
-                  -- Keep track of it in our database for later
-                  runDb $
-                    upsertBy
-                      (UniqueStripeCustomer authCookieUserUUID customerId)
-                      (StripeCustomer {stripeCustomerUser = authCookieUserUUID, stripeCustomerCustomer = customerId})
-                      [StripeCustomerCustomer =. customerId]
+          customerId <- getOrCreateCustomerId config user
 
+          let metadata = mkMetadata userUsername
           -- Make the request to create a checkout session
           let successUrl = initiateStripeCheckoutSessionSuccessUrl iscs
               cancelUrl = initiateStripeCheckoutSessionCanceledUrl iscs
           let request =
                 (mkPostCheckoutSessionsRequestBody cancelUrl successUrl)
-                  { postCheckoutSessionsRequestBodyCustomer = Just $ stripeCustomerCustomer stripeCustomer,
+                  { postCheckoutSessionsRequestBodyCustomer = Just customerId,
                     postCheckoutSessionsRequestBodyClientReferenceId = Just $ usernameText userUsername,
                     postCheckoutSessionsRequestBodyLineItems = Nothing,
                     postCheckoutSessionsRequestBodyMode = Just PostCheckoutSessionsRequestBodyMode'EnumSubscription,
@@ -98,13 +77,33 @@ servePostInitiateStripeCheckoutSession AuthCookie {..} iscs = do
               pure $
                 InitiatedCheckoutSession
                   { initiatedCheckoutSessionId = checkout'sessionId session,
-                    initiatedCheckoutSessionCustomerId = case checkout'sessionCustomer session of
-                      Nothing -> Nothing
-                      Just Stripe.Null -> Nothing
-                      Just (NonNull (Checkout'sessionCustomer'NonNullableText cid)) -> Just cid
-                      Just (NonNull (Checkout'sessionCustomer'NonNullableCustomer c)) -> Just (customerId c)
-                      Just (NonNull (Checkout'sessionCustomer'NonNullableDeletedCustomer _)) -> Nothing
+                    initiatedCheckoutSessionCustomerId = customerId
                   }
+
+getOrCreateCustomerId :: Stripe.Configuration -> User -> TicklerHandler Text
+getOrCreateCustomerId config User {..} = do
+  mStripeCustomer <- runDb $ selectFirst [StripeCustomerUser ==. userIdentifier] [Desc StripeCustomerId]
+  case mStripeCustomer of
+    Just (Entity _ sce) -> pure $ stripeCustomerCustomer sce
+    Nothing -> do
+      let postCustomersRequest =
+            mkPostCustomersRequestBody
+              { postCustomersRequestBodyDescription = Just $ usernameText userUsername,
+                postCustomersRequestBodyMetadata = Just $ PostCustomersRequestBodyMetadata'Object $ mkMetadata userUsername
+              }
+      resp <- liftIO $ runWithConfiguration config $ postCustomers $ Just postCustomersRequest
+      case responseBody resp of
+        PostCustomersResponseError err -> throwError err500 {errBody = LB.fromStrict $ TE.encodeUtf8 $ "Something went wrong while parsing stripe's response:\n" <> T.pack err}
+        PostCustomersResponseDefault err -> throwError err500 {errBody = "Error while calling stripe:\n" <> JSON.encodePretty err}
+        PostCustomersResponse200 Customer {..} -> do
+          -- Keep track of it in our database for later
+          _ <-
+            runDb $
+              upsertBy
+                (UniqueStripeCustomer userIdentifier customerId)
+                (StripeCustomer {stripeCustomerUser = userIdentifier, stripeCustomerCustomer = customerId})
+                [StripeCustomerCustomer =. customerId]
+          pure customerId
 
 mkMetadata :: Username -> JSON.Object
 mkMetadata username =
