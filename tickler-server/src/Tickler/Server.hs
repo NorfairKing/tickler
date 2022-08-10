@@ -34,7 +34,8 @@ import UnliftIO
 runTicklerServer :: Settings -> IO ()
 runTicklerServer settings@Settings {..} =
   runStderrLoggingT $
-    filterLogger (\_ ll -> ll >= setLogLevel) $
+    filterLogger (\_ ll -> ll >= setLogLevel) $ do
+      logDebugN $ T.pack $ unlines ["Running tickler-server with these settings:", ppShow settings]
       withSqlitePoolInfo (mkSqliteConnectionInfo (T.pack (fromAbsFile setDb))) 1 $
         \pool -> do
           runResourceT (runSqlPool (runMigration serverAutoMigration >> customMigrations) pool)
