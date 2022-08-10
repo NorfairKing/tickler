@@ -43,6 +43,12 @@ in
               example = "LevelInfo";
               description = "The minimal severity of log messages";
             };
+            web-url = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              example = "https://tickler.cs-syd.eu";
+              description = "The url of the web server to display";
+            };
             admins = mkOption {
               type = types.nullOr (types.listOf types.str);
               default = null;
@@ -198,6 +204,7 @@ in
         (attrOrNullHead "host" hosts)
         (attrOrNull "port" port)
         (attrOrNull "log-level" log-level)
+        (attrOrNull "web-host" web-url)
         (attrOrNull "admins" admins)
         (attrOrNull "freeloaders" freeloaders)
         (attrOrNull "monetisation" monetisation)
