@@ -3,10 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Tickler.Server.Handler.Account
-  ( getUserAccountInfo,
-  )
-where
+module Tickler.Server.Handler.Account (getUserAccountInfo) where
 
 import Database.Persist
 import Import

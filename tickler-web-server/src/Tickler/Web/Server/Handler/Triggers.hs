@@ -30,10 +30,12 @@ makeTriggerInfoWidget tti =
 
 makeIntrayTriggerWidget :: TriggerUUID -> IntrayTriggerInfo -> Handler Widget
 makeIntrayTriggerWidget triggerInfoIdentifier IntrayTriggerInfo {..} = do
+  token <- genToken
   pure $(widgetFile "intray-trigger")
 
 makeEmailTriggerWidget :: TriggerUUID -> EmailTriggerInfo -> Handler Widget
 makeEmailTriggerWidget triggerInfoIdentifier EmailTriggerInfo {..} = do
+  token <- genToken
   pure $(widgetFile "email-trigger")
 
 makeAddIntrayTriggerWidget :: Handler Widget

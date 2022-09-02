@@ -5,6 +5,7 @@
 
 module Tickler.Web.Server.Handler.Account
   ( getAccountR,
+    getAccountSettingsR,
     postAccountSettingsR,
     postAccountDeleteR,
   )
@@ -19,37 +20,13 @@ import Tickler.Web.Server.Time
 import Yesod
 import Yesod.Auth
 
-accountSettingsForm ::
-  Maybe AccountSettings -> Html -> MForm Handler (FormResult AccountSettings, Widget)
-accountSettingsForm mas extra = do
-  (timeZoneRes, timeZoneView) <-
-    mreq
-      (selectFieldList $ map (\tz -> (T.pack $ timeZoneName tz, tz)) timeZoneChoices)
-      "Not Used"
-      (dv accountSettingsTimeZone)
-  let accountSettingsRes = AccountSettings <$> timeZoneRes
-  let accountSettingsWidget =
-        [whamlet|
-                #{extra}
-                <div .field>
-                    <label>Time Zone</label>
-                    ^{fvInput timeZoneView}
-            |]
-  return (accountSettingsRes, accountSettingsWidget)
-  where
-    dv :: (AccountSettings -> a) -> Maybe a
-    dv func = func <$> mas
-
-getAccountPage :: Maybe (FormResult a) -> Handler Html
-getAccountPage mfr =
+getAccountR :: Handler Html
+getAccountR =
   withLogin $ \t -> do
     mai <- runClientOrDisallow $ clientGetAccountInfo t
     mPricing <- runClientOrErr clientGetPricing
     accountInfoWidget <- accountInfoSegment mai mPricing
-    as <- runClientOrErr $ clientGetAccountSettings t
-    token <- genToken
-    (accountSettingsFormWidget, formEnctype) <- generateFormPost $ accountSettingsForm $ Just as
-    maybe withNavBar withFormResultNavBar mfr $(widgetFile "account")
+    withNavBar $(widgetFile "account")
 
 accountInfoSegment :: Maybe AccountInfo -> Maybe Pricing -> Handler Widget
 accountInfoSegment mai mp =
@@ -123,19 +100,35 @@ adminSegment mai =
                     The Admin Panel|]
       | otherwise -> mempty
 
-getAccountR :: Handler Html
-getAccountR = getAccountPage Nothing
+accountSettingsForm :: FormInput Handler AccountSettings
+accountSettingsForm =
+  AccountSettings
+    <$> ireq
+      ( selectField . pure $
+          mkOptionList $ do
+            tz <- timeZoneChoices
+            pure
+              Option
+                { optionDisplay = T.pack $ timeZoneName tz,
+                  optionInternalValue = tz,
+                  optionExternalValue = T.pack $ show $ timeZoneMinutes tz
+                }
+      )
+      "timezone"
+
+getAccountSettingsR :: Handler Html
+getAccountSettingsR = withLogin $ \t -> do
+  as <- runClientOrErr $ clientGetAccountSettings t
+  token <- genToken
+  withNavBar $(widgetFile "account/settings")
 
 postAccountSettingsR :: Handler Html
 postAccountSettingsR =
   withLogin $ \t -> do
-    ((result, _), _) <- runFormPost $ accountSettingsForm Nothing
-    case result of
-      FormSuccess as -> do
-        NoContent <- runClientOrErr $ clientPutAccountSettings t as
-        addPositiveMessage "Account Settings Saved"
-        redirect AccountR
-      fr -> getAccountPage $ Just fr
+    as <- runInputPost accountSettingsForm
+    NoContent <- runClientOrErr $ clientPutAccountSettings t as
+    addPositiveMessage "Account Settings Saved"
+    redirect AccountSettingsR
 
 postAccountDeleteR :: Handler Html
 postAccountDeleteR =

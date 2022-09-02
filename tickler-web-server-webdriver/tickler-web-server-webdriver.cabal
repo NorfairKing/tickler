@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.5.
+-- This file has been generated from package.yaml by hpack version 0.34.7.
 --
 -- see: https://github.com/sol/hpack
 
@@ -15,6 +15,7 @@ library
       Tickler.Web.Server.Webdriver.Delete.TestUtils
       Tickler.Web.Server.Webdriver.Edit.TestUtils
       Tickler.Web.Server.Webdriver.TestUtils
+      Tickler.Web.Server.Webdriver.TriggerAddEmail.TestUtils
   other-modules:
       Paths_tickler_web_server_webdriver
   hs-source-dirs:
@@ -48,6 +49,7 @@ test-suite tickler-web-server-webdriver-test
       Tickler.Web.Server.Webdriver.DeleteSpec
       Tickler.Web.Server.Webdriver.EditSpec
       Tickler.Web.Server.Webdriver.HomeSpec
+      Tickler.Web.Server.Webdriver.OnboardingSpec
       Tickler.Web.Server.Webdriver.TestImport
       Tickler.Web.Server.Webdriver.TriggerAddEmailSpec
       Tickler.Web.Server.Webdriver.TriggerAddIntraySpec
@@ -59,15 +61,18 @@ test-suite tickler-web-server-webdriver-test
       sydtest-discover:sydtest-discover
   build-depends:
       base >=4.9 && <5
+    , bytestring
     , containers
     , genvalidity-sydtest
     , http-client
     , http-types
     , intray-client
     , intray-server-gen
+    , persistent
     , sydtest
     , sydtest-webdriver
     , sydtest-webdriver-yesod
+    , sydtest-yesod
     , text
     , tickler-api
     , tickler-client

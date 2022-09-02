@@ -1,0 +1,26 @@
+<section .section>
+  <div .columns .is-centered>
+    <div .column .is-half .content>
+      <p .title .is-size-2 .has-text-weight-semibold .has-text-centered>
+        Settings
+
+      <form
+        method=post
+        action=@{AccountSettingsR}>
+        <div .field>
+          <label .label>
+            Time Zone
+          <div .control>
+            <div .select>
+              <select name="timezone">
+                $forall timeZoneChoice <- timeZoneChoices
+                  <option :timeZoneChoice == accountSettingsTimeZone as:selected value=#{timeZoneMinutes timeZoneChoice}>
+                    #{timeZoneName timeZoneChoice}
+
+        ^{token}
+
+        <div .field>
+          <div .control>
+            <button #submit .button .is-primary type="submit">
+              Save
+

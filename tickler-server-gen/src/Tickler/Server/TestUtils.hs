@@ -15,6 +15,7 @@ module Tickler.Server.TestUtils
     withPaidTicklerServerAndDatabase_,
     withBothTicklerAndIntrayServer,
     ticklerTestClientEnvSetupFunc,
+    ticklerTestClientEnvAndDatabaseSetupFunc,
     withTicklerDatabase,
     runClient,
     runClientOrError,

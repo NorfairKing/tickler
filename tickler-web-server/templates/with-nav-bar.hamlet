@@ -44,10 +44,11 @@
           <a .button #nav-register href=@{AuthR registerR}>
             Register
 
-<div .container>
-  $forall (msgtype, msg) <- msgs
-    <div .is-#{msgtype} .message>
-      <div .message-body>
+
+$if not (null msgs)
+  <section .section>
+    $forall (msgtype, msg) <- msgs
+      <div .notification .is-#{msgtype}>
         ^{msg}
 
-  ^{body}
+^{body}

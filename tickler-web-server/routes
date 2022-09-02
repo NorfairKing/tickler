@@ -13,7 +13,7 @@
 /trigger/delete/#TriggerUUID                              TriggerDeleteR       POST
 
 /account                                                  AccountR             GET
-/account/settings                                         AccountSettingsR     POST
+/account/settings                                         AccountSettingsR     GET POST
 /account/delete                                           AccountDeleteR       POST
 
 /checkout/stripe                                          CheckoutR            GET

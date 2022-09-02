@@ -26,7 +26,7 @@ servePostEmailTriggerResendVerificationEmail AuthCookie {..} tuuid = do
     Nothing -> throwAll err404
     Just (Entity _ EmailTrigger {..}) -> do
       if emailTriggerVerified
-        then throwAll err400 {errBody = "Email trigger already verified."}
+        then throwAll err409 {errBody = "Email trigger already verified."}
         else do
           emailsAlreadyQueued <- runDB $ count [VerificationEmailTrigger ==. tuuid, VerificationEmailEmail ==. Nothing]
           if emailsAlreadyQueued >= 1

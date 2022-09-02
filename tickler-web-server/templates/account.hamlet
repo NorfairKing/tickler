@@ -6,27 +6,16 @@
 
         ^{accountInfoWidget}
 
-
-
-  <div .columns .is-centered>
-    <div .column .is-half .content>
-      <p .title .is-size-4>
-        Settings
-
-      <form
-        method=post
-        action=@{AccountSettingsR}
-        enctype=#{formEnctype}>
-        ^{accountSettingsFormWidget}
-        <a .button .is-primary type="submit">
-          Save
-
-
+      <p>
+        <a .button
+          href=@{AccountSettingsR}>
+          Settings
 
   <div .columns .is-centered>
     <div .column .is-half .content>
       <p .title .is-size-4>
         Danger Zone
+
       <p>
         <a .button
           href=@{AuthR changePasswordTargetR}>
@@ -36,7 +25,6 @@
         <form
           method=post
           action=@{AccountDeleteR}>
-          ^{token}
           <a .button 
             .is-danger .button .my-1
             onclick="return confirm('Are you sure you want to delete your account? This cannot be undone.');">

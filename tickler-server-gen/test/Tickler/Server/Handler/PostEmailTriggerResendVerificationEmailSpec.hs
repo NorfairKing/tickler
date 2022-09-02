@@ -57,6 +57,6 @@ spec = do
           case errOrResult of
             Left err ->
               case err of
-                FailureResponse _ resp -> responseStatusCode resp `shouldBe` badRequest400
+                FailureResponse _ resp -> responseStatusCode resp `shouldBe` conflict409
                 _ -> expectationFailure $ unwords ["Unexpected error:", show err]
             Right _ -> expectationFailure "Should not have succeeded."
