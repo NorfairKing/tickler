@@ -88,7 +88,7 @@ adminSegment mai =
     Nothing -> mempty
     Just AccountInfo {..}
       | accountInfoAdmin ->
-          [whamlet|
+        [whamlet|
             <div .columns .is-centered>
               <div .column .is-half .content>
                 <h3>

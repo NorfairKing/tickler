@@ -13,7 +13,6 @@ import Autodocodec.Yaml
 import Control.Applicative
 import Control.Monad.Logger
 import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
 import qualified Env
 import Import
 import Looper
@@ -206,7 +205,7 @@ flagsParser = info (helper <*> parseFlags) help_
     footerStr =
       unlines
         [ "Configuration file format:",
-          T.unpack (TE.decodeUtf8 (renderColouredSchemaViaCodec @Configuration))
+          T.unpack (renderColouredSchemaViaCodec @Configuration)
         ]
 
 parseFlags :: Parser Flags

@@ -121,7 +121,6 @@ in
           composeExtensions (old.overrides or (_: _: { })) (
             self: super:
               {
-                envparse = self.callHackage "envparse" "0.4.1" { };
                 yesod-autoreload = self.callCabal2nix "yesod-autoreload" sources.yesod-autoreload { };
                 yesod-static-remote = dontCheck (self.callCabal2nix "yesod-static-remote" sources.yesod-static-remote { });
               } // final.ticklerPackages

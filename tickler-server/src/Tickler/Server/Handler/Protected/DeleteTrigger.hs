@@ -1,9 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
-
-module Tickler.Server.Handler.Protected.DeleteTrigger
-  ( serveDeleteTrigger,
-  )
-where
+module Tickler.Server.Handler.Protected.DeleteTrigger (serveDeleteTrigger) where
 
 import Database.Persist
 import Import

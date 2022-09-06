@@ -25,11 +25,9 @@ extra-deps:
 - unliftio-core-0.1.2.0@sha256:b0a7652ffce2284a6cebe05c99eb60573a8fb6631163f34b0b30a80b4a78cb23,1081
 
 - servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
-- envparse-0.4.1@sha256:989902e6368532548f61de1fa245ad2b39176cddd8743b20071af519a709ce30,2842
-
 
 - github: NorfairKing/intray
-  commit: be749bd66a5d9859826b4854bf9d1da5f15e3517
+  commit: bee638922cbb7d44da0a577038bfb34839984b96
   subdirs:
     - intray-data
     - intray-data-gen
@@ -40,14 +38,14 @@ extra-deps:
     - intray-server-gen
       
 - github: NorfairKing/mergeless
-  commit: 639cdca0dc7cce53a62cf40aa856b156e2ab1f32
+  commit: b6bfcca1ae17e5ac662c6aa9128ed0b293b1f9c8
   subdirs:
     - mergeless
     - mergeless-persistent
     - genvalidity-mergeless
 
 - github: NorfairKing/validity
-  commit: 160e846cc5de8e92e6758172da341f5d81fe037
+  commit: 2e9198bdaaa8c80a5dbe2b7b860b5c26558c6374
   subdirs:
     - genvalidity
     - genvalidity-aeson
@@ -98,18 +96,18 @@ extra-deps:
   commit: a634358ff274380a12360f7814c3aea46ea35b1b
 
 - github: NorfairKing/safe-coloured-text
-  commit: 71c5940a3b84eeb498304d8e584e7638f875d51b
+  commit: 675cb01fce5f46718416d7746de5b856ed90a63f
   subdirs:
     - safe-coloured-text
     - safe-coloured-text-terminfo
 
 - github: NorfairKing/looper
-  commit: 6f7d44f563a7e21c3ca5fa24ebe01ed1665426ca
+  commit: fd36d37becfa04fa4d7e00604e37c61817b6b62b
   subdirs:
     - looper
 
 - github: NorfairKing/sydtest
-  commit: 7e30853ff89503968165d4ebb9c3d42f005a1975
+  commit: ff224861ea409a9ee08576adb0438bbbb948917f
   subdirs:
   - sydtest
   - sydtest-aeson
@@ -124,17 +122,17 @@ extra-deps:
   - sydtest-yesod
 
 - github: NorfairKing/autodocodec
-  commit: 38bd4865ff2dd40d342141b7fde9319f835d98c6
+  commit: e337d681109cac273f5b9ea2b54b174bce79d312
   subdirs:
   - autodocodec
   - autodocodec-yaml
   - autodocodec-schema
 
 - github: NorfairKing/yesod-static-remote
-  commit: ed6bf8ef434d49b160429028613a1f6882fccfdf
+  commit: 7eda644dc369e16c3591847f6c7cad30846bf6b0
 
 - github: NorfairKing/yesod-autoreload
-  commit: 7135e864c0d4a48efeae473ee2761f5168946e58
+  commit: 796def9af50cd7b053c9fb4a065c55603d4a8399
 
 nix:
   shell-file: shell.nix

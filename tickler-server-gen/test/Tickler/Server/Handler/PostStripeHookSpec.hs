@@ -62,6 +62,7 @@ spec =
                                         subscriptionCreated = round $ utcTimeToPOSIXSeconds created,
                                         subscriptionCurrentPeriodEnd = round $ utcTimeToPOSIXSeconds expectedEnd,
                                         subscriptionCurrentPeriodStart = round $ utcTimeToPOSIXSeconds periodStart,
+                                        subscriptionCurrency = "CHF",
                                         subscriptionCustomer = customer,
                                         subscriptionDaysUntilDue = Nothing,
                                         subscriptionDefaultPaymentMethod = Nothing,
