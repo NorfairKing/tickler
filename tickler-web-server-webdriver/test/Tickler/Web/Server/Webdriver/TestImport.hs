@@ -16,3 +16,4 @@ import Tickler.Web.Server.Webdriver.Delete.TestUtils as X
 import Tickler.Web.Server.Webdriver.Edit.TestUtils as X
 import Tickler.Web.Server.Webdriver.TestUtils as X
 import Tickler.Web.Server.Webdriver.TriggerAddEmail.TestUtils as X
+import Tickler.Web.Server.Webdriver.TriggerAddIntray.TestUtils as X

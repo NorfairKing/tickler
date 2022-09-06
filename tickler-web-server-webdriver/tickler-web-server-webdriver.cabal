@@ -16,6 +16,7 @@ library
       Tickler.Web.Server.Webdriver.Edit.TestUtils
       Tickler.Web.Server.Webdriver.TestUtils
       Tickler.Web.Server.Webdriver.TriggerAddEmail.TestUtils
+      Tickler.Web.Server.Webdriver.TriggerAddIntray.TestUtils
   other-modules:
       Paths_tickler_web_server_webdriver
   hs-source-dirs:
@@ -23,7 +24,9 @@ library
   ghc-options: -Wall
   build-depends:
       base >=4.9 && <5
+    , containers
     , http-client
+    , intray-client
     , mtl
     , persistent
     , servant-auth-client
@@ -53,6 +56,7 @@ test-suite tickler-web-server-webdriver-test
       Tickler.Web.Server.Webdriver.EditSpec
       Tickler.Web.Server.Webdriver.EmailTriggerLifetimeSpec
       Tickler.Web.Server.Webdriver.HomeSpec
+      Tickler.Web.Server.Webdriver.IntrayTriggerLifetimeSpec
       Tickler.Web.Server.Webdriver.OnboardingSpec
       Tickler.Web.Server.Webdriver.TestImport
       Tickler.Web.Server.Webdriver.TriggerAddEmailSpec
@@ -72,6 +76,7 @@ test-suite tickler-web-server-webdriver-test
     , http-types
     , intray-client
     , intray-server-gen
+    , mtl
     , persistent
     , sydtest
     , sydtest-webdriver

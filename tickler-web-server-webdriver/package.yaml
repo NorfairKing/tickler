@@ -7,7 +7,9 @@ library:
   source-dirs: src
   ghc-options: -Wall
   dependencies:
+  - containers
   - http-client
+  - intray-client
   - mtl
   - persistent
   - servant-auth-client
@@ -42,6 +44,7 @@ tests:
     - http-types
     - intray-client
     - intray-server-gen
+    - mtl
     - persistent
     - sydtest
     - sydtest-webdriver

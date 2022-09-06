@@ -14,7 +14,7 @@ import Tickler.Web.Server.Webdriver.TestImport
 -- And we need access to the database in order to get the verification email out.
 spec :: WebdriverSpec App
 spec = ticklerWebdriverWithDBSpec $
-  it "Can go through the entire onboarding flow without trouble" $ \(pool, wte) -> runWebdriverTestM wte $ do
+  it "Can go through the entire email trigger lifetime without trouble" $ \(pool, wte) -> runWebdriverTestM wte $ do
     let runSqlHere :: SqlPersistT IO a -> WebdriverTestM App a
         runSqlHere query = liftIO $ runSqlPool query pool
 
