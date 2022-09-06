@@ -3,13 +3,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Tickler.Web.Server.Webdriver.OnboardingSpec (spec) where
+module Tickler.Web.Server.Webdriver.EmailTriggerLifetimeSpec (spec) where
 
 import qualified Data.Text as T
 import Database.Persist.Sql as DB
 import Test.Syd.Webdriver.Yesod
 import Tickler.Web.Server.Webdriver.TestImport
 
+-- This entire mess is only necessary because we did the sydtest-discover trick to only run one selenium server.
+-- And we need access to the database in order to get the verification email out.
 spec :: WebdriverSpec App
 spec = ticklerWebdriverWithDBSpec $
   it "Can go through the entire onboarding flow without trouble" $ \(pool, wte) -> runWebdriverTestM wte $ do
@@ -25,12 +27,6 @@ spec = ticklerWebdriverWithDBSpec $
 
     -- Navigate to the Account page
     openRoute AccountR
-
-    -- Navigate to the Settings page
-    -- Set the timezone to UTC+2
-    openRoute AccountSettingsR
-    findElem (ByName "timezone") >>= sendKeys "UTC+2"
-    findElem (ById "submit") >>= submit
 
     let ea :: EmailAddress
         ea = "tickler@example.com"
@@ -70,6 +66,9 @@ spec = ticklerWebdriverWithDBSpec $
     contents <- findElem (ById $ uuidText triggerUUID) >>= getText
     liftIO $ contents `shouldSatisfy` ("Verified" `T.isInfixOf`)
 
-    -- Add a tickle
-    uuid <- driveAddTickle (testUserUsername user) dummyTickle
-    liftIO $ shouldBeValid uuid
+    -- Delete the email trigger
+    openRoute TriggersR
+    findElem (ById $ uuidText triggerUUID) >>= \e ->
+      findElemFrom e (ById "delete") >>= click
+    acceptAlert
+    getCurrentRoute >>= (liftIO . (`shouldBe` TriggersR))

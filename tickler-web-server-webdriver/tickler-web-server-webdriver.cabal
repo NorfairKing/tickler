@@ -23,11 +23,14 @@ library
   ghc-options: -Wall
   build-depends:
       base >=4.9 && <5
+    , http-client
     , mtl
+    , persistent
     , servant-auth-client
     , sydtest
     , sydtest-webdriver
     , sydtest-webdriver-yesod
+    , sydtest-yesod
     , text
     , tickler-api
     , tickler-client
@@ -48,6 +51,7 @@ test-suite tickler-web-server-webdriver-test
       Tickler.Web.Server.Webdriver.AuthSpec
       Tickler.Web.Server.Webdriver.DeleteSpec
       Tickler.Web.Server.Webdriver.EditSpec
+      Tickler.Web.Server.Webdriver.EmailTriggerLifetimeSpec
       Tickler.Web.Server.Webdriver.HomeSpec
       Tickler.Web.Server.Webdriver.OnboardingSpec
       Tickler.Web.Server.Webdriver.TestImport
