@@ -1,7 +1,8 @@
-{ sources ? import ./sources.nix
-, pkgs ? import ./pkgs.nix { inherit sources; }
-, ticklerReleasePackages ? pkgs.ticklerReleasePackages
-, envname
+{ tickler-server
+, tickler-web-server
+, mkLooperOption
+}:
+{ envname
 }:
 { lib, pkgs, config, ... }:
 with lib;
@@ -9,8 +10,6 @@ with lib;
 let
   cfg = config.services.tickler."${envname}";
   mergeListRecursively = pkgs.callPackage ./merge-lists-recursively.nix { };
-  toYamlFile = pkgs.callPackage ./to-yaml.nix { };
-  mkLooperOption = pkgs.callPackage (sources.looper + "/nix/looper-option.nix") { };
 in
 {
   options.services.tickler."${envname}" =
@@ -222,7 +221,7 @@ in
         (attrOrNull "admin-notification-email-converter" admin-notification-email-converter)
         cfg.api-server.config
       ];
-      api-server-config-file = toYamlFile "tickler-api-server-config" api-server-config;
+      api-server-config-file = (pkgs.formats.yaml { }).generate "tickler-api-server-config" api-server-config;
       api-server-service = optionalAttrs (cfg.api-server.enable or false) {
         "tickler-api-server-${envname}" = {
           description = "Tickler ${envname} api server service";
@@ -234,7 +233,7 @@ in
             ''
               mkdir -p "${workingDir}"
               cd "${workingDir}"
-              ${ticklerReleasePackages.tickler-server}/bin/tickler-server
+              ${tickler-server}/bin/tickler-server
             '';
           serviceConfig =
             {
@@ -268,7 +267,7 @@ in
         (attrOrNull "verification" verification-tag)
         cfg.web-server.config
       ];
-      web-server-config-file = toYamlFile "tickler-web-server-config" web-server-config;
+      web-server-config-file = (pkgs.formats.yaml { }).generate "tickler-web-server-config" web-server-config;
       web-server-service = optionalAttrs (cfg.web-server.enable or false) {
         "tickler-web-server-${envname}" = {
           description = "Tickler ${envname} web server service";
@@ -280,7 +279,7 @@ in
             ''
               mkdir -p "${workingDir}"
               cd "${workingDir}"
-              ${ticklerReleasePackages.tickler-web-server}/bin/tickler-web-server
+              ${tickler-web-server}/bin/tickler-web-server
             '';
           serviceConfig =
             {
@@ -296,13 +295,14 @@ in
         };
       };
       web-host =
-        let redirectHost = host: {
-          "www.${host}" = {
-            enableACME = true;
-            forceSSL = true;
-            globalRedirect = host;
+        let
+          redirectHost = host: {
+            "www.${host}" = {
+              enableACME = true;
+              forceSSL = true;
+              globalRedirect = host;
+            };
           };
-        };
         in
         optionalAttrs (cfg.web-server.enable or false && cfg.web-server.hosts != [ ])
           {

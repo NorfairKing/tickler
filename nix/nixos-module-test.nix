@@ -1,12 +1,8 @@
-{ sources ? import ./sources.nix
-, pkgs ? import ./pkgs.nix { inherit sources; }
-, ticklerReleasePackages ? pkgs.ticklerReleasePackages
+{ pkgs
+, tickler-nixos-module-factory
 }:
 let
-  tickler-production = import (./nixos-module.nix) {
-    inherit sources;
-    inherit pkgs;
-    inherit ticklerReleasePackages;
+  tickler-production = tickler-nixos-module-factory {
     envname = "production";
   };
 
