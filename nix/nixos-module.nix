@@ -1,7 +1,5 @@
-{ sources ? import ./sources.nix
-, pkgs ? import ./pkgs.nix { inherit sources; }
-, ticklerReleasePackages ? pkgs.ticklerReleasePackages
-, envname
+{ envname
+, ticklerReleasePackages
 }:
 { lib, pkgs, config, ... }:
 with lib;
@@ -10,7 +8,7 @@ let
   cfg = config.services.tickler."${envname}";
   mergeListRecursively = pkgs.callPackage ./merge-lists-recursively.nix { };
   toYamlFile = pkgs.callPackage ./to-yaml.nix { };
-  mkLooperOption = pkgs.callPackage (sources.looper + "/nix/looper-option.nix") { };
+  mkLooperOption = pkgs.haskellPackages.looper.passthru.mkLooperOption;
 in
 {
   options.services.tickler."${envname}" =
