@@ -250,14 +250,18 @@
         "validity": "validity"
       },
       "locked": {
-        "lastModified": 1666469854,
-        "narHash": "sha256-q4SNFi8GPLf0G9YNM80Zco6Xh9EiShO3PldaCWRiXV0=",
-        "path": "/home/syd/src/openapi-code-generator",
-        "type": "path"
+        "lastModified": 1666818406,
+        "narHash": "sha256-uYjZ5M+NeJV5Q4Ps/TicSJJgpzVIJMsEOopBYO5AhmE=",
+        "owner": "Haskell-OpenAPI-Code-Generator",
+        "repo": "Haskell-OpenAPI-Client-Code-Generator",
+        "rev": "b37f645f7305c4e1d205db47debb498cb698ee8c",
+        "type": "github"
       },
       "original": {
-        "path": "/home/syd/src/openapi-code-generator",
-        "type": "path"
+        "owner": "Haskell-OpenAPI-Code-Generator",
+        "ref": "flake",
+        "repo": "Haskell-OpenAPI-Client-Code-Generator",
+        "type": "github"
       }
     },
     "pre-commit-hooks": {

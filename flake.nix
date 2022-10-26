@@ -28,7 +28,7 @@
     typed-uuid.flake = false;
     intray.url = "github:NorfairKing/intray?ref=flake";
     intray.flake = false;
-    openapi-code-generator.url = "path:///home/syd/src/openapi-code-generator";
+    openapi-code-generator.url = "github:Haskell-OpenAPI-Code-Generator/Haskell-OpenAPI-Client-Code-Generator?ref=flake";
     linkcheck.url = "github:NorfairKing/linkcheck?ref=flake";
     linkcheck.flake = false;
     seocheck.url = "github:NorfairKing/seocheck?ref=flake";
