@@ -38,7 +38,7 @@ in
 
                 ticklerPkg = name:
                   overrideCabal
-                    (buildStrictly (final.haskellPackages.callCabal2nixWithOptions name (../${name}) "--no-hpack" { }))
+                    (self.callPackage (../${name}/default.nix) { })
                     (old: {
                       doBenchmark = true;
                       doHaddock = false;

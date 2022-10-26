@@ -145,6 +145,23 @@
         "type": "github"
       }
     },
+    "mergeful": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1666635739,
+        "narHash": "sha256-nadbMT/+iGEEeyL1qnSyTS7ZgzsszN9OqJvRp44Gp80=",
+        "owner": "NorfairKing",
+        "repo": "mergeful",
+        "rev": "63ad193c17e2f5fd403869d1b539684b1a6c5d88",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NorfairKing",
+        "ref": "flake",
+        "repo": "mergeful",
+        "type": "github"
+      }
+    },
     "mergeless": {
       "flake": false,
       "locked": {
@@ -281,6 +298,23 @@
         "type": "github"
       }
     },
+    "pretty-relative-time": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1666635361,
+        "narHash": "sha256-UDXYx0yUgv9oieqDaYJLyEZxJpVTcOQedXZ7WVhJDv8=",
+        "owner": "NorfairKing",
+        "repo": "pretty-relative-time",
+        "rev": "b9e7f9bedb9c28652d40cf422e8477fcc8c5124e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NorfairKing",
+        "ref": "flake",
+        "repo": "pretty-relative-time",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "autodocodec": "autodocodec",
@@ -288,13 +322,16 @@
         "intray": "intray",
         "linkcheck": "linkcheck",
         "looper": "looper",
+        "mergeful": "mergeful",
         "mergeless": "mergeless",
         "nixpkgs": "nixpkgs",
         "openapi-code-generator": "openapi-code-generator",
         "pre-commit-hooks": "pre-commit-hooks_2",
+        "pretty-relative-time": "pretty-relative-time",
         "safe-coloured-text": "safe-coloured-text_2",
         "seocheck": "seocheck",
         "sydtest": "sydtest_2",
+        "typed-uuid": "typed-uuid",
         "validity": "validity_2",
         "yesod-autoreload": "yesod-autoreload",
         "yesod-static-remote": "yesod-static-remote"
@@ -382,6 +419,23 @@
         "owner": "NorfairKing",
         "ref": "flake",
         "repo": "sydtest",
+        "type": "github"
+      }
+    },
+    "typed-uuid": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1666800492,
+        "narHash": "sha256-A4lcpSKaa6nK138zl5uyroQ1Z1nCFjdKiPqXGOE35CA=",
+        "owner": "NorfairKing",
+        "repo": "typed-uuid",
+        "rev": "9772d7f8bfddda5fead98248dbbdd943c378690c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NorfairKing",
+        "ref": "flake",
+        "repo": "typed-uuid",
         "type": "github"
       }
     },

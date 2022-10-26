@@ -20,9 +20,14 @@
     yesod-static-remote.flake = false;
     looper.url = "github:NorfairKing/looper?ref=flake";
     looper.flake = false;
+    pretty-relative-time.url = "github:NorfairKing/pretty-relative-time?ref=flake";
+    pretty-relative-time.flake = false;
+    mergeful.url = "github:NorfairKing/mergeful?ref=flake";
+    mergeful.flake = false;
+    typed-uuid.url = "github:NorfairKing/typed-uuid?ref=flake";
+    typed-uuid.flake = false;
     intray.url = "github:NorfairKing/intray?ref=flake";
     intray.flake = false;
-    # openapi-code-generator.url = "github:Haskell-OpenAPI-Code-Generator/Haskell-OpenAPI-Client-Code-Generator?ref=flake";
     openapi-code-generator.url = "path:///home/syd/src/openapi-code-generator";
     linkcheck.url = "github:NorfairKing/linkcheck?ref=flake";
     linkcheck.flake = false;
@@ -43,6 +48,9 @@
     , yesod-autoreload
     , yesod-static-remote
     , looper
+    , pretty-relative-time
+    , mergeful
+    , typed-uuid
     , intray
     , openapi-code-generator
     , linkcheck
@@ -64,8 +72,10 @@
             (import (yesod-autoreload + "/nix/overlay.nix"))
             (import (yesod-static-remote + "/nix/overlay.nix"))
             (import (looper + "/nix/overlay.nix"))
+            (import (pretty-relative-time + "/nix/overlay.nix"))
+            (import (mergeful + "/nix/overlay.nix"))
+            (import (typed-uuid + "/nix/overlay.nix"))
             (import (intray + "/nix/overlay.nix"))
-            # (import (openapi-code-generator + "/nix/overlay.nix"))
             (_:_: { generateOpenAPIClient = openapi-code-generator.packages.${system}.default.passthru.generateOpenAPIClient; })
             (import (linkcheck + "/nix/overlay.nix"))
             (import (seocheck + "/nix/overlay.nix"))
