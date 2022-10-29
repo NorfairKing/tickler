@@ -1,5 +1,9 @@
 {
   description = "tickler";
+  nixConfig = {
+    extra-substituters = "https://tickler.cachix.org";
+    extra-trusted-public-keys = "tickler.cachix.org-1:hOYeQ5gFg2xfpA3fxBBS2ixfsvJL2t6wUjdFAVL1Cqc=";
+  };
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-21.11";
     flake-utils.url = "github:numtide/flake-utils";
