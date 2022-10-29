@@ -1,5 +1,7 @@
+{ tickler-server
+, tickler-web-server
+}:
 { envname
-, ticklerReleasePackages
 }:
 { lib, pkgs, config, ... }:
 with lib;
@@ -232,7 +234,7 @@ in
             ''
               mkdir -p "${workingDir}"
               cd "${workingDir}"
-              ${ticklerReleasePackages.tickler-server}/bin/tickler-server
+              ${tickler-server}/bin/tickler-server
             '';
           serviceConfig =
             {
@@ -278,7 +280,7 @@ in
             ''
               mkdir -p "${workingDir}"
               cd "${workingDir}"
-              ${ticklerReleasePackages.tickler-web-server}/bin/tickler-web-server
+              ${tickler-web-server}/bin/tickler-web-server
             '';
           serviceConfig =
             {

@@ -82,7 +82,7 @@
           ];
         };
         pkgs = pkgsFor nixpkgs;
-
+        mkNixosModule = import ./nix/nixos-module.nix { inherit (pkgs.ticklerReleasePackages) tickler-server tickler-web-server; };
       in
       {
         overlays = import ./nix/overlay.nix;
@@ -125,6 +125,7 @@
             ]);
           shellHook = self.checks.${system}.pre-commit.shellHook;
         };
-        nixosModuleFactories.default = import ./nix/nixos-module.nix;
+        nixosModules.default = mkNixosModule { envname = "production"; };
+        nixosModuleFactories.default = mkNixosModule;
       });
 }

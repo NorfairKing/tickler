@@ -4,7 +4,6 @@
 let
   tickler-production = tickler-nixos-module-factory {
     envname = "production";
-    ticklerReleasePackages = pkgs.ticklerReleasePackages;
   };
 
   api-port = 8000;
