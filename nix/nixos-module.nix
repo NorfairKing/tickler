@@ -1,5 +1,6 @@
 { tickler-server
 , tickler-web-server
+, mkLooperOption
 }:
 { envname
 }:
@@ -10,7 +11,7 @@ let
   cfg = config.services.tickler."${envname}";
   mergeListRecursively = pkgs.callPackage ./merge-lists-recursively.nix { };
   toYamlFile = pkgs.callPackage ./to-yaml.nix { };
-  mkLooperOption = pkgs.haskellPackages.looper.passthru.mkLooperOption;
+  mkLooperOption = looper.passthru.mkLooperOption;
 in
 {
   options.services.tickler."${envname}" =

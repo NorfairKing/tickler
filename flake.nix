@@ -86,7 +86,10 @@
           ];
         };
         pkgs = pkgsFor nixpkgs;
-        mkNixosModule = import ./nix/nixos-module.nix { inherit (pkgs.ticklerReleasePackages) tickler-server tickler-web-server; };
+        mkNixosModule = import ./nix/nixos-module.nix {
+          inherit (pkgs.ticklerReleasePackages) tickler-server tickler-web-server;
+          inherit (pkgs.haskellPackages.looper.passthru) mkLooperOption;
+        };
       in
       {
         overlays = import ./nix/overlay.nix;
