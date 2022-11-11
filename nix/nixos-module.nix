@@ -1,7 +1,8 @@
-{ sources ? import ./sources.nix
-, pkgs ? import ./pkgs.nix { inherit sources; }
-, ticklerReleasePackages ? pkgs.ticklerReleasePackages
-, envname
+{ tickler-server
+, tickler-web-server
+, mkLooperOption
+}:
+{ envname
 }:
 { lib, pkgs, config, ... }:
 with lib;
@@ -10,7 +11,6 @@ let
   cfg = config.services.tickler."${envname}";
   mergeListRecursively = pkgs.callPackage ./merge-lists-recursively.nix { };
   toYamlFile = pkgs.callPackage ./to-yaml.nix { };
-  mkLooperOption = pkgs.callPackage (sources.looper + "/nix/looper-option.nix") { };
 in
 {
   options.services.tickler."${envname}" =
@@ -234,7 +234,7 @@ in
             ''
               mkdir -p "${workingDir}"
               cd "${workingDir}"
-              ${ticklerReleasePackages.tickler-server}/bin/tickler-server
+              ${tickler-server}/bin/tickler-server
             '';
           serviceConfig =
             {
@@ -280,7 +280,7 @@ in
             ''
               mkdir -p "${workingDir}"
               cd "${workingDir}"
-              ${ticklerReleasePackages.tickler-web-server}/bin/tickler-web-server
+              ${tickler-web-server}/bin/tickler-web-server
             '';
           serviceConfig =
             {
@@ -296,13 +296,14 @@ in
         };
       };
       web-host =
-        let redirectHost = host: {
-          "www.${host}" = {
-            enableACME = true;
-            forceSSL = true;
-            globalRedirect = host;
+        let
+          redirectHost = host: {
+            "www.${host}" = {
+              enableACME = true;
+              forceSSL = true;
+              globalRedirect = host;
+            };
           };
-        };
         in
         optionalAttrs (cfg.web-server.enable or false && cfg.web-server.hosts != [ ])
           {
