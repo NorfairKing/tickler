@@ -40,5 +40,4 @@ mkDerivation {
     servant-auth-client servant-client sydtest tickler-client
   ];
   license = "unknown";
-  hydraPlatforms = lib.platforms.none;
 }

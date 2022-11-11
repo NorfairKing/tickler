@@ -296,13 +296,14 @@ in
         };
       };
       web-host =
-        let redirectHost = host: {
-          "www.${host}" = {
-            enableACME = true;
-            forceSSL = true;
-            globalRedirect = host;
+        let
+          redirectHost = host: {
+            "www.${host}" = {
+              enableACME = true;
+              forceSSL = true;
+              globalRedirect = host;
+            };
           };
-        };
         in
         optionalAttrs (cfg.web-server.enable or false && cfg.web-server.hosts != [ ])
           {

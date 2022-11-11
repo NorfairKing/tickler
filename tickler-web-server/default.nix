@@ -29,5 +29,5 @@ mkDerivation {
   executableHaskellDepends = [ base ];
   testHaskellDepends = [ base ];
   license = "unknown";
-  hydraPlatforms = lib.platforms.none;
+  mainProgram = "tickler-web-server";
 }

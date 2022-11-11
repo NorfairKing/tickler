@@ -16,5 +16,4 @@ mkDerivation {
     validity-uuid
   ];
   license = "unknown";
-  hydraPlatforms = lib.platforms.none;
 }
