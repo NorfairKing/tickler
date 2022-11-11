@@ -11,7 +11,6 @@ let
   cfg = config.services.tickler."${envname}";
   mergeListRecursively = pkgs.callPackage ./merge-lists-recursively.nix { };
   toYamlFile = pkgs.callPackage ./to-yaml.nix { };
-  mkLooperOption = looper.passthru.mkLooperOption;
 in
 {
   options.services.tickler."${envname}" =
