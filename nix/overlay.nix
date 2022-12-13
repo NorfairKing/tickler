@@ -115,11 +115,26 @@ in
                     "tickler-web-server-gen" = ticklerPkg "tickler-web-server-gen";
                     "tickler-web-server-webdriver" = final.haskellPackages.sydtest-webdriver.enableWebdriver (ticklerPkg "tickler-web-server-webdriver");
                   };
+                amazonkaRepo = builtins.fetchGit {
+                  url = "https://github.com/brendanhay/amazonka";
+                  rev = "cfe2584aef0b03c86650372d362c74f237925d8c";
+                };
+                amazonkaPkg = name: path: self.callCabal2nix name (amazonkaRepo + "/${path}") { };
+                amazonkaPackages = builtins.mapAttrs amazonkaPkg {
+                  "amazonka" = "lib/amazonka";
+                  "amazonka-core" = "lib/amazonka-core";
+                  "amazonka-test" = "lib/amazonka-test";
+                  "amazonka-ses" = "lib/services/amazonka-ses";
+                  "amazonka-sso" = "lib/services/amazonka-sso";
+                  "amazonka-sts" = "lib/services/amazonka-sts";
+                };
+
               in
               {
                 inherit ticklerPackages;
-              } // ticklerPackages
+              } // ticklerPackages // amazonkaPackages
           );
+
       }
     );
 }

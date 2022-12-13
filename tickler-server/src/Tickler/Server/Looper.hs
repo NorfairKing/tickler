@@ -7,7 +7,6 @@ module Tickler.Server.Looper (runTicklerLoopers) where
 
 import Control.Monad.Catch as Catch
 import Control.Monad.Logger
-import Control.Monad.Trans.AWS as AWS (Credentials (..))
 import Control.Retry
 import Data.Pool
 import qualified Data.Text as T
@@ -66,9 +65,7 @@ runTicklerLoopers pool Settings {..} = do
 
   runLoopersIgnoreOverrun looperRunner $
     concat
-      [ [ mkLooperDef "Emailer" setEmailerSets $
-            let emailerSettings = EmailerSettings AWS.Discover
-             in runEmailer emailerSettings,
+      [ [ mkLooperDef "Emailer" setEmailerSets runEmailer,
           mkLooperDef
             "Triggerer"
             setTriggererSets

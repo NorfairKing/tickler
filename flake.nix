@@ -5,7 +5,7 @@
     extra-trusted-public-keys = "tickler.cachix.org-1:hOYeQ5gFg2xfpA3fxBBS2ixfsvJL2t6wUjdFAVL1Cqc=";
   };
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-21.11";
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-22.11";
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
     validity.url = "github:NorfairKing/validity?ref=flake";
     validity.flake = false;
@@ -90,7 +90,11 @@
     in
     {
       overlays.${system} = import ./nix/overlay.nix;
-      packages.${system}.default = pkgs.ticklerRelease;
+      packages.${system} = {
+        default = pkgs.ticklerRelease;
+        generatedIntrayStripeCode = pkgs.generatedIntrayStripeCode;
+        generatedTicklerStripeCode = pkgs.generatedTicklerStripeCode;
+      };
       checks.${system} = {
         nixos-module-test = import ./nix/nixos-module-test.nix {
           inherit pkgs;
@@ -117,6 +121,10 @@
           niv
           zlib
           cabal-install
+          chromedriver
+          chromium
+          selenium-server-standalone
+
         ]) ++ (with pre-commit-hooks.packages.${system};
           [
             hlint
@@ -125,7 +133,10 @@
             ormolu
             cabal2nix
           ]);
-        shellHook = self.checks.${system}.pre-commit.shellHook;
+        shellHook = ''
+          ${self.checks.${system}.pre-commit.shellHook}
+          ${pkgs.haskellPackages.sydtest-webdriver.setupFontsConfigScript}
+        '';
       };
       nixosModules.${system}.default = mkNixosModule { envname = "production"; };
       nixosModuleFactories.${system}.default = mkNixosModule;

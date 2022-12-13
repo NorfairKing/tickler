@@ -11,8 +11,8 @@ where
 
 import Data.Aeson as JSON
 import Data.Aeson.Encode.Pretty as JSON
+import qualified Data.Aeson.KeyMap as KM
 import qualified Data.ByteString.Lazy as LB
-import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Data.Version
@@ -112,7 +112,7 @@ mkPostCustomersRequestBodyForUser username =
 
 metadata :: JSON.Object
 metadata =
-  HM.fromList
+  KM.fromList
     [ ("product", "tickler"),
       ("tickler-server-version", toJSON $ showVersion version)
     ]

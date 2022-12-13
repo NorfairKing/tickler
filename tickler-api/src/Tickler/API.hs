@@ -24,7 +24,6 @@ import Data.UUID.Typed
 import Import
 import Intray.API ()
 import Servant.API
-import Servant.API.Generic
 import Tickler.API.Account
 import Tickler.API.Admin
 import Tickler.API.Protected

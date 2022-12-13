@@ -14,7 +14,6 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.Time
 import Import
 import Servant.API
-import Servant.API.Generic
 import Tickler.API.Account
 import Tickler.API.Protected
 import Tickler.Data

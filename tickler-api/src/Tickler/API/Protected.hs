@@ -20,7 +20,6 @@ import Import
 import Intray.API ()
 import qualified Intray.Data as Intray
 import Servant.API
-import Servant.API.Generic
 import Servant.Auth
 import Servant.Auth.Server
 import Tickler.API.Account

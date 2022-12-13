@@ -5,6 +5,9 @@ $doctype 5
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>#{pageTitle pc}
+    ^{pageHead pc}
+    $maybe description <- pageDescription pc
+      <meta name="description" content=#{description}>
 
     <!-- Google search console -->
     $maybe searchConsoleId <- appVerification app_
@@ -12,8 +15,6 @@ $doctype 5
 
     <link rel="stylesheet" href=@{StaticR static_bulma_bulma_min_css}>
     <script src=@{StaticR static_jquery_jquery_min_js}>
-
-    ^{pageHead pc}
 
     <!-- Google Analytics -->
     $maybe analyticsID <- appTracking app_

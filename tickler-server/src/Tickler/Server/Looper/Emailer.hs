@@ -2,42 +2,36 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Tickler.Server.Looper.Emailer
-  ( EmailerSettings (..),
-    runEmailer,
+  ( runEmailer,
   )
 where
 
+import qualified Amazonka as AWS
+import qualified Amazonka.SES.SendEmail
+import qualified Amazonka.SES.SendEmail as SES
+import qualified Amazonka.SES.Types as SES
 import Conduit
-import Control.Lens
-import Control.Monad.Trans.AWS as AWS (runAWST)
 import qualified Data.Conduit.Combinators as C
 import qualified Data.Text as T
 import Data.Time
 import Database.Persist.Sqlite
 import Import
-import Network.AWS as AWS
-import Network.AWS.SES
-import System.IO
+import qualified System.IO as IO
 import Tickler.Data
 import Tickler.Server.Looper.DB
 import Tickler.Server.Looper.Types
 
-data EmailerSettings = EmailerSettings
-  { emailerSetAWSCredentials :: AWS.Credentials
-  }
-  deriving (Show)
-
-runEmailer :: EmailerSettings -> Looper ()
-runEmailer EmailerSettings {..} = do
+runEmailer :: Looper ()
+runEmailer = do
   acqEmailsToSendSource <- runDB $ selectSourceRes [EmailStatus ==. EmailUnsent] [Asc EmailScheduled]
   withAcquire acqEmailsToSendSource $ \emailsToSendSource -> do
-    runConduit $ emailsToSendSource .| C.mapM_ (handleSingleEmail emailerSetAWSCredentials)
+    runConduit $ emailsToSendSource .| C.mapM_ handleSingleEmail
 
-handleSingleEmail :: AWS.Credentials -> Entity Email -> Looper ()
-handleSingleEmail awsCreds (Entity emailId email) = do
+handleSingleEmail :: Entity Email -> Looper ()
+handleSingleEmail (Entity emailId email) = do
   logInfoN $ T.pack $ unwords ["Sending email email:", show $ fromSqlKey emailId]
   runDB $ do
-    newStatus <- liftIO $ sendSingleEmail awsCreds email
+    newStatus <- liftIO $ sendSingleEmail email
     now <- liftIO getCurrentTime
     update emailId $
       case newStatus of
@@ -52,23 +46,30 @@ handleSingleEmail awsCreds (Entity emailId email) = do
             EmailSendAttempt =. Just now
           ]
 
-sendSingleEmail :: AWS.Credentials -> Email -> IO (Either Text Text)
-sendSingleEmail creds Email {..} = do
-  lgr <- newLogger Debug stderr
-  env <- set envLogger lgr <$> newEnv creds
-  runResourceT . runAWST env . AWS.within Ireland $ do
-    let txt = content emailTextContent
-    let html = content emailHtmlContent
-    let bod = body & bText ?~ txt & bHTML ?~ html
-    let sub = content emailSubject
-    let mesg = message sub bod
-    let dest = destination & dToAddresses .~ [emailAddressText emailTo]
-    let req = sendEmail (emailAddressText emailFrom) dest mesg
-    errOrResp <- trying _ServiceError (AWS.send req)
-    pure $
-      case errOrResp of
-        Left err -> Left $ T.pack $ show err
-        Right resp ->
-          case resp ^. sersResponseStatus of
-            200 -> Right $ resp ^. sersMessageId
-            _ -> Left "Error while sending email."
+sendSingleEmail :: Email -> IO (Either Text Text)
+sendSingleEmail Email {..} = do
+  logger <- AWS.newLogger AWS.Debug IO.stdout
+  discoveredEnv <- liftIO $ AWS.newEnv AWS.discover
+  let awsEnv =
+        discoveredEnv
+          { AWS.logger = logger,
+            AWS.region = AWS.Ireland
+          }
+
+  let textBody = SES.newContent emailTextContent
+  let htmlBody = SES.newContent emailHtmlContent
+  let body = SES.newBody {SES.html = Just textBody, SES.text = Just htmlBody}
+  let subject = SES.newContent emailSubject
+  let message = SES.newMessage subject body
+  let destination = SES.newDestination {SES.toAddresses = Just [emailAddressText emailTo]}
+  let request = SES.newSendEmail (emailAddressText emailFrom) destination message
+
+  errOrResp <- runResourceT $ AWS.sendEither awsEnv request
+
+  pure $
+    case errOrResp of
+      Left err -> Left $ T.pack $ show err
+      Right response ->
+        case SES.httpStatus response of
+          200 -> Right $ Amazonka.SES.SendEmail.messageId response
+          _ -> Left "Error while sending email."

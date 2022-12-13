@@ -16,6 +16,5 @@ getHomeR = do
   mPricing <- runClientOrErr clientGetPricing
   withNavBar $ do
     setTitle "Tickler"
-    setDescription
-      "Your GTD Tickler system; Tickler puts things back into your intray in the future."
+    setDescriptionIdemp "Your GTD Tickler system; Tickler puts things back into your intray in the future."
     $(widgetFile "home")
