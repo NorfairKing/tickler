@@ -15,7 +15,7 @@ let
 in
 {
   ticklerReleasePackages = mapAttrs
-    (_: pkg: justStaticExecutables (doCheck pkg))
+    (_: pkg: justStaticExecutables pkg)
     final.haskellPackages.ticklerPackages;
 
   ticklerRelease =

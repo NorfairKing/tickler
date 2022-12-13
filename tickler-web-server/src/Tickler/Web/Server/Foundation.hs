@@ -139,6 +139,7 @@ data LoginData = LoginData
 loginFormPostTargetR :: AuthRoute
 loginFormPostTargetR = PluginR ticklerAuthPluginName ["login"]
 
+{-# ANN postLoginR ("NOCOVER" :: String) #-}
 postLoginR :: TicklerAuthHandler TypedContent
 postLoginR = do
   let loginInputForm = LoginData <$> ireq textField "username" <*> ireq passwordField "passphrase"

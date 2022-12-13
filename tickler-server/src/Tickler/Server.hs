@@ -78,6 +78,7 @@ ticklerApp se =
           corsMethods = ["GET", "POST", "HEAD", "DELETE"]
         }
 
+{-# ANN makeTicklerServer ("NOCOVER" :: String) #-}
 makeTicklerServer :: TicklerServerEnv -> Server TicklerAPI
 makeTicklerServer cfg =
   hoistServerWithContext

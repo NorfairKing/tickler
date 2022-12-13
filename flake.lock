@@ -34,6 +34,22 @@
         "type": "github"
       }
     },
+    "dekking": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1670939911,
+        "narHash": "sha256-xNUwy9ya2Zt+0AQIdxEzWX4ISl+Nq9cKrlAsrukN2Fc=",
+        "owner": "NorfairKing",
+        "repo": "dekking",
+        "rev": "bba10e86af9c49b06cb72e7067d275f28f5587d5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NorfairKing",
+        "repo": "dekking",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -113,6 +129,29 @@
       "original": {
         "owner": "hercules-ci",
         "repo": "gitignore.nix",
+        "type": "github"
+      }
+    },
+    "haskell-dependency-graph-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "pre-commit-hooks": [
+          "pre-commit-hooks"
+        ]
+      },
+      "locked": {
+        "lastModified": 1670417232,
+        "narHash": "sha256-mSKwKYAmOrKW2VQ7AL1x5GOFmbXd5FV02ImxdJl+mZg=",
+        "owner": "NorfairKing",
+        "repo": "haskell-dependency-graph-nix",
+        "rev": "1dd987dee4863e47f69eae2b1e3df1b747d43e53",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NorfairKing",
+        "repo": "haskell-dependency-graph-nix",
         "type": "github"
       }
     },
@@ -364,6 +403,8 @@
     "root": {
       "inputs": {
         "autodocodec": "autodocodec",
+        "dekking": "dekking",
+        "haskell-dependency-graph-nix": "haskell-dependency-graph-nix",
         "intray": "intray",
         "linkcheck": "linkcheck",
         "looper": "looper",

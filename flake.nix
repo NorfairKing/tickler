@@ -7,6 +7,9 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-22.11";
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
+    haskell-dependency-graph-nix.url = "github:NorfairKing/haskell-dependency-graph-nix";
+    haskell-dependency-graph-nix.inputs.nixpkgs.follows = "nixpkgs";
+    haskell-dependency-graph-nix.inputs.pre-commit-hooks.follows = "pre-commit-hooks";
     validity.url = "github:NorfairKing/validity?ref=flake";
     validity.flake = false;
     autodocodec.url = "github:NorfairKing/autodocodec?ref=flake";
@@ -36,12 +39,15 @@
     linkcheck.flake = false;
     seocheck.url = "github:NorfairKing/seocheck?ref=flake";
     seocheck.flake = false;
+    dekking.url = "github:NorfairKing/dekking";
+    dekking.flake = false;
   };
 
   outputs =
     { self
     , nixpkgs
     , pre-commit-hooks
+    , haskell-dependency-graph-nix
     , validity
     , safe-coloured-text
     , sydtest
@@ -57,6 +63,7 @@
     , openapi-code-generator
     , linkcheck
     , seocheck
+    , dekking
     }:
     let
       system = "x86_64-linux";
@@ -64,7 +71,6 @@
         inherit system;
         config.allowUnfree = true;
         overlays = [
-          self.overlays.${system}
           (import (autodocodec + "/nix/overlay.nix"))
           (import (safe-coloured-text + "/nix/overlay.nix"))
           (import (sydtest + "/nix/overlay.nix"))
@@ -80,6 +86,8 @@
           (_:_: { generateOpenAPIClient = openapi-code-generator.packages.${system}.default.passthru.generateOpenAPIClient; })
           (import (linkcheck + "/nix/overlay.nix"))
           (import (seocheck + "/nix/overlay.nix"))
+          (import (dekking + "/nix/overlay.nix"))
+          self.overlays.${system}
         ];
       };
       pkgs = pkgsFor nixpkgs;
@@ -99,6 +107,28 @@
         nixos-module-test = import ./nix/nixos-module-test.nix {
           inherit pkgs;
           tickler-nixos-module-factory = self.nixosModuleFactories.${system}.default;
+        };
+        dependency-graph = haskell-dependency-graph-nix.lib.${system}.makeDependencyGraph {
+          packages = builtins.attrNames pkgs.haskellPackages.ticklerPackages;
+          inherit (pkgs) haskellPackages;
+        };
+        coverage-report = pkgs.dekking.makeCoverageReport {
+          name = "test-coverage-report";
+          packages = [
+            "tickler-api"
+            "tickler-client"
+            "tickler-data"
+            "tickler-server"
+            # "tickler-stripe-client" # No need to cover generated code
+            "tickler-web-server"
+          ];
+          coverage = [
+            "tickler-api-gen"
+            "tickler-data-gen"
+            "tickler-server-gen"
+            "tickler-web-server-gen"
+            "tickler-web-server-webdriver"
+          ];
         };
         pre-commit = pre-commit-hooks.lib.${system}.run {
           src = ./.;
