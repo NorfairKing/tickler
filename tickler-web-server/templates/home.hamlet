@@ -46,27 +46,18 @@
 
 
 
-    <section .section>
-      <div .columns .is-centered>
-        <div .column>
+      <div .columns .is-flex-mobile .is-centered>
+        <div .column .is-one-third>
           <div .content>
             <ul>
               <li> Faster, cleaner and leaner than its alternatives
               <li> No-nonsense web interface
               <li> Minimal design, maximum efficient
               <li> In browser or terminal
-
-        <div .column>
-          <div .content>
-            <ul>
               <li> Application programming interface
               <li> Command line interface options included
               <li> Open source
               <li> Optimized for power users
-
-        <div .column>
-          <div .content>
-            <ul>
               <li> Ad-free forever
               <li> Anywhere, anytime
               <li> Reliable
