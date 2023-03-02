@@ -4,7 +4,7 @@
 
 <footer .footer>
   <div .container>
-    <div .columns .is-centered .p-4>
+    <div .columns .is-centered .has-text-centered-mobile .p-4>
       <div>
         &copy;
         <span id="copyright">
@@ -15,7 +15,7 @@
           Tom Sydney Kerckhove | Technical Leader | Speaker | Coach.
 
 
-    <div .columns .is-centered .is-mobile>
+    <div .columns .is-centered .has-text-centered-mobile>
       <a href="https://twitter.com/kerckhove_ts">
         <img src=@{StaticR static_tom_sydney_kerckhove_twitter_icon_svg} alt="Tom Sydney Kerckhove Twitter" style="height: 25px" .m-1>
 
@@ -33,10 +33,5 @@
 
 
 
-    <div .columns .is-centered .is-mobile>
-      <p>
-        syd
-        <span style="display:none">
-          muhaha
-      <p>
-        @cs-syd.eu
+    <div .columns .is-centered .has-text-centered-mobile>
+      <a href="https://cs-syd.eu/contact">contact</a>
