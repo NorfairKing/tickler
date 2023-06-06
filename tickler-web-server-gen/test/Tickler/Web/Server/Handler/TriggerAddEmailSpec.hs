@@ -9,4 +9,5 @@ spec =
     it "can post an email trigger" $ \yc -> do
       forAllValid $ \emailTrigger ->
         runYesodClientM yc $
-          withExampleAccountAndLogin_ $ addEmailTrigger emailTrigger
+          withExampleAccountAndLogin_ $
+            addEmailTrigger emailTrigger

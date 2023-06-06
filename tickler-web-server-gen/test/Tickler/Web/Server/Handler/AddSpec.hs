@@ -112,7 +112,7 @@ spec = do
                   tickleScheduledTime = Nothing,
                   tickleRecurrence =
                     Just $
-                      EveryDaysAtTime 5 (Just (TimeOfDay 12 34 00))
+                      EveryDaysAtTime 5 (Just (timeOfDayToMinuteOfDay (TimeOfDay 12 34 00)))
                 }
           statusIs 200
 
@@ -126,7 +126,7 @@ spec = do
                   tickleScheduledTime = Nothing,
                   tickleRecurrence =
                     Just $
-                      EveryMonthsOnDay 6 (Just 15) (Just (TimeOfDay 23 45 00))
+                      EveryMonthsOnDay 6 (Just 15) (Just (timeOfDayToMinuteOfDay (TimeOfDay 23 45 00)))
                 }
           statusIs 200
 

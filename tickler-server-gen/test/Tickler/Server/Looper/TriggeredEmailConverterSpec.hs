@@ -24,7 +24,7 @@ spec = do
             triggeredItemContents = "Hello world\nFoo bar",
             triggeredItemCreated = UTCTime (fromGregorian 2022 05 02) 36000,
             triggeredItemScheduledDay = fromGregorian 2022 05 03,
-            triggeredItemScheduledTime = Just $ TimeOfDay 19 30 00,
+            triggeredItemScheduledTime = Just $ timeOfDayToMinuteOfDay $ TimeOfDay 19 30 00,
             triggeredItemRecurrence = Nothing,
             triggeredItemTriggered = UTCTime (fromGregorian 2022 05 03) 31000
           }

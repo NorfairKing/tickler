@@ -1,4 +1,4 @@
-resolver: lts-19.32
+resolver: lts-20.23
 packages:
 - tickler-api
 - tickler-api-gen
@@ -23,7 +23,7 @@ ghc-options:
 extra-deps:
 
 - github: NorfairKing/intray
-  commit: 1464e7a1c4f7fe7f05afc900859517dc54269ed9
+  commit: e39177c80b56d3519649bef695763c7afd44ee96
   subdirs:
     - intray-api
     - intray-api-gen
@@ -41,48 +41,6 @@ extra-deps:
     - mergeless-persistent
     - genvalidity-mergeless
 
-- github: NorfairKing/validity
-  commit: 2e9198bdaaa8c80a5dbe2b7b860b5c26558c6374
-  subdirs:
-    - genvalidity
-    - genvalidity-aeson
-    - genvalidity-bytestring
-    - genvalidity-containers
-    - genvalidity-criterion
-    - genvalidity-hspec
-    - genvalidity-hspec-aeson
-    - genvalidity-hspec-binary
-    - genvalidity-hspec-cereal
-    - genvalidity-hspec-hashable
-    - genvalidity-hspec-optics
-    - genvalidity-hspec-persistent
-    - genvalidity-path
-    - genvalidity-persistent
-    - genvalidity-property
-    - genvalidity-scientific
-    - genvalidity-sydtest
-    - genvalidity-sydtest-aeson
-    - genvalidity-sydtest-hashable
-    - genvalidity-sydtest-persistent
-    - genvalidity-text
-    - genvalidity-time
-    - genvalidity-unordered-containers
-    - genvalidity-uuid
-    - genvalidity-vector
-    - validity
-    - validity-aeson
-    - validity-bytestring
-    - validity-containers
-    - validity-path
-    - validity-persistent
-    - validity-primitive
-    - validity-scientific
-    - validity-text
-    - validity-time
-    - validity-unordered-containers
-    - validity-uuid
-    - validity-vector
-
 - github: NorfairKing/typed-uuid
   commit: 00fbc7e0380ab2ff72e8fd02323e76f13b7d5b59
   subdirs:
@@ -92,38 +50,10 @@ extra-deps:
 - github: NorfairKing/pretty-relative-time
   commit: a634358ff274380a12360f7814c3aea46ea35b1b
 
-- github: NorfairKing/safe-coloured-text
-  commit: 675cb01fce5f46718416d7746de5b856ed90a63f
-  subdirs:
-    - safe-coloured-text
-    - safe-coloured-text-terminfo
-
 - github: NorfairKing/looper
   commit: fd36d37becfa04fa4d7e00604e37c61817b6b62b
   subdirs:
     - looper
-
-- github: NorfairKing/sydtest
-  commit: ff224861ea409a9ee08576adb0438bbbb948917f
-  subdirs:
-  - sydtest
-  - sydtest-aeson
-  - sydtest-discover
-  - sydtest-persistent
-  - sydtest-persistent-sqlite
-  - sydtest-typed-process
-  - sydtest-wai
-  - sydtest-webdriver
-  - sydtest-webdriver-screenshot
-  - sydtest-webdriver-yesod
-  - sydtest-yesod
-
-- github: NorfairKing/autodocodec
-  commit: e337d681109cac273f5b9ea2b54b174bce79d312
-  subdirs:
-  - autodocodec
-  - autodocodec-yaml
-  - autodocodec-schema
 
 - github: NorfairKing/yesod-static-remote
   commit: 7eda644dc369e16c3591847f6c7cad30846bf6b0
@@ -135,7 +65,7 @@ extra-deps:
   commit: cf9c387de7c1525ffbcd58125ccb3f798a97a2bb
 
 - github: brendanhay/amazonka
-  commit: cfe2584aef0b03c86650372d362c74f237925d8c
+  commit: 2dc498fe75ff47db2db3ee63e042b1aa3da57c0f
   subdirs:
   - lib/amazonka
   - lib/amazonka-core
@@ -143,6 +73,20 @@ extra-deps:
   - lib/services/amazonka-ses
   - lib/services/amazonka-sso
   - lib/services/amazonka-sts
+
+- github: NorfairKing/sydtest
+  commit: dcd230e48f164594a473925fa0dbbaf956eb6848
+  subdirs:
+    - sydtest
+    - sydtest-aeson
+    - sydtest-discover
+    - sydtest-persistent
+    - sydtest-persistent-sqlite
+    - sydtest-servant
+    - sydtest-wai
+    - sydtest-webdriver
+    - sydtest-webdriver-yesod
+    - sydtest-yesod
 
 system-ghc: true
 nix:

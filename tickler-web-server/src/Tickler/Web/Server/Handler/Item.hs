@@ -37,23 +37,25 @@ handleEditItemForm = do
 data EditItem = EditItem
   { editItemText :: Textarea,
     editItemScheduledDay :: !(Maybe Day),
-    editItemScheduledTime :: !(Maybe TimeOfDay),
+    editItemScheduledTime :: !(Maybe MinuteOfDay),
     editItemRecurrenceData :: RecurrenceData
   }
 
 data RecurrenceData = RecurrenceData
   { recurrenceDataOption :: RecurrenceOption,
     recurrenceDataDays :: !(Maybe Word),
-    recurrenceDataDayTimeOfDay :: !(Maybe TimeOfDay),
+    recurrenceDataDayTimeOfDay :: !(Maybe MinuteOfDay),
     recurrenceDataMonths :: !(Maybe Word),
     recurrenceDataMonthDay :: !(Maybe Word8),
-    recurrenceDataMonthTimeOfDay :: !(Maybe TimeOfDay)
+    recurrenceDataMonthTimeOfDay :: !(Maybe MinuteOfDay)
   }
 
 editItemForm :: FormInput Handler EditItem
 editItemForm =
-  EditItem <$> ireq textareaField "contents" <*> iopt dayField "scheduled-day"
-    <*> iopt timeField "scheduled-time"
+  EditItem
+    <$> ireq textareaField "contents"
+    <*> iopt dayField "scheduled-day"
+    <*> iopt minuteOfDayField "scheduled-time"
     <*> recurrenceDataForm
 
 recurrenceDataForm :: FormInput Handler RecurrenceData
@@ -67,12 +69,12 @@ recurrenceDataForm =
       )
       "recurrence"
     <*> iopt (checkMMap (pure . (pure :: a -> Either Text a) . fromInteger) fromIntegral intField) "days"
-    <*> iopt timeField "day-time-of-day"
+    <*> iopt minuteOfDayField "day-time-of-day"
     <*> iopt
       (checkMMap (pure . (pure :: a -> Either Text a) . fromInteger) fromIntegral intField)
       "months"
     <*> iopt (checkMMap (pure . (pure :: a -> Either Text a) . fromInteger) fromIntegral intField) "day"
-    <*> iopt timeField "month-time-of-day"
+    <*> iopt minuteOfDayField "month-time-of-day"
 
 data RecurrenceOption
   = NoRecurrence
@@ -80,7 +82,7 @@ data RecurrenceOption
   | Months
   deriving (Show, Read, Eq, Enum, Bounded)
 
-defaultScheduledDay :: UTCTime -> Maybe TimeOfDay -> Maybe Recurrence -> (Day, Maybe TimeOfDay)
+defaultScheduledDay :: UTCTime -> Maybe MinuteOfDay -> Maybe Recurrence -> (Day, Maybe MinuteOfDay)
 defaultScheduledDay now mtod mrec =
   case mrec of
     Nothing -> (utctDay $ addUTCTime nominalDay now, mtod)

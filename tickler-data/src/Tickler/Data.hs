@@ -10,6 +10,7 @@ import Tickler.Data.EmailStatus as X
 import Tickler.Data.EmailVerificationKey as X
 import Tickler.Data.HashedPassword as X
 import Tickler.Data.ItemUUID as X
+import Tickler.Data.MinuteOfDay as X
 import Tickler.Data.Recurrence as X
 import Tickler.Data.Time as X
 import Tickler.Data.TriggerUUID as X

@@ -86,15 +86,15 @@ dummyTickle = head dummyTickles
 dummyTickles :: [Tickle]
 dummyTickles = do
   tickleScheduledDay <- [fromGregorian 2222 04 24]
-  tickleScheduledTime <- [Nothing, Just $ TimeOfDay 12 15 00]
+  tickleScheduledTime <- [Nothing, Just $ timeOfDayToMinuteOfDay $ TimeOfDay 12 15 00]
   tickleRecurrence <-
     mconcat
       [ [Nothing],
         do
-          mtod <- [Nothing, Just $ TimeOfDay 12 30 00]
+          mtod <- [Nothing, Just $ timeOfDayToMinuteOfDay $ TimeOfDay 12 30 00]
           pure $ Just $ EveryDaysAtTime 5 mtod,
         do
-          mtod <- [Nothing, Just $ TimeOfDay 12 45 00]
+          mtod <- [Nothing, Just $ timeOfDayToMinuteOfDay $ TimeOfDay 12 45 00]
           md <- [Nothing, Just 15]
           pure $ Just $ EveryMonthsOnDay 6 md mtod
       ]

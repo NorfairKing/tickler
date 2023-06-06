@@ -5,39 +5,39 @@
     extra-trusted-public-keys = "tickler.cachix.org-1:hOYeQ5gFg2xfpA3fxBBS2ixfsvJL2t6wUjdFAVL1Cqc=";
   };
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-22.11";
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-23.05";
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
     haskell-dependency-graph-nix.url = "github:NorfairKing/haskell-dependency-graph-nix";
     haskell-dependency-graph-nix.inputs.nixpkgs.follows = "nixpkgs";
     haskell-dependency-graph-nix.inputs.pre-commit-hooks.follows = "pre-commit-hooks";
-    validity.url = "github:NorfairKing/validity?ref=flake";
+    validity.url = "github:NorfairKing/validity";
     validity.flake = false;
-    autodocodec.url = "github:NorfairKing/autodocodec?ref=flake";
+    autodocodec.url = "github:NorfairKing/autodocodec";
     autodocodec.flake = false;
-    safe-coloured-text.url = "github:NorfairKing/safe-coloured-text?ref=flake";
+    safe-coloured-text.url = "github:NorfairKing/safe-coloured-text";
     safe-coloured-text.flake = false;
-    sydtest.url = "github:NorfairKing/sydtest?ref=flake";
+    sydtest.url = "github:NorfairKing/sydtest";
     sydtest.flake = false;
-    mergeless.url = "github:NorfairKing/mergeless?ref=flake";
+    mergeless.url = "github:NorfairKing/mergeless";
     mergeless.flake = false;
-    yesod-autoreload.url = "github:NorfairKing/yesod-autoreload?ref=flake";
+    yesod-autoreload.url = "github:NorfairKing/yesod-autoreload";
     yesod-autoreload.flake = false;
-    yesod-static-remote.url = "github:NorfairKing/yesod-static-remote?ref=flake";
+    yesod-static-remote.url = "github:NorfairKing/yesod-static-remote";
     yesod-static-remote.flake = false;
-    looper.url = "github:NorfairKing/looper?ref=flake";
+    looper.url = "github:NorfairKing/looper";
     looper.flake = false;
-    pretty-relative-time.url = "github:NorfairKing/pretty-relative-time?ref=flake";
+    pretty-relative-time.url = "github:NorfairKing/pretty-relative-time";
     pretty-relative-time.flake = false;
-    mergeful.url = "github:NorfairKing/mergeful?ref=flake";
+    mergeful.url = "github:NorfairKing/mergeful";
     mergeful.flake = false;
-    typed-uuid.url = "github:NorfairKing/typed-uuid?ref=flake";
+    typed-uuid.url = "github:NorfairKing/typed-uuid";
     typed-uuid.flake = false;
     intray.url = "github:NorfairKing/intray";
     intray.flake = false;
     openapi-code-generator.url = "github:Haskell-OpenAPI-Code-Generator/Haskell-OpenAPI-Client-Code-Generator?ref=flake";
-    linkcheck.url = "github:NorfairKing/linkcheck?ref=flake";
+    linkcheck.url = "github:NorfairKing/linkcheck";
     linkcheck.flake = false;
-    seocheck.url = "github:NorfairKing/seocheck?ref=flake";
+    seocheck.url = "github:NorfairKing/seocheck";
     seocheck.flake = false;
     dekking.url = "github:NorfairKing/dekking";
     dekking.flake = false;
@@ -148,7 +148,6 @@
         withHoogle = true;
         doBenchmark = true;
         buildInputs = (with pkgs; [
-          niv
           zlib
           cabal-install
           chromedriver

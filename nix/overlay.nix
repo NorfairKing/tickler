@@ -67,7 +67,7 @@ in
                       testTarget = (old.testTarget or "") + " --show-details=direct";
 
                     });
-                ticklerPkgWithComp = exeName: name: generateOptparseApplicativeCompletion exeName (ticklerPkg name);
+                ticklerPkgWithComp = exeName: name: self.generateOptparseApplicativeCompletions [ exeName ] (ticklerPkg name);
                 ticklerPkgWithOwnComp = name: ticklerPkgWithComp name name;
                 ticklerPackages =
                   {
@@ -117,7 +117,7 @@ in
                   };
                 amazonkaRepo = builtins.fetchGit {
                   url = "https://github.com/brendanhay/amazonka";
-                  rev = "cfe2584aef0b03c86650372d362c74f237925d8c";
+                  rev = "2dc498fe75ff47db2db3ee63e042b1aa3da57c0f";
                 };
                 amazonkaPkg = name: path: self.callCabal2nix name (amazonkaRepo + "/${path}") { };
                 amazonkaPackages = builtins.mapAttrs amazonkaPkg {

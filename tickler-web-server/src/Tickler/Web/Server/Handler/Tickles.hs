@@ -40,10 +40,11 @@ makeItemInfoWidget items = withLogin $ \t -> do
               localTimeToUTC accountSettingsTimeZone $
                 LocalTime
                   (tickleScheduledDay itemInfoContents)
-                  (fromMaybe midnight $ tickleScheduledTime itemInfoContents)
+                  (maybe midnight minuteOfDayToTimeOfDay $ tickleScheduledTime itemInfoContents)
       pure $(widgetFile "tickle")
 
 sortByScheduled :: [ItemInfo] -> [ItemInfo]
 sortByScheduled = sortOn $ \tt ->
   let Tickle {..} = itemInfoContents tt
-   in LocalTime tickleScheduledDay $ fromMaybe midnight tickleScheduledTime
+   in LocalTime tickleScheduledDay $
+        maybe midnight minuteOfDayToTimeOfDay tickleScheduledTime

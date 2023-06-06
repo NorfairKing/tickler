@@ -35,6 +35,9 @@ instance GenValid Username where
 
 instance GenValid HashedPassword
 
+instance GenValid MinuteOfDay where
+  genValid = MinuteOfDay <$> choose (0, 60 * 24 - 1)
+
 instance GenValid User
 
 instance GenValid UserSettings

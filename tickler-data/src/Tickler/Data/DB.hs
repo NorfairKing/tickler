@@ -27,6 +27,7 @@ import Tickler.Data.EmailStatus
 import Tickler.Data.EmailVerificationKey
 import Tickler.Data.HashedPassword
 import Tickler.Data.ItemUUID
+import Tickler.Data.MinuteOfDay
 import Tickler.Data.Recurrence
 import Tickler.Data.Time ()
 import Tickler.Data.TriggerUUID
@@ -92,7 +93,7 @@ TicklerItem
     created UTCTime
 
     scheduledDay Day
-    scheduledTime TimeOfDay Maybe
+    scheduledTime MinuteOfDay Maybe
 
     recurrence Recurrence Maybe
 
@@ -111,7 +112,7 @@ TriggeredItem
     created UTCTime
 
     scheduledDay Day
-    scheduledTime TimeOfDay Maybe
+    scheduledTime MinuteOfDay Maybe
 
     recurrence Recurrence Maybe
 

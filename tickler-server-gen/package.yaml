@@ -13,7 +13,7 @@ library:
   - QuickCheck >=2.9
   - aeson
   - base
-  - bytestring >=0.10 && <0.11
+  - bytestring >=0.10
   - cache
   - cookie >=0.4 && <0.5
   - genvalidity-bytestring

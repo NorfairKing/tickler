@@ -112,6 +112,7 @@ instance YesodAuth App where
 ticklerAuthPluginName :: Text
 ticklerAuthPluginName = "tickler-auth-plugin"
 
+{-# ANN ticklerAuthPlugin ("NOCOVER" :: String) #-}
 ticklerAuthPlugin :: AuthPlugin App
 ticklerAuthPlugin = AuthPlugin ticklerAuthPluginName dispatch loginWidget
   where
@@ -265,7 +266,9 @@ postChangePasswordR = do
   ChangePassword {..} <-
     liftHandler $
       runInputPost $
-        ChangePassword <$> ireq passwordField "old" <*> ireq passwordField "new1"
+        ChangePassword
+          <$> ireq passwordField "old"
+          <*> ireq passwordField "new1"
           <*> ireq passwordField "new2"
   unless (changePasswordNewPassword1 == changePasswordNewPassword2) $
     invalidArgs ["Passwords do not match."]
@@ -427,3 +430,15 @@ addNegativeMessage = addMessage "danger"
 
 addPositiveMessage :: Html -> Handler ()
 addPositiveMessage = addMessage "success"
+
+minuteOfDayField ::
+  forall m.
+  ( Monad m,
+    RenderMessage (HandlerSite m) FormMessage
+  ) =>
+  Field m MinuteOfDay
+minuteOfDayField =
+  checkMMap
+    (pure . (Right :: MinuteOfDay -> Either FormMessage MinuteOfDay) . timeOfDayToMinuteOfDay)
+    minuteOfDayToTimeOfDay
+    timeField

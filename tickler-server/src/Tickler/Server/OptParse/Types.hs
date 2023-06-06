@@ -77,73 +77,77 @@ instance HasCodec Configuration where
 
 configurationObjectCodec :: JSONObjectCodec Configuration
 configurationObjectCodec =
-  Configuration <$> optionalField "database" "The database file" .= confDb
+  Configuration
+    <$> optionalField "database" "The database file"
+    .= confDb
     <*> optionalField
       "web-host"
       "The host to serve the web-server on, this is used to to send emails with links to the web interface"
-      .= confWebHost
+    .= confWebHost
     <*> optionalField
       "port"
       "The port to serve the api-server on"
-      .= confPort
+    .= confPort
     <*> optionalField
       "log-level"
       "The minimal sevirity of log messages"
-      .= confLogLevel
+    .= confLogLevel
     <*> optionalField
       "admins"
       "The list of usernames that will be considered administrators"
-      .= confAdmins
+    .= confAdmins
     <*> optionalField
       "freeloaders"
       "The list of usernames that won't have to pay"
-      .= confFreeloaders
+    .= confFreeloaders
     <*> optionalField
       "monetisation"
       "Monetisation configuration. If this is not configured then the server is run for free."
-      .= confMonetisationConfiguration
+    .= confMonetisationConfiguration
     <*> optionalField
       "triggerer-from"
       "From email address for triggered emails"
-      .= confTriggererFromEmailAddress
+    .= confTriggererFromEmailAddress
     <*> optionalField
       "verification-from"
       "From email address for verification emails"
-      .= confVerificationFromEmailAddress
+    .= confVerificationFromEmailAddress
     <*> optionalField
       "admin-notification-from"
       "From email address for admin notifcitaion emails"
-      .= confAdminNotificationFromEmailAddress
+    .= confAdminNotificationFromEmailAddress
     <*> optionalField
       "admin-notification-to"
       "To email address for admin notifcitaion emails"
-      .= confAdminNotificationToEmailAddress
-    <*> optionalField "triggerer" "The looper that triggers tickles" .= confTriggererConf
-    <*> optionalField "emailer" "The looper that sends emails" .= confEmailerConf
+    .= confAdminNotificationToEmailAddress
+    <*> optionalField "triggerer" "The looper that triggers tickles"
+    .= confTriggererConf
+    <*> optionalField "emailer" "The looper that sends emails"
+    .= confEmailerConf
     <*> optionalField
       "triggered-intray-item-scheduler"
       "The looper that schedules adding intray items for a triggered tickle"
-      .= confTriggeredIntrayItemSchedulerConf
+    .= confTriggeredIntrayItemSchedulerConf
     <*> optionalField
       "triggered-intray-item-sender"
       "The looper that actually adds intray items for a triggered tickle"
-      .= confTriggeredIntrayItemSenderConf
+    .= confTriggeredIntrayItemSenderConf
     <*> optionalField
       "verification-email-converter"
       "The looper that converts verification emails in the database to actual emails"
-      .= confVerificationEmailConverterConf
+    .= confVerificationEmailConverterConf
     <*> optionalField
       "triggered-email-scheduler"
       "The looper that schedules sending emails for a triggered tickle"
-      .= confTriggeredEmailSchedulerConf
+    .= confTriggeredEmailSchedulerConf
     <*> optionalField
       "triggered-email-converter"
       "The looper that converts triggered item emails in the database to actual emails"
-      .= confTriggeredEmailConverterConf
+    .= confTriggeredEmailConverterConf
     <*> optionalField
       "admin-notification-email-converter"
       "The looper that converts admin notifications to actual emails"
-      .= confAdminNotificationEmailConverterConf
+    .= confAdminNotificationEmailConverterConf
 
 data MonetisationConfiguration = MonetisationConfiguration
   { monetisationConfStripePlan :: !(Maybe Text),
@@ -162,20 +166,21 @@ instance HasCodec MonetisationConfiguration where
         <$> optionalField
           "stripe-plan"
           "The stripe identifier of the stripe plan used to checkout a subscription"
-          .= monetisationConfStripePlan
+        .= monetisationConfStripePlan
         <*> optionalField
           "stripe-secret-key"
           "The secret key for calling the stripe api"
-          .= monetisationConfStripeSecretKey
+        .= monetisationConfStripeSecretKey
         <*> optionalField
           "stripe-publishable-key"
           "The publishable key for calling the stripe api"
-          .= monetisationConfStripePulishableKey
+        .= monetisationConfStripePulishableKey
         <*> optionalFieldOrNull
           "max-items-free"
           "The number of items a free user can have on the server"
-          .= monetisationConfMaxItemsFree
-        <*> optionalFieldOrNull "price" "A string description of the price" .= monetisationConfPrice
+        .= monetisationConfMaxItemsFree
+        <*> optionalFieldOrNull "price" "A string description of the price"
+        .= monetisationConfPrice
 
 data Environment = Environment
   { envConfigFile :: Maybe FilePath,

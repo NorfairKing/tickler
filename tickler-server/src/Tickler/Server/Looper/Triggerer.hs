@@ -59,12 +59,23 @@ triggerTicklerItem now (Entity tii ti) = do
 ticklerItemUpdates :: TicklerItem -> Maybe [Update TicklerItem]
 ticklerItemUpdates ti = do
   r <- ticklerItemRecurrence ti
-  let (d, mtod) = nextScheduledTime (ticklerItemScheduledDay ti) (ticklerItemScheduledTime ti) r
-  pure [TicklerItemScheduledDay =. d, TicklerItemScheduledTime =. mtod]
+  let (d, mtod) =
+        nextScheduledTime
+          (ticklerItemScheduledDay ti)
+          (ticklerItemScheduledTime ti)
+          r
+  pure
+    [ TicklerItemScheduledDay =. d,
+      TicklerItemScheduledTime =. mtod
+    ]
 
 ticklerItemLocalScheduledTime :: TicklerItem -> LocalTime
 ticklerItemLocalScheduledTime TicklerItem {..} =
-  LocalTime ticklerItemScheduledDay $ fromMaybe midnight ticklerItemScheduledTime
+  LocalTime ticklerItemScheduledDay $
+    maybe
+      midnight
+      minuteOfDayToTimeOfDay
+      ticklerItemScheduledTime
 
 makeTriggeredItem :: ItemUUID -> UTCTime -> TicklerItem -> TriggeredItem
 makeTriggeredItem uuid now TicklerItem {..} =
