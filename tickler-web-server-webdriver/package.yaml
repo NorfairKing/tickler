@@ -26,6 +26,7 @@ library:
   - time
   - unordered-containers
   - webdriver
+  - yesod-auth
 
 tests:
   tickler-web-server-webdriver-test:
@@ -59,3 +60,4 @@ tests:
     - tickler-web-server-webdriver
     - time
     - webdriver
+

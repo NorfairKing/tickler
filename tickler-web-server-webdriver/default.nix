@@ -4,7 +4,7 @@
 , sydtest-webdriver, sydtest-webdriver-yesod, sydtest-yesod, text
 , tickler-api, tickler-client, tickler-server-gen
 , tickler-web-server, tickler-web-server-gen, time
-, unordered-containers, webdriver
+, unordered-containers, webdriver, yesod-auth
 }:
 mkDerivation {
   pname = "tickler-web-server-webdriver";
@@ -16,6 +16,7 @@ mkDerivation {
     sydtest-webdriver-yesod sydtest-yesod text tickler-api
     tickler-client tickler-server-gen tickler-web-server
     tickler-web-server-gen time unordered-containers webdriver
+    yesod-auth
   ];
   testHaskellDepends = [
     base bytestring containers genvalidity-sydtest http-client

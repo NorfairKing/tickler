@@ -10,5 +10,5 @@ spec =
   it "can add an email trigger" $ do
     driveAsNewUser dummyUser $ do
       let ea = "tickler@example.com"
-      EmailTriggerInfo {..} <- driveTriggerAddEmail (testUserUsername dummyUser) ea
+      EmailTriggerInfo {..} <- driveTriggerAddEmail dummyUser ea
       liftIO $ emailAddressText emailTriggerInfoEmailAddress `shouldBe` ea

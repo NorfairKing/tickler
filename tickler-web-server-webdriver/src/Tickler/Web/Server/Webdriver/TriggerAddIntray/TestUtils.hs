@@ -11,10 +11,11 @@ import Test.WebDriver
 import Tickler.API
 import Tickler.Client
 import Tickler.Web.Server.Foundation
+import Tickler.Web.Server.Webdriver.Auth.TestUtils
 import Tickler.Web.Server.Webdriver.TestUtils
 
-driveTriggerAddIntray :: Username -> Intray.Username -> BaseUrl -> Intray.AccessKeySecret -> WebdriverTestM App IntrayTriggerInfo
-driveTriggerAddIntray ticklerUsername intrayUsername intrayBaseUrl intrayAccessKey = do
+driveTriggerAddIntray :: TestUser -> Intray.Username -> BaseUrl -> Intray.AccessKeySecret -> WebdriverTestM App IntrayTriggerInfo
+driveTriggerAddIntray user intrayUsername intrayBaseUrl intrayAccessKey = do
   findElem (ById "nav-triggers") >>= click
   -- Url
   urlE <- findElem (ByName "url")
@@ -28,7 +29,7 @@ driveTriggerAddIntray ticklerUsername intrayUsername intrayBaseUrl intrayAccessK
   findElem (ByName "access-key") >>= sendKeys (Intray.accessKeySecretText intrayAccessKey)
   findElem (ById "submit-intray") >>= submit
   -- Check that the trigger exists now.
-  token <- getUserToken ticklerUsername
+  token <- loginViaAPI user
   triggers <- driveClientOrErr $ clientGetTriggers token
   liftIO $ case triggers of
     [] -> expectationFailure "Got no triggers."

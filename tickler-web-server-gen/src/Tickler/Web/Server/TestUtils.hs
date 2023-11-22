@@ -28,11 +28,9 @@ module Tickler.Web.Server.TestUtils
   )
 where
 
-import Control.Concurrent (newMVar)
 import Control.Monad
 import Control.Monad.Logger
 import Control.Monad.Reader
-import qualified Data.HashMap.Strict as HM
 import Data.Maybe
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -78,11 +76,9 @@ appSetupFunc man cenv = do
   let appLogLevel = LevelWarn
   let appHTTPManager = man
   let appStatic = myStatic
-  appLoginTokens <- liftIO $ newMVar HM.empty
   let appAPIBaseUrl = baseUrl cenv
   let appTracking = Nothing
   let appVerification = Nothing
-  let appPersistLogins = False
   let appDefaultIntrayUrl = Nothing
   pure App {..}
 

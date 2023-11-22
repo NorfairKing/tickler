@@ -17,7 +17,7 @@ addSpec tickle = do
     context ("Tickle to add: " <> ppShow tickle) $
       runWebdriverTestM wte $
         driveAsNewUser dummyUser $ do
-          uuid <- driveAddTickle (testUserUsername dummyUser) tickle
-          token <- getUserToken $ testUserUsername dummyUser
+          uuid <- driveAddTickle dummyUser tickle
+          token <- loginViaAPI dummyUser
           ItemInfo {..} <- driveClientOrErr $ clientGetItem token uuid
           liftIO $ itemInfoContents `shouldBe` tickle

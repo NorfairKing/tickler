@@ -10,14 +10,15 @@ import Test.WebDriver
 import Tickler.API
 import Tickler.Client
 import Tickler.Web.Server.Foundation
+import Tickler.Web.Server.Webdriver.Auth.TestUtils
 import Tickler.Web.Server.Webdriver.TestUtils
 
-driveTriggerAddEmail :: Username -> Text -> WebdriverTestM App EmailTriggerInfo
-driveTriggerAddEmail un ea = do
+driveTriggerAddEmail :: TestUser -> Text -> WebdriverTestM App EmailTriggerInfo
+driveTriggerAddEmail user ea = do
   findElem (ById "nav-triggers") >>= click
   findElem (ByName "email-address") >>= sendKeys ea
   findElem (ById "submit-email") >>= submit
-  token <- getUserToken un
+  token <- loginViaAPI user
   triggers <- driveClientOrErr $ clientGetTriggers token
   liftIO $ case triggers of
     [] -> expectationFailure "Got no triggers."

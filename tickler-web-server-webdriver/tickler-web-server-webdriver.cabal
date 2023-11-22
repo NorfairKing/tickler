@@ -43,6 +43,7 @@ library
     , time
     , unordered-containers
     , webdriver
+    , yesod-auth
   default-language: Haskell2010
 
 test-suite tickler-web-server-webdriver-test

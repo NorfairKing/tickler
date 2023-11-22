@@ -33,7 +33,7 @@ spec = ticklerWebdriverWithDBSpec $
 
     -- Add an email trigger
     openRoute TriggersR
-    eti <- driveTriggerAddEmail (testUserUsername user) (emailAddressText ea)
+    eti <- driveTriggerAddEmail user (emailAddressText ea)
     liftIO $ shouldBeValid eti
 
     -- Find the email trigger in the db to know its UUID

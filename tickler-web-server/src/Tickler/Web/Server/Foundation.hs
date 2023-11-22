@@ -17,12 +17,8 @@ module Tickler.Web.Server.Foundation
   )
 where
 
-import Control.Concurrent
-import Control.Monad.Trans.Maybe
-import Data.HashMap.Strict (HashMap)
-import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
-import Data.Text.Encoding (encodeUtf8)
+import qualified Data.Text.Encoding as TE
 import Import
 import qualified Network.HTTP.Client as HTTP
 import qualified Network.HTTP.Types as HTTP
@@ -32,7 +28,6 @@ import Servant.Client
 import Text.Hamlet
 import Tickler.Client
 import Tickler.Web.Server.Constants
-import Tickler.Web.Server.Persistence
 import Tickler.Web.Server.Static
 import Tickler.Web.Server.Widget
 import Web.Cookie
@@ -55,10 +50,8 @@ data App = App
     appLogLevel :: !LogLevel,
     appStatic :: !EmbeddedStatic,
     appAPIBaseUrl :: !BaseUrl,
-    appPersistLogins :: !Bool,
     appTracking :: !(Maybe Text),
     appVerification :: !(Maybe Text),
-    appLoginTokens :: !(MVar (HashMap Username Token)),
     appSessionKeyFile :: !(Path Abs File),
     appDefaultIntrayUrl :: !(Maybe BaseUrl)
   }
@@ -93,21 +86,17 @@ instance PathPiece EmailVerificationKey where
   toPathPiece = emailVerificationKeyText
 
 instance YesodAuth App where
-  type AuthId App = Username
+  type AuthId App = Text -- Session token, but Text instead of Token because we need a 'PathPiece' instance.
   loginDest _ = AddR
   logoutDest _ = HomeR
   authHttpManager = getsYesod appHTTPManager
   authenticate creds =
-    if credsPlugin creds == ticklerAuthPluginName
-      then case parseUsername $ credsIdent creds of
-        Nothing -> pure $ UserError Msg.InvalidLogin
-        Just un -> pure $ Authenticated un
-      else pure $ ServerError $ T.unwords ["Unknown authentication plugin:", credsPlugin creds]
+    pure $
+      if credsPlugin creds == ticklerAuthPluginName
+        then Authenticated $ credsIdent creds
+        else ServerError $ T.unwords ["Unknown authentication plugin:", credsPlugin creds]
   authPlugins _ = [ticklerAuthPlugin]
-  maybeAuthId =
-    runMaybeT $ do
-      s <- MaybeT $ lookupSession credsKey
-      MaybeT $ return $ fromPathPiece s
+  maybeAuthId = lookupSession credsKey
 
 ticklerAuthPluginName :: Text
 ticklerAuthPluginName = "tickler-auth-plugin"
@@ -153,11 +142,11 @@ postLoginR = do
         case parseUsername name of
           Nothing -> pure $ Left Msg.InvalidUsernamePass
           Just un -> do
-            liftHandler $ login LoginForm {loginFormUsername = un, loginFormPassword = pwd}
-            pure $ Right un
+            session <- liftHandler $ login LoginForm {loginFormUsername = un, loginFormPassword = pwd}
+            pure $ Right session
   case muser of
     Left err -> loginErrorMessageI LoginR err
-    Right un -> setCredsRedirect $ Creds ticklerAuthPluginName (usernameText un) []
+    Right session -> setCredsRedirect $ Creds ticklerAuthPluginName session []
 
 registerR :: AuthRoute
 registerR = PluginR ticklerAuthPluginName ["register"]
@@ -237,13 +226,14 @@ postNewAccountR = do
           liftHandler $ redirect $ AuthR registerR
         Right NoContent ->
           liftHandler $ do
-            login
-              LoginForm
-                { loginFormUsername = registrationUsername reg,
-                  loginFormPassword = registrationPassword reg
-                }
+            session <-
+              login
+                LoginForm
+                  { loginFormUsername = registrationUsername reg,
+                    loginFormPassword = registrationPassword reg
+                  }
             setCredsRedirect $
-              Creds ticklerAuthPluginName (usernameText $ registrationUsername reg) []
+              Creds ticklerAuthPluginName session []
 
 changePasswordTargetR :: AuthRoute
 changePasswordTargetR = PluginR ticklerAuthPluginName ["change-password"]
@@ -362,7 +352,7 @@ handleStandardServantErrs err func =
             show e
           ]
 
-login :: LoginForm -> Handler ()
+login :: LoginForm -> Handler Text
 login form = do
   errOrRes <- runClient $ clientPostLogin form
   case errOrRes of
@@ -375,7 +365,9 @@ login form = do
           else sendResponseStatus HTTP.status500 $ show resp
     Right (Headers NoContent (HCons sessionHeader HNil)) ->
       case sessionHeader of
-        Header session -> recordLoginToken (loginFormUsername form) session
+        Header session -> do
+          setCreds False $ Creds ticklerAuthPluginName session []
+          pure session
         _ ->
           sendResponseStatus HTTP.status500 $
             unwords
@@ -384,43 +376,10 @@ login form = do
               ]
 
 withLogin :: (Token -> Handler a) -> Handler a
-withLogin func = do
-  un <- requireAuthId
-  mLoginToken <- lookupToginToken un
-  case mLoginToken of
-    Nothing -> redirect $ AuthR LoginR
-    Just token -> func token
+withLogin func = requireAuthId >>= (func . sessionToToken)
 
-lookupToginToken :: Username -> Handler (Maybe Token)
-lookupToginToken un = do
-  whenPersistLogins loadLogins
-  tokenMapVar <- getsYesod appLoginTokens
-  tokenMap <- liftIO $ readMVar tokenMapVar
-  pure $ HM.lookup un tokenMap
-
-recordLoginToken :: Username -> Text -> Handler ()
-recordLoginToken un session = do
-  let token = Token $ setCookieValue $ parseSetCookie $ encodeUtf8 session
-  tokenMapVar <- getsYesod appLoginTokens
-  liftIO $ modifyMVar_ tokenMapVar $ pure . HM.insert un token
-  whenPersistLogins storeLogins
-
-whenPersistLogins :: Handler () -> Handler ()
-whenPersistLogins f = do
-  b <- getsYesod appPersistLogins
-  when b f
-
-loadLogins :: Handler ()
-loadLogins = do
-  tokenMapVar <- getsYesod appLoginTokens
-  liftIO $ modifyMVar_ tokenMapVar $ \m -> fromMaybe m <$> readLogins
-
-storeLogins :: Handler ()
-storeLogins = do
-  tokenMapVar <- getsYesod appLoginTokens
-  liftIO $ do
-    m <- readMVar tokenMapVar
-    writeLogins m
+sessionToToken :: Text -> Token
+sessionToToken = Token . setCookieValue . parseSetCookie . TE.encodeUtf8
 
 addInfoMessage :: Html -> Handler ()
 addInfoMessage = addMessage ""

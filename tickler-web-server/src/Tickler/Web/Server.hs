@@ -3,8 +3,6 @@
 
 module Tickler.Web.Server (ticklerWebServer) where
 
-import Control.Concurrent
-import qualified Data.HashMap.Strict as HM
 import Import
 import qualified Network.HTTP.Client as HTTP
 import qualified Network.HTTP.Client.TLS as HTTP
@@ -22,7 +20,6 @@ ticklerWebServer = do
 runTicklerWebServer :: Settings -> IO ()
 runTicklerWebServer Settings {..} = do
   man <- HTTP.newManager HTTP.tlsManagerSettings
-  tokens <- newMVar HM.empty
   sessionKeyFile <- resolveFile' "client_session_key.aes"
   warp
     setPort
@@ -30,11 +27,9 @@ runTicklerWebServer Settings {..} = do
       { appHTTPManager = man,
         appLogLevel = setLogLevel,
         appStatic = myStatic,
-        appLoginTokens = tokens,
         appAPIBaseUrl = setAPIBaseUrl,
         appTracking = setTracking,
         appVerification = setVerification,
-        appPersistLogins = setPersistLogins,
         appSessionKeyFile = sessionKeyFile,
         appDefaultIntrayUrl = setDefaultIntrayUrl
       }

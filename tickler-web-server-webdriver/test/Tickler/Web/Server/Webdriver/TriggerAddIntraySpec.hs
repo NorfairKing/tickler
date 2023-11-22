@@ -33,7 +33,7 @@ spec =
                 driveAsNewUser dummyUser $ do
                   IntrayTriggerInfo {..} <-
                     driveTriggerAddIntray
-                      (testUserUsername dummyUser)
+                      dummyUser
                       intrayUsername
                       (baseUrl ienv)
                       (Intray.accessKeyCreatedKey accessKeyCreated)

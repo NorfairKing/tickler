@@ -35,7 +35,6 @@ combineToSettings Flags {..} Environment {..} mConf = do
   setAPIBaseUrl <- case flagAPIBaseUrl <|> envAPIBaseUrl <|> mc confAPIBaseUrl of
     Nothing -> die "No API URL Configured. Try --help to see how to configure it."
     Just burl -> pure burl
-  let setPersistLogins = fromMaybe False $ flagPersistLogins <|> envPersistLogins <|> mc confPersistLogins
   let setDefaultIntrayUrl = flagDefaultIntrayUrl <|> envDefaultIntrayUrl <|> mc confDefaultIntrayUrl
   let setTracking = flagTracking <|> envTracking <|> mc confTracking
   let setVerification = flagVerification <|> envVerification <|> mc confVerification
@@ -63,7 +62,6 @@ environmentParser =
       <*> optional (Env.var (left (Env.UnreadError . show) . parseBaseUrl) "API_URL" (Env.help "base url of the api server"))
       <*> optional (Env.var Env.auto "PORT" (Env.help "port to run the web server on"))
       <*> optional (Env.var Env.auto "LOG_LEVEL" (Env.help "minimal severity of log messages"))
-      <*> optional (Env.var Env.auto "PERSIST_LOGINS" (Env.help "Whether to persist logins"))
       <*> optional (Env.var (left (Env.UnreadError . show) . parseBaseUrl) "DEFAULT_INTRAY_URL" (Env.help "Default intray url to suggest when adding intray triggers"))
       <*> optional (Env.var Env.str "TRACKING" (Env.help "Tracking code"))
       <*> optional (Env.var Env.str "SEARCH_CONSOLE_VERIFICATION" (Env.help "Search console verification"))
@@ -129,15 +127,6 @@ parseFlags =
                 help "minimal severity of log messages"
               ]
           )
-      )
-    <*> flag
-      Nothing
-      (Just True)
-      ( mconcat
-          [ long "persist-logins",
-            help
-              "Whether to persist logins accross restarts. This should not be used in production."
-          ]
       )
     <*> optional
       ( option

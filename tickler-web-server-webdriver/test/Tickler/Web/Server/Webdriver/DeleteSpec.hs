@@ -8,9 +8,9 @@ spec :: WebdriverSpec App
 spec =
   it "can delete this dummy tickle" $
     driveAsNewUser dummyUser $ do
-      uuid <- driveAddTickle (testUserUsername dummyUser) dummyTickle
+      uuid <- driveAddTickle dummyUser dummyTickle
       driveDeleteTickle uuid
-      token <- getUserToken $ testUserUsername dummyUser
+      token <- loginViaAPI dummyUser
       errOrInfo <- driveClient $ clientGetItem token uuid
       liftIO $ case errOrInfo of
         Right itemInfo ->

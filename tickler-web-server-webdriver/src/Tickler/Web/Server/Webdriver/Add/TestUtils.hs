@@ -15,11 +15,12 @@ import Test.WebDriver
 import Tickler.API
 import Tickler.Client
 import Tickler.Web.Server.Foundation
+import Tickler.Web.Server.Webdriver.Auth.TestUtils
 import Tickler.Web.Server.Webdriver.TestUtils
 
-driveAddTickle :: Username -> Tickle -> WebdriverTestM App ItemUUID
-driveAddTickle username tickle = do
-  token <- getUserToken username
+driveAddTickle :: TestUser -> Tickle -> WebdriverTestM App ItemUUID
+driveAddTickle user tickle = do
+  token <- loginViaAPI user
 
   itemsBefore <- driveClientOrErr $ clientGetItems token
 

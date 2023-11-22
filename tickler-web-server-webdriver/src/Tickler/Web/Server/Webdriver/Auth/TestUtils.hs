@@ -3,13 +3,17 @@
 
 module Tickler.Web.Server.Webdriver.Auth.TestUtils where
 
+import Control.Monad.IO.Class
 import Data.Maybe
 import Data.Text (Text)
+import Servant.Auth.Client
 import Test.Syd.Webdriver
 import Test.Syd.Webdriver.Yesod
 import Test.WebDriver
 import Tickler.API
+import qualified Tickler.Server.TestUtils as API
 import Tickler.Web.Server.Foundation
+import Tickler.Web.Server.Webdriver.TestUtils
 
 data TestUser = TestUser
   { testUserUsername :: !Username,
@@ -57,3 +61,8 @@ driveAsUser testUser func = do
   result <- func
   driveLogout
   pure result
+
+loginViaAPI :: TestUser -> WebdriverTestM App Token
+loginViaAPI TestUser {..} =
+  withClientEnv $ \cenv ->
+    liftIO $ API.login cenv testUserUsername testUserPassword

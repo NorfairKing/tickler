@@ -53,7 +53,7 @@ spec = ticklerWebdriverWithDBSpec $
                 let intrayBaseUrl = baseUrl ienv
                 iti <-
                   driveTriggerAddIntray
-                    (testUserUsername dummyUser)
+                    user
                     intrayUsername
                     (baseUrl ienv)
                     (Intray.accessKeyCreatedKey accessKeyCreated)
