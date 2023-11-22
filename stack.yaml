@@ -1,4 +1,4 @@
-resolver: lts-20.23
+resolver: lts-20.25
 packages:
 - tickler-api
 - tickler-api-gen
@@ -21,9 +21,10 @@ ghc-options:
   tickler-stripe-client: -w # Turn off warnings for the generated code.
 
 extra-deps:
+- servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
 
 - github: NorfairKing/intray
-  commit: e39177c80b56d3519649bef695763c7afd44ee96
+  commit: 40a4ad6ab5cc6d710735095597124c3539c1809b
   subdirs:
     - intray-api
     - intray-api-gen
@@ -34,32 +35,41 @@ extra-deps:
     - intray-server
     - intray-server-gen
       
+- github: NorfairKing/mergeful
+  commit: 0c1e0ea93b9db61e1f0b81a9f36db4810b061a65
+  subdirs:
+    - mergeful
+    - mergeful-persistent
+    - genvalidity-mergeful
+      
 - github: NorfairKing/mergeless
-  commit: b6bfcca1ae17e5ac662c6aa9128ed0b293b1f9c8
+  commit: af70d2eb3055bdba54be960fa14ee5c55a60772e
   subdirs:
     - mergeless
     - mergeless-persistent
     - genvalidity-mergeless
 
 - github: NorfairKing/typed-uuid
-  commit: 00fbc7e0380ab2ff72e8fd02323e76f13b7d5b59
+  commit: d8739935721b51c2beace3d13fa2079746808701
   subdirs:
     - typed-uuid
     - genvalidity-typed-uuid
 
 - github: NorfairKing/pretty-relative-time
-  commit: a634358ff274380a12360f7814c3aea46ea35b1b
+  commit: f63d0328f7c1ff2bbabf8f2a365edec0dbe627e2
+  subdirs:
+    - pretty-relative-time
 
 - github: NorfairKing/looper
-  commit: fd36d37becfa04fa4d7e00604e37c61817b6b62b
+  commit: a395be4d2edd17d81655baca20b3f68f954f4ce6
   subdirs:
     - looper
 
 - github: NorfairKing/yesod-static-remote
-  commit: 7eda644dc369e16c3591847f6c7cad30846bf6b0
+  commit: f3a65a0012b0a82c963ec027732be18d45c0c991
 
 - github: NorfairKing/yesod-autoreload
-  commit: 796def9af50cd7b053c9fb4a065c55603d4a8399
+  commit: dfd89eaa65f77c1f1a5a38810d9513b3649971e4
 
 - github: georgefst/hs-webdriver
   commit: cf9c387de7c1525ffbcd58125ccb3f798a97a2bb
@@ -73,6 +83,65 @@ extra-deps:
   - lib/services/amazonka-ses
   - lib/services/amazonka-sso
   - lib/services/amazonka-sts
+    
+- github: NorfairKing/safe-coloured-text
+  commit: b4fd34585472a8b5aaec942bb1bd0748fa3d5aa0
+  subdirs:
+  - safe-coloured-text
+  - safe-coloured-text-layout
+  - safe-coloured-text-terminfo
+
+- github: NorfairKing/autodocodec
+  commit: e7f4ec8d1d47e77c0f7fe83c8032abae5b082572
+  subdirs:
+    - autodocodec
+    - autodocodec-schema
+    - autodocodec-yaml
+
+- github: NorfairKing/validity
+  commit: 20ddbd625304817694b7ae9dc8751f7456259dd6
+  subdirs:
+  - genvalidity
+  - genvalidity-aeson
+  - genvalidity-bytestring
+  - genvalidity-case-insensitive
+  - genvalidity-containers
+  - genvalidity-criterion
+  - genvalidity-network-uri
+  - genvalidity-path
+  - genvalidity-persistent
+  - genvalidity-property
+  - genvalidity-scientific
+  - genvalidity-sydtest
+  - genvalidity-sydtest-aeson
+  - genvalidity-sydtest-hashable
+  - genvalidity-sydtest-lens
+  - genvalidity-sydtest-persistent
+  - genvalidity-text
+  - genvalidity-time
+  - genvalidity-unordered-containers
+  - genvalidity-uuid
+  - genvalidity-vector
+  - validity
+  - validity-aeson
+  - validity-bytestring
+  - validity-case-insensitive
+  - validity-containers
+  - validity-network-uri
+  - validity-path
+  - validity-persistent
+  - validity-primitive
+  - validity-scientific
+  - validity-text
+  - validity-time
+  - validity-unordered-containers
+  - validity-uuid
+  - validity-vector
+
+- github: NorfairKing/fast-myers-diff
+  commit: c106ef803c69ef9440399247ec4ffd59c84f6fc7
+  subdirs:
+    - fast-myers-diff
 
 - github: NorfairKing/sydtest
   commit: dcd230e48f164594a473925fa0dbbaf956eb6848
