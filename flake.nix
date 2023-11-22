@@ -169,5 +169,9 @@
       };
       nixosModules.${system}.default = mkNixosModule { envname = "production"; };
       nixosModuleFactories.${system}.default = mkNixosModule;
+      nix-ci.cachix = {
+        name = "tickler";
+        public-key = "tickler.cachix.org-1:hOYeQ5gFg2xfpA3fxBBS2ixfsvJL2t6wUjdFAVL1Cqc=";
+      };
     };
 }
