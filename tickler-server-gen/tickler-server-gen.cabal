@@ -34,7 +34,7 @@ library
     , base
     , bytestring >=0.10
     , cache
-    , cookie ==0.4.*
+    , cookie >=0.4
     , genvalidity-bytestring
     , genvalidity-sydtest
     , genvalidity-text
@@ -55,7 +55,7 @@ library
     , sydtest
     , sydtest-persistent-sqlite
     , sydtest-wai
-    , text ==1.2.*
+    , text >=1.2
     , tickler-api
     , tickler-api-gen
     , tickler-client

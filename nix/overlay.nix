@@ -128,11 +128,25 @@ in
                   "amazonka-sso" = "lib/services/amazonka-sso";
                   "amazonka-sts" = "lib/services/amazonka-sts";
                 };
-
+                servantPkg = name: subdir: self.callCabal2nix name
+                  ((builtins.fetchGit {
+                    url = "https://github.com/haskell-servant/servant";
+                    rev = "552da96ff9a6d81a8553c6429843178d78356054";
+                  }) + "/${subdir}")
+                  { };
+                servantPackages = {
+                  "servant" = servantPkg "servant" "servant";
+                  "servant-client" = servantPkg "servant-client" "servant-client";
+                  "servant-client-core" = servantPkg "servant-client-core" "servant-client-core";
+                  "servant-server" = servantPkg "servant-server" "servant-server";
+                  "servant-auth" = servantPkg "servant-auth-client" "servant-auth/servant-auth";
+                  "servant-auth-client" = servantPkg "servant-auth-client" "servant-auth/servant-auth-client";
+                  "servant-auth-server" = servantPkg "servant-auth-server" "servant-auth/servant-auth-server";
+                };
               in
               {
                 inherit ticklerPackages;
-              } // ticklerPackages // amazonkaPackages
+              } // ticklerPackages // servantPackages // amazonkaPackages
           );
 
       }

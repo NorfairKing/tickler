@@ -17,7 +17,6 @@ import Database.Persist
 import Database.Persist.Sqlite
 import Import
 import Servant
-import Servant.Auth.Server as Auth
 import Tickler.API
 import Tickler.Server.Types
 
@@ -35,7 +34,7 @@ withAdminCreds adminCandidate func = do
     Just (Entity _ User {..}) ->
       if userUsername `elem` admins
         then func
-        else throwAll err401
+        else throwError err401
 
 sendAdminNotification :: MonadIO m => Text -> SqlPersistT m ()
 sendAdminNotification contents =
