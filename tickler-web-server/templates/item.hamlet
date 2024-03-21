@@ -111,7 +111,7 @@
             name="recurrence"
             value="NoRecurrence"
             :noRecurrenceChecked:checked>
-          No reccurence
+          No recurrence
 
       <div .control>
         <label .radio>
