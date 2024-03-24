@@ -1,4 +1,3 @@
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
@@ -45,41 +44,42 @@ driveFillInTickleForm Tickle {..} = do
   findElem (ByName "scheduled-day")
     >>= sendKeys (T.pack (formatTime defaultTimeLocale "%m%d%Y" tickleScheduledDay))
 
-  -- Scheduled time
-  forM_ tickleScheduledTime $ \scheduledTime ->
-    findElem (ByName "scheduled-time")
-      >>= sendKeys (T.pack (formatTime defaultTimeLocale "%I%M%p" scheduledTime))
-
   -- Recurrence
-  forM_ tickleRecurrence $ \case
-    -- Every day
-    EveryDaysAtTime ds mtod -> do
-      findElem (ById "EveryDay") >>= click
+  case tickleRecurrence of
+    Nothing -> do
+      -- Scheduled time
+      forM_ tickleScheduledTime $ \scheduledTime ->
+        findElem (ByName "scheduled-time")
+          >>= sendKeys (T.pack (formatTime defaultTimeLocale "%I%M%p" scheduledTime))
+    Just r -> case r of
+      -- Every day
+      EveryDaysAtTime ds mtod -> do
+        findElem (ById "EveryDay") >>= click
 
-      -- Number of days
-      findElem (ByName "days") >>= sendKeys (T.pack (show ds))
+        -- Number of days
+        findElem (ByName "days") >>= sendKeys (T.pack (show ds))
 
-      -- Time of day
-      forM_ mtod $ \tod ->
-        findElem (ByName "day-time-of-day")
-          >>= sendKeys (T.pack (formatTime defaultTimeLocale "%I%M%p" tod))
+        -- Time of day
+        forM_ mtod $ \tod ->
+          findElem (ByName "day-time-of-day")
+            >>= sendKeys (T.pack (formatTime defaultTimeLocale "%I%M%p" tod))
 
-    -- Every month
-    EveryMonthsOnDay ms md mtod -> do
-      findElem (ById "EveryMonth") >>= click
+      -- Every month
+      EveryMonthsOnDay ms md mtod -> do
+        findElem (ById "EveryMonth") >>= click
 
-      -- Number of months
-      findElem (ByName "months") >>= sendKeys (T.pack (show ms))
+        -- Number of months
+        findElem (ByName "months") >>= sendKeys (T.pack (show ms))
 
-      -- Day within the month
-      forM_ md $ \d ->
-        findElem (ByName "day")
-          >>= sendKeys (T.pack (show d))
+        -- Day within the month
+        forM_ md $ \d ->
+          findElem (ByName "day")
+            >>= sendKeys (T.pack (show d))
 
-      -- Time of day
-      forM_ mtod $ \tod ->
-        findElem (ByName "month-time-of-day")
-          >>= sendKeys (T.pack (formatTime defaultTimeLocale "%I%M%p" tod))
+        -- Time of day
+        forM_ mtod $ \tod ->
+          findElem (ByName "month-time-of-day")
+            >>= sendKeys (T.pack (formatTime defaultTimeLocale "%I%M%p" tod))
 
 dummyTickle :: Tickle
 dummyTickle = head dummyTickles
@@ -87,43 +87,42 @@ dummyTickle = head dummyTickles
 dummyTickles :: [Tickle]
 dummyTickles = do
   tickleScheduledDay <- [fromGregorian 2222 04 24]
-  tickleScheduledTime <- [Nothing, Just $ timeOfDayToMinuteOfDay $ TimeOfDay 12 15 00]
-  tickleRecurrence <-
+  (tickleRecurrence, tickleScheduledTime) <-
     mconcat
-      [ [Nothing],
+      [ do
+          mtod <- [Nothing, Just $ timeOfDayToMinuteOfDay $ TimeOfDay 12 15 00]
+          pure (Nothing, mtod),
         do
           mtod <- [Nothing, Just $ timeOfDayToMinuteOfDay $ TimeOfDay 12 30 00]
-          pure $ Just $ EveryDaysAtTime 5 mtod,
+          pure (Just $ EveryDaysAtTime 5 mtod, Nothing),
         do
           mtod <- [Nothing, Just $ timeOfDayToMinuteOfDay $ TimeOfDay 12 45 00]
           md <- [Nothing, Just 15]
-          pure $ Just $ EveryMonthsOnDay 6 md mtod
+          pure (Just $ EveryMonthsOnDay 6 md mtod, Nothing)
       ]
   let tickleContent =
         T.pack $
-          mconcat
-            [ if isJust tickleScheduledTime
+          case tickleRecurrence of
+            Nothing ->
+              if isJust tickleScheduledTime
                 then "scheduled time, "
-                else "no scheduled time, ",
-              case tickleRecurrence of
-                Nothing -> "no recurrence"
-                Just recurrence -> case recurrence of
-                  EveryDaysAtTime _ mtod ->
-                    mconcat
-                      [ "daily recurrence, ",
-                        if isJust mtod
-                          then "time of day"
-                          else "no time of day"
-                      ]
-                  EveryMonthsOnDay _ md mtod ->
-                    mconcat
-                      [ "monthly recurrence, ",
-                        if isJust md
-                          then "day, "
-                          else "no day, ",
-                        if isJust mtod
-                          then "time of day"
-                          else "no time of day"
-                      ]
-            ]
+                else "no scheduled time, "
+            Just recurrence -> case recurrence of
+              EveryDaysAtTime _ mtod ->
+                mconcat
+                  [ "daily recurrence, ",
+                    if isJust mtod
+                      then "time of day"
+                      else "no time of day"
+                  ]
+              EveryMonthsOnDay _ md mtod ->
+                mconcat
+                  [ "monthly recurrence, ",
+                    if isJust md
+                      then "day, "
+                      else "no day, ",
+                    if isJust mtod
+                      then "time of day"
+                      else "no time of day"
+                  ]
   pure Tickle {..}

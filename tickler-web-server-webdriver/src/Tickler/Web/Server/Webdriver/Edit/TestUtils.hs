@@ -30,17 +30,17 @@ driveEditTickleForm Tickle {..} = do
   clearInput scheduledDayE
   sendKeys (T.pack (formatTime defaultTimeLocale "%m%d%Y" tickleScheduledDay)) scheduledDayE
 
-  -- Scheduled time of day
-  scheduledTimeE <- findElem (ByName "scheduled-time")
-  clearInput scheduledTimeE
-  forM_ tickleScheduledTime $ \scheduledTime -> do
-    sendKeys (T.pack (formatTime defaultTimeLocale "%I%M%p" scheduledTime)) scheduledTimeE
-
   -- Recurrence
   case tickleRecurrence of
     -- No recurrence
-    Nothing ->
+    Nothing -> do
       findElem (ById "None") >>= click
+
+      -- Scheduled time of day
+      scheduledTimeE <- findElem (ByName "scheduled-time")
+      clearInput scheduledTimeE
+      forM_ tickleScheduledTime $ \scheduledTime -> do
+        sendKeys (T.pack (formatTime defaultTimeLocale "%I%M%p" scheduledTime)) scheduledTimeE
     Just recurrence -> case recurrence of
       -- Daily recurrence
       EveryDaysAtTime ds mtod -> do

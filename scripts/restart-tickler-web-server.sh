@@ -21,4 +21,4 @@ export TICKLER_WEB_SERVER_DEFAULT_INTRAY_URL="https://api.intray.cs-syd.eu"
 
 tickler-server --admin admin &
 sleep 0.1
-tickler-web-server --persist-logins $@ &
+tickler-web-server $@ &
