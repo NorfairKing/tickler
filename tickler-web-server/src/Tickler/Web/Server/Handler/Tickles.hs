@@ -32,19 +32,20 @@ makeItemInfoWidget items = withLogin $ \t -> do
   AccountSettings {..} <- runClientOrErr $ clientGetAccountSettings t
   token <- genToken
   now <- liftIO getCurrentTime
-  fmap mconcat $
-    forM (sortByScheduled items) $ \ItemInfo {..} -> do
+  fmap mconcat
+    $ forM (sortByScheduled items)
+    $ \ItemInfo {..} -> do
       let createdWidget = makeTimestampWidget now itemInfoCreated
       let scheduledWidget =
-            makeTimestampWidget now $
-              localTimeToUTC accountSettingsTimeZone $
-                LocalTime
-                  (tickleScheduledDay itemInfoContents)
-                  (maybe midnight minuteOfDayToTimeOfDay $ tickleScheduledTime itemInfoContents)
+            makeTimestampWidget now
+              $ localTimeToUTC accountSettingsTimeZone
+              $ LocalTime
+                (tickleScheduledDay itemInfoContents)
+                (maybe midnight minuteOfDayToTimeOfDay $ tickleScheduledTime itemInfoContents)
       pure $(widgetFile "tickle")
 
 sortByScheduled :: [ItemInfo] -> [ItemInfo]
 sortByScheduled = sortOn $ \tt ->
   let Tickle {..} = itemInfoContents tt
-   in LocalTime tickleScheduledDay $
-        maybe midnight minuteOfDayToTimeOfDay tickleScheduledTime
+   in LocalTime tickleScheduledDay
+        $ maybe midnight minuteOfDayToTimeOfDay tickleScheduledTime

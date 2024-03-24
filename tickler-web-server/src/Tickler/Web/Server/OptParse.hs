@@ -56,15 +56,15 @@ getEnvironment = Env.parse id environmentParser
 
 environmentParser :: Env.Parser Env.Error Environment
 environmentParser =
-  Env.prefixed "TICKLER_WEB_SERVER_" $
-    Environment
-      <$> optional (Env.var Env.str "CONFIG_FILE" (Env.help "configuration file"))
-      <*> optional (Env.var (left (Env.UnreadError . show) . parseBaseUrl) "API_URL" (Env.help "base url of the api server"))
-      <*> optional (Env.var Env.auto "PORT" (Env.help "port to run the web server on"))
-      <*> optional (Env.var Env.auto "LOG_LEVEL" (Env.help "minimal severity of log messages"))
-      <*> optional (Env.var (left (Env.UnreadError . show) . parseBaseUrl) "DEFAULT_INTRAY_URL" (Env.help "Default intray url to suggest when adding intray triggers"))
-      <*> optional (Env.var Env.str "TRACKING" (Env.help "Tracking code"))
-      <*> optional (Env.var Env.str "SEARCH_CONSOLE_VERIFICATION" (Env.help "Search console verification"))
+  Env.prefixed "TICKLER_WEB_SERVER_"
+    $ Environment
+    <$> optional (Env.var Env.str "CONFIG_FILE" (Env.help "configuration file"))
+    <*> optional (Env.var (left (Env.UnreadError . show) . parseBaseUrl) "API_URL" (Env.help "base url of the api server"))
+    <*> optional (Env.var Env.auto "PORT" (Env.help "port to run the web server on"))
+    <*> optional (Env.var Env.auto "LOG_LEVEL" (Env.help "minimal severity of log messages"))
+    <*> optional (Env.var (left (Env.UnreadError . show) . parseBaseUrl) "DEFAULT_INTRAY_URL" (Env.help "Default intray url to suggest when adding intray triggers"))
+    <*> optional (Env.var Env.str "TRACKING" (Env.help "Tracking code"))
+    <*> optional (Env.var Env.str "SEARCH_CONSOLE_VERIFICATION" (Env.help "Search console verification"))
 
 getFlags :: IO Flags
 getFlags = do

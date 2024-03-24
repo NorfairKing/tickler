@@ -22,15 +22,15 @@ import Tickler.Server.Types
 
 servePostStripeHook :: JSON.Value -> TicklerHandler NoContent
 servePostStripeHook value = do
-  logDebugNS "stripe-hook" $
-    T.unlines
+  logDebugNS "stripe-hook"
+    $ T.unlines
       [ "Got a request from Stripe:",
         TE.decodeUtf8 $ LB.toStrict $ JSON.encodePretty value
       ]
   case JSON.parseEither parseJSON value of
     Left err -> throwError $ err400 {errBody = LB.fromStrict $ TE.encodeUtf8 $ "Failed to parse event value from stripe: " <> T.pack err}
     Right event -> do
-      let fullfillWith :: FromJSON a => (a -> TicklerHandler ()) -> TicklerHandler ()
+      let fullfillWith :: (FromJSON a) => (a -> TicklerHandler ()) -> TicklerHandler ()
           fullfillWith func = case parseEither parseJSON (toJSON (notificationEventDataObject (eventData event))) of
             Left err -> throwError $ err400 {errBody = LB.fromStrict $ TE.encodeUtf8 $ "Failed to parse event data in event with id " <> eventId event <> ": " <> T.pack err}
             Right r -> func r
@@ -66,10 +66,10 @@ fullfillSubscription subscription = do
             _ -> subscriptionCurrentPeriodEnd subscription
 
       let end = posixSecondsToUTCTime $ fromIntegral endtime
-      void $
-        runDB $
-          upsertBy
-            (UniqueSubscriptionUser uid)
-            (Tickler.Subscription {subscriptionUser = uid, subscriptionEnd = end})
-            [SubscriptionEnd =. end]
+      void
+        $ runDB
+        $ upsertBy
+          (UniqueSubscriptionUser uid)
+          (Tickler.Subscription {subscriptionUser = uid, subscriptionEnd = end})
+          [SubscriptionEnd =. end]
     Just otherProduct -> logInfoNS "stripe-hook" $ "Not fulfilling subscription for other product: " <> TE.decodeUtf8 (LB.toStrict (JSON.encodePretty otherProduct))

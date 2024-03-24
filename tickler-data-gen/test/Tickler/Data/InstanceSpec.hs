@@ -30,9 +30,9 @@ spec = do
   persistSpec @Recurrence
   describe "Recurrence" $ do
     describe "everyDaysAtTime" $ it "produces valid recurrences" $ producesValid2 everyDaysAtTime
-    describe "everyMonthsOnDayAtTime" $
-      it "produces valid recurrences" $
-        producesValid3 everyMonthsOnDayAtTime
+    describe "everyMonthsOnDayAtTime"
+      $ it "produces valid recurrences"
+      $ producesValid3 everyMonthsOnDayAtTime
   genValidSpec @TicklerItem
   persistSpec @TicklerItem
   genValidSpec @TriggeredItem
@@ -52,11 +52,11 @@ spec = do
   genValidSpec @EmailVerificationKey
   showReadSpec @EmailVerificationKey
   persistSpec @EmailVerificationKey
-  describe "Encode and Decode EmailVerificationKey" $
-    it "are inverses" $
-      forAllValid $
-        \evk ->
-          parseEmailVerificationKeyText (emailVerificationKeyText evk) `shouldBe` Just evk
+  describe "Encode and Decode EmailVerificationKey"
+    $ it "are inverses"
+    $ forAllValid
+    $ \evk ->
+      parseEmailVerificationKeyText (emailVerificationKeyText evk) `shouldBe` Just evk
   genValidSpec @EmailTrigger
   persistSpec @EmailTrigger
   genValidSpec @VerificationEmail

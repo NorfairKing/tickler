@@ -32,8 +32,8 @@ instance Validity BaseUrl where
         declare "The host is entirely within Latin1" $ all Char.isLatin1 baseUrlHost,
         declare "The path does not contain spaces" $ not $ any Char.isSpace baseUrlPath,
         declare "The path is entirely within Latin1" $ all Char.isLatin1 baseUrlPath,
-        declare "The path does not start with a slash" $
-          case baseUrlPath of
+        declare "The path does not start with a slash"
+          $ case baseUrlPath of
             ('/' : _) -> False
             _ -> True,
         declare
@@ -45,7 +45,8 @@ instance Validity BaseUrl where
                 "actual:   " <> showBaseUrl burl
               ]
           )
-          $ parseBaseUrl (showBaseUrl burl) == Just burl
+          $ parseBaseUrl (showBaseUrl burl)
+          == Just burl
       ]
 
 instance PersistField BaseUrl where

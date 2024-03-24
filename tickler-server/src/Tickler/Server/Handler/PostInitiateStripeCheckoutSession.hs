@@ -57,8 +57,8 @@ servePostInitiateStripeCheckoutSession AuthCookie {..} iscs = do
             PostCheckoutSessionsResponseError err -> throwError err500 {errBody = LB.fromStrict $ TE.encodeUtf8 $ "Something went wrong while parsing stripe's response:" <> T.pack err}
             PostCheckoutSessionsResponseDefault err -> throwError err500 {errBody = "Error while calling stripe:\n" <> JSON.encodePretty err}
             PostCheckoutSessionsResponse200 session -> do
-              pure $
-                InitiatedCheckoutSession
+              pure
+                $ InitiatedCheckoutSession
                   { initiatedCheckoutSessionId = checkout'sessionId session,
                     initiatedCheckoutSessionCustomerId = customerId
                   }
@@ -72,8 +72,8 @@ mkPostCheckoutSessionsRequestBodyForUser InitiateStripeCheckoutSession {..} user
       postCheckoutSessionsRequestBodyMode = Just PostCheckoutSessionsRequestBodyMode'EnumSubscription,
       postCheckoutSessionsRequestBodyMetadata = Just metadata,
       postCheckoutSessionsRequestBodySubscriptionData =
-        Just $
-          mkPostCheckoutSessionsRequestBodySubscriptionData'
+        Just
+          $ mkPostCheckoutSessionsRequestBodySubscriptionData'
             { postCheckoutSessionsRequestBodySubscriptionData'Metadata = Just metadata,
               postCheckoutSessionsRequestBodySubscriptionData'Items =
                 Just
@@ -96,8 +96,8 @@ getOrCreateCustomerId config User {..} = do
         PostCustomersResponse200 Customer {..} -> do
           -- Keep track of it in our database for later
           _ <-
-            runDB $
-              upsertBy
+            runDB
+              $ upsertBy
                 (UniqueStripeCustomer userIdentifier customerId)
                 (StripeCustomer {stripeCustomerUser = userIdentifier, stripeCustomerCustomer = customerId})
                 [StripeCustomerCustomer =. customerId]

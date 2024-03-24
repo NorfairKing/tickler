@@ -47,8 +47,8 @@ spec = withTicklerDatabase $ do
           -- Make sure the triggered items have unique uuids and belong to the user
           triggeredItems <- forM triggeredItemPrototypes $ \ti -> do
             uuid <- nextRandomUUID
-            pure $
-              ti
+            pure
+              $ ti
                 { triggeredItemIdentifier = uuid,
                   triggeredItemUserId = userIdentifier user
                 }
@@ -96,13 +96,13 @@ spec = withTicklerDatabase $ do
 
                   -- Check that the intray items were scheduled to be sent to each their own user.
                   user1TriggeredIntrayItems <-
-                    runPersistentTest pool $
-                      DB.selectList [TriggeredIntrayItemTrigger DB.==. intrayTriggerIdentifier user1IntrayTrigger] []
+                    runPersistentTest pool
+                      $ DB.selectList [TriggeredIntrayItemTrigger DB.==. intrayTriggerIdentifier user1IntrayTrigger] []
                   sort (map (triggeredIntrayItemItem . DB.entityVal) user1TriggeredIntrayItems)
                     `shouldBe` sort (map triggeredItemIdentifier user1TriggeredItems)
                   user2TriggeredIntrayItems <-
-                    runPersistentTest pool $
-                      DB.selectList [TriggeredIntrayItemTrigger DB.==. intrayTriggerIdentifier user2IntrayTrigger] []
+                    runPersistentTest pool
+                      $ DB.selectList [TriggeredIntrayItemTrigger DB.==. intrayTriggerIdentifier user2IntrayTrigger] []
                   sort (map (triggeredIntrayItemItem . DB.entityVal) user2TriggeredIntrayItems)
                     `shouldBe` sort (map triggeredItemIdentifier user2TriggeredItems)
 
@@ -135,12 +135,12 @@ spec = withTicklerDatabase $ do
                 -- Run the looper
                 testRunLooper pool runTriggeredIntrayItemScheduler
                 triggeredIntrayItemsAfterFirstRun <-
-                  runPersistentTest pool $
-                    DB.selectList [] []
+                  runPersistentTest pool
+                    $ DB.selectList [] []
 
                 testRunLooper pool runTriggeredIntrayItemScheduler
                 triggeredIntrayItemsAfterSecondRun <-
-                  runPersistentTest pool $
-                    DB.selectList [] []
+                  runPersistentTest pool
+                    $ DB.selectList [] []
 
                 triggeredIntrayItemsAfterSecondRun `shouldBe` (triggeredIntrayItemsAfterFirstRun :: [DB.Entity TriggeredIntrayItem])

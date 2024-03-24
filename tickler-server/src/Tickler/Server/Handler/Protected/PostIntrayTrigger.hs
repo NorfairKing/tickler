@@ -29,17 +29,17 @@ servePostIntrayTrigger AuthCookie {..} AddIntrayTrigger {..} = do
   errOrOk <-
     do
       let env = mkClientEnv man addIntrayTriggerUrl
-      liftIO $
-        flip runClientM env $
-          do
-            let loginForm =
-                  Intray.LoginForm
-                    { Intray.loginFormUsername = addIntrayTriggerUsername,
-                      Intray.loginFormPassword = Intray.accessKeySecretText addIntrayTriggerAccessKey
-                    }
-            res <- Intray.clientPostLogin loginForm
-            case res of
-              Headers Intray.NoContent (HCons _ HNil) -> pure ()
+      liftIO
+        $ flip runClientM env
+        $ do
+          let loginForm =
+                Intray.LoginForm
+                  { Intray.loginFormUsername = addIntrayTriggerUsername,
+                    Intray.loginFormPassword = Intray.accessKeySecretText addIntrayTriggerAccessKey
+                  }
+          res <- Intray.clientPostLogin loginForm
+          case res of
+            Headers Intray.NoContent (HCons _ HNil) -> pure ()
   case errOrOk of
     Left err ->
       case err of
@@ -47,8 +47,8 @@ servePostIntrayTrigger AuthCookie {..} AddIntrayTrigger {..} = do
         FailureResponse req resp -> pure $ Left $ T.pack $ unlines [ppShow req, ppShow resp]
         _ -> pure $ Left $ T.pack $ ppShow err
     Right () -> do
-      runDB $
-        insert_
+      runDB
+        $ insert_
           IntrayTrigger
             { intrayTriggerUser = authCookieUserUUID,
               intrayTriggerIdentifier = uuid,

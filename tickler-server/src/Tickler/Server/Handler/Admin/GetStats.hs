@@ -25,15 +25,15 @@ serveAdminGetStats AuthCookie {..} =
     adminStatsNbSubscribers <-
       do
         us <- runDB $ selectList [] []
-        fmap (fromIntegral . length . catMaybes) $
-          forM us $
-            \(Entity _ u) -> do
-              ups <- getUserPaidStatus (userIdentifier u)
-              pure $
-                case ups of
-                  HasNotPaid _ -> Nothing
-                  HasPaid t -> Just t
-                  NoPaymentNecessary -> Nothing
+        fmap (fromIntegral . length . catMaybes)
+          $ forM us
+          $ \(Entity _ u) -> do
+            ups <- getUserPaidStatus (userIdentifier u)
+            pure
+              $ case ups of
+                HasNotPaid _ -> Nothing
+                HasPaid t -> Just t
+                NoPaymentNecessary -> Nothing
     now <- liftIO getCurrentTime
     let day :: NominalDiffTime
         day = 86400

@@ -18,8 +18,8 @@ import Tickler.Server.Types
 serveGetAccountSettings :: AuthCookie -> TicklerHandler AccountSettings
 serveGetAccountSettings AuthCookie {..} = do
   mSets <- runDB $ getBy $ UniqueUserSettings authCookieUserUUID
-  pure $
-    case mSets of
+  pure
+    $ case mSets of
       Nothing -> defaultAccountSettings
       Just (Entity _ UserSettings {..}) ->
         AccountSettings {accountSettingsTimeZone = userSettingsTimeZone}

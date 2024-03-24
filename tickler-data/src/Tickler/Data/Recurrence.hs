@@ -23,15 +23,15 @@ data Recurrence
 
 instance Validity Recurrence where
   validate (EveryDaysAtTime ds mtod) =
-    decorate "EveryDaysAtTime" $
-      mconcat
+    decorate "EveryDaysAtTime"
+      $ mconcat
         [ delve "Word" ds,
           delve "Maybe TimeOfDay" mtod,
           declare "The number of days is strictly positive" $ ds >= 1
         ]
   validate (EveryMonthsOnDay ms md mtod) =
-    decorate "EveryMonthsOnDay" $
-      mconcat
+    decorate "EveryMonthsOnDay"
+      $ mconcat
         [ delve "Word" ms,
           delve "Maybe Word8" md,
           delve "Maybe TimeOfDay" mtod,
@@ -42,9 +42,9 @@ instance Validity Recurrence where
 
 instance HasCodec Recurrence where
   codec =
-    object "Recurrence" $
-      dimapCodec f g $
-        eitherCodec everyDaysAtTimeCodec everyMonthsOnDayCodec
+    object "Recurrence"
+      $ dimapCodec f g
+      $ eitherCodec everyDaysAtTimeCodec everyMonthsOnDayCodec
     where
       f = \case
         Left (ds, mtod) -> EveryDaysAtTime ds mtod
@@ -56,26 +56,26 @@ instance HasCodec Recurrence where
       everyDaysAtTimeCodec =
         requiredFieldWith
           "every-x-days"
-          ( object "EveryDaysAtTime" $
-              (,)
-                <$> requiredField "days" "days between recurrence"
-                  .= fst
-                <*> optionalFieldOrNull "time-of-day" "time of day within the recurring day"
-                  .= snd
+          ( object "EveryDaysAtTime"
+              $ (,)
+              <$> requiredField "days" "days between recurrence"
+                .= fst
+              <*> optionalFieldOrNull "time-of-day" "time of day within the recurring day"
+                .= snd
           )
           "every x days"
       everyMonthsOnDayCodec :: JSONObjectCodec (Word, Maybe Word8, Maybe MinuteOfDay)
       everyMonthsOnDayCodec =
         requiredFieldWith
           "every-x-months"
-          ( object "EveryMonthsOnDay" $
-              (,,)
-                <$> requiredField "months" "months between recurrence"
-                  .= (\(a, _, _) -> a)
-                <*> optionalFieldOrNull "day" "day within the recurring month"
-                  .= (\(_, a, _) -> a)
-                <*> optionalFieldOrNull "time-of-day" "time of day within the recurring day"
-                  .= (\(_, _, a) -> a)
+          ( object "EveryMonthsOnDay"
+              $ (,,)
+              <$> requiredField "months" "months between recurrence"
+                .= (\(a, _, _) -> a)
+              <*> optionalFieldOrNull "day" "day within the recurring month"
+                .= (\(_, a, _) -> a)
+              <*> optionalFieldOrNull "time-of-day" "time of day within the recurring day"
+                .= (\(_, _, a) -> a)
           )
           "every x months"
 

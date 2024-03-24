@@ -17,15 +17,16 @@ import Tickler.Server.TestUtils
 
 spec :: Spec
 spec = do
-  withTicklerServer $
-    it "fails to add an intray trigger if the intray server is down" $ \tenv ->
+  withTicklerServer
+    $ it "fails to add an intray trigger if the intray server is down"
+    $ \tenv ->
       forAllValid $ \intrayUsername ->
         forAllValid $ \intrayAccessKey ->
           withValidNewUser tenv $ \ttoken -> do
             intrayBaseUrl <- parseBaseUrl "intray.example.com"
             errOrUuid <-
-              runClientOrError tenv $
-                clientPostIntrayTrigger
+              runClientOrError tenv
+                $ clientPostIntrayTrigger
                   ttoken
                   AddIntrayTrigger
                     { addIntrayTriggerUrl = intrayBaseUrl,
@@ -36,15 +37,16 @@ spec = do
               Right _ -> expectationFailure "should not have succeeded."
               Left _ -> pure ()
 
-  withBothTicklerAndIntrayServer $
-    it "gets the trigger that was just added" $ \(tenv, ienv) ->
+  withBothTicklerAndIntrayServer
+    $ it "gets the trigger that was just added"
+    $ \(tenv, ienv) ->
       forAllValid $ \name ->
         withValidNewUser tenv $ \ttoken ->
           Intray.withValidNewUserAndData ienv $ \un _ itoken -> do
             -- Add an intray access key that only permits adding items
             akc <-
-              runClientOrError ienv $
-                Intray.clientPostAddAccessKey
+              runClientOrError ienv
+                $ Intray.clientPostAddAccessKey
                   itoken
                   Intray.AddAccessKey
                     { Intray.addAccessKeyName = name,

@@ -13,14 +13,16 @@ import Tickler.Server.TestUtils
 spec :: Spec
 spec =
   describe "PostItem" $ do
-    withFreeTicklerServer $
-      it "adds an item without crashing" $ \cenv ->
+    withFreeTicklerServer
+      $ it "adds an item without crashing"
+      $ \cenv ->
         forAllValid $ \t ->
           withValidNewUser cenv $ \token -> do
             uuid <- runClientOrError cenv $ clientPostItem token t
             shouldBeValid uuid
-    withPaidTicklerServer 2 $
-      it "fail to add an item if the user has not paid" $ \cenv ->
+    withPaidTicklerServer 2
+      $ it "fail to add an item if the user has not paid"
+      $ \cenv ->
         forAllValid $ \t1 ->
           forAllValid $ \t2 ->
             forAllValid $ \t3 ->

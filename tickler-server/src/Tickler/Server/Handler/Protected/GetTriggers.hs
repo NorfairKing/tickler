@@ -17,8 +17,8 @@ import Tickler.Server.Types
 
 serveGetTriggers :: AuthCookie -> TicklerHandler [TriggerInfo]
 serveGetTriggers AuthCookie {..} =
-  runDB $
-    liftA2
+  runDB
+    $ liftA2
       mplus
       (fmap (makeIntrayTriggerInfo . entityVal) <$> selectList [IntrayTriggerUser ==. authCookieUserUUID] [])
       (fmap (makeEmailTriggerInfo . entityVal) <$> selectList [EmailTriggerUser ==. authCookieUserUUID] [])

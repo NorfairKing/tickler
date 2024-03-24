@@ -84,10 +84,12 @@ instance Validity Registration
 
 instance HasCodec Registration where
   codec =
-    object "Registration" $
-      Registration
-        <$> requiredField "username" "username" .= registrationUsername
-        <*> requiredField "password" "password" .= registrationPassword
+    object "Registration"
+      $ Registration
+      <$> requiredField "username" "username"
+      .= registrationUsername
+      <*> requiredField "password" "password"
+      .= registrationPassword
 
 data LoginForm = LoginForm
   { loginFormUsername :: Username,
@@ -100,10 +102,12 @@ instance Validity LoginForm
 
 instance HasCodec LoginForm where
   codec =
-    object "LoginForm" $
-      LoginForm
-        <$> requiredField "username" "username" .= loginFormUsername
-        <*> requiredField "password" "password" .= loginFormPassword
+    object "LoginForm"
+      $ LoginForm
+      <$> requiredField "username" "username"
+      .= loginFormUsername
+      <*> requiredField "password" "password"
+      .= loginFormPassword
 
 data Pricing = Pricing
   { pricingPlan :: !Text, -- Stripe plan id
@@ -118,12 +122,16 @@ instance Validity Pricing
 
 instance HasCodec Pricing where
   codec =
-    object "Pricing" $
-      Pricing
-        <$> requiredField "plan" "stripe plan" .= pricingPlan
-        <*> requiredField "price" "price" .= pricingPrice
-        <*> requiredField "publishable-key" "publishable key" .= pricingStripePublishableKey
-        <*> requiredField "max-items-free" "maximum number of free items" .= pricingMaxItemsFree
+    object "Pricing"
+      $ Pricing
+      <$> requiredField "plan" "stripe plan"
+      .= pricingPlan
+      <*> requiredField "price" "price"
+      .= pricingPrice
+      <*> requiredField "publishable-key" "publishable key"
+      .= pricingStripePublishableKey
+      <*> requiredField "max-items-free" "maximum number of free items"
+      .= pricingMaxItemsFree
 
 type PostStripeHook =
   "stripe"

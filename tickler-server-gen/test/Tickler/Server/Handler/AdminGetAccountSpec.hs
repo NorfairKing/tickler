@@ -13,8 +13,9 @@ import Tickler.Data.Gen ()
 import Tickler.Server.TestUtils
 
 spec :: Spec
-spec = withTicklerServer $
-  describe "AdminGetAccount" $ do
+spec = withTicklerServer
+  $ describe "AdminGetAccount"
+  $ do
     it "forbids non-admin users from getting account info" $ \cenv ->
       forAllValid $ \username ->
         requiresAdmin cenv $ \token ->

@@ -26,8 +26,9 @@ spec = do
                   _ -> expectationFailure $ unwords ["Unexpected error:", show err]
               Right _ -> expectationFailure "Should not have succeeded."
 
-  withFreeTicklerServer $
-    it "sets the subscription time correctly" $ \cenv ->
+  withFreeTicklerServer
+    $ it "sets the subscription time correctly"
+    $ \cenv ->
       forAllValid $ \end ->
         withAdmin cenv $ \adminToken ->
           withValidNewUserAndData cenv $ \username _ userToken ->

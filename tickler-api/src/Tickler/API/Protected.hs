@@ -41,10 +41,10 @@ instance ToJWT AuthCookie
 
 instance HasCodec AuthCookie where
   codec =
-    object "AuthCookie" $
-      AuthCookie
-        <$> requiredField "id" "identifier"
-          .= authCookieUserUUID
+    object "AuthCookie"
+      $ AuthCookie
+      <$> requiredField "id" "identifier"
+      .= authCookieUserUUID
 
 data TicklerProtectedSite route = TicklerProtectedSite
   { getItems :: !(route :- GetItems),
@@ -92,14 +92,14 @@ instance Validity ItemInfo
 
 instance HasCodec ItemInfo where
   codec =
-    object "ItemInfo" $
-      ItemInfo
-        <$> requiredField "id" "identifier"
-          .= itemInfoIdentifier
-        <*> requiredField "contents" "contents"
-          .= itemInfoContents
-        <*> requiredField "created" "created timestam"
-          .= itemInfoCreated
+    object "ItemInfo"
+      $ ItemInfo
+      <$> requiredField "id" "identifier"
+      .= itemInfoIdentifier
+      <*> requiredField "contents" "contents"
+      .= itemInfoContents
+      <*> requiredField "created" "created timestam"
+      .= itemInfoCreated
 
 type PostItem =
   ProtectAPI
@@ -132,16 +132,16 @@ instance Validity Tickle where
 
 instance HasCodec Tickle where
   codec =
-    object "Tickle" $
-      Tickle
-        <$> requiredField "content" "content"
-          .= tickleContent
-        <*> requiredField "scheduled-day" "scheduled day"
-          .= tickleScheduledDay
-        <*> optionalField "scheduled-time" "scheduled time of day"
-          .= tickleScheduledTime
-        <*> optionalField "recurrence" "recurrence"
-          .= tickleRecurrence
+    object "Tickle"
+      $ Tickle
+      <$> requiredField "content" "content"
+      .= tickleContent
+      <*> requiredField "scheduled-day" "scheduled day"
+      .= tickleScheduledDay
+      <*> optionalField "scheduled-time" "scheduled time of day"
+      .= tickleScheduledTime
+      <*> optionalField "recurrence" "recurrence"
+      .= tickleRecurrence
 
 type DeleteItem =
   ProtectAPI
@@ -171,12 +171,12 @@ instance Validity TriggerInfo
 
 instance HasCodec TriggerInfo where
   codec =
-    object "TriggerInfo" $
-      TriggerInfo
-        <$> requiredField "id" "identifier"
-          .= triggerInfoIdentifier
-        <*> requiredField "trigger" "trigger"
-          .= triggerInfo
+    object "TriggerInfo"
+      $ TriggerInfo
+      <$> requiredField "id" "identifier"
+      .= triggerInfoIdentifier
+      <*> requiredField "trigger" "trigger"
+      .= triggerInfo
 
 data Trigger
   = TriggerIntray IntrayTriggerInfo
@@ -207,10 +207,10 @@ instance Validity IntrayTriggerInfo
 
 instance HasCodec IntrayTriggerInfo where
   codec =
-    object "IntrayTriggerInfo" $
-      IntrayTriggerInfo
-        <$> requiredFieldWith "url" (codecViaAeson "BaseUrl") "base url of the intray instance"
-          .= intrayTriggerInfoUrl
+    object "IntrayTriggerInfo"
+      $ IntrayTriggerInfo
+      <$> requiredFieldWith "url" (codecViaAeson "BaseUrl") "base url of the intray instance"
+      .= intrayTriggerInfoUrl
 
 data EmailTriggerInfo = EmailTriggerInfo
   { emailTriggerInfoEmailAddress :: !EmailAddress,
@@ -223,12 +223,12 @@ instance Validity EmailTriggerInfo
 
 instance HasCodec EmailTriggerInfo where
   codec =
-    object "EmailTriggerInfo" $
-      EmailTriggerInfo
-        <$> requiredField "email-address" "email address"
-          .= emailTriggerInfoEmailAddress
-        <*> requiredField "verified" "verified"
-          .= emailTriggerInfoVerified
+    object "EmailTriggerInfo"
+      $ EmailTriggerInfo
+      <$> requiredField "email-address" "email address"
+      .= emailTriggerInfoEmailAddress
+      <*> requiredField "verified" "verified"
+      .= emailTriggerInfoVerified
 
 type PostIntrayTrigger =
   ProtectAPI
@@ -249,14 +249,14 @@ instance Validity AddIntrayTrigger
 
 instance HasCodec AddIntrayTrigger where
   codec =
-    object "AddIntrayTrigger" $
-      AddIntrayTrigger
-        <$> requiredFieldWith "url" (codecViaAeson "BaseUrl") "base url of the intray instance"
-          .= addIntrayTriggerUrl
-        <*> requiredField "username" "username at that intray instance"
-          .= addIntrayTriggerUsername
-        <*> requiredField "access key secret" "access key to log into intray"
-          .= addIntrayTriggerAccessKey
+    object "AddIntrayTrigger"
+      $ AddIntrayTrigger
+      <$> requiredFieldWith "url" (codecViaAeson "BaseUrl") "base url of the intray instance"
+      .= addIntrayTriggerUrl
+      <*> requiredField "username" "username at that intray instance"
+      .= addIntrayTriggerUsername
+      <*> requiredField "access key secret" "access key to log into intray"
+      .= addIntrayTriggerAccessKey
 
 type PostEmailTrigger =
   ProtectAPI
@@ -275,10 +275,10 @@ instance Validity AddEmailTrigger
 
 instance HasCodec AddEmailTrigger where
   codec =
-    object "AddEmailTrigger" $
-      AddEmailTrigger
-        <$> requiredField "email-address" "email address"
-          .= addEmailTriggerEmailAddress
+    object "AddEmailTrigger"
+      $ AddEmailTrigger
+      <$> requiredField "email-address" "email address"
+      .= addEmailTriggerEmailAddress
 
 type PostEmailTriggerVerify =
   ProtectAPI
@@ -342,12 +342,12 @@ instance Validity ChangePassphrase
 
 instance HasCodec ChangePassphrase where
   codec =
-    object "ChangePassphrase" $
-      ChangePassphrase
-        <$> requiredField "old-passphrase" "old passphrase"
-          .= changePassphraseOld
-        <*> requiredField "new-passphrase" "new passphrase"
-          .= changePassphraseNew
+    object "ChangePassphrase"
+      $ ChangePassphrase
+      <$> requiredField "old-passphrase" "old passphrase"
+      .= changePassphraseOld
+      <*> requiredField "new-passphrase" "new passphrase"
+      .= changePassphraseNew
 
 type PutAccountSettings =
   ProtectAPI
@@ -380,12 +380,12 @@ instance Validity InitiateStripeCheckoutSession
 
 instance HasCodec InitiateStripeCheckoutSession where
   codec =
-    object "InitiateStripeCheckoutSession" $
-      InitiateStripeCheckoutSession
-        <$> requiredField "success" "success url"
-          .= initiateStripeCheckoutSessionSuccessUrl
-        <*> requiredField "canceled" "canceled url"
-          .= initiateStripeCheckoutSessionCanceledUrl
+    object "InitiateStripeCheckoutSession"
+      $ InitiateStripeCheckoutSession
+      <$> requiredField "success" "success url"
+      .= initiateStripeCheckoutSessionSuccessUrl
+      <*> requiredField "canceled" "canceled url"
+      .= initiateStripeCheckoutSessionCanceledUrl
 
 data InitiatedCheckoutSession = InitiatedCheckoutSession
   { initiatedCheckoutSessionId :: Text,
@@ -398,9 +398,9 @@ instance Validity InitiatedCheckoutSession
 
 instance HasCodec InitiatedCheckoutSession where
   codec =
-    object "InitiatedCheckoutSession" $
-      InitiatedCheckoutSession
-        <$> requiredField "session" "session identifier"
-          .= initiatedCheckoutSessionId
-        <*> requiredField "customer" "customer identifier"
-          .= initiatedCheckoutSessionCustomerId
+    object "InitiatedCheckoutSession"
+      $ InitiatedCheckoutSession
+      <$> requiredField "session" "session identifier"
+      .= initiatedCheckoutSessionId
+      <*> requiredField "customer" "customer identifier"
+      .= initiatedCheckoutSessionCustomerId

@@ -33,8 +33,8 @@ servePostEmailTriggerResendVerificationEmail AuthCookie {..} tuuid = do
             then throwAll err400 {errBody = "Verification email already scheduled."}
             else do
               now <- liftIO getCurrentTime
-              runDB $
-                insert_
+              runDB
+                $ insert_
                   VerificationEmail
                     { verificationEmailTo = emailTriggerAddress,
                       verificationEmailKey = emailTriggerVerificationKey,

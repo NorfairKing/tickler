@@ -21,8 +21,8 @@ servePutItem AuthCookie {..} uuid Tickle {..} = do
   case mI of
     Nothing -> throwError err404
     Just (Entity i _) -> do
-      runDB $
-        update
+      runDB
+        $ update
           i
           [ TicklerItemContents =. tickleContent,
             TicklerItemScheduledDay =. tickleScheduledDay,

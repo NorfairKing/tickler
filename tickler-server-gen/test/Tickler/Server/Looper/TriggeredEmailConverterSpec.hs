@@ -29,14 +29,14 @@ spec = do
             triggeredItemTriggered = UTCTime (fromGregorian 2022 05 03) 31000
           }
 
-  it "produces the same subject as last time" $
-    pureGoldenTextFile "test_resources/email/triggered.subject" $
-      triggeredEmailSubject ti
+  it "produces the same subject as last time"
+    $ pureGoldenTextFile "test_resources/email/triggered.subject"
+    $ triggeredEmailSubject ti
 
-  it "produces the same text content as last time" $
-    pureGoldenTextFile "test_resources/email/triggered.text" $
-      triggeredEmailTextContent sets ti
+  it "produces the same text content as last time"
+    $ pureGoldenTextFile "test_resources/email/triggered.text"
+    $ triggeredEmailTextContent sets ti
 
-  it "produces the same text content as last time" $
-    pureGoldenTextFile "test_resources/email/triggered.html" $
-      triggeredEmailHtmlContent sets ti
+  it "produces the same text content as last time"
+    $ pureGoldenTextFile "test_resources/email/triggered.html"
+    $ triggeredEmailHtmlContent sets ti

@@ -14,8 +14,9 @@ import Tickler.Client
 import Tickler.Server.TestUtils
 
 spec :: Spec
-spec = withTicklerServer $
-  describe "Register" $ do
+spec = withTicklerServer
+  $ describe "Register"
+  $ do
     it "does not crash" $ \cenv ->
       forAllValid $ \registration -> do
         nameOrError <- runClient cenv $ clientPostRegister registration
@@ -34,8 +35,9 @@ spec = withTicklerServer $
         forAllValid $ \registration -> do
           void $ runClient cenv $ clientPostRegister registration
           nameOrError <-
-            runClient cenv . clientPostRegister $
-              Registration (registrationUsername registration) password
+            runClient cenv
+              . clientPostRegister
+              $ Registration (registrationUsername registration) password
           case nameOrError of
             Left err ->
               let snf = expectationFailure $ "Should not fail with error: " <> show err

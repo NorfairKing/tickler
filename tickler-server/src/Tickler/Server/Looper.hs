@@ -32,21 +32,22 @@ runTicklerLoopers :: Pool SqlBackend -> Settings -> LoggingT IO ()
 runTicklerLoopers pool Settings {..} = do
   let looperEnv = LooperEnv {looperEnvPool = pool}
       looperRunner LooperDef {..} =
-        addLooperNameToLog looperDefName $
-          runLooper looperEnv $ do
+        addLooperNameToLog looperDefName
+          $ runLooper looperEnv
+          $ do
             logInfoN "Starting"
             begin <- liftIO getMonotonicTimeNSec
             recovering
               retryPolicyDefault
               ( skipAsyncExceptions
                   ++ [ \_ -> Catch.Handler $ \(se :: SomeException) -> do
-                         runDB $
-                           insert_
+                         runDB
+                           $ insert_
                              AdminNotificationEmail
                                { adminNotificationEmailEmail = Nothing,
                                  adminNotificationEmailContents =
-                                   T.pack $
-                                     unlines
+                                   T.pack
+                                     $ unlines
                                        [ unwords ["The following exception occurred in the", T.unpack looperDefName, "looper:"],
                                          displayException se
                                        ]
@@ -56,15 +57,15 @@ runTicklerLoopers pool Settings {..} = do
               )
               (const looperDefFunc)
             end <- liftIO getMonotonicTimeNSec
-            logInfoN $
-              T.pack $
-                formatTime
-                  defaultTimeLocale
-                  "Done, took %Hh%Mm%Ss"
-                  (realToFrac (fromIntegral (end - begin) / (1_000_000_000 :: Double)) :: NominalDiffTime)
+            logInfoN
+              $ T.pack
+              $ formatTime
+                defaultTimeLocale
+                "Done, took %Hh%Mm%Ss"
+                (realToFrac (fromIntegral (end - begin) / (1_000_000_000 :: Double)) :: NominalDiffTime)
 
-  runLoopersIgnoreOverrun looperRunner $
-    concat
+  runLoopersIgnoreOverrun looperRunner
+    $ concat
       [ [ mkLooperDef "Emailer" setEmailerSets runEmailer,
           mkLooperDef
             "Triggerer"
@@ -83,8 +84,8 @@ runTicklerLoopers pool Settings {..} = do
             setTriggeredEmailSchedulerSets
             runTriggeredEmailScheduler
         ],
-        [ mkLooperDef "TriggeredVerificationEmailConverter" setVerificationEmailConverterSets $
-            runVerificationEmailConverter verificationEmailConverterSettings
+        [ mkLooperDef "TriggeredVerificationEmailConverter" setVerificationEmailConverterSets
+            $ runVerificationEmailConverter verificationEmailConverterSettings
           | verificationEmailConverterSettings <- maybeToList $ do
               from <- setVerificationFromEmailAddress
               webHost <- setWebHost
@@ -95,8 +96,8 @@ runTicklerLoopers pool Settings {..} = do
                     verificationEmailConverterSetWebHost = webHost
                   }
         ],
-        [ mkLooperDef "TriggeredEmailConverter" setTriggeredEmailConverterSets $
-            runTriggeredEmailConverter triggeredEmailConverterSettings
+        [ mkLooperDef "TriggeredEmailConverter" setTriggeredEmailConverterSets
+            $ runTriggeredEmailConverter triggeredEmailConverterSettings
           | triggeredEmailConverterSettings <- maybeToList $ do
               from <- setTriggererFromEmailAddress
               webHost <- setWebHost
@@ -107,8 +108,8 @@ runTicklerLoopers pool Settings {..} = do
                     triggeredEmailConverterSetWebHost = webHost
                   }
         ],
-        [ mkLooperDef "AdminNotificationEmailConverter" setTriggeredEmailConverterSets $
-            runAdminNotificationEmailConverter adminNotificationEmailConverterSettings
+        [ mkLooperDef "AdminNotificationEmailConverter" setTriggeredEmailConverterSets
+            $ runAdminNotificationEmailConverter adminNotificationEmailConverterSettings
           | adminNotificationEmailConverterSettings <- maybeToList $ do
               from <- setAdminNotificationFromEmailAddress
               to <- setAdminNotificationToEmailAddress

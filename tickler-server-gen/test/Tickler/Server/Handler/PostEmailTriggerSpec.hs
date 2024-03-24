@@ -13,8 +13,9 @@ import Tickler.Client
 import Tickler.Server.TestUtils
 
 spec :: Spec
-spec = withTicklerServer $
-  it "gets the trigger that was just added" $ \cenv ->
+spec = withTicklerServer
+  $ it "gets the trigger that was just added"
+  $ \cenv ->
     forAllValid $ \addEmailTrigger ->
       withValidNewUser cenv $ \token -> do
         runClientOrError cenv $ do

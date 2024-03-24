@@ -12,8 +12,9 @@ import Tickler.Client
 import Tickler.Server.TestUtils
 
 spec :: Spec
-spec = withTicklerServer $
-  describe "Login" $ do
+spec = withTicklerServer
+  $ describe "Login"
+  $ do
     it "does not crash" $ \cenv ->
       forAllValid $ \registration ->
         withNewUser cenv registration $ \_ -> do

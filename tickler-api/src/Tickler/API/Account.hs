@@ -32,16 +32,24 @@ instance Validity AccountInfo
 
 instance HasCodec AccountInfo where
   codec =
-    object "AccountInfo" $
-      AccountInfo
-        <$> requiredField "id" "identifier" .= accountInfoUUID
-        <*> requiredField "username" "username" .= accountInfoUsername
-        <*> requiredField "created" "created timestamp" .= accountInfoCreated
-        <*> requiredField "last-login" "last login timestamp" .= accountInfoLastLogin
-        <*> requiredField "admin" "whether this account is an admin" .= accountInfoAdmin
-        <*> requiredField "tickler-item-count" "number of tickler items" .= accountInfoTicklerItemCount
-        <*> requiredField "triggered-item-count" "number of triggered items" .= accountInfoTriggeredItemCount
-        <*> requiredField "status" "paid status" .= accountInfoStatus
+    object "AccountInfo"
+      $ AccountInfo
+      <$> requiredField "id" "identifier"
+      .= accountInfoUUID
+      <*> requiredField "username" "username"
+      .= accountInfoUsername
+      <*> requiredField "created" "created timestamp"
+      .= accountInfoCreated
+      <*> requiredField "last-login" "last login timestamp"
+      .= accountInfoLastLogin
+      <*> requiredField "admin" "whether this account is an admin"
+      .= accountInfoAdmin
+      <*> requiredField "tickler-item-count" "number of tickler items"
+      .= accountInfoTicklerItemCount
+      <*> requiredField "triggered-item-count" "number of triggered items"
+      .= accountInfoTriggeredItemCount
+      <*> requiredField "status" "paid status"
+      .= accountInfoStatus
 
 data PaidStatus
   = HasNotPaid Int -- Number of extra items that they're still allowed
@@ -54,9 +62,9 @@ instance Validity PaidStatus
 
 instance HasCodec PaidStatus where
   codec =
-    dimapCodec f g $
-      eitherCodec hasNotPaidCodec $
-        eitherCodec hasPaidCodec noPaymentNecessaryCodec
+    dimapCodec f g
+      $ eitherCodec hasNotPaidCodec
+      $ eitherCodec hasPaidCodec noPaymentNecessaryCodec
     where
       f = \case
         Left i -> HasNotPaid i
@@ -89,6 +97,7 @@ instance Validity AccountSettings where
 
 instance HasCodec AccountSettings where
   codec =
-    object "AccountSettings" $
-      AccountSettings
-        <$> requiredField "timezone" "timezone" .= accountSettingsTimeZone
+    object "AccountSettings"
+      $ AccountSettings
+      <$> requiredField "timezone" "timezone"
+      .= accountSettingsTimeZone

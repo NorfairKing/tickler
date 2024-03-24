@@ -33,20 +33,20 @@ data Configuration = Configuration
 
 instance HasCodec Configuration where
   codec =
-    object "Configuration" $
-      Configuration
-        <$> optionalField "port" "The port to serve web requests on"
-          .= confPort
-        <*> optionalField "log-level" "The minimal sevirity of log messages"
-          .= confLogLevel
-        <*> optionalField "api-url" "The url to contact the api server at"
-          .= confAPIBaseUrl
-        <*> optionalField "default-intray-url" "The default intray url to fill in for setting up intray triggers"
-          .= confDefaultIntrayUrl
-        <*> optionalField "tracking" "The google analytics tracking code"
-          .= confTracking
-        <*> optionalField "verification" "The google search console verification code"
-          .= confVerification
+    object "Configuration"
+      $ Configuration
+      <$> optionalField "port" "The port to serve web requests on"
+      .= confPort
+      <*> optionalField "log-level" "The minimal sevirity of log messages"
+      .= confLogLevel
+      <*> optionalField "api-url" "The url to contact the api server at"
+      .= confAPIBaseUrl
+      <*> optionalField "default-intray-url" "The default intray url to fill in for setting up intray triggers"
+      .= confDefaultIntrayUrl
+      <*> optionalField "tracking" "The google analytics tracking code"
+      .= confTracking
+      <*> optionalField "verification" "The google search console verification code"
+      .= confVerification
 
 data Environment = Environment
   { envConfigFile :: !(Maybe FilePath),

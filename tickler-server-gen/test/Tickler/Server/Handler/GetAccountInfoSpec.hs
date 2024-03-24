@@ -11,8 +11,9 @@ import Tickler.Server.TestUtils
 
 spec :: Spec
 spec =
-  withTicklerServer $
-    describe "GetAccountInfo" $ do
+  withTicklerServer
+    $ describe "GetAccountInfo"
+    $ do
       it "returns valid account info" $ \cenv ->
         withValidNewUser cenv $ \token -> do
           accountInfo <- runClientOrError cenv $ clientGetAccountInfo token

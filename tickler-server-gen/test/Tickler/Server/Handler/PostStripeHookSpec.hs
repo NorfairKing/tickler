@@ -21,15 +21,16 @@ import Tickler.Server.TestUtils
 
 spec :: Spec
 spec =
-  withPaidTicklerServerAndDatabase 5 $
-    it "can set the subscription of a user" $ \(pool, cenv) ->
+  withPaidTicklerServerAndDatabase 5
+    $ it "can set the subscription of a user"
+    $ \(pool, cenv) ->
       let eventTypes = ["customer.subscription.created", "customer.subscription.updated", "customer.subscription.deleted"]
        in forAll (elements eventTypes) $ \eventType ->
             forAllValid $ \customerId ->
               let customerForms =
                     [ SubscriptionCustomer'Text customerId,
-                      SubscriptionCustomer'Customer $
-                        mkCustomer
+                      SubscriptionCustomer'Customer
+                        $ mkCustomer
                           0
                           customerId
                           False

@@ -96,9 +96,9 @@ withFreeTicklerServerAndDatabase =
 
 withBothTicklerAndIntrayServer :: TestDef '[HTTP.Manager] (ClientEnv, ClientEnv) -> Spec
 withBothTicklerAndIntrayServer specFunc =
-  managerSpec $
-    setupAroundWith' (\man () -> bothSetupFunc man) $
-      modifyMaxSuccess (`div` 20) specFunc
+  managerSpec
+    $ setupAroundWith' (\man () -> bothSetupFunc man)
+    $ modifyMaxSuccess (`div` 20) specFunc
   where
     bothSetupFunc :: HTTP.Manager -> SetupFunc (ClientEnv, ClientEnv)
     bothSetupFunc man = do

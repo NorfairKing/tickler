@@ -33,21 +33,22 @@ import UnliftIO
 
 runTicklerServer :: Settings -> IO ()
 runTicklerServer settings@Settings {..} =
-  runStderrLoggingT $
-    filterLogger (\_ ll -> ll >= setLogLevel) $ do
+  runStderrLoggingT
+    $ filterLogger (\_ ll -> ll >= setLogLevel)
+    $ do
       logDebugN $ T.pack $ unlines ["Running tickler-server with these settings:", ppShow settings]
-      withSqlitePoolInfo (mkSqliteConnectionInfo (T.pack (fromAbsFile setDb))) 1 $
-        \pool -> do
+      withSqlitePoolInfo (mkSqliteConnectionInfo (T.pack (fromAbsFile setDb))) 1
+        $ \pool -> do
           runResourceT (runSqlPool (runMigration serverAutoMigration >> customMigrations) pool)
             `catch` ( \pe ->
-                        liftIO $
-                          die $
-                            unlines
-                              [ case pe of
-                                  PersistError t -> T.unpack t
-                                  _ -> show (pe :: PersistException),
-                                unwords ["sqlite3", show setDb]
-                              ]
+                        liftIO
+                          $ die
+                          $ unlines
+                            [ case pe of
+                                PersistError t -> T.unpack t
+                                _ -> show (pe :: PersistException),
+                              unwords ["sqlite3", show setDb]
+                            ]
                     )
           signingKey <- liftIO loadSigningKey
           let jwtCfg = defaultJWTSettings signingKey
@@ -149,7 +150,7 @@ ticklerAdminServer =
       adminPutAccountSubscription = withAuthResult serveAdminPutAccountSubscription
     }
 
-withAuthResult :: ThrowAll a => (AuthCookie -> a) -> (AuthResult AuthCookie -> a)
+withAuthResult :: (ThrowAll a) => (AuthCookie -> a) -> (AuthResult AuthCookie -> a)
 withAuthResult func ar =
   case ar of
     Authenticated ac -> func ac

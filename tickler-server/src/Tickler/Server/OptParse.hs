@@ -63,8 +63,8 @@ combineToSettings Flags {..} Environment {..} mConf = do
     pure $ do
       ss <- StripeSettings <$> plan <*> secretKey <*> publicKey
       price <- monetisationFlagPrice <|> monetisationEnvPrice <|> mmc monetisationConfPrice
-      pure $
-        MonetisationSettings
+      pure
+        $ MonetisationSettings
           { monetisationSetStripeSettings = ss,
             monetisationSetMaxItemsFree = maxItemsFree,
             monetisationSetPrice = price
@@ -157,26 +157,26 @@ getEnvironment = Env.parse id environmentParser
 
 environmentParser :: Env.Parser Env.Error Environment
 environmentParser =
-  Env.prefixed "TICKLER_SERVER_" $
-    Environment
-      <$> optional (Env.var Env.str "CONFIG_FILE" (Env.help "configuration file"))
-      <*> optional (Env.var Env.str "DATABASE_FILE" (Env.help "database file"))
-      <*> optional (Env.var Env.str "WEB_HOST" (Env.help "host that the web server is running on"))
-      <*> optional (Env.var Env.auto "PORT" (Env.help "port to run the api server on"))
-      <*> optional (Env.var Env.auto "LOG_LEVEL" (Env.help "minimal severity of error messages"))
-      <*> monetisationEnvironmentParser
-      <*> optional (Env.var Env.str "TRIGGERER_FROM_EMAIL_ADDRESS" (Env.help "From email address for triggered emails"))
-      <*> optional (Env.var Env.str "VERIFICATION_FROM_EMAIL_ADDRESS" (Env.help "From email address for verification emails"))
-      <*> optional (Env.var Env.str "ADMIN_NOTIFICATION_FROM_EMAIL_ADDRESS" (Env.help "From email address for admin notifcitaion emails"))
-      <*> optional (Env.var Env.str "ADMIN_NOTIFICATION_TO_EMAIL_ADDRESS" (Env.help "To email address for admin notifcitaion emails"))
-      <*> looperEnvironmentParser "TRIGGERER"
-      <*> looperEnvironmentParser "EMAILER"
-      <*> looperEnvironmentParser "TRIGGERED_INTRAY_ITEM_SCHEDULER"
-      <*> looperEnvironmentParser "TRIGGERED_INTRAY_ITEM_SENDER"
-      <*> looperEnvironmentParser "VERIFICATION_EMAIL_CONVERTER"
-      <*> looperEnvironmentParser "TRIGGERED_EMAIL_SCHEDULER"
-      <*> looperEnvironmentParser "TRIGGERED_EMAIL_CONVERTER"
-      <*> looperEnvironmentParser "ADMIN_NOTIFICATION_EMAIL_CONVERTER"
+  Env.prefixed "TICKLER_SERVER_"
+    $ Environment
+    <$> optional (Env.var Env.str "CONFIG_FILE" (Env.help "configuration file"))
+    <*> optional (Env.var Env.str "DATABASE_FILE" (Env.help "database file"))
+    <*> optional (Env.var Env.str "WEB_HOST" (Env.help "host that the web server is running on"))
+    <*> optional (Env.var Env.auto "PORT" (Env.help "port to run the api server on"))
+    <*> optional (Env.var Env.auto "LOG_LEVEL" (Env.help "minimal severity of error messages"))
+    <*> monetisationEnvironmentParser
+    <*> optional (Env.var Env.str "TRIGGERER_FROM_EMAIL_ADDRESS" (Env.help "From email address for triggered emails"))
+    <*> optional (Env.var Env.str "VERIFICATION_FROM_EMAIL_ADDRESS" (Env.help "From email address for verification emails"))
+    <*> optional (Env.var Env.str "ADMIN_NOTIFICATION_FROM_EMAIL_ADDRESS" (Env.help "From email address for admin notifcitaion emails"))
+    <*> optional (Env.var Env.str "ADMIN_NOTIFICATION_TO_EMAIL_ADDRESS" (Env.help "To email address for admin notifcitaion emails"))
+    <*> looperEnvironmentParser "TRIGGERER"
+    <*> looperEnvironmentParser "EMAILER"
+    <*> looperEnvironmentParser "TRIGGERED_INTRAY_ITEM_SCHEDULER"
+    <*> looperEnvironmentParser "TRIGGERED_INTRAY_ITEM_SENDER"
+    <*> looperEnvironmentParser "VERIFICATION_EMAIL_CONVERTER"
+    <*> looperEnvironmentParser "TRIGGERED_EMAIL_SCHEDULER"
+    <*> looperEnvironmentParser "TRIGGERED_EMAIL_CONVERTER"
+    <*> looperEnvironmentParser "ADMIN_NOTIFICATION_EMAIL_CONVERTER"
 
 monetisationEnvironmentParser :: Env.Parser Env.Error MonetisationEnvironment
 monetisationEnvironmentParser =

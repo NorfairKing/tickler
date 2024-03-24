@@ -18,8 +18,8 @@ servePostEmailTriggerVerify ::
   AuthCookie -> TriggerUUID -> EmailVerificationKey -> TicklerHandler NoContent
 servePostEmailTriggerVerify AuthCookie {..} tuuid evk = do
   mt <-
-    runDB $
-      selectFirst
+    runDB
+      $ selectFirst
         [ EmailTriggerUser ==. authCookieUserUUID,
           EmailTriggerIdentifier ==. tuuid
         ]

@@ -28,8 +28,8 @@ import Web.Cookie
 runTriggeredIntrayItemSender :: Looper ()
 runTriggeredIntrayItemSender = do
   acqTriggeredIntrayItemSource <-
-    runDB $
-      selectSourceRes
+    runDB
+      $ selectSourceRes
         [TriggeredIntrayItemIntrayItemUUID ==. Nothing, TriggeredIntrayItemError ==. Nothing]
         []
   withAcquire acqTriggeredIntrayItemSource $ \triggeredIntrayItemSource ->
@@ -47,8 +47,9 @@ sendTriggeredIntrayItem (Entity tii TriggeredIntrayItem {..}) = do
         Nothing -> logErrorN "Triggered item does not exist anymore."
         Just (Entity _ TriggeredItem {..}) -> do
           let env = mkClientEnv man intrayTriggerUrl
-          errOrUuid <- liftIO $
-            flip runClientM env $ do
+          errOrUuid <- liftIO
+            $ flip runClientM env
+            $ do
               let loginForm =
                     Intray.LoginForm
                       { Intray.loginFormUsername = intrayTriggerUsername,
@@ -67,8 +68,8 @@ sendTriggeredIntrayItem (Entity tii TriggeredIntrayItem {..}) = do
                           jwtCookie = find ((== "JWT-Cookie") . setCookieName) cookies
                       case jwtCookie of
                         Nothing ->
-                          pure $
-                            Left "No JWT-Cookie was found in the Set-Cookie session header."
+                          pure
+                            $ Left "No JWT-Cookie was found in the Set-Cookie session header."
                         Just session -> do
                           let token = Token $ setCookieValue session
                           let item =
@@ -79,19 +80,19 @@ sendTriggeredIntrayItem (Entity tii TriggeredIntrayItem {..}) = do
                           Right <$> Intray.clientPostAddItem token item
           case errOrUuid of
             Left (ConnectionError err) -> do
-              logErrorN $
-                T.pack $
-                  unwords ["Failed to add item to intray:", show err]
+              logErrorN
+                $ T.pack
+                $ unwords ["Failed to add item to intray:", show err]
               runDB $ update tii [TriggeredIntrayItemError =. Just (T.pack (show err))]
             Left err -> do
-              logErrorN $
-                T.pack $
-                  unwords ["Failed to add item to intray:", show err]
+              logErrorN
+                $ T.pack
+                $ unwords ["Failed to add item to intray:", show err]
               runDB $ update tii [TriggeredIntrayItemError =. Just (T.pack (show err))]
             Right (Left err) -> do
-              logErrorN $
-                T.pack $
-                  unwords ["The intray server did something wrong:", err]
+              logErrorN
+                $ T.pack
+                $ unwords ["The intray server did something wrong:", err]
               runDB $ update tii [TriggeredIntrayItemError =. Just (T.pack err)]
             Right (Right uuid) ->
               runDB $ update tii [TriggeredIntrayItemIntrayItemUUID =. Just uuid]

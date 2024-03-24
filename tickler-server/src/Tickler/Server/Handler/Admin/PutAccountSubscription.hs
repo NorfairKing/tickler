@@ -17,15 +17,15 @@ serveAdminPutAccountSubscription AuthCookie {..} username end = withAdminCreds a
     Nothing -> throwError err404
     Just (Entity _ user) ->
       let uuid = userIdentifier user
-       in runDB $
-            void $
-              upsertBy
-                (UniqueSubscriptionUser uuid)
-                ( Subscription
-                    { subscriptionUser = uuid,
-                      subscriptionEnd = end
-                    }
-                )
-                [ SubscriptionEnd =. end
-                ]
+       in runDB
+            $ void
+            $ upsertBy
+              (UniqueSubscriptionUser uuid)
+              ( Subscription
+                  { subscriptionUser = uuid,
+                    subscriptionEnd = end
+                  }
+              )
+              [ SubscriptionEnd =. end
+              ]
   pure NoContent

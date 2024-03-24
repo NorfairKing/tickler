@@ -62,10 +62,10 @@ recurrenceDataForm :: FormInput Handler RecurrenceData
 recurrenceDataForm =
   RecurrenceData
     <$> ireq
-      ( radioField $
-          pure $
-            mkOptionList $
-              map (\v -> Option (T.pack $ show v) v (T.pack $ show v)) [minBound .. maxBound]
+      ( radioField
+          $ pure
+          $ mkOptionList
+          $ map (\v -> Option (T.pack $ show v) v (T.pack $ show v)) [minBound .. maxBound]
       )
       "recurrence"
     <*> iopt (checkMMap (pure . (pure :: a -> Either Text a) . fromInteger) fromIntegral intField) "days"

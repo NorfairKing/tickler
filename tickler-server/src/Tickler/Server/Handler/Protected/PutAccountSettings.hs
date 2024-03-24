@@ -17,12 +17,12 @@ import Tickler.Server.Types
 
 servePutAccountSettings :: AuthCookie -> AccountSettings -> TicklerHandler NoContent
 servePutAccountSettings AuthCookie {..} AccountSettings {..} = do
-  void $
-    runDB $
-      upsert
-        UserSettings
-          { userSettingsUserId = authCookieUserUUID,
-            userSettingsTimeZone = accountSettingsTimeZone
-          }
-        [UserSettingsUserId =. authCookieUserUUID, UserSettingsTimeZone =. accountSettingsTimeZone]
+  void
+    $ runDB
+    $ upsert
+      UserSettings
+        { userSettingsUserId = authCookieUserUUID,
+          userSettingsTimeZone = accountSettingsTimeZone
+        }
+      [UserSettingsUserId =. authCookieUserUUID, UserSettingsTimeZone =. accountSettingsTimeZone]
   pure NoContent

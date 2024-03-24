@@ -33,8 +33,8 @@ handleSingleEmail (Entity emailId email) = do
   runDB $ do
     newStatus <- liftIO $ sendSingleEmail email
     now <- liftIO getCurrentTime
-    update emailId $
-      case newStatus of
+    update emailId
+      $ case newStatus of
         Right hid ->
           [ EmailStatus =. EmailSent,
             EmailSesId =. Just hid,
@@ -66,8 +66,8 @@ sendSingleEmail Email {..} = do
 
   errOrResp <- runResourceT $ AWS.sendEither awsEnv request
 
-  pure $
-    case errOrResp of
+  pure
+    $ case errOrResp of
       Left err -> Left $ T.pack $ show err
       Right response ->
         case SES.httpStatus response of

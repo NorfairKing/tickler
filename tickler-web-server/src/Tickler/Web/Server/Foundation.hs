@@ -71,11 +71,11 @@ instance Yesod App where
   makeSessionBackend a = Just <$> defaultClientSessionBackend (60 * 24 * 365 * 10) (fromAbsFile (appSessionKeyFile a))
   shouldLogIO a _ ll = pure $ ll >= appLogLevel a
   errorHandler NotFound =
-    fmap toTypedContent $
-      withNavBar $
-        do
-          setTitle "Page not found"
-          [whamlet|
+    fmap toTypedContent
+      $ withNavBar
+      $ do
+        setTitle "Page not found"
+        [whamlet|
       <h1>
         Page not found
       |]
@@ -91,8 +91,8 @@ instance YesodAuth App where
   logoutDest _ = HomeR
   authHttpManager = getsYesod appHTTPManager
   authenticate creds =
-    pure $
-      if credsPlugin creds == ticklerAuthPluginName
+    pure
+      $ if credsPlugin creds == ticklerAuthPluginName
         then Authenticated $ credsIdent creds
         else ServerError $ T.unwords ["Unknown authentication plugin:", credsPlugin creds]
   authPlugins _ = [ticklerAuthPlugin]
@@ -155,8 +155,9 @@ getNewAccountR :: TicklerAuthHandler Html
 getNewAccountR = do
   token <- genToken
   msgs <- getMessages
-  liftHandler $
-    defaultLayout $ do
+  liftHandler
+    $ defaultLayout
+    $ do
       setTitle "Tickler Login"
       setDescriptionIdemp "This is where you sign into your tickler account."
       $(widgetFile "auth/register")
@@ -175,8 +176,8 @@ postNewAccountR = do
           <$> ireq
             ( checkMMap
                 ( \t ->
-                    pure $
-                      case parseUsernameWithError t of
+                    pure
+                      $ case parseUsernameWithError t of
                         Left err -> Left (T.pack $ unwords ["Invalid username:", show t ++ ";", err])
                         Right un -> Right un
                 )
@@ -193,8 +194,8 @@ postNewAccountR = do
       FormMissing -> invalidArgs ["Form is incomplete"]
       FormFailure msgs -> pure $ Left msgs
       FormSuccess d ->
-        pure $
-          if newAccountPassword1 d == newAccountPassword2 d
+        pure
+          $ if newAccountPassword1 d == newAccountPassword2 d
             then
               Right
                 Registration
@@ -215,14 +216,17 @@ postNewAccountR = do
               case HTTP.statusCode $ responseStatusCode resp of
                 409 -> addMessage "error" "An account with this username already exists"
                 c ->
-                  addMessage "error" $
-                    "Failed to register for unknown reasons, got status code: " <> toHtml c
+                  addMessage "error"
+                    $ "Failed to register for unknown reasons, got status code: "
+                    <> toHtml c
             ConnectionError t ->
-              addMessage "error" $
-                "Failed to register for unknown reasons. with connection error:" <> toHtml (show t)
+              addMessage "error"
+                $ "Failed to register for unknown reasons. with connection error:"
+                <> toHtml (show t)
             e ->
-              addMessage "error" $
-                "Failed to register for unknown reasons. with error:" <> toHtml (show e)
+              addMessage "error"
+                $ "Failed to register for unknown reasons. with error:"
+                <> toHtml (show e)
           liftHandler $ redirect $ AuthR registerR
         Right NoContent ->
           liftHandler $ do
@@ -232,8 +236,8 @@ postNewAccountR = do
                   { loginFormUsername = registrationUsername reg,
                     loginFormPassword = registrationPassword reg
                   }
-            setCredsRedirect $
-              Creds ticklerAuthPluginName session []
+            setCredsRedirect
+              $ Creds ticklerAuthPluginName session []
 
 changePasswordTargetR :: AuthRoute
 changePasswordTargetR = PluginR ticklerAuthPluginName ["change-password"]
@@ -254,24 +258,24 @@ getChangePasswordR = do
 postChangePasswordR :: TicklerAuthHandler Html
 postChangePasswordR = do
   ChangePassword {..} <-
-    liftHandler $
-      runInputPost $
-        ChangePassword
-          <$> ireq passwordField "old"
-          <*> ireq passwordField "new1"
-          <*> ireq passwordField "new2"
-  unless (changePasswordNewPassword1 == changePasswordNewPassword2) $
-    invalidArgs ["Passwords do not match."]
-  liftHandler $
-    withLogin $
-      \t -> do
-        let cpp =
-              ChangePassphrase
-                { changePassphraseOld = changePasswordOldPassword,
-                  changePassphraseNew = changePasswordNewPassword1
-                }
-        NoContent <- runClientOrErr $ clientPostChangePassphrase t cpp
-        redirect AccountR
+    liftHandler
+      $ runInputPost
+      $ ChangePassword
+      <$> ireq passwordField "old"
+      <*> ireq passwordField "new1"
+      <*> ireq passwordField "new2"
+  unless (changePasswordNewPassword1 == changePasswordNewPassword2)
+    $ invalidArgs ["Passwords do not match."]
+  liftHandler
+    $ withLogin
+    $ \t -> do
+      let cpp =
+            ChangePassphrase
+              { changePassphraseOld = changePasswordOldPassword,
+                changePassphraseNew = changePasswordNewPassword1
+              }
+      NoContent <- runClientOrErr $ clientPostChangePassphrase t cpp
+      redirect AccountR
 
 instance RenderMessage App FormMessage where
   renderMessage _ _ = defaultFormMessage
@@ -297,15 +301,15 @@ withFormFailureNavBar errs body = do
   currentRoute <- getCurrentRoute
   defaultLayout $(widgetFile "with-nav-bar")
 
-genToken :: MonadHandler m => m Html
+genToken :: (MonadHandler m) => m Html
 genToken = genToken_ defaultCsrfParamName
 
-genToken_ :: MonadHandler m => Text -> m Html
+genToken_ :: (MonadHandler m) => Text -> m Html
 genToken_ tokenKey = do
   alreadyExpired
   req <- getRequest
-  pure $
-    case reqToken req of
+  pure
+    $ case reqToken req of
       Nothing -> mempty
       Just n -> [shamlet|<input type=hidden name=#{tokenKey} value=#{n}>|]
 
@@ -340,14 +344,14 @@ handleStandardServantErrs err func =
   case err of
     FailureResponse _ resp -> func resp
     ConnectionError e ->
-      sendResponseStatus HTTP.status500 $
-        unwords
+      sendResponseStatus HTTP.status500
+        $ unwords
           [ "Error while connecting to API:",
             show e
           ]
     e ->
-      sendResponseStatus HTTP.status500 $
-        unwords
+      sendResponseStatus HTTP.status500
+        $ unwords
           [ "Error while calling API:",
             show e
           ]
@@ -369,8 +373,8 @@ login form = do
           setCreds False $ Creds ticklerAuthPluginName session []
           pure session
         _ ->
-          sendResponseStatus HTTP.status500 $
-            unwords
+          sendResponseStatus HTTP.status500
+            $ unwords
               [ "The server responded but with an invalid header for login",
                 show sessionHeader
               ]

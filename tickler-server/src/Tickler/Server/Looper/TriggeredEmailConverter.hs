@@ -75,12 +75,12 @@ makeTriggeredEmail tecs@TriggeredEmailConverterSettings {..} EmailTrigger {..} t
 
 triggeredEmailSubject :: TriggeredItem -> Text
 triggeredEmailSubject TriggeredItem {..} =
-  T.pack $
-    unwords
+  T.pack
+    $ unwords
       [ "[Tickler]:",
-        take 50 $
-          filter (\c -> not (Char.isControl c) && c /= '\n' && c /= '\r') $
-            T.unpack triggeredItemContents
+        take 50
+          $ filter (\c -> not (Char.isControl c) && c /= '\n' && c /= '\r')
+          $ T.unpack triggeredItemContents
       ]
 
 triggeredEmailTextContent :: TriggeredEmailConverterSettings -> TriggeredItem -> Text

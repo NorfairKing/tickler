@@ -26,15 +26,15 @@ spec = do
             verificationEmailEmail = Nothing
           }
 
-  it "produces the same subject as last time" $
-    pureGoldenTextFile
+  it "produces the same subject as last time"
+    $ pureGoldenTextFile
       "test_resources/email/verification.subject"
       verificationEmailSubject
 
-  it "produces the same text content as last time" $
-    pureGoldenTextFile "test_resources/email/verification.text" $
-      verificationEmailTextContent sets ve
+  it "produces the same text content as last time"
+    $ pureGoldenTextFile "test_resources/email/verification.text"
+    $ verificationEmailTextContent sets ve
 
-  it "produces the same text content as last time" $
-    pureGoldenTextFile "test_resources/email/verification.html" $
-      verificationEmailHtmlContent sets ve
+  it "produces the same text content as last time"
+    $ pureGoldenTextFile "test_resources/email/verification.html"
+    $ verificationEmailHtmlContent sets ve

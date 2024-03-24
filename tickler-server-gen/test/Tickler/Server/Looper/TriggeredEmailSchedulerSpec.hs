@@ -21,8 +21,8 @@ spec = withTicklerDatabase $ do
             -- Set up an email trigger
             runPersistentTest pool $ do
               DB.insert_ (user :: User)
-              DB.insert_ $
-                emailTrigger
+              DB.insert_
+                $ emailTrigger
                   { emailTriggerUser = userIdentifier user,
                     emailTriggerVerified = True
                   }
@@ -51,8 +51,8 @@ spec = withTicklerDatabase $ do
           -- Make sure the triggered items have unique uuids and belong to the user
           triggeredItems <- forM triggeredItemPrototypes $ \ti -> do
             uuid <- nextRandomUUID
-            pure $
-              ti
+            pure
+              $ ti
                 { triggeredItemIdentifier = uuid,
                   triggeredItemUserId = userIdentifier user
                 }
@@ -74,8 +74,8 @@ spec = withTicklerDatabase $ do
             -- Set up a user without an email trigger
             runPersistentTest pool $ do
               DB.insert_ (user :: User)
-              DB.insert_ $
-                emailTrigger
+              DB.insert_
+                $ emailTrigger
                   { emailTriggerUser = userIdentifier user,
                     emailTriggerVerified = False
                   }
@@ -83,8 +83,8 @@ spec = withTicklerDatabase $ do
             -- Make sure the triggered items have unique uuids and belong to the user
             triggeredItems <- forM triggeredItemPrototypes $ \ti -> do
               uuid <- nextRandomUUID
-              pure $
-                ti
+              pure
+                $ ti
                   { triggeredItemIdentifier = uuid,
                     triggeredItemUserId = userIdentifier user
                   }
@@ -111,13 +111,13 @@ spec = withTicklerDatabase $ do
                     -- One user with a trigger and the other without
                     DB.insert_ (user1 :: User)
                     DB.insert_ (user2 :: User)
-                    DB.insert_ $
-                      user1EmailTrigger
+                    DB.insert_
+                      $ user1EmailTrigger
                         { emailTriggerUser = userIdentifier user1,
                           emailTriggerVerified = True
                         }
-                    DB.insert_ $
-                      user2EmailTrigger
+                    DB.insert_
+                      $ user2EmailTrigger
                         { emailTriggerUser = userIdentifier user2,
                           emailTriggerVerified = True
                         }
@@ -153,8 +153,8 @@ spec = withTicklerDatabase $ do
                   -- One user with a trigger and the other without
                   DB.insert_ (user1 :: User)
                   DB.insert_ (user2 :: User)
-                  DB.insert_ $
-                    emailTrigger
+                  DB.insert_
+                    $ emailTrigger
                       { emailTriggerUser = userIdentifier user1,
                         emailTriggerVerified = True
                       }
@@ -176,12 +176,12 @@ spec = withTicklerDatabase $ do
                 testRunLooper pool runTriggeredEmailScheduler
 
                 triggeredEmailsAfterFirstRun <-
-                  runPersistentTest pool $
-                    DB.selectList [] []
+                  runPersistentTest pool
+                    $ DB.selectList [] []
 
                 testRunLooper pool runTriggeredEmailScheduler
                 triggeredEmailsAfterSecondRun <-
-                  runPersistentTest pool $
-                    DB.selectList [] []
+                  runPersistentTest pool
+                    $ DB.selectList [] []
 
                 triggeredEmailsAfterSecondRun `shouldBe` (triggeredEmailsAfterFirstRun :: [DB.Entity TriggeredEmail])

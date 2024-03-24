@@ -30,8 +30,8 @@ runTriggerer = do
       -- and another because timezones.
       inTwoDays = addDays 2 nowDay
   acqItemsToConsiderSource <-
-    runDB $
-      selectSourceRes
+    runDB
+      $ selectSourceRes
         [TicklerItemScheduledDay <=. inTwoDays]
         [Asc TicklerItemScheduledDay, Asc TicklerItemScheduledTime]
   withAcquire acqItemsToConsiderSource $ \itemsToConsiderSource ->
@@ -48,7 +48,7 @@ considerTicklerItem e@(Entity _ ti@TicklerItem {..}) =
       logInfoN $ T.pack $ unwords ["Triggering item with identifier", uuidString ticklerItemIdentifier]
       triggerTicklerItem now e
 
-triggerTicklerItem :: MonadIO m => UTCTime -> Entity TicklerItem -> SqlPersistT m ()
+triggerTicklerItem :: (MonadIO m) => UTCTime -> Entity TicklerItem -> SqlPersistT m ()
 triggerTicklerItem now (Entity tii ti) = do
   uuid <- nextRandomUUID
   insert_ $ makeTriggeredItem uuid now ti -- Make the triggered item
@@ -71,8 +71,8 @@ ticklerItemUpdates ti = do
 
 ticklerItemLocalScheduledTime :: TicklerItem -> LocalTime
 ticklerItemLocalScheduledTime TicklerItem {..} =
-  LocalTime ticklerItemScheduledDay $
-    maybe
+  LocalTime ticklerItemScheduledDay
+    $ maybe
       midnight
       minuteOfDayToTimeOfDay
       ticklerItemScheduledTime

@@ -17,8 +17,9 @@ import Tickler.Server.TestUtils
 
 spec :: Spec
 spec =
-  withTicklerServer $
-    describe "AdminDeleteAccount" $ do
+  withTicklerServer
+    $ describe "AdminDeleteAccount"
+    $ do
       it "forbids non-admin users from deleting a user" $ \cenv ->
         forAllValid $ \uid -> requiresAdmin cenv $ \token -> clientAdminDeleteAccount token uid
       it "deletes an account correctly" $ \cenv ->
@@ -33,5 +34,5 @@ spec =
                   FailureResponse _ resp -> Http.statusCode (responseStatusCode resp) `shouldBe` 404
                   _ -> expectationFailure "Should have gotten the right error."
               Right ai ->
-                expectationFailure $
-                  unlines ["Should not have found account info, got this instead:", show ai]
+                expectationFailure
+                  $ unlines ["Should not have found account info, got this instead:", show ai]

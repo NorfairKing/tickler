@@ -45,8 +45,8 @@ accountInfoSegment mai mp =
               HasPaid subbed -> [whamlet|Subscribed until ^{makeTimestampWidget now subbed}|]
               NoPaymentNecessary -> [whamlet|No payment necessary|]
           createdWidget = makeTimestampWidget now accountInfoCreated
-      pure $
-        mconcat
+      pure
+        $ mconcat
           [ [whamlet|
           <div .ui .segment>
             <h3>
@@ -104,8 +104,10 @@ accountSettingsForm :: FormInput Handler AccountSettings
 accountSettingsForm =
   AccountSettings
     <$> ireq
-      ( selectField . pure $
-          mkOptionList $ do
+      ( selectField
+          . pure
+          $ mkOptionList
+          $ do
             tz <- timeZoneChoices
             pure
               Option

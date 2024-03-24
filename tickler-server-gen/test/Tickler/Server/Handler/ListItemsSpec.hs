@@ -15,8 +15,9 @@ import Tickler.Server.TestUtils
 
 spec :: Spec
 spec =
-  withFreeTicklerServer $
-    describe "ListItems" $ do
+  withFreeTicklerServer
+    $ describe "ListItems"
+    $ do
       it "it lists items that were just added" $ \cenv ->
         forAllValid $ \items ->
           withValidNewUser cenv $ \token -> do

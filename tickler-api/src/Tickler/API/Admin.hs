@@ -48,13 +48,18 @@ instance Validity AdminStats
 
 instance HasCodec AdminStats where
   codec =
-    object "AdminStats" $
-      AdminStats
-        <$> requiredField "users" "number of users" .= adminStatsNbUsers
-        <*> requiredField "subscribers" "number of subscribers" .= adminStatsNbSubscribers
-        <*> requiredField "tickler-items" "number of tickler items" .= adminStatsNbTicklerItems
-        <*> requiredField "triggered-items" "number of triggered items" .= adminStatsNbTriggeredItems
-        <*> requiredField "active-users" "active users" .= adminStatsActiveUsers
+    object "AdminStats"
+      $ AdminStats
+      <$> requiredField "users" "number of users"
+      .= adminStatsNbUsers
+      <*> requiredField "subscribers" "number of subscribers"
+      .= adminStatsNbSubscribers
+      <*> requiredField "tickler-items" "number of tickler items"
+      .= adminStatsNbTicklerItems
+      <*> requiredField "triggered-items" "number of triggered items"
+      .= adminStatsNbTriggeredItems
+      <*> requiredField "active-users" "active users"
+      .= adminStatsActiveUsers
 
 data ActiveUsers = ActiveUsers
   { activeUsersDaily :: !Word,
@@ -69,12 +74,16 @@ instance Validity ActiveUsers
 
 instance HasCodec ActiveUsers where
   codec =
-    object "ActiveUsers" $
-      ActiveUsers
-        <$> requiredField "daily" "daily active users" .= activeUsersDaily
-        <*> requiredField "weekly" "weekly active users" .= activeUsersWeekly
-        <*> requiredField "monthly" "monthly active users" .= activeUsersMonthly
-        <*> requiredField "yearly" "yearly active users" .= activeUsersYearly
+    object "ActiveUsers"
+      $ ActiveUsers
+      <$> requiredField "daily" "daily active users"
+      .= activeUsersDaily
+      <*> requiredField "weekly" "weekly active users"
+      .= activeUsersWeekly
+      <*> requiredField "monthly" "monthly active users"
+      .= activeUsersMonthly
+      <*> requiredField "yearly" "yearly active users"
+      .= activeUsersYearly
 
 type AdminDeleteAccount =
   ProtectAPI

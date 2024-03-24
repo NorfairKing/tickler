@@ -14,11 +14,14 @@ import Text.Printf
 
 instance HasCodec TimeZone where
   codec =
-    object "TimeZone" $
-      TimeZone
-        <$> requiredField' "offset" .= timeZoneMinutes
-        <*> requiredField' "summer" .= timeZoneSummerOnly
-        <*> requiredField' "name" .= timeZoneName
+    object "TimeZone"
+      $ TimeZone
+      <$> requiredField' "offset"
+      .= timeZoneMinutes
+      <*> requiredField' "summer"
+      .= timeZoneSummerOnly
+      <*> requiredField' "name"
+      .= timeZoneName
 
 deriving via (Autodocodec TimeZone) instance (FromJSON TimeZone)
 

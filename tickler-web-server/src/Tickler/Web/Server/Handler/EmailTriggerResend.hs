@@ -23,8 +23,8 @@ postTriggerEmailResendR tuuid =
             addNegativeMessage "Verification email already scheduled."
             redirect TriggersR
           c ->
-            sendResponseStatus HTTP.status500 $
-              unwords
+            sendResponseStatus HTTP.status500
+              $ unwords
                 [ "Error while connecting to the API:",
                   show c
                 ]

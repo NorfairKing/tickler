@@ -23,8 +23,8 @@ getCheckoutR = do
     AccountInfo {..} <- runClientOrErr $ clientGetAccountInfo t
     renderUrl <- getUrlRender
     InitiatedCheckoutSession {..} <-
-      runClientOrErr $
-        clientPostInitiateStripeCheckoutSession
+      runClientOrErr
+        $ clientPostInitiateStripeCheckoutSession
           t
           InitiateStripeCheckoutSession
             { initiateStripeCheckoutSessionSuccessUrl = renderUrl CheckoutSuccessR,

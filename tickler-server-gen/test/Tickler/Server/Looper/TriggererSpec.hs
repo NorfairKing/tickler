@@ -16,17 +16,18 @@ spec :: Spec
 spec = do
   describe "shouldBeTriggered" $ it "doesn't crash" $ producesValid3 shouldBeTriggered
 
-  describe "ticklerItemLocalScheduledTime" $
-    it "makes valid local times" $
-      producesValid ticklerItemLocalScheduledTime
+  describe "ticklerItemLocalScheduledTime"
+    $ it "makes valid local times"
+    $ producesValid ticklerItemLocalScheduledTime
 
-  describe "makeTriggeredItem" $
-    it "produces valid ticklerItems when it succeeds" $
-      producesValid3 makeTriggeredItem
+  describe "makeTriggeredItem"
+    $ it "produces valid ticklerItems when it succeeds"
+    $ producesValid3 makeTriggeredItem
 
   withTicklerServerAndDatabase $ do
-    describe "considerTicklerItem" $
-      it "triggers this item I just made for the past" $ \(pool, cenv) ->
+    describe "considerTicklerItem"
+      $ it "triggers this item I just made for the past"
+      $ \(pool, cenv) ->
         forAllValid $ \ticklePrototype ->
           withValidNewUser cenv $ \token -> do
             let day = fromGregorian 2022 05 04
@@ -48,8 +49,9 @@ spec = do
               Nothing -> expectationFailure "The item should have been triggered."
               Just (DB.Entity _ TriggeredItem {..}) -> triggeredItemContents `shouldBe` tickleContent tickle
 
-    describe "runTriggerer" $
-      it "triggers this item I just made for the past" $ \(pool, cenv) ->
+    describe "runTriggerer"
+      $ it "triggers this item I just made for the past"
+      $ \(pool, cenv) ->
         forAllValid $ \ticklePrototype ->
           withValidNewUser cenv $ \token -> do
             let day = fromGregorian 2022 05 05

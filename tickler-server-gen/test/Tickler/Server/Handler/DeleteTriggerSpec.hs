@@ -36,15 +36,16 @@ spec = do
                 _ -> expectationFailure $ unwords ["Unexpected error:", show err]
             Right _ -> expectationFailure "Should not have succeeded."
 
-  withBothTicklerAndIntrayServer $
-    it "can delete the intray trigger that was just added" $ \(tenv, ienv) ->
+  withBothTicklerAndIntrayServer
+    $ it "can delete the intray trigger that was just added"
+    $ \(tenv, ienv) ->
       forAllValid $ \name ->
         withValidNewUser tenv $ \ttoken ->
           Intray.withValidNewUserAndData ienv $ \un _ itoken -> do
             -- Add an intray access key that only permits adding items
             akc <-
-              runClientOrError ienv $
-                Intray.clientPostAddAccessKey
+              runClientOrError ienv
+                $ Intray.clientPostAddAccessKey
                   itoken
                   Intray.AddAccessKey
                     { Intray.addAccessKeyName = name,

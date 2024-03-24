@@ -161,26 +161,26 @@ data MonetisationConfiguration = MonetisationConfiguration
 
 instance HasCodec MonetisationConfiguration where
   codec =
-    object "MonetisationConfiguration" $
-      MonetisationConfiguration
-        <$> optionalField
-          "stripe-plan"
-          "The stripe identifier of the stripe plan used to checkout a subscription"
-        .= monetisationConfStripePlan
-        <*> optionalField
-          "stripe-secret-key"
-          "The secret key for calling the stripe api"
-        .= monetisationConfStripeSecretKey
-        <*> optionalField
-          "stripe-publishable-key"
-          "The publishable key for calling the stripe api"
-        .= monetisationConfStripePulishableKey
-        <*> optionalFieldOrNull
-          "max-items-free"
-          "The number of items a free user can have on the server"
-        .= monetisationConfMaxItemsFree
-        <*> optionalFieldOrNull "price" "A string description of the price"
-        .= monetisationConfPrice
+    object "MonetisationConfiguration"
+      $ MonetisationConfiguration
+      <$> optionalField
+        "stripe-plan"
+        "The stripe identifier of the stripe plan used to checkout a subscription"
+      .= monetisationConfStripePlan
+      <*> optionalField
+        "stripe-secret-key"
+        "The secret key for calling the stripe api"
+      .= monetisationConfStripeSecretKey
+      <*> optionalField
+        "stripe-publishable-key"
+        "The publishable key for calling the stripe api"
+      .= monetisationConfStripePulishableKey
+      <*> optionalFieldOrNull
+        "max-items-free"
+        "The number of items a free user can have on the server"
+      .= monetisationConfMaxItemsFree
+      <*> optionalFieldOrNull "price" "A string description of the price"
+      .= monetisationConfPrice
 
 data Environment = Environment
   { envConfigFile :: Maybe FilePath,
